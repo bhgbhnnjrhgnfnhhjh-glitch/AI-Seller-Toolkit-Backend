@@ -1,0 +1,130 @@
+<script>
+function generateTitle() {
+
+let product = document.getElementById("product").value;
+let category = document.getElementById("category").value;
+let brand = document.getElementById("brand").value;
+let keyword = document.getElementById("keyword").value;
+
+if(product=="" || category=="" || brand=="" || keyword==""){
+    alert("कृपया सभी जानकारी भरें।");
+    return;
+}
+
+document.getElementById("result").value =
+brand + " " + product +
+" | " + category +
+" | Premium Quality | " +
+keyword +
+" | Best Price";
+
+}
+</script><!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Product Title Generator</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header>
+
+<h1>🤖 AI Seller Toolkit</h1>
+
+<a href="tools.html">⬅ Back</a>
+
+</header>
+
+<section class="hero">
+
+<h2>AI Product Title Generator</h2>
+
+<p>Create High Converting Product Titles</p>
+
+</section>
+
+<section class="tools">
+
+<div class="card">
+
+<label>Product Name</label>
+
+<input
+type="text"
+id="product"
+placeholder="Enter Product Name">
+
+<br><br>
+
+<label>Category</label>
+
+<input
+type="text"
+id="category"
+placeholder="Enter Category">
+
+<br><br>
+
+<label>Brand</label>
+
+<input
+type="text"
+id="brand"
+placeholder="Enter Brand">
+
+<br><br>
+
+<label>Keyword</label>
+
+<input
+type="text"
+id="keyword"
+placeholder="Enter Main Keyword">
+
+<br><br>
+
+<button onclick="generateTitle()">
+
+Generate Title
+
+</button>
+
+<h3>Generated Title</h3>
+
+<textarea
+id="result"
+rows="5"
+readonly
+style="width:100%;"></textarea>
+
+</div>
+
+</section>
+
+<script>
+
+function generateTitle(){
+
+let product=document.getElementById("product").value;
+
+let category=document.getElementById("category").value;
+
+let brand=document.getElementById("brand").value;
+
+let keyword=document.getElementById("keyword").value;
+
+document.getElementById("result").value=
+
+brand+" "+product+" | "+category+" | Premium Quality | "+keyword+" | Best Price";
+
+}
+
+</script>
+
+</body>
+</html>

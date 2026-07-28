@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Product Description Generator</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+<h1>🤖 AI Seller Toolkit</h1>
+<a href="tools.html">⬅ Back</a>
+</header>
+
+<section class="hero">
+<h2>AI Product Description Generator</h2>
+<p>Create Professional Product Descriptions</p>
+</section>
+
+<section class="tools">
+
+<div class="card">
+
+<label>Product Name</label><br>
+<input type="text" id="product" placeholder="Enter Product Name">
+
+<br><br>
+
+<label>Category</label><br>
+<input type="text" id="category" placeholder="Enter Category">
+
+<br><br>
+
+<label>Brand</label><br>
+<input type="text" id="brand" placeholder="Enter Brand">
+
+<br><br>
+
+<button onclick="generateDescription()">
+Generate Description
+</button>
+
+<br><br>
+
+<h3>Generated Description</h3>
+
+<textarea id="result" rows="8" style="width:100%;" readonly></textarea>
+
+</div>
+
+</section>
+
+<script>
+
+function generateDescription(){
+
+let product=document.getElementById("product").value;
+let category=document.getElementById("category").value;
+let brand=document.getElementById("brand").value;
+
+if(product=="" || category=="" || brand==""){
+alert("Please fill all fields");
+return;
+}
+
+document.getElementById("result").value =
+brand+" "+product+
+" is a premium quality product in the "+category+
+" category. It is durable, stylish, lightweight and perfect for daily use. Order now at the best price.";
+
+}
+
+</script>
+
+</body>
+</html>
