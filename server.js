@@ -10,7 +10,11 @@ app.use(cors());
 app.use(express.json());
 
 const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+app.get("/", (req, res) => {
+  res.send("AI Seller Toolkit Backend is Running!");
 });
 
 app.post("/generate", async (req, res) => {
@@ -19,16 +23,18 @@ app.post("/generate", async (req, res) => {
 
     const response = await client.responses.create({
       model: "gpt-5-nano",
-      input: prompt
+      input: prompt,
     });
 
     res.json({
-      result: response.output_text
+      result: response.output_text,
     });
 
   } catch (err) {
+    console.error(err);
+
     res.status(500).json({
-      error: err.message
+      error: err.message,
     });
   }
 });
