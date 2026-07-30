@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profit Calculator</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f4f7fb;
+}
+
+header{
+background:linear-gradient(90deg,#2563eb,#4f46e5);
+color:#fff;
+text-align:center;
+padding:18px;
+font-size:24px;
+font-weight:bold;
+}
+
+.container{
+max-width:600px;
+margin:30px auto;
+background:#fff;
+padding:25px;
+border-radius:12px;
+box-shadow:0 5px 15px rgba(0,0,0,.15);
+}
+
+label{
+display:block;
+margin-top:15px;
+font-weight:bold;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-top:6px;
+border:1px solid #ccc;
+border-radius:6px;
+font-size:16px;
+}
+
+button{
+width:100%;
+margin-top:20px;
+padding:14px;
+background:#16a34a;
+color:#fff;
+font-size:18px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:hover{
+background:#15803d;
+}
+
+.result{
+margin-top:25px;
+padding:18px;
+background:#f8fafc;
+border:1px solid #ddd;
+border-radius:8px;
+line-height:2;
+font-size:18px;
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+💰 Profit Calculator
+</header>
+
+<div class="container">
+
+<label>Product Cost (₹)</label>
+<input type="number" id="cost" placeholder="Enter Product Cost">
+
+<label>Selling Price (₹)</label>
+<input type="number" id="selling" placeholder="Enter Selling Price">
+
+<label>Shipping Cost (₹)</label>
+<input type="number" id="shipping" placeholder="Enter Shipping Cost">
+
+<label>Other Expenses (₹)</label>
+<input type="number" id="expense" placeholder="Enter Other Expenses">
+
+<button onclick="calculateProfit()">
+Calculate Profit
+</button>
+
+<div class="result" id="result">
+Enter details and click "Calculate Profit".
+</div>
+
+</div>
+
+<script>
+
+function calculateProfit(){
+
+let cost=Number(document.getElementById("cost").value)||0;
+let selling=Number(document.getElementById("selling").value)||0;
+let shipping=Number(document.getElementById("shipping").value)||0;
+let expense=Number(document.getElementById("expense").value)||0;
+
+let totalCost=cost+shipping+expense;
+let profit=selling-totalCost;
+
+let percent=0;
+
+if(totalCost>0){
+percent=(profit/totalCost)*100;
+}
+
+document.getElementById("result").innerHTML=
+"<b>Total Cost:</b> ₹"+totalCost+
+"<br><b>Selling Price:</b> ₹"+selling+
+"<br><b>Profit:</b> ₹"+profit+
+"<br><b>Profit %:</b> "+percent.toFixed(2)+"%";
+
+}
+
+</script>
+
+</body>
+  </html>
