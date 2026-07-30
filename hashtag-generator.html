@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Hashtag Generator</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f4f7fb;
+}
+
+header{
+background:linear-gradient(90deg,#2563eb,#4f46e5);
+color:white;
+padding:18px;
+text-align:center;
+font-size:24px;
+font-weight:bold;
+}
+
+.container{
+max-width:700px;
+margin:30px auto;
+background:white;
+padding:25px;
+border-radius:12px;
+box-shadow:0 5px 15px rgba(0,0,0,.15);
+}
+
+label{
+display:block;
+margin-top:15px;
+margin-bottom:6px;
+font-weight:bold;
+}
+
+input,select{
+width:100%;
+padding:12px;
+border:1px solid #ccc;
+border-radius:6px;
+font-size:16px;
+}
+
+button{
+width:100%;
+margin-top:20px;
+padding:14px;
+background:#16a34a;
+color:white;
+font-size:18px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:hover{
+background:#15803d;
+}
+
+.result{
+margin-top:25px;
+padding:15px;
+background:#f9fafb;
+border-radius:8px;
+border:1px solid #ddd;
+line-height:1.8;
+}
+
+.copyBtn{
+background:#2563eb;
+margin-top:15px;
+}
+
+.copyBtn:hover{
+background:#1d4ed8;
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+#️⃣ AI Hashtag Generator
+</header>
+
+<div class="container">
+
+<label>Product Name</label>
+<input type="text" id="product" placeholder="Example: Tshirt">
+
+<label>Brand Name</label>
+<input type="text" id="brand" placeholder="Example: Nike">
+
+<label>Category</label>
+<input type="text" id="category" placeholder="Example: Fashion">
+
+<label>Platform</label>
+
+<select id="platform">
+<option>Instagram</option>
+<option>Facebook</option>
+<option>Meesho</option>
+<option>Amazon</option>
+<option>Flipkart</option>
+<option>Shopify</option>
+</select>
+
+<button onclick="generateHashtags()">
+Generate Hashtags
+</button>
+
+<div class="result" id="result">
+Your hashtags will appear here...
+</div>
+
+<button class="copyBtn" onclick="copyTags()">
+Copy Hashtags
+</button>
+
+</div>
+
+<script>
+
+function generateHashtags(){
+
+let product=document.getElementById("product").value.trim();
+let brand=document.getElementById("brand").value.trim();
+let category=document.getElementById("category").value.trim();
+let platform=document.getElementById("platform").value;
+
+if(product==""){
+alert("Please enter Product Name");
+return;
+}
+
+let tags=[
+"#"+product.replace(/\s+/g,""),
+"#Buy"+product.replace(/\s+/g,""),
+"#Best"+product.replace(/\s+/g,""),
+"#Trending",
+"#Sale",
+"#Shopping",
+"#OnlineShopping",
+"#"+category.replace(/\s+/g,""),
+"#"+brand.replace(/\s+/g,""),
+"#"+platform.replace(/\s+/g,""),
+"#Deal",
+"#Offer",
+"#NewArrival",
+"#Quality",
+"#Fashion",
+"#India",
+"#Viral",
+"#MustBuy",
+"#LoveIt",
+"#SellerToolkit"
+];
+
+document.getElementById("result").innerHTML=tags.join(" ");
+}
+
+function copyTags(){
+
+let text=document.getElementById("result").innerText;
+
+navigator.clipboard.writeText(text);
+
+alert("Hashtags copied successfully!");
+
+}
+
+</script>
+
+</body>
+</html>
