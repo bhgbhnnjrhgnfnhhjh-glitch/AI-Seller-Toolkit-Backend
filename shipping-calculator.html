@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shipping Calculator</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f4f7fb;
+}
+
+header{
+background:linear-gradient(90deg,#2563eb,#4f46e5);
+color:white;
+padding:18px;
+text-align:center;
+font-size:24px;
+font-weight:bold;
+}
+
+.container{
+max-width:600px;
+margin:30px auto;
+background:white;
+padding:25px;
+border-radius:12px;
+box-shadow:0 5px 15px rgba(0,0,0,.15);
+}
+
+label{
+display:block;
+margin-top:15px;
+font-weight:bold;
+}
+
+input,select{
+width:100%;
+padding:12px;
+margin-top:6px;
+border:1px solid #ccc;
+border-radius:6px;
+font-size:16px;
+}
+
+button{
+width:100%;
+padding:14px;
+margin-top:20px;
+background:#16a34a;
+color:white;
+font-size:18px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:hover{
+background:#15803d;
+}
+
+.result{
+margin-top:20px;
+padding:15px;
+background:#f8fafc;
+border-radius:8px;
+border:1px solid #ddd;
+line-height:2;
+font-size:18px;
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+🚚 Shipping Calculator
+</header>
+
+<div class="container">
+
+<label>Product Weight (kg)</label>
+<input type="number" id="weight" placeholder="Example: 1">
+
+<label>Distance (km)</label>
+<input type="number" id="distance" placeholder="Example: 250">
+
+<label>Shipping Type</label>
+<select id="type">
+<option value="50">Standard</option>
+<option value="100">Express</option>
+</select>
+
+<button onclick="calculateShipping()">
+Calculate Shipping
+</button>
+
+<div class="result" id="result">
+Enter details and click Calculate Shipping.
+</div>
+
+</div>
+
+<script>
+
+function calculateShipping(){
+
+let weight = Number(document.getElementById("weight").value);
+let distance = Number(document.getElementById("distance").value);
+let type = Number(document.getElementById("type").value);
+
+if(weight<=0 || distance<=0){
+alert("Please enter valid details.");
+return;
+}
+
+let shipping = (weight*20)+(distance*0.5)+type;
+
+let delivery="";
+
+if(type==50){
+delivery="5-7 Days";
+}else{
+delivery="2-3 Days";
+}
+
+document.getElementById("result").innerHTML=
+"<b>Weight:</b> "+weight+" kg"+
+"<br><b>Distance:</b> "+distance+" km"+
+"<br><b>Shipping Cost:</b> ₹"+shipping.toFixed(2)+
+"<br><b>Estimated Delivery:</b> "+delivery;
+
+}
+
+</script>
+
+</body>
+  </html>
