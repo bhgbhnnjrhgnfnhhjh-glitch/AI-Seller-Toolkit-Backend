@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Code Generator</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f4f7fb;
+}
+
+header{
+background:linear-gradient(90deg,#2563eb,#4f46e5);
+color:#fff;
+text-align:center;
+padding:18px;
+font-size:24px;
+font-weight:bold;
+}
+
+.container{
+max-width:600px;
+margin:30px auto;
+background:#fff;
+padding:25px;
+border-radius:12px;
+box-shadow:0 5px 15px rgba(0,0,0,.15);
+}
+
+label{
+display:block;
+margin-top:15px;
+font-weight:bold;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-top:6px;
+border:1px solid #ccc;
+border-radius:6px;
+font-size:16px;
+}
+
+button{
+width:100%;
+padding:14px;
+margin-top:15px;
+background:#16a34a;
+color:#fff;
+font-size:18px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:hover{
+background:#15803d;
+}
+
+#qrcode{
+margin-top:25px;
+display:flex;
+justify-content:center;
+}
+
+#downloadBtn{
+display:none;
+background:#2563eb;
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+📱 QR Code Generator
+</header>
+
+<div class="container">
+
+<label>Enter Text / URL</label>
+
+<input
+type="text"
+id="qrText"
+placeholder="https://example.com">
+
+<button onclick="generateQR()">
+Generate QR Code
+</button>
+
+<div id="qrcode"></div>
+
+<button id="downloadBtn" onclick="downloadQR()">
+Download QR Code
+</button>
+
+</div>
+
+<script>
+
+function generateQR(){
+
+let text=document.getElementById("qrText").value.trim();
+
+if(text==""){
+alert("Please enter text or URL.");
+return;
+}
+
+document.getElementById("qrcode").innerHTML="";
+
+new QRCode(document.getElementById("qrcode"),{
+text:text,
+width:220,
+height:220
+});
+
+setTimeout(function(){
+document.getElementById("downloadBtn").style.display="block";
+},500);
+
+}
+
+function downloadQR(){
+
+let img=document.querySelector("#qrcode img");
+
+if(!img){
+alert("Generate QR Code first.");
+return;
+}
+
+let a=document.createElement("a");
+a.href=img.src;
+a.download="QRCode.png";
+a.click();
+
+}
+
+</script>
+
+</body>
+  </html>
