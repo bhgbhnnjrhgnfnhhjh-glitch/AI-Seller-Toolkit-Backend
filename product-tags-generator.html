@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Product Tags Generator</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f4f7fb;
+}
+
+header{
+background:linear-gradient(90deg,#2563eb,#4f46e5);
+color:white;
+text-align:center;
+padding:18px;
+font-size:24px;
+font-weight:bold;
+}
+
+.container{
+max-width:650px;
+margin:30px auto;
+background:white;
+padding:25px;
+border-radius:12px;
+box-shadow:0 5px 15px rgba(0,0,0,.15);
+}
+
+label{
+display:block;
+margin-top:15px;
+font-weight:bold;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-top:8px;
+border:1px solid #ccc;
+border-radius:6px;
+font-size:16px;
+}
+
+button{
+width:100%;
+padding:14px;
+margin-top:20px;
+background:#16a34a;
+color:white;
+font-size:18px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:hover{
+background:#15803d;
+}
+
+.result{
+margin-top:20px;
+background:#f8fafc;
+padding:15px;
+border-radius:8px;
+border:1px solid #ddd;
+white-space:pre-wrap;
+line-height:1.8;
+}
+
+.copyBtn{
+background:#2563eb;
+}
+
+.copyBtn:hover{
+background:#1d4ed8;
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+🏷 AI Product Tags Generator
+</header>
+
+<div class="container">
+
+<label>Product Name</label>
+
+<input
+type="text"
+id="product"
+placeholder="Example: Cotton T-Shirt">
+
+<button onclick="generateTags()">
+Generate Product Tags
+</button>
+
+<div class="result" id="result">
+Enter a product name and click Generate.
+</div>
+
+<button class="copyBtn" onclick="copyTags()">
+Copy Tags
+</button>
+
+</div>
+
+<script>
+
+function generateTags(){
+
+let product=document.getElementById("product").value.trim();
+
+if(product==""){
+alert("Please enter product name.");
+return;
+}
+
+let tags=[
+product,
+product+" Online",
+"Best "+product,
+"Original "+product,
+"Premium "+product,
+"Latest "+product,
+product+" India",
+product+" for Men",
+product+" for Women",
+product+" Store",
+product+" Sale",
+product+" Collection",
+product+" Fashion",
+product+" Trending",
+product+" New Arrival",
+product+" Shopping",
+product+" Quality",
+product+" Brand",
+product+" Offer",
+product+" Bestseller"
+];
+
+document.getElementById("result").innerHTML=tags.join(", ");
+
+}
+
+function copyTags(){
+
+let text=document.getElementById("result").innerText;
+
+navigator.clipboard.writeText(text);
+
+alert("Tags Copied Successfully!");
+
+}
+
+</script>
+
+</body>
+</html>
