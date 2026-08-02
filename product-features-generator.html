@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Product Features Generator</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f4f7fb;
+}
+
+header{
+background:linear-gradient(90deg,#2563eb,#4f46e5);
+color:white;
+text-align:center;
+padding:18px;
+font-size:24px;
+font-weight:bold;
+}
+
+.container{
+max-width:700px;
+margin:30px auto;
+background:white;
+padding:25px;
+border-radius:12px;
+box-shadow:0 5px 15px rgba(0,0,0,.15);
+}
+
+label{
+display:block;
+margin-top:15px;
+font-weight:bold;
+}
+
+input,select{
+width:100%;
+padding:12px;
+margin-top:6px;
+border:1px solid #ccc;
+border-radius:6px;
+font-size:16px;
+}
+
+button{
+width:100%;
+padding:14px;
+margin-top:20px;
+background:#16a34a;
+color:white;
+font-size:18px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:hover{
+background:#15803d;
+}
+
+.result{
+margin-top:20px;
+padding:15px;
+background:#f8fafc;
+border:1px solid #ddd;
+border-radius:8px;
+line-height:2;
+white-space:pre-line;
+font-size:16px;
+}
+
+.copyBtn{
+background:#2563eb;
+margin-top:10px;
+}
+
+.copyBtn:hover{
+background:#1d4ed8;
+}
+</style>
+
+</head>
+
+<body>
+
+<header>
+⭐ AI Product Features Generator
+</header>
+
+<div class="container">
+
+<label>Product Name</label>
+<input type="text" id="product" placeholder="Example: Cotton T-Shirt">
+
+<label>Brand Name</label>
+<input type="text" id="brand" placeholder="Example: Fashion Hud">
+
+<label>Material</label>
+<input type="text" id="material" placeholder="Example: 100% Cotton">
+
+<label>Target Audience</label>
+<select id="audience">
+<option>Men</option>
+<option>Women</option>
+<option>Kids</option>
+<option>Unisex</option>
+</select>
+
+<button onclick="generateFeatures()">
+Generate Features
+</button>
+
+<div class="result" id="result">
+Your product features will appear here...
+</div>
+
+<button class="copyBtn" onclick="copyFeatures()">
+Copy Features
+</button>
+
+</div>
+
+<script>
+
+function generateFeatures(){
+
+let product=document.getElementById("product").value.trim();
+let brand=document.getElementById("brand").value.trim();
+let material=document.getElementById("material").value.trim();
+let audience=document.getElementById("audience").value;
+
+if(product==""){
+alert("Please enter Product Name");
+return;
+}
+
+let features=
+"⭐ Product: "+product+"\n\n"+
+"⭐ Brand: "+(brand || "Generic")+"\n\n"+
+"⭐ Material: "+(material || "High Quality Material")+"\n\n"+
+"⭐ Suitable For: "+audience+"\n\n"+
+"⭐ Premium Build Quality\n\n"+
+"⭐ Soft & Comfortable Design\n\n"+
+"⭐ Durable & Long Lasting\n\n"+
+"⭐ Lightweight & Easy to Use\n\n"+
+"⭐ Stylish Modern Look\n\n"+
+"⭐ Easy to Clean & Maintain\n\n"+
+"⭐ Perfect for Daily Use\n\n"+
+"⭐ Suitable for Amazon, Flipkart, Meesho & Shopify Listings";
+
+document.getElementById("result").innerText=features;
+
+}
+
+function copyFeatures(){
+
+let text=document.getElementById("result").innerText;
+
+navigator.clipboard.writeText(text);
+
+alert("Features Copied Successfully!");
+
+}
+
+</script>
+
+</body>
+</html>
