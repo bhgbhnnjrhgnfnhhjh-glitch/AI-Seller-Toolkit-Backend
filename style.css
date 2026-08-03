@@ -1515,3 +1515,82 @@ button:hover{
 transform:translateY(-2px);
 
 }
+.container{
+max-width:900px;
+margin:30px auto;
+background:#ffffff;
+padding:25px;
+border-radius:12px;
+box-shadow:0 4px 15px rgba(0,0,0,0.15);
+}
+
+label{
+display:block;
+margin-top:15px;
+font-weight:bold;
+}
+
+input,select{
+width:100%;
+padding:12px;
+margin-top:6px;
+border:1px solid #ccc;
+border-radius:6px;
+font-size:16px;
+}
+
+button{
+width:100%;
+padding:14px;
+margin-top:20px;
+background:#2563eb;
+color:white;
+font-size:18px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+background:#1d4ed8;
+}
+
+.result{
+margin-top:10px;
+padding:15px;
+background:#f8fafc;
+border:1px solid #ddd;
+border-radius:8px;
+min-height:60px;
+white-space:pre-wrap;
+line-height:1.7;
+}
+
+hr{
+margin:25px 0;
+}
+
+h2,h3{
+margin-top:20px;
+color:#222;
+}
+
+header{
+background:#2563eb;
+color:white;
+padding:18px;
+text-align:center;
+}
+
+header a{
+color:white;
+text-decoration:none;
+display:inline-block;
+margin-top:10px;
+font-weight:bold;
+}
+
+header a:hover{
+text-decoration:underline;
+   }
