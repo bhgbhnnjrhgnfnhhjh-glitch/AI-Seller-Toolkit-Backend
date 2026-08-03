@@ -199,3 +199,103 @@ card.style.transform="translateY(0px)";
 console.log("Dark Mode Ready");
 console.log("Search Ready");
 console.log("Animation Ready");
+function generateListing(){
+
+let product=document.getElementById("product").value.trim();
+let brand=document.getElementById("brand").value.trim();
+let category=document.getElementById("category").value.trim();
+let material=document.getElementById("material").value.trim();
+let color=document.getElementById("color").value.trim();
+let audience=document.getElementById("audience").value;
+
+if(product===""){
+alert("Please enter Product Name");
+return;
+}
+
+// SEO Title
+document.getElementById("titleResult").innerText =
+"Buy Premium " + product +
+(brand ? " by " + brand : "") +
+" | Best Price Online";
+
+// Description
+document.getElementById("descriptionResult").innerText =
+(product + " is a premium quality " + (category || "product") +
+". Made with " + (material || "high-quality material") +
+". Color: " + (color || "Standard") +
+". Suitable for " + audience +
+". Perfect for daily use.");
+
+// Bullet Points
+document.getElementById("bulletResult").innerText =
+"✔ Premium Quality\n" +
+"✔ Material: " + (material || "High Quality") + "\n" +
+"✔ Color: " + (color || "Standard") + "\n" +
+"✔ Comfortable & Durable\n" +
+"✔ Suitable for " + audience;
+
+// Features
+document.getElementById("featureResult").innerText =
+"⭐ Premium Build Quality\n" +
+"⭐ Lightweight Design\n" +
+"⭐ Stylish Look\n" +
+"⭐ Easy to Maintain\n" +
+"⭐ Long Lasting";
+
+// Keywords
+document.getElementById("keywordResult").innerText =
+product + ", " +
+(category || "Product") + ", " +
+(color || "Color") + ", " +
+brand + ", Online Shopping";
+
+// Hashtags
+let hash = product.replace(/\s+/g,"");
+document.getElementById("hashtagResult").innerText =
+"#" + hash +
+" #OnlineShopping #Sale #Trending #India #BestSeller";
+
+// Tags
+document.getElementById("tagResult").innerText =
+product + ", " +
+brand + ", " +
+(category || "Product") + ", " +
+(material || "Material") + ", " +
+(color || "Color");
+
+}
+
+function copyAll(){
+
+let text =
+document.getElementById("titleResult").innerText + "\n\n" +
+document.getElementById("descriptionResult").innerText + "\n\n" +
+document.getElementById("bulletResult").innerText + "\n\n" +
+document.getElementById("featureResult").innerText + "\n\n" +
+document.getElementById("keywordResult").innerText + "\n\n" +
+document.getElementById("hashtagResult").innerText + "\n\n" +
+document.getElementById("tagResult").innerText;
+
+navigator.clipboard.writeText(text);
+
+alert("Complete Listing Copied!");
+}
+
+function clearAll(){
+
+document.getElementById("product").value="";
+document.getElementById("brand").value="";
+document.getElementById("category").value="";
+document.getElementById("material").value="";
+document.getElementById("color").value="";
+document.getElementById("audience").selectedIndex=0;
+
+document.getElementById("titleResult").innerText="";
+document.getElementById("descriptionResult").innerText="";
+document.getElementById("bulletResult").innerText="";
+document.getElementById("featureResult").innerText="";
+document.getElementById("keywordResult").innerText="";
+document.getElementById("hashtagResult").innerText="";
+document.getElementById("tagResult").innerText="";
+}
