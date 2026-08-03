@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Complete Product Listing Generator</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header>
+<h1>🚀 Complete Product Listing Generator</h1>
+<a href="tools.html">⬅ Back to Tools</a>
+</header>
+
+<div class="container">
+
+<h2>Create Complete Product Listing</h2>
+
+<label>Product Name</label>
+<input type="text" id="product" placeholder="Example: Cotton T-Shirt">
+
+<label>Brand Name</label>
+<input type="text" id="brand" placeholder="Example: Fashion Hud">
+
+<label>Category</label>
+<input type="text" id="category" placeholder="Example: Clothing">
+
+<label>Material</label>
+<input type="text" id="material" placeholder="Example: 100% Cotton">
+
+<label>Color</label>
+<input type="text" id="color" placeholder="Example: Black">
+
+<label>Target Audience</label>
+<select id="audience">
+<option>Men</option>
+<option>Women</option>
+<option>Kids</option>
+<option>Unisex</option>
+</select>
+
+<button onclick="generateListing()">
+🚀 Generate Complete Listing
+</button>
+
+<hr>
+
+<h3>📝 SEO Product Title</h3>
+<div id="titleResult" class="result"></div>
+
+<h3>📄 Product Description</h3>
+<div id="descriptionResult" class="result"></div>
+
+<h3>📌 Bullet Points</h3>
+<div id="bulletResult" class="result"></div>
+
+<h3>⭐ Product Features</h3>
+<div id="featureResult" class="result"></div>
+
+<h3>🔍 SEO Keywords</h3>
+<div id="keywordResult" class="result"></div>
+
+<h3>#️⃣ Hashtags</h3>
+<div id="hashtagResult" class="result"></div>
+
+<h3>🏷 Product Tags</h3>
+<div id="tagResult" class="result"></div>
+
+<button onclick="copyAll()">
+📋 Copy Complete Listing
+</button>
+
+<button onclick="clearAll()">
+🗑 Clear
+</button>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
