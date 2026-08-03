@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI FAQ Generator</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+    <h1>🤖 AI FAQ Generator</h1>
+    <a href="tools.html">⬅ Back to Tools</a>
+</header>
+
+<div class="container">
+
+    <div class="card">
+
+        <h2>Generate Product FAQs</h2>
+
+        <label>Product Name</label>
+        <input
+            type="text"
+            id="product"
+            placeholder="Example: Cotton T-Shirt">
+
+        <label>Brand Name</label>
+        <input
+            type="text"
+            id="brand"
+            placeholder="Example: Fashion hud">
+
+        <label>Material</label>
+        <input
+            type="text"
+            id="material"
+            placeholder="Example: 100% Cotton">
+
+        <label>Suitable For</label>
+        <input
+            type="text"
+            id="gender"
+            placeholder="Example: Men">
+
+        <button onclick="generateFAQ()">
+            Generate FAQ
+        </button>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Generated FAQs</h2>
+
+        <textarea
+            id="result"
+            rows="18"
+            readonly
+            placeholder="Generated FAQs will appear here...">
+        </textarea>
+
+        <button onclick="copyFAQ()">
+            📋 Copy FAQ
+        </button>
+
+    </div>
+
+</div>
+
+<script src="faq-generator.js"></script>
+
+</body>
+      </html>
