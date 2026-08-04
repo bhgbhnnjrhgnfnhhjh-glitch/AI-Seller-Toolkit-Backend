@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Logo Prompt Generator</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header>
+
+<h1>🎨 AI Logo Prompt Generator</h1>
+
+<a href="tools.html">⬅ Back to Tools</a>
+
+</header>
+
+<div class="container">
+
+<div class="card">
+
+<h2>Create AI Logo Prompt</h2>
+
+<label>Brand Name</label>
+<input
+type="text"
+id="brand"
+placeholder="Example: Fashion Hud">
+
+<label>Business Type</label>
+<input
+type="text"
+id="business"
+placeholder="Example: Clothing Brand">
+
+<label>Logo Style</label>
+
+<select id="style">
+<option>Minimal</option>
+<option>Modern</option>
+<option>Luxury</option>
+<option>3D</option>
+<option>Vintage</option>
+<option>Flat</option>
+</select>
+
+<label>Primary Color</label>
+<input
+type="text"
+id="primary"
+placeholder="Example: Black">
+
+<label>Secondary Color</label>
+<input
+type="text"
+id="secondary"
+placeholder="Example: Gold">
+
+<label>Background</label>
+
+<select id="background">
+<option>Transparent</option>
+<option>White</option>
+<option>Black</option>
+<option>Gradient</option>
+</select>
+
+<button onclick="generateLogoPrompt()">
+
+Generate Logo Prompt
+
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>Generated Prompt</h2>
+
+<textarea
+id="result"
+rows="12"
+readonly
+placeholder="Your AI Logo Prompt will appear here...">
+</textarea>
+
+<button onclick="copyPrompt()">
+
+📋 Copy Prompt
+
+</button>
+
+</div>
+
+</div>
+
+<script src="logo-prompt-generator.js"></script>
+
+</body>
+  </html>
