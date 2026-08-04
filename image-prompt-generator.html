@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Image Prompt Generator</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header>
+
+<h1>🖼 AI Image Prompt Generator</h1>
+
+<a href="tools.html">⬅ Back to Tools</a>
+
+</header>
+
+<div class="container">
+
+<div class="card">
+
+<h2>Create AI Image Prompt</h2>
+
+<label>Product Name</label>
+<input
+type="text"
+id="product"
+placeholder="Example: Cotton T-Shirt">
+
+<label>Brand Name</label>
+<input
+type="text"
+id="brand"
+placeholder="Example: Fashion Hud">
+
+<label>Product Color</label>
+<input
+type="text"
+id="color"
+placeholder="Example: Black">
+
+<label>Material</label>
+<input
+type="text"
+id="material"
+placeholder="Example: 100% Cotton">
+
+<label>Background Style</label>
+
+<select id="background">
+
+<option>White Studio</option>
+<option>Luxury</option>
+<option>Wooden Table</option>
+<option>Outdoor</option>
+<option>Lifestyle</option>
+
+</select>
+
+<label>Image Style</label>
+
+<select id="style">
+
+<option>Realistic</option>
+<option>3D Render</option>
+<option>Ultra HD</option>
+<option>Cinematic</option>
+<option>Minimal</option>
+
+</select>
+
+<button onclick="generatePrompt()">
+
+Generate AI Prompt
+
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>Generated Prompt</h2>
+
+<textarea
+id="result"
+rows="12"
+readonly
+placeholder="AI Image Prompt will appear here...">
+</textarea>
+
+<button onclick="copyPrompt()">
+
+📋 Copy Prompt
+
+</button>
+
+</div>
+
+</div>
+
+<script src="image-prompt-generator.js"></script>
+
+</body>
+</html>
