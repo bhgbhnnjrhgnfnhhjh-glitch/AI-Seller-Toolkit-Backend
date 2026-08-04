@@ -1652,3 +1652,82 @@ cursor:pointer;
 button:hover{
 background:#1d4ed8;
    }
+
+/* AI Image Prompt Generator */
+
+.container{
+max-width:900px;
+margin:30px auto;
+padding:20px;
+}
+
+.card{
+background:#ffffff;
+padding:20px;
+margin-bottom:20px;
+border-radius:12px;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+.card h2{
+margin-bottom:15px;
+color:#2563eb;
+}
+
+label{
+display:block;
+margin-top:15px;
+margin-bottom:5px;
+font-weight:bold;
+}
+
+input,
+select,
+textarea{
+width:100%;
+padding:12px;
+border:1px solid #ccc;
+border-radius:8px;
+font-size:16px;
+margin-bottom:10px;
+}
+
+textarea{
+resize:vertical;
+min-height:220px;
+}
+
+button{
+width:100%;
+padding:14px;
+margin-top:10px;
+background:#2563eb;
+color:white;
+border:none;
+border-radius:8px;
+font-size:18px;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+background:#1d4ed8;
+}
+
+header{
+background:#2563eb;
+color:white;
+padding:20px;
+text-align:center;
+}
+
+header a{
+color:white;
+text-decoration:none;
+display:inline-block;
+margin-top:10px;
+}
+
+header a:hover{
+text-decoration:underline;
+}
