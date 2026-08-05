@@ -2,54 +2,51 @@ function generateReview() {
 
 let product = document.getElementById("product").value.trim();
 let brand = document.getElementById("brand").value.trim();
-let customer = document.getElementById("customer").value.trim();
 let rating = document.getElementById("rating").value;
+let style = document.getElementById("style").value;
 
-if (product === "") {
-    alert("Please enter Product Name");
-    return;
+if(product===""){
+alert("Please enter Product Name");
+return;
 }
 
-let review = "";
+let review = rating + "\n\n";
 
-if(customer !== ""){
-review += "Review by: " + customer + "\n\n";
+review += "Product: " + product + "\n";
+review += "Brand: " + brand + "\n\n";
+
+if(style==="Professional"){
+
+review += "I purchased the " + product + " by " + brand + " and I am very satisfied with its quality. The product is comfortable, durable and worth the price. Highly recommended.";
+
+}else if(style==="Customer Experience"){
+
+review += "I have been using this product for a few days and my experience has been excellent. The quality is impressive and I would definitely recommend it.";
+
+}else if(style==="Short Review"){
+
+review += "Excellent quality, stylish design and great value for money. Highly recommended!";
+
+}else{
+
+review += "The " + product + " from " + brand + " exceeded my expectations. It is made with quality materials, offers great comfort, and has an attractive design. Overall, it is an excellent choice for daily use and provides outstanding value for money.";
+
 }
-
-review += rating + "\n\n";
-
-review +=
-"I purchased the " + product + " by " +
-(brand || "this brand") +
-" and I am very satisfied with its quality.\n\n";
-
-review +=
-"The product is made with premium quality materials. It is comfortable, durable, stylish and perfect for everyday use. The finishing is excellent and the value for money is outstanding.\n\n";
-
-review +=
-"Pros:\n";
-review += "✔ Premium Quality\n";
-review += "✔ Comfortable & Durable\n";
-review += "✔ Stylish Design\n";
-review += "✔ Value for Money\n";
-review += "✔ Highly Recommended\n\n";
-
-review += "Overall Rating: " + rating;
 
 document.getElementById("result").value = review;
 
 }
 
-function copyReview() {
+function copyReview(){
 
-let text = document.getElementById("result");
+let result=document.getElementById("result");
 
-if(text.value === ""){
+if(result.value===""){
 alert("Generate a review first.");
 return;
 }
 
-navigator.clipboard.writeText(text.value);
+navigator.clipboard.writeText(result.value);
 
 alert("Review Copied Successfully!");
 
