@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Social Media Caption Generator</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header>
+
+<h1>📱 AI Social Media Caption Generator</h1>
+
+<a href="tools.html">⬅ Back to Tools</a>
+
+</header>
+
+<div class="container">
+
+<div class="card">
+
+<h2>Create Social Media Caption</h2>
+
+<label>Product Name</label>
+<input
+type="text"
+id="product"
+placeholder="Example: Cotton T-Shirt">
+
+<label>Brand Name</label>
+<input
+type="text"
+id="brand"
+placeholder="Example: Fashion Hud">
+
+<label>Offer (Optional)</label>
+<input
+type="text"
+id="offer"
+placeholder="Example: 20% OFF">
+
+<label>Platform</label>
+
+<select id="platform">
+
+<option>Instagram</option>
+<option>Facebook</option>
+<option>WhatsApp</option>
+<option>X (Twitter)</option>
+<option>Pinterest</option>
+<option>LinkedIn</option>
+
+</select>
+
+<button onclick="generateCaption()">
+
+Generate Caption
+
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>Generated Caption</h2>
+
+<textarea
+id="result"
+rows="12"
+readonly
+placeholder="Your caption will appear here...">
+</textarea>
+
+<button onclick="copyCaption()">
+
+📋 Copy Caption
+
+</button>
+
+</div>
+
+</div>
+
+<script src="social-caption-generator.js"></script>
+
+</body>
+
+</html>
