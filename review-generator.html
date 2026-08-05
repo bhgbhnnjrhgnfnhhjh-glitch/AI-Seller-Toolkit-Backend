@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Product Review Generator</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header>
+
+<h1>⭐ AI Product Review Generator</h1>
+
+<a href="tools.html">⬅ Back to Tools</a>
+
+</header>
+
+<div class="container">
+
+<div class="card">
+
+<h2>Create Product Review</h2>
+
+<label>Product Name</label>
+<input
+type="text"
+id="product"
+placeholder="Example: Cotton T-Shirt">
+
+<label>Brand Name</label>
+<input
+type="text"
+id="brand"
+placeholder="Example: Fashion Hud">
+
+<label>Rating</label>
+
+<select id="rating">
+<option>⭐⭐⭐⭐⭐ (5/5)</option>
+<option>⭐⭐⭐⭐ (4/5)</option>
+<option>⭐⭐⭐ (3/5)</option>
+</select>
+
+<label>Review Style</label>
+
+<select id="style">
+<option>Professional</option>
+<option>Customer Experience</option>
+<option>Short Review</option>
+<option>Detailed Review</option>
+</select>
+
+<button onclick="generateReview()">
+Generate Review
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>Generated Review</h2>
+
+<textarea
+id="result"
+rows="12"
+readonly
+placeholder="Your review will appear here...">
+</textarea>
+
+<button onclick="copyReview()">
+📋 Copy Review
+</button>
+
+</div>
+
+</div>
+
+<script src="review-generator.js"></script>
+
+</body>
+
+  </html>
