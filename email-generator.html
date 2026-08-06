@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Email Generator</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header>
+
+<h1>📧 AI Email Generator</h1>
+
+<a href="tools.html">⬅ Back to Tools</a>
+
+</header>
+
+<div class="container">
+
+<div class="card">
+
+<h2>Create Professional Email</h2>
+
+<label>Email Type</label>
+
+<select id="emailType">
+
+<option>Product Promotion</option>
+<option>Order Confirmation</option>
+<option>Customer Support</option>
+<option>Thank You</option>
+<option>Follow Up</option>
+
+</select>
+
+<label>Recipient Name</label>
+
+<input
+type="text"
+id="recipient"
+placeholder="Example: Rahul">
+
+<label>Product / Subject</label>
+
+<input
+type="text"
+id="product"
+placeholder="Example: Cotton T-Shirt">
+
+<label>Company Name</label>
+
+<input
+type="text"
+id="company"
+placeholder="Example: Fashion Hud">
+
+<label>Special Offer (Optional)</label>
+
+<input
+type="text"
+id="offer"
+placeholder="Example: 20% OFF">
+
+<button onclick="generateEmail()">
+
+Generate Email
+
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>Generated Email</h2>
+
+<textarea
+id="result"
+rows="16"
+readonly
+placeholder="Your professional email will appear here...">
+</textarea>
+
+<button onclick="copyEmail()">
+
+📋 Copy Email
+
+</button>
+
+</div>
+
+</div>
+
+<script src="email-generator.js"></script>
+
+</body>
+
+  </html>
