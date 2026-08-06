@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Product Specification Generator</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header>
+
+<h1>📋 AI Product Specification Generator</h1>
+
+<a href="tools.html">⬅ Back to Tools</a>
+
+</header>
+
+<div class="container">
+
+<div class="card">
+
+<h2>Create Product Specification</h2>
+
+<label>Product Name</label>
+<input
+type="text"
+id="product"
+placeholder="Example: Cotton T-Shirt">
+
+<label>Brand Name</label>
+<input
+type="text"
+id="brand"
+placeholder="Example: Fashion Hud">
+
+<label>Material</label>
+<input
+type="text"
+id="material"
+placeholder="Example: 100% Cotton">
+
+<label>Color</label>
+<input
+type="text"
+id="color"
+placeholder="Example: Black">
+
+<label>Size</label>
+<input
+type="text"
+id="size"
+placeholder="Example: M, L, XL">
+
+<label>Weight</label>
+<input
+type="text"
+id="weight"
+placeholder="Example: 250 g">
+
+<label>Country of Origin</label>
+<input
+type="text"
+id="country"
+placeholder="Example: India">
+
+<button onclick="generateSpecification()">
+
+Generate Specification
+
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>Generated Specification</h2>
+
+<textarea
+id="result"
+rows="14"
+readonly
+placeholder="Your product specification will appear here...">
+</textarea>
+
+<button onclick="copySpecification()">
+
+📋 Copy Specification
+
+</button>
+
+</div>
+
+</div>
+
+<script src="specification-generator.js"></script>
+
+</body>
+
+  </html>
