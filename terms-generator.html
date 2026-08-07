@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI Terms & Conditions Generator</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<header>
+
+<h1>📜 AI Terms & Conditions Generator</h1>
+
+<a href="tools.html">⬅ Back to Tools</a>
+
+</header>
+
+<div class="container">
+
+<div class="card">
+
+<h2>Create Terms & Conditions</h2>
+
+<label>Website Name</label>
+<input type="text" id="website" placeholder="Example: AI Seller Toolkit">
+
+<label>Website URL</label>
+<input type="text" id="url" placeholder="https://example.com">
+
+<label>Company Name</label>
+<input type="text" id="company" placeholder="Example: AI Seller Toolkit">
+
+<label>Contact Email</label>
+<input type="email" id="email" placeholder="support@example.com">
+
+<label>Country</label>
+<input type="text" id="country" placeholder="Example: India">
+
+<button onclick="generateTerms()">
+Generate Terms & Conditions
+</button>
+
+</div>
+
+<div class="card">
+
+<h2>Generated Terms & Conditions</h2>
+
+<textarea
+id="result"
+rows="18"
+readonly
+placeholder="Terms & Conditions will appear here...">
+</textarea>
+
+<button onclick="copyTerms()">
+📋 Copy Terms
+</button>
+
+</div>
+
+</div>
+
+<script src="terms-generator.js"></script>
+
+</body>
+</html>
