@@ -1,34 +1,41 @@
-
-
 async function generateTitle() {
 
     const product = document.getElementById("product").value.trim();
+    const category = document.getElementById("category").value.trim();
     const brand = document.getElementById("brand").value.trim();
+    const keyword = document.getElementById("keyword").value.trim();
 
-    if (product === "") {
-        alert("Please enter Product Name");
+    if (product === "" || category === "" || brand === "" || keyword === "") {
+        alert("कृपया सभी जानकारी भरें।");
         return;
     }
 
+    const result = document.getElementById("result");
+
+    result.value = "⏳ AI titles बनाए जा रहे हैं...";
+
     const prompt = `
-Create 5 professional eCommerce product titles.
+You are a professional eCommerce SEO product title generator.
+
+Create 5 high-quality product titles.
 
 Product Name: ${product}
-Brand: ${brand || "Not specified"}
+Category: ${category}
+Brand: ${brand}
+Main Keyword: ${keyword}
 
 Requirements:
+- Professional and attractive
 - SEO friendly
-- Professional
 - Suitable for Amazon, Flipkart, Meesho and Shopify
+- Include important product information
 - Do not use fake claims
+- Do not use unnecessary symbols
 - Keep titles clear and readable
+- Each title should be different
 
-Return only the 5 titles as a numbered list.
+Return only 5 numbered titles.
 `;
-
-    const resultBox = document.getElementById("result");
-
-    resultBox.value = "⏳ Generating titles...";
 
     try {
 
@@ -51,29 +58,33 @@ Return only the 5 titles as a numbered list.
             throw new Error(data.error || "Server error");
         }
 
-        resultBox.value = data.result;
+        result.value = data.result;
 
     } catch (error) {
 
-        console.error(error);
+        console.error("AI Error:", error);
 
-        resultBox.value =
-            "❌ Error: AI response नहीं मिल सका।\n\n" +
-            error.message;
+        result.value =
+            "❌ AI से response नहीं मिला।\n\n" +
+            "Error: " + error.message;
     }
 }
 
 
 function copyTitle() {
 
-    const resultBox = document.getElementById("result");
+    const result = document.getElementById("result");
 
-    if (resultBox.value.trim() === "") {
-        alert("Generate a title first.");
+    if (result.value.trim() === "") {
+        alert("पहले title generate करें।");
         return;
     }
 
-    navigator.clipboard.writeText(resultBox.value);
-
-    alert("✅ Titles Copied Successfully!");
+    navigator.clipboard.writeText(result.value)
+        .then(function () {
+            alert("✅ Titles copied successfully!");
+        })
+        .catch(function () {
+            alert("❌ Copy नहीं हो सका।");
+        });
 }
