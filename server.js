@@ -2,45 +2,59 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
-const OpenAI = require("openai");
+const { GoogleGenAI } = require("@google/genai");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+const PORT = process.env.PORT || 3000;
+
+if (!process.env.GEMINI_API_KEY) {
+    console.error("❌ GEMINI_API_KEY is missing");
+}
+
+const ai = new GoogleGenAI({
+    apiKey: process.env.GEMINI_API_KEY
 });
 
 app.get("/", (req, res) => {
-  res.send("AI Seller Toolkit Backend is Running!");
+    res.send("✅ AI Seller Toolkit Gemini Backend is running!");
 });
 
 app.post("/generate", async (req, res) => {
-  try {
-    const { prompt } = req.body;
 
-    const response = await client.responses.create({
-      model: "gpt-5-nano",
-      input: prompt,
-    });
+    try {
 
-    res.json({
-      result: response.output_text,
-    });
+        const prompt = req.body.prompt;
 
-  } catch (err) {
-    console.error(err);
+        if (!prompt) {
+            return res.status(400).json({
+                error: "Prompt is required"
+            });
+        }
 
-    res.status(500).json({
-      error: err.message,
-    });
-  }
+        const response = await ai.models.generateContent({
+            model: "gemini-3.6-flash",
+            contents: prompt
+        });
+
+        res.json({
+            result: response.text
+        });
+
+    } catch (error) {
+
+        console.error("Gemini Error:", error);
+
+        res.status(500).json({
+            error: "Gemini API request failed"
+        });
+    }
+
 });
 
-const PORT = process.env.PORT || 3000;
-
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
 });
