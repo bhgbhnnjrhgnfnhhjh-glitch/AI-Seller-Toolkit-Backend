@@ -1,29 +1,11 @@
-<script>
-function generateTitle() {
-
-let product = document.getElementById("product").value;
-let category = document.getElementById("category").value;
-let brand = document.getElementById("brand").value;
-let keyword = document.getElementById("keyword").value;
-
-if(product=="" || category=="" || brand=="" || keyword==""){
-    alert("कृपया सभी जानकारी भरें।");
-    return;
-}
-
-document.getElementById("result").value =
-brand + " " + product +
-" | " + category +
-" | Premium Quality | " +
-keyword +
-" | Best Price";
-
-}
-</script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>AI Product Title Generator</title>
 
 <link rel="stylesheet" href="style.css">
@@ -40,13 +22,15 @@ keyword +
 
 </header>
 
+
 <section class="hero">
 
 <h2>AI Product Title Generator</h2>
 
-<p>Create High Converting Product Titles</p>
+<p>Create High Converting Product Titles with AI</p>
 
 </section>
+
 
 <section class="tools">
 
@@ -57,74 +41,82 @@ keyword +
 <input
 type="text"
 id="product"
-placeholder="Enter Product Name">
+placeholder="Example: Cotton T-Shirt">
+
 
 <br><br>
+
 
 <label>Category</label>
 
 <input
 type="text"
 id="category"
-placeholder="Enter Category">
+placeholder="Example: Men's Clothing">
+
 
 <br><br>
+
 
 <label>Brand</label>
 
 <input
 type="text"
 id="brand"
-placeholder="Enter Brand">
+placeholder="Example: Fashion Hud">
+
 
 <br><br>
 
-<label>Keyword</label>
+
+<label>Main Keyword</label>
 
 <input
 type="text"
 id="keyword"
-placeholder="Enter Main Keyword">
+placeholder="Example: Black Cotton T-Shirt">
+
 
 <br><br>
 
+
 <button onclick="generateTitle()">
 
-Generate Title
+🤖 Generate AI Title
 
 </button>
 
-<h3>Generated Title</h3>
+
+<h3>Generated AI Title</h3>
 
 <textarea
 id="result"
-rows="5"
+rows="10"
 readonly
-style="width:100%;"></textarea>
+style="width:100%;"
+placeholder="Your AI generated titles will appear here...">
+</textarea>
+
+
+<br><br>
+
+
+<button onclick="copyTitle()">
+
+📋 Copy Title
+
+</button>
 
 </div>
 
 </section>
 
-<script>
 
-function generateTitle(){
+<!-- AI JavaScript -->
 
-let product=document.getElementById("product").value;
+<script src="title-generator.js"></script>
 
-let category=document.getElementById("category").value;
-
-let brand=document.getElementById("brand").value;
-
-let keyword=document.getElementById("keyword").value;
-
-document.getElementById("result").value=
-
-brand+" "+product+" | "+category+" | Premium Quality | "+keyword+" | Best Price";
-
-}
-
-</script>
 
 </body>
+
 </html>
