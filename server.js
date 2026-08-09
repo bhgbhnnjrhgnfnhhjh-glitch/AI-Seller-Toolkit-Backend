@@ -10,7 +10,6 @@ app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
-
 const API_KEY = process.env.GEMINI_API_KEY;
 
 if (!API_KEY) {
@@ -22,6 +21,10 @@ const ai = new GoogleGenAI({
 });
 
 
+/* =========================
+   HOME / HEALTH CHECK
+========================= */
+
 app.get("/", (req, res) => {
 
     res.json({
@@ -32,6 +35,121 @@ app.get("/", (req, res) => {
 });
 
 
+/* =========================
+   GEMINI GENERATION
+========================= */
+
+async function generateWithRetry(prompt) {
+
+    const models = [
+        "gemini-3.5-flash",
+        "gemini-3.6-flash"
+    ];
+
+    let lastError = null;
+
+    for (const model of models) {
+
+        for (let attempt = 1; attempt <= 3; attempt++) {
+
+            try {
+
+                console.log(
+                    `🤖 Trying ${model} - Attempt ${attempt}`
+                );
+
+                const response =
+                    await ai.models.generateContent({
+
+                        model: model,
+                        contents: prompt
+
+                    });
+
+                const text = response.text;
+
+                if (!text || !text.trim()) {
+
+                    throw new Error(
+                        "Gemini returned an empty response"
+                    );
+
+                }
+
+                console.log(
+                    `✅ Gemini response received from ${model}`
+                );
+
+                return text;
+
+            } catch (error) {
+
+                lastError = error;
+
+                console.error(
+                    `❌ ${model} attempt ${attempt} failed:`,
+                    error.message || error
+                );
+
+                const status =
+                    error?.status ||
+                    error?.code ||
+                    error?.error?.code;
+
+                const message =
+                    error?.message ||
+                    error?.error?.message ||
+                    "";
+
+                const temporaryError =
+                    status === 429 ||
+                    status === 500 ||
+                    status === 502 ||
+                    status === 503 ||
+                    message.includes("high demand") ||
+                    message.includes("temporarily");
+
+                if (!temporaryError) {
+
+                    break;
+
+                }
+
+                if (attempt < 3) {
+
+                    const delay =
+                        Math.pow(2, attempt) * 1000;
+
+                    console.log(
+                        `⏳ Retrying after ${delay}ms...`
+                    );
+
+                    await new Promise(
+                        resolve => setTimeout(resolve, delay)
+                    );
+
+                }
+
+            }
+
+        }
+
+        console.log(
+            `⚠️ Switching model after failures: ${model}`
+        );
+
+    }
+
+    throw lastError ||
+        new Error("Gemini API request failed");
+
+}
+
+
+/* =========================
+   GENERATE ENDPOINT
+========================= */
+
 app.post("/generate", async (req, res) => {
 
     try {
@@ -41,7 +159,9 @@ app.post("/generate", async (req, res) => {
         if (!prompt) {
 
             return res.status(400).json({
+
                 error: "Prompt is required"
+
             });
 
         }
@@ -50,63 +170,76 @@ app.post("/generate", async (req, res) => {
         if (!API_KEY) {
 
             return res.status(500).json({
-                error: "GEMINI_API_KEY is not configured on server"
+
+                error:
+                    "GEMINI_API_KEY is not configured on Render"
+
             });
 
         }
 
 
-        console.log("🤖 Gemini request received");
+        console.log("📥 Gemini request received");
 
 
-        const response = await ai.models.generateContent({
-
-        model: "gemini-3.5-flash",
-
-            contents: prompt
-
-        });
+        const result =
+            await generateWithRetry(prompt);
 
 
-        const result = response.text;
+        console.log("✅ Listing generated successfully");
 
 
-        if (!result) {
+        return res.json({
 
-            console.error("❌ Gemini returned empty response");
-
-            return res.status(500).json({
-                error: "Gemini returned an empty response"
-            });
-
-        }
-
-
-        console.log("✅ Gemini response generated");
-
-
-        res.json({
             result: result
+
         });
 
 
     } catch (error) {
 
-        console.error("❌ Gemini API Error:");
-        console.error(error);
+        console.error(
+            "❌ Final Gemini Error:",
+            error
+        );
 
 
-        const errorMessage =
+        const status =
+            error?.status ||
+            error?.code ||
+            error?.error?.code ||
+            500;
+
+
+        const details =
             error?.message ||
-            error?.toString() ||
+            error?.error?.message ||
             "Unknown Gemini API error";
 
 
-        res.status(500).json({
+        if (
+            status === 429 ||
+            status === 503 ||
+            details.includes("high demand")
+        ) {
 
-            error: "Gemini API request failed",
+            return res.status(503).json({
 
-            details: errorMessage
+                error:
+                    "Gemini service is temporarily busy. Please try again in a few seconds."
+
+            });
+
+        }
+
+
+        return res.status(500).json({
+
+            error:
+                "Gemini API request failed",
+
+            details:
+                details
 
         });
 
@@ -114,6 +247,10 @@ app.post("/generate", async (req, res) => {
 
 });
 
+
+/* =========================
+   START SERVER
+========================= */
 
 app.listen(PORT, () => {
 
