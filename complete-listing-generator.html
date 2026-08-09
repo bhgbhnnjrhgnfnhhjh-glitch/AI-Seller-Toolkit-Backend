@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -13,75 +15,223 @@
 <body>
 
 <header>
+
 <h1>🚀 Complete Product Listing Generator</h1>
+
 <a href="tools.html">⬅ Back to Tools</a>
+
 </header>
 
-<div class="container">
 
-<h2>Create Complete Product Listing</h2>
+<section class="hero">
+
+<h2>🚀 Complete Product Listing Generator</h2>
+
+<p>Create a Complete eCommerce Product Listing with AI</p>
+
+</section>
+
+
+<section class="tools">
+
+<div class="card">
 
 <label>Product Name</label>
-<input type="text" id="product" placeholder="Example: Cotton T-Shirt">
+
+<input
+type="text"
+id="product"
+placeholder="Example: Cotton T-Shirt">
+
+
+<br><br>
+
 
 <label>Brand Name</label>
-<input type="text" id="brand" placeholder="Example: Fashion Hud">
+
+<input
+type="text"
+id="brand"
+placeholder="Example: Fashion Hud">
+
+
+<br><br>
+
 
 <label>Category</label>
-<input type="text" id="category" placeholder="Example: Clothing">
+
+<input
+type="text"
+id="category"
+placeholder="Example: Men's Clothing">
+
+
+<br><br>
+
 
 <label>Material</label>
-<input type="text" id="material" placeholder="Example: 100% Cotton">
+
+<input
+type="text"
+id="material"
+placeholder="Example: 100% Cotton">
+
+
+<br><br>
+
 
 <label>Color</label>
-<input type="text" id="color" placeholder="Example: Black">
+
+<input
+type="text"
+id="color"
+placeholder="Example: Black">
+
+
+<br><br>
+
 
 <label>Target Audience</label>
+
 <select id="audience">
-<option>Men</option>
-<option>Women</option>
-<option>Kids</option>
-<option>Unisex</option>
+
+<option value="Men">Men</option>
+
+<option value="Women">Women</option>
+
+<option value="Kids">Kids</option>
+
+<option value="Unisex">Unisex</option>
+
 </select>
 
+
+<br><br>
+
+
+<label>Extra Product Information</label>
+
+<textarea
+id="extra"
+rows="5"
+placeholder="Example: Comfortable, durable, lightweight, stylish">
+</textarea>
+
+
+<br><br>
+
+
 <button onclick="generateListing()">
+
 🚀 Generate Complete Listing
+
 </button>
+
 
 <hr>
 
+
 <h3>📝 SEO Product Title</h3>
-<div id="titleResult" class="result"></div>
+
+<textarea
+id="titleResult"
+rows="5"
+style="width:100%;"
+readonly
+placeholder="AI generated product titles will appear here...">
+</textarea>
+
 
 <h3>📄 Product Description</h3>
-<div id="descriptionResult" class="result"></div>
+
+<textarea
+id="descriptionResult"
+rows="10"
+style="width:100%;"
+readonly
+placeholder="AI generated product description will appear here...">
+</textarea>
+
 
 <h3>📌 Bullet Points</h3>
-<div id="bulletResult" class="result"></div>
+
+<textarea
+id="bulletResult"
+rows="10"
+style="width:100%;"
+readonly
+placeholder="AI generated bullet points will appear here...">
+</textarea>
+
 
 <h3>⭐ Product Features</h3>
-<div id="featureResult" class="result"></div>
+
+<textarea
+id="featureResult"
+rows="10"
+style="width:100%;"
+readonly
+placeholder="AI generated product features will appear here...">
+</textarea>
+
 
 <h3>🔍 SEO Keywords</h3>
-<div id="keywordResult" class="result"></div>
+
+<textarea
+id="keywordResult"
+rows="10"
+style="width:100%;"
+readonly
+placeholder="AI generated SEO keywords will appear here...">
+</textarea>
+
 
 <h3>#️⃣ Hashtags</h3>
-<div id="hashtagResult" class="result"></div>
+
+<textarea
+id="hashtagResult"
+rows="8"
+style="width:100%;"
+readonly
+placeholder="AI generated hashtags will appear here...">
+</textarea>
+
 
 <h3>🏷 Product Tags</h3>
-<div id="tagResult" class="result"></div>
+
+<textarea
+id="tagResult"
+rows="8"
+style="width:100%;"
+readonly
+placeholder="AI generated product tags will appear here...">
+</textarea>
+
+
+<br><br>
+
 
 <button onclick="copyAll()">
+
 📋 Copy Complete Listing
+
 </button>
 
+
 <button onclick="clearAll()">
+
 🗑 Clear
+
 </button>
 
 </div>
 
-<script src="script.js"></script>
+</section>
+
+
+<script src="complete-listing-generator.js"></script>
+
 
 </body>
+
 </html>
