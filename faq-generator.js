@@ -1,52 +1,77 @@
 async function generateFAQ() {
 
-    const product = document.getElementById("product").value.trim();
-    const brand = document.getElementById("brand").value.trim();
-    const material = document.getElementById("material").value.trim();
-    const gender = document.getElementById("gender").value.trim();
+    const product =
+        document.getElementById("product").value.trim();
+
+    const brand =
+        document.getElementById("brand").value.trim();
+
+    const material =
+        document.getElementById("material").value.trim();
+
+    const gender =
+        document.getElementById("gender").value.trim();
+
 
     if (product === "") {
+
         alert("Please enter Product Name");
         return;
+
     }
 
-    const result = document.getElementById("result");
 
-    result.value = "⏳ Generating FAQs...";
+    const result =
+        document.getElementById("result");
+
+    result.value =
+        "⏳ Generating FAQs...";
+
 
     const prompt = `
-You are a professional eCommerce FAQ specialist.
+You are a professional eCommerce FAQ writer.
 
-Create useful customer FAQs for the product using ONLY the information provided below.
+Create accurate, useful and non-repetitive customer FAQs
+using ONLY the product information provided below.
 
+========================
 PRODUCT INFORMATION
--------------------
-Product Name: ${product}
-Brand: ${brand || "Not specified"}
-Material: ${material || "Not specified"}
-Suitable For: ${gender || "Not specified"}
+========================
 
-STRICT ACCURACY RULES
----------------------
+PRODUCT NAME:
+${product}
 
-1. Use ONLY information explicitly provided above.
+BRAND:
+${brand || "Not specified"}
 
-2. NEVER invent product specifications.
+MATERIAL:
+${material || "Not specified"}
 
-3. NEVER assume:
-- Size
+SUITABLE FOR:
+${gender || "Not specified"}
+
+
+========================
+VERY IMPORTANT DATA RULES
+========================
+
+1. NEVER invent information.
+
+2. NEVER assume missing information.
+
+3. NEVER add:
 - Color
+- Size
 - Weight
 - Fit
+- Pattern
 - Sleeve type
 - Neck type
-- Pattern
-- Design
 - Price
 - Discount
 - Warranty
 - Return policy
-- Delivery time
+- Delivery information
 - Washing instructions
 - Durability
 - Comfort
@@ -54,60 +79,181 @@ STRICT ACCURACY RULES
 - Quality
 - Certifications
 - Package contents
-- Country of origin
 
-unless that information is explicitly provided.
+unless explicitly provided.
 
-4. NEVER change the product type.
+4. Keep the EXACT product type.
 
-For example:
-If the product is "Cotton T-Shirt", always call it "Cotton T-Shirt".
-Do NOT change it to "shirt", "top", "tee", "apparel" or another product type.
+If Product Name is "Cotton T-Shirt",
+always call it "Cotton T-Shirt".
 
-5. Do not make medical, guaranteed, exaggerated or misleading claims.
+Do NOT change it to:
+- Shirt
+- Top
+- Tee
+- Polo
+- Clothing item
 
-6. Do not repeat the same fact in multiple questions.
+unless that exact wording is part of the supplied product information.
 
-7. Do not create multiple questions that have essentially the same answer.
 
-8. Questions must be genuinely useful to a customer.
+========================
+FIELD SEPARATION RULE
+========================
 
-9. If there is not enough information to create another unique FAQ, create FEWER FAQs.
+THIS RULE IS EXTREMELY IMPORTANT.
 
-10. Quality is more important than quantity.
+Never mix information from different fields.
 
-11. NEVER invent information just to reach a fixed number of FAQs.
+PRODUCT NAME must contain only product-name information.
 
-12. Do not mention AI or this prompt.
+BRAND must contain only brand information.
 
-13. Keep answers short, clear and professional.
+MATERIAL must contain only material information.
 
-14. Do not use emojis.
+SUITABLE FOR must contain only audience information.
 
-15. Use natural customer-friendly English.
+Example:
 
-FAQ PRIORITY
-------------
+Product Name:
+Cotton T-Shirt
 
-Prioritize available information in this order:
+Brand:
+Fashion Hud
+
+Material:
+100% Cotton
+
+Suitable For:
+Men
+
+
+CORRECT:
+
+Q: What is the brand of this Cotton T-Shirt?
+
+A: This Cotton T-Shirt is from the brand Fashion Hud.
+
+
+CORRECT:
+
+Q: What material is used to make this Cotton T-Shirt?
+
+A: This Cotton T-Shirt is made of 100% Cotton.
+
+
+CORRECT:
+
+Q: Who is this Cotton T-Shirt suitable for?
+
+A: This Cotton T-Shirt is suitable for men.
+
+
+INCORRECT:
+
+A: This Cotton T-Shirt is from Fashion Hud 100% Cotton.
+
+Reason:
+Brand and Material have been incorrectly combined.
+
+
+INCORRECT:
+
+A: This Cotton T-Shirt is Fashion Hud Men.
+
+Reason:
+Brand and Suitable For have been incorrectly combined.
+
+
+========================
+FAQ QUALITY RULES
+========================
+
+1. Create only useful customer questions.
+
+2. Do not repeat the same fact unnecessarily.
+
+3. Do not ask multiple questions that have the same answer.
+
+4. Do not create duplicate FAQs.
+
+5. Quality is more important than quantity.
+
+6. If only 3 unique useful facts are available,
+create 3 FAQs.
+
+7. Do NOT create 8 FAQs just to reach a number.
+
+8. Do NOT repeat Brand, Material or Suitable For
+just to increase the FAQ count.
+
+9. Keep answers short and natural.
+
+10. Keep answers factual.
+
+11. Do not use marketing claims.
+
+12. Do not mention AI.
+
+13. Do not use emojis.
+
+14. Do not add information that is not supplied.
+
+
+========================
+FAQ SELECTION
+========================
+
+Use the available information in this order:
 
 1. Product identity
 2. Brand
 3. Material
-4. Suitable audience
-5. Other explicitly provided product information
+4. Suitable For
+5. Any additional information explicitly supplied
 
-Only create questions for information that actually exists.
+Create one useful FAQ per unique fact.
 
-IMPORTANT:
-If only 4 unique facts are available, create approximately 4 useful FAQs instead of repeating those facts to reach 8.
+If two facts naturally belong together in one question,
+they may be combined only when the question specifically
+asks for both facts.
 
+Otherwise keep them separate.
+
+
+========================
+ANSWER VALIDATION
+========================
+
+Before returning each FAQ:
+
+1. Check the question against PRODUCT INFORMATION.
+
+2. Check the answer against PRODUCT INFORMATION.
+
+3. Make sure Brand information has not been mixed with Material.
+
+4. Make sure Material information has not been mixed with Brand.
+
+5. Make sure Suitable For information has not been mixed
+with Brand or Material.
+
+6. Make sure Product Name remains accurate.
+
+7. Remove any unsupported claim.
+
+8. Remove duplicate questions.
+
+9. Remove duplicate answers.
+
+
+========================
 OUTPUT FORMAT
--------------
+========================
 
 Return ONLY the FAQs.
 
-Use this exact format:
+Use exactly this format:
 
 1. Q: [Question]
    A: [Answer]
@@ -118,12 +264,17 @@ Use this exact format:
 3. Q: [Question]
    A: [Answer]
 
-Continue only while there are useful, non-repetitive FAQs.
+Continue only when another unique and useful FAQ
+can be created from the supplied information.
 
-Do not add an introduction.
-Do not add a conclusion.
-Do not add extra headings.
+Do NOT add:
+- Introduction
+- Conclusion
+- Extra headings
+- Notes
+- Explanations
 `;
+
 
     try {
 
@@ -142,7 +293,10 @@ Do not add extra headings.
             }
         );
 
-        const data = await response.json();
+
+        const data =
+            await response.json();
+
 
         if (!response.ok) {
 
@@ -151,18 +305,27 @@ Do not add extra headings.
                 data.error ||
                 "Server error"
             );
+
         }
 
-        if (!data.result || !data.result.trim()) {
+
+        if (
+            !data.result ||
+            !data.result.trim()
+        ) {
 
             throw new Error(
                 "AI returned an empty response."
             );
+
         }
 
-        result.value = cleanFAQOutput(
-            data.result
-        );
+
+        result.value =
+            cleanFAQOutput(
+                data.result
+            );
+
 
     } catch (error) {
 
@@ -171,53 +334,67 @@ Do not add extra headings.
             error
         );
 
+
         result.value =
             "❌ FAQ generate नहीं हो सकी.\n\n" +
             "Error: " +
             error.message;
+
     }
+
 }
 
 
-/* =========================
-   CLEAN FAQ OUTPUT
-========================= */
+/* =================================
+   CLEAN AI RESPONSE
+================================= */
 
 function cleanFAQOutput(text) {
 
-    let cleaned = text.trim();
+    let cleaned =
+        text.trim();
 
-    // Remove accidental markdown headings
-    cleaned = cleaned.replace(
-        /^#+\s*(FAQs?|Frequently Asked Questions)\s*:?\s*/i,
-        ""
-    );
 
-    // Remove accidental code fences
-    cleaned = cleaned.replace(
-        /^```[a-zA-Z]*\s*/i,
-        ""
-    );
+    // Remove markdown code fences
+    cleaned =
+        cleaned.replace(
+            /^```[a-zA-Z]*\s*/i,
+            ""
+        );
 
-    cleaned = cleaned.replace(
-        /\s*```$/i,
-        ""
-    );
+
+    cleaned =
+        cleaned.replace(
+            /\s*```$/i,
+            ""
+        );
+
+
+    // Remove unwanted heading
+    cleaned =
+        cleaned.replace(
+            /^#+\s*(FAQs?|Frequently Asked Questions)\s*:?\s*/i,
+            ""
+        );
+
 
     return cleaned.trim();
+
 }
 
 
-/* =========================
+/* =================================
    COPY FAQ
-========================= */
+================================= */
 
 function copyFAQ() {
 
     const result =
         document.getElementById("result");
 
-    const text = result.value.trim();
+    const text =
+        result.value.trim();
+
 
     if (text === "") {
 
@@ -226,7 +403,9 @@ function copyFAQ() {
         );
 
         return;
+
     }
+
 
     if (
         text.includes(
@@ -239,7 +418,9 @@ function copyFAQ() {
         );
 
         return;
+
     }
+
 
     navigator.clipboard
         .writeText(text)
@@ -259,4 +440,5 @@ function copyFAQ() {
             );
 
         });
-        }
+
+}
