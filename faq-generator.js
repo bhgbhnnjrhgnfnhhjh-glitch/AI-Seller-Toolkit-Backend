@@ -15,38 +15,99 @@ async function generateFAQ() {
     result.value = "⏳ Generating FAQs...";
 
     const prompt = `
-You are a professional eCommerce FAQ generator.
+You are a professional eCommerce FAQ specialist.
 
-Create exactly 8 frequently asked questions and answers
-for the product using ONLY the information provided below.
+Create useful customer FAQs for the product using ONLY the information provided below.
 
-PRODUCT INFORMATION:
-
+PRODUCT INFORMATION
+-------------------
 Product Name: ${product}
 Brand: ${brand || "Not specified"}
 Material: ${material || "Not specified"}
 Suitable For: ${gender || "Not specified"}
 
-STRICT RULES:
+STRICT ACCURACY RULES
+---------------------
 
-1. Use ONLY the information provided by the user.
-2. Do NOT invent specifications.
-3. Do NOT invent size, weight, warranty, price, delivery time,
-   return policy, washing instructions, durability, comfort,
-   quality, certifications or other unsupported information.
-4. Do NOT make medical or guaranteed claims.
-5. Do NOT assume product benefits.
-6. Keep the exact product type.
-7. If information is not available, do not create an answer for it.
-8. Questions and answers should be useful for online shoppers.
-9. Keep answers short and clear.
-10. Do not mention AI.
-11. Do not use emojis.
-12. Do not repeat the same question.
+1. Use ONLY information explicitly provided above.
 
-Create exactly 8 FAQs.
+2. NEVER invent product specifications.
 
-Use this format:
+3. NEVER assume:
+- Size
+- Color
+- Weight
+- Fit
+- Sleeve type
+- Neck type
+- Pattern
+- Design
+- Price
+- Discount
+- Warranty
+- Return policy
+- Delivery time
+- Washing instructions
+- Durability
+- Comfort
+- Breathability
+- Quality
+- Certifications
+- Package contents
+- Country of origin
+
+unless that information is explicitly provided.
+
+4. NEVER change the product type.
+
+For example:
+If the product is "Cotton T-Shirt", always call it "Cotton T-Shirt".
+Do NOT change it to "shirt", "top", "tee", "apparel" or another product type.
+
+5. Do not make medical, guaranteed, exaggerated or misleading claims.
+
+6. Do not repeat the same fact in multiple questions.
+
+7. Do not create multiple questions that have essentially the same answer.
+
+8. Questions must be genuinely useful to a customer.
+
+9. If there is not enough information to create another unique FAQ, create FEWER FAQs.
+
+10. Quality is more important than quantity.
+
+11. NEVER invent information just to reach a fixed number of FAQs.
+
+12. Do not mention AI or this prompt.
+
+13. Keep answers short, clear and professional.
+
+14. Do not use emojis.
+
+15. Use natural customer-friendly English.
+
+FAQ PRIORITY
+------------
+
+Prioritize available information in this order:
+
+1. Product identity
+2. Brand
+3. Material
+4. Suitable audience
+5. Other explicitly provided product information
+
+Only create questions for information that actually exists.
+
+IMPORTANT:
+If only 4 unique facts are available, create approximately 4 useful FAQs instead of repeating those facts to reach 8.
+
+OUTPUT FORMAT
+-------------
+
+Return ONLY the FAQs.
+
+Use this exact format:
 
 1. Q: [Question]
    A: [Answer]
@@ -57,20 +118,11 @@ Use this format:
 3. Q: [Question]
    A: [Answer]
 
-4. Q: [Question]
-   A: [Answer]
+Continue only while there are useful, non-repetitive FAQs.
 
-5. Q: [Question]
-   A: [Answer]
-
-6. Q: [Question]
-   A: [Answer]
-
-7. Q: [Question]
-   A: [Answer]
-
-8. Q: [Question]
-   A: [Answer]
+Do not add an introduction.
+Do not add a conclusion.
+Do not add extra headings.
 `;
 
     try {
@@ -93,6 +145,7 @@ Use this format:
         const data = await response.json();
 
         if (!response.ok) {
+
             throw new Error(
                 data.details ||
                 data.error ||
@@ -100,17 +153,23 @@ Use this format:
             );
         }
 
-        if (!data.result) {
+        if (!data.result || !data.result.trim()) {
+
             throw new Error(
                 "AI returned an empty response."
             );
         }
 
-        result.value = data.result.trim();
+        result.value = cleanFAQOutput(
+            data.result
+        );
 
     } catch (error) {
 
-        console.error("FAQ AI Error:", error);
+        console.error(
+            "FAQ AI Error:",
+            error
+        );
 
         result.value =
             "❌ FAQ generate नहीं हो सकी.\n\n" +
@@ -120,29 +179,70 @@ Use this format:
 }
 
 
+/* =========================
+   CLEAN FAQ OUTPUT
+========================= */
+
+function cleanFAQOutput(text) {
+
+    let cleaned = text.trim();
+
+    // Remove accidental markdown headings
+    cleaned = cleaned.replace(
+        /^#+\s*(FAQs?|Frequently Asked Questions)\s*:?\s*/i,
+        ""
+    );
+
+    // Remove accidental code fences
+    cleaned = cleaned.replace(
+        /^```[a-zA-Z]*\s*/i,
+        ""
+    );
+
+    cleaned = cleaned.replace(
+        /\s*```$/i,
+        ""
+    );
+
+    return cleaned.trim();
+}
+
+
+/* =========================
+   COPY FAQ
+========================= */
+
 function copyFAQ() {
 
     const result =
         document.getElementById("result");
 
-    if (result.value.trim() === "") {
+    const text = result.value.trim();
 
-        alert("पहले FAQ generate करें।");
+    if (text === "") {
+
+        alert(
+            "पहले FAQ generate करें।"
+        );
+
         return;
     }
 
     if (
-        result.value.includes(
+        text.includes(
             "❌ FAQ generate नहीं हो सकी"
         )
     ) {
 
-        alert("पहले FAQ successfully generate करें।");
+        alert(
+            "पहले FAQ successfully generate करें।"
+        );
+
         return;
     }
 
     navigator.clipboard
-        .writeText(result.value)
+        .writeText(text)
 
         .then(function () {
 
@@ -159,4 +259,4 @@ function copyFAQ() {
             );
 
         });
-    }
+        }
