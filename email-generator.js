@@ -1,96 +1,295 @@
-function generateEmail() {
+async function generateEmail() {
 
-let emailType = document.getElementById("emailType").value;
-let recipient = document.getElementById("recipient").value.trim();
-let product = document.getElementById("product").value.trim();
-let company = document.getElementById("company").value.trim();
-let offer = document.getElementById("offer").value.trim();
+    const emailType =
+        document.getElementById("emailType").value.trim();
 
-if (recipient === "" || product === "") {
-    alert("Please enter Recipient Name and Product/Subject.");
-    return;
+    const recipient =
+        document.getElementById("recipient").value.trim();
+
+    const product =
+        document.getElementById("product").value.trim();
+
+    const company =
+        document.getElementById("company").value.trim();
+
+    const offer =
+        document.getElementById("offer").value.trim();
+
+    const result =
+        document.getElementById("result");
+
+
+    if (product === "") {
+
+        alert("Please enter Product / Subject.");
+        return;
+
+    }
+
+
+    result.value =
+        "⏳ Generating professional email...";
+
+
+    const prompt = `
+You are a professional business email writer.
+
+Create one professional email using ONLY the information provided below.
+
+EMAIL INFORMATION
+-----------------
+
+Email Type:
+${emailType}
+
+Recipient Name:
+${recipient || "Not specified"}
+
+Product / Subject:
+${product}
+
+Company Name:
+${company || "Not specified"}
+
+Special Offer:
+${offer || "Not specified"}
+
+
+STRICT RULES
+------------
+
+1. Use ONLY the information provided.
+
+2. Do NOT invent facts.
+
+3. Do NOT invent prices, discounts, product features,
+delivery dates, guarantees, policies or company information.
+
+4. If Special Offer is "Not specified", do not create
+a discount or promotional offer.
+
+5. If Company Name is "Not specified", do not invent a company name.
+
+6. If Recipient Name is "Not specified", use a professional
+generic greeting such as "Dear Customer" or "Hello".
+
+7. Keep the email professional, natural and easy to understand.
+
+8. Keep the email concise.
+
+9. Match the tone to the selected Email Type.
+
+10. Do not mention AI.
+
+11. Do not use emojis.
+
+12. Do not add fake claims.
+
+13. Do not repeat the same information unnecessarily.
+
+14. Do not add a fake phone number, email address,
+website URL or physical address.
+
+15. Do not create information that was not supplied.
+
+
+EMAIL TYPE GUIDELINES
+---------------------
+
+Product Promotion:
+Create a professional promotional email using only
+the supplied product and offer information.
+
+Order Confirmation:
+Create a confirmation-style email without inventing
+order number, price, shipping date or delivery date.
+
+Customer Support:
+Create a helpful support email without inventing
+specific solutions or policies.
+
+Thank You:
+Create a polite thank-you email related to the supplied product
+or subject.
+
+Follow Up:
+Create a professional follow-up email related to the supplied subject.
+
+
+OUTPUT FORMAT
+-------------
+
+Return ONLY the email.
+
+Use this structure:
+
+Subject: [Professional subject]
+
+Dear [Recipient or Customer],
+
+[Email body]
+
+Regards,
+[Company Name if provided]
+`;
+
+
+
+    try {
+
+        const response = await fetch(
+            "https://ai-seller-toolkit-backend-1.onrender.com/generate",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({
+                    prompt: prompt
+                })
+            }
+        );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.details ||
+                data.error ||
+                "Server error"
+            );
+
+        }
+
+
+        if (
+            !data.result ||
+            !data.result.trim()
+        ) {
+
+            throw new Error(
+                "AI returned an empty response."
+            );
+
+        }
+
+
+        result.value =
+            cleanEmailOutput(
+                data.result
+            );
+
+
+    } catch (error) {
+
+        console.error(
+            "Email AI Error:",
+            error
+        );
+
+
+        result.value =
+            "❌ Email generate नहीं हो सकी.\n\n" +
+            "Error: " +
+            error.message;
+
+    }
+
 }
 
-let email = "";
 
-if (emailType === "Product Promotion") {
+/* =========================
+   CLEAN EMAIL OUTPUT
+========================= */
 
-email =
-"Subject: Special Offer on " + product + "\n\n" +
+function cleanEmailOutput(text) {
 
-"Dear " + recipient + ",\n\n" +
+    let cleaned =
+        text.trim();
 
-"We are excited to introduce our premium " + product + ". ";
 
-if (offer !== "") {
-email += "Enjoy our limited-time offer: " + offer + ". ";
-}
+    // Remove accidental markdown code fences
+    cleaned =
+        cleaned.replace(
+            /^```[a-zA-Z]*\s*/i,
+            ""
+        );
 
-email +=
 
-"\n\nThank you for choosing " + (company || "our company") + ". We look forward to serving you.\n\nBest Regards,\n" + (company || "Our Team");
+    cleaned =
+        cleaned.replace(
+            /\s*```$/i,
+            ""
+        );
 
-}
 
-else if (emailType === "Order Confirmation") {
-
-email =
-"Subject: Order Confirmation - " + product + "\n\n" +
-
-"Dear " + recipient + ",\n\n" +
-
-"Thank you for your order. Your order for " + product + " has been successfully confirmed.\n\nWe appreciate your trust in " + (company || "our company") + ".\n\nBest Regards,\n" + (company || "Support Team");
+    return cleaned.trim();
 
 }
 
-else if (emailType === "Customer Support") {
 
-email =
-"Subject: Support for " + product + "\n\n" +
-
-"Dear " + recipient + ",\n\n" +
-
-"Thank you for contacting us. We have received your request regarding " + product + " and our support team will get back to you shortly.\n\nBest Regards,\nCustomer Support\n" + (company || "");
-
-}
-
-else if (emailType === "Thank You") {
-
-email =
-"Subject: Thank You!\n\n" +
-
-"Dear " + recipient + ",\n\n" +
-
-"Thank you for choosing " + (company || "our company") + ". We truly appreciate your support and hope you enjoy your " + product + ".\n\nBest Regards,\n" + (company || "Our Team");
-
-}
-
-else {
-
-email =
-"Subject: Follow-up Regarding " + product + "\n\n" +
-
-"Dear " + recipient + ",\n\n" +
-
-"We hope you are enjoying your " + product + ". We would love to hear your feedback and answer any questions you may have.\n\nBest Regards,\n" + (company || "Our Team");
-
-}
-
-document.getElementById("result").value = email;
-
-}
+/* =========================
+   COPY EMAIL
+========================= */
 
 function copyEmail() {
 
-let result = document.getElementById("result");
+    const result =
+        document.getElementById("result");
 
-if (result.value === "") {
-alert("Generate an email first.");
-return;
-}
+    const text =
+        result.value.trim();
 
-navigator.clipboard.writeText(result.value);
 
-alert("Email Copied Successfully!");
+    if (text === "") {
+
+        alert(
+            "पहले email generate करें।"
+        );
+
+        return;
 
     }
+
+
+    if (
+        text.includes(
+            "❌ Email generate नहीं हो सकी"
+        )
+    ) {
+
+        alert(
+            "पहले email successfully generate करें।"
+        );
+
+        return;
+
+    }
+
+
+    navigator.clipboard
+        .writeText(text)
+
+        .then(function () {
+
+            alert(
+                "✅ Email copied successfully!"
+            );
+
+        })
+
+        .catch(function () {
+
+            alert(
+                "❌ Copy नहीं हो सका।"
+            );
+
+        });
+
+        }
