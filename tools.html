@@ -1,216 +1,572 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>AI Seller Toolkit - All Tools</title>
+
 <link rel="stylesheet" href="style.css">
+
+<style>
+
+.search-box {
+    max-width: 700px;
+    margin: 25px auto;
+    padding: 0 20px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    font-size: 16px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.search-box input:focus {
+    border-color: #2563eb;
+}
+
+.tools .card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tools .card:hover {
+    transform: translateY(-3px);
+}
+
+.no-results {
+    display: none;
+    text-align: center;
+    padding: 30px;
+    font-size: 18px;
+    color: #666;
+}
+
+.tool-count {
+    text-align: center;
+    margin: 10px 0 20px;
+    color: #666;
+    font-size: 14px;
+}
+
+</style>
+
 </head>
+
 
 <body>
 
+
 <header>
+
 <h1>🤖 AI Seller Toolkit</h1>
+
 <a href="index.html">⬅ Home</a>
+
 </header>
 
+
 <div class="search-box">
-<input type="text" id="searchTools" placeholder="🔍 Search Tools...">
+
+<input
+type="text"
+id="searchTools"
+placeholder="🔍 Search tools..."
+autocomplete="off">
+
 </div>
+
+
+<div class="tool-count" id="toolCount">
+Showing all tools
+</div>
+
 
 <section class="hero">
+
 <h2>AI Seller Toolkit - All Tools</h2>
-<p>Select any AI Tool below.</p>
+
+<p>Choose a tool to create, optimize and manage your product listings.</p>
+
 </section>
 
-<section class="tools">
 
-<div class="card">
+<section class="tools" id="toolsContainer">
+
+
+<!-- 1 -->
+
+<div class="card tool-card">
+
 <h3>📝 AI Product Title Generator</h3>
-<p>Create attractive product titles.</p>
-<button onclick="location.href='title-generator.html'">Open</button>
+
+<p>Create attractive SEO-friendly product titles.</p>
+
+<button onclick="location.href='title-generator.html'">
+Open
+</button>
+
 </div>
 
-<div class="card">
+
+<!-- 2 -->
+
+<div class="card tool-card">
+
 <h3>📄 AI Product Description Generator</h3>
-<p>Create professional descriptions.</p>
-<button onclick="location.href='description-generator.html'">Open</button>
+
+<p>Create professional product descriptions.</p>
+
+<button onclick="location.href='description-generator.html'">
+Open
+</button>
+
 </div>
 
-<div class="card">
+
+<!-- 3 -->
+
+<div class="card tool-card">
+
 <h3>🔍 SEO Keyword Generator</h3>
-<p>Generate SEO Keywords.</p>
-<button onclick="location.href='seo-generator.html'">Open</button>
+
+<p>Generate relevant SEO keywords for your products.</p>
+
+<button onclick="location.href='seo-generator.html'">
+Open
+</button>
+
 </div>
 
-<div class="card">
+
+<!-- 4 -->
+
+<div class="card tool-card">
+
 <h3>#️⃣ Hashtag Generator</h3>
-<p>Create Trending Hashtags.</p>
-<button onclick="location.href='hashtag-generator.html'">Open</button>
+
+<p>Create relevant hashtags for product marketing.</p>
+
+<button onclick="location.href='hashtag-generator.html'">
+Open
+</button>
+
 </div>
 
-<div class="card">
+
+<!-- 5 -->
+
+<div class="card tool-card">
+
 <h3>💰 Profit Calculator</h3>
-<p>Calculate Product Profit.</p>
-<button onclick="location.href='profit-calculator.html'">Open</button>
+
+<p>Calculate product cost, selling price and profit.</p>
+
+<button onclick="location.href='profit-calculator.html'">
+Open
+</button>
+
 </div>
-  
-<div class="card">
+
+
+<!-- 6 -->
+
+<div class="card tool-card">
+
 <h3>🧾 GST Calculator</h3>
-<p>Calculate GST Instantly.</p>
+
+<p>Calculate GST quickly and easily.</p>
+
 <button onclick="location.href='gst-calculator.html'">
 Open
 </button>
+
 </div>
-  
-<div class="card">
+
+
+<!-- 7 -->
+
+<div class="card tool-card">
+
 <h3>🚚 Shipping Calculator</h3>
-<p>Calculate Shipping Cost.</p>
+
+<p>Calculate estimated shipping costs.</p>
+
 <button onclick="location.href='shipping-calculator.html'">
 Open
 </button>
+
 </div>
-  
-<div class="card">
+
+
+<!-- 8 -->
+
+<div class="card tool-card">
+
 <h3>🏷️ Discount Calculator</h3>
-<p>Calculate Discount Instantly.</p>
+
+<p>Calculate discounts and final selling prices.</p>
+
 <button onclick="location.href='discount-calculator.html'">
 Open
 </button>
-</div>  
-  
-<div class="card">
+
+</div>
+
+
+<!-- 9 -->
+
+<div class="card tool-card">
+
 <h3>📱 QR Code Generator</h3>
-<p>Create QR Codes for Text & URLs.</p>
+
+<p>Create QR codes for text and URLs.</p>
+
 <button onclick="location.href='qr-generator.html'">
 Open
 </button>
+
 </div>
-  
-<div class="card">
+
+
+<!-- 10 -->
+
+<div class="card tool-card">
+
 <h3>📦 Barcode Generator</h3>
-<p>Create Product Barcodes.</p>
+
+<p>Create product barcodes.</p>
+
 <button onclick="location.href='barcode-generator.html'">
 Open
 </button>
-  </div>  
 
-<div class="card">
-<h3>🏷 AI Product Tags Generator</h3>
-<p>Generate SEO Friendly Product Tags.</p>
+</div>
+
+
+<!-- 11 -->
+
+<div class="card tool-card">
+
+<h3>🏷️ AI Product Tags Generator</h3>
+
+<p>Generate SEO-friendly product tags.</p>
+
 <button onclick="location.href='product-tags-generator.html'">
 Open
 </button>
- </div>
-  
-  <div class="card">
+
+</div>
+
+
+<!-- 12 -->
+
+<div class="card tool-card">
+
 <h3>⭐ Advanced SEO Title Generator</h3>
-<p>Create Professional SEO Product Titles.</p>
+
+<p>Create professional SEO product titles.</p>
+
 <button onclick="location.href='advanced-title-generator.html'">
 Open
 </button>
-  </div>
-  
-  <div class="card">
+
+</div>
+
+
+<!-- 13 -->
+
+<div class="card tool-card">
+
 <h3>📌 AI Bullet Points Generator</h3>
-<p>Create Professional Product Bullet Points.</p>
+
+<p>Create professional product bullet points.</p>
+
 <button onclick="location.href='bullet-points-generator.html'">
 Open
 </button>
-</div>
-  
-<div class="card">
-    <h3>⭐ AI Product Features Generator</h3>
-    <p>Create Professional Product Features.</p>
-    <button onclick="location.href='product-features-generator.html'">
-        Open
-    </button>
+
 </div>
 
-<div class="card">
-    <h3>🚀 Complete Product Listing Generator</h3>
-    <p>Create complete product listings in one click.</p>
-    <button onclick="location.href='complete-listing-generator.html'">
-        Open
-    </button>
+
+<!-- 14 -->
+
+<div class="card tool-card">
+
+<h3>⭐ AI Product Features Generator</h3>
+
+<p>Create professional product features.</p>
+
+<button onclick="location.href='product-features-generator.html'">
+Open
+</button>
+
 </div>
 
-<div class="card">
-    <h3>🤖 AI FAQ Generator</h3>
-    <p>Generate Professional Product FAQs.</p>
-    <button onclick="location.href='faq-generator.html'">
-        Open
-    </button>
+
+<!-- 15 -->
+
+<div class="card tool-card">
+
+<h3>🚀 Complete Product Listing Generator</h3>
+
+<p>Create a complete product listing in one click.</p>
+
+<button onclick="location.href='complete-listing-generator.html'">
+Open
+</button>
+
 </div>
-<div class="card">
-    <h3>🖼️ AI Image Prompt Generator</h3>
-    <p>Generate AI prompts for product images.</p>
-    <button onclick="location.href='image-prompt-generator.html'">
-        Open
-    </button>
-  </div>
-  <div class="card">
+
+
+<!-- 16 -->
+
+<div class="card tool-card">
+
+<h3>🤖 AI FAQ Generator</h3>
+
+<p>Generate professional product FAQs.</p>
+
+<button onclick="location.href='faq-generator.html'">
+Open
+</button>
+
+</div>
+
+
+<!-- 17 -->
+
+<div class="card tool-card">
+
+<h3>🖼️ AI Image Prompt Generator</h3>
+
+<p>Generate professional AI prompts for product images.</p>
+
+<button onclick="location.href='image-prompt-generator.html'">
+Open
+</button>
+
+</div>
+
+
+<!-- 18 -->
+
+<div class="card tool-card">
+
 <h3>🎨 AI Logo Prompt Generator</h3>
+
 <p>Generate professional AI logo prompts.</p>
+
 <button onclick="location.href='logo-prompt-generator.html'">
 Open
 </button>
-  </div>
-  <div class="card">
+
+</div>
+
+
+<!-- 19 -->
+
+<div class="card tool-card">
+
 <h3>📱 AI Social Media Caption Generator</h3>
-<p>Create professional captions for Instagram, Facebook, WhatsApp, X, Pinterest & LinkedIn.</p>
+
+<p>Create captions for Instagram, Facebook, WhatsApp, X, Pinterest and LinkedIn.</p>
+
 <button onclick="location.href='social-caption-generator.html'">
 Open
 </button>
 
 </div>
-<div class="card">
+
+
+<!-- 20 -->
+
+<div class="card tool-card">
+
 <h3>⭐ AI Product Review Generator</h3>
-<p>Create professional customer reviews.</p>
+
+<p>Create professional product review content.</p>
+
 <button onclick="location.href='review-generator.html'">
 Open
 </button>
 
-</div>  
-  <div class="card">
+</div>
+
+
+<!-- 21 -->
+
+<div class="card tool-card">
+
 <h3>📋 AI Product Specification Generator</h3>
+
 <p>Create professional product specifications.</p>
+
 <button onclick="location.href='specification-generator.html'">
 Open
 </button>
 
-  </div>
-  <div class="card">
+</div>
+
+
+<!-- 22 -->
+
+<div class="card tool-card">
+
 <h3>📧 AI Email Generator</h3>
+
 <p>Create professional business emails instantly.</p>
+
 <button onclick="location.href='email-generator.html'">
 Open
 </button>
 
-  </div>
-  <div class="card">
+</div>
+
+
+<!-- 23 -->
+
+<div class="card tool-card">
+
 <h3>🌍 AI Privacy Policy Generator</h3>
+
 <p>Create a professional Privacy Policy for your website.</p>
+
 <button onclick="location.href='privacy-policy-generator.html'">
 Open
 </button>
 
 </div>
-<div class="card">
+
+
+<!-- 24 -->
+
+<div class="card tool-card">
+
 <h3>📜 AI Terms & Conditions Generator</h3>
+
 <p>Create professional Terms & Conditions for your website.</p>
+
 <button onclick="location.href='terms-generator.html'">
 Open
 </button>
 
-</div>  
+</div>
+
+
 </section>
 
+
+<div
+class="no-results"
+id="noResults">
+
+🔍 No matching tools found.
+
+</div>
+
+
 <footer>
-    <p>© 2026 AI Seller Toolkit</p>
+
+<p>© 2026 AI Seller Toolkit</p>
+
 </footer>
 
-<script src="script.js"></script>
+
+<script>
+
+const searchInput =
+document.getElementById("searchTools");
+
+const toolCards =
+document.querySelectorAll(".tool-card");
+
+const toolCount =
+document.getElementById("toolCount");
+
+const noResults =
+document.getElementById("noResults");
+
+
+searchInput.addEventListener("input", function () {
+
+    const search =
+        this.value
+            .toLowerCase()
+            .trim();
+
+    let visibleCount = 0;
+
+
+    toolCards.forEach(function (card) {
+
+        const text =
+            card.innerText.toLowerCase();
+
+
+        if (
+            search === "" ||
+            text.includes(search)
+        ) {
+
+            card.style.display = "";
+
+            visibleCount++;
+
+        } else {
+
+            card.style.display = "none";
+
+        }
+
+    });
+
+
+    if (search === "") {
+
+        toolCount.textContent =
+            "Showing all " +
+            toolCards.length +
+            " tools";
+
+    } else {
+
+        toolCount.textContent =
+            "Showing " +
+            visibleCount +
+            " matching tool" +
+            (visibleCount === 1 ? "" : "s");
+
+    }
+
+
+    if (visibleCount === 0) {
+
+        noResults.style.display = "block";
+
+    } else {
+
+        noResults.style.display = "none";
+
+    }
+
+});
+
+
+toolCount.textContent =
+    "Showing all " +
+    toolCards.length +
+    " tools";
+
+</script>
+
 
 </body>
+
   </html>
