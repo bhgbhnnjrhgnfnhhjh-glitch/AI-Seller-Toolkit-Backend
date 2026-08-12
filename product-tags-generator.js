@@ -1,8 +1,3 @@
-/* =========================================
-   PRODUCT TAGS GENERATOR
-   Exact Product Identity Protected
-========================================= */
-
 function generateTags() {
 
     const product =
@@ -11,171 +6,71 @@ function generateTags() {
     const result =
         document.getElementById("result");
 
-
     if (product === "") {
-
         alert("Please enter Product Name.");
-
         return;
     }
 
-
-    /*
-     * Exact product name हमेशा सुरक्षित रहेगा.
-     */
-
     const tags = [
-
         product,
-
         product + " Online",
-
         product + " Shopping",
-
         "Buy " + product,
-
         "Shop " + product,
-
         product + " Store",
-
         product + " Shop",
-
         product + " India",
-
         product + " Clothing",
-
         product + " Apparel",
-
         product + " Fashion",
-
         product + " Wear",
-
         product + " Collection",
-
         product + " Product",
-
         product + " Online Shopping",
-
         "Buy " + product + " Online",
-
         "Shop " + product + " Online",
-
         product + " for Shopping",
-
         product + " Online Store",
-
         product + " Marketplace"
-
     ];
 
-
-    /*
-     * Duplicate हटाएँ
-     */
-
-    const uniqueTags = [];
-
-    const seen = new Set();
-
-
-    tags.forEach(function(tag) {
-
-        const cleanTag =
-            tag.trim();
-
-        const normalized =
-            cleanTag.toLowerCase();
-
-
-        if (
-            cleanTag !== "" &&
-            !seen.has(normalized)
-        ) {
-
-            seen.add(normalized);
-
-            uniqueTags.push(cleanTag);
-
-        }
-
-    });
-
-
-    /*
-     * 20 tags display करें
-     */
-
     result.innerText =
-        uniqueTags
-            .slice(0, 20)
-            .map(function(tag, index) {
-
-                return (
-                    (index + 1) +
-                    ". " +
-                    tag
-                );
-
-            })
-            .join("\n");
-
+        tags.map(function(tag, index) {
+            return (index + 1) + ". " + tag;
+        }).join("\n");
 }
 
-
-/* =========================================
-   COPY TAGS
-========================================= */
 
 async function copyTags() {
 
     const result =
         document.getElementById("result");
 
-
     const text =
         result.innerText.trim();
 
-
     if (
         text === "" ||
-        text ===
-        "Enter a product name and click Generate."
+        text === "Enter a product name and click Generate."
     ) {
-
-        alert(
-            "पहले Product Tags generate करें।"
-        );
-
+        alert("पहले Product Tags generate करें।");
         return;
     }
 
-
     try {
 
-        await navigator.clipboard.writeText(
-            text
-        );
+        await navigator.clipboard.writeText(text);
 
-
-        alert(
-            "✅ Product Tags copied successfully!"
-        );
-
+        alert("✅ Product Tags copied successfully!");
 
     } catch (error) {
 
         const textarea =
             document.createElement("textarea");
 
+        textarea.value = text;
 
-        textarea.value =
-            text;
-
-
-        document.body.appendChild(
-            textarea
-        );
-
+        document.body.appendChild(textarea);
 
         textarea.select();
 
@@ -183,11 +78,6 @@ async function copyTags() {
 
         textarea.remove();
 
-
-        alert(
-            "✅ Product Tags copied successfully!"
-        );
-
+        alert("✅ Product Tags copied successfully!");
     }
-
-       }
+    }
