@@ -48,26 +48,24 @@ VERY IMPORTANT RULES:
 4. Every generated tag MUST contain the complete exact product name:
 "${product}"
 
-5. Do NOT create shortened versions.
+Generate up to 20 useful product tags.
 
-6. Do NOT remove:
-- color
-- material
-- product type
-- brand
-- model
-- other words present in the product name
+IMPORTANT:
+Quality is more important than quantity.
 
-7. Do NOT change:
-"T-Shirt" into "Shirt".
+If only 5, 8, 10 or 12 genuinely useful tags
+can be created from the supplied information,
+return only those tags.
 
-8. Do NOT change:
-"T-Shirt" into "Tshirt".
+NEVER create meaningless tags just to reach 20.
 
-9. Do NOT change:
-"T-Shirt" into "T Shirt".
+NEVER add words such as:
+Fashion, Style, Wear, Outfit, Look, Collection,
+Line, Range, Selection, Product, Item, Garment,
+Merchandise, Goods, Gear
 
-10. Keep the exact spelling and wording:
+unless those words are explicitly present in
+the supplied information.
 "${product}"
 
 11. You may add useful search phrases AFTER the complete product name.
