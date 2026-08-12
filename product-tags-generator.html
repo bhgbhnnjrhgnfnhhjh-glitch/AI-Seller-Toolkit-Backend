@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>AI Product Tags Generator</title>
 
 <style>
+
 *{
 margin:0;
 padding:0;
@@ -74,6 +78,7 @@ border-radius:8px;
 border:1px solid #ddd;
 white-space:pre-wrap;
 line-height:1.8;
+min-height:120px;
 }
 
 .copyBtn{
@@ -83,6 +88,7 @@ background:#2563eb;
 .copyBtn:hover{
 background:#1d4ed8;
 }
+
 </style>
 
 </head>
@@ -93,6 +99,7 @@ background:#1d4ed8;
 🏷 AI Product Tags Generator
 </header>
 
+
 <div class="container">
 
 <label>Product Name</label>
@@ -102,69 +109,269 @@ type="text"
 id="product"
 placeholder="Example: Cotton T-Shirt">
 
+
 <button onclick="generateTags()">
-Generate Product Tags
+
+🤖 Generate AI Product Tags
+
 </button>
+
 
 <div class="result" id="result">
 Enter a product name and click Generate.
 </div>
 
+
 <button class="copyBtn" onclick="copyTags()">
-Copy Tags
+
+📋 Copy Tags
+
 </button>
 
 </div>
 
+
 <script>
 
-function generateTags(){
+async function generateTags(){
 
-let product=document.getElementById("product").value.trim();
+    const product =
+        document.getElementById("product")
+        .value
+        .trim();
 
-if(product==""){
-alert("Please enter product name.");
-return;
+
+    const result =
+        document.getElementById("result");
+
+
+    if(product === ""){
+
+        alert("Please enter product name.");
+
+        return;
+    }
+
+
+    result.innerText =
+        "⏳ AI product tags बनाए जा रहे हैं...";
+
+
+    const prompt = `
+You are a professional eCommerce product tag specialist.
+
+Generate exactly 20 relevant product tags for the following product.
+
+PRODUCT NAME:
+${product}
+
+STRICT RULES:
+
+1. Use only the information provided in the product name.
+
+2. Do not invent product specifications.
+
+3. Do not invent brand names.
+
+4. Do not invent colors.
+
+5. Do not invent material.
+
+6. Do not invent gender unless clearly included in the product name.
+
+7. Do not use unsupported claims such as:
+Premium, Best, Original, Bestseller, High Quality,
+Guaranteed, Latest or No.1.
+
+8. Keep the exact product type.
+
+9. Tags must be directly relevant to the product.
+
+10. Avoid unrelated product categories.
+
+11. Avoid duplicate tags.
+
+12. Do not use keyword stuffing.
+
+13. Suitable for eCommerce marketplaces.
+
+14. Return exactly 20 tags.
+
+15. Return only the tags as a numbered list.
+
+Example:
+
+1. Cotton T-Shirt
+2. Cotton T-Shirt Online
+3. Cotton T-Shirt Shopping
+
+Do not add explanations.
+Do not mention AI.
+`;
+
+
+    try{
+
+        const response =
+            await fetch(
+                "https://ai-seller-toolkit-backend-1.onrender.com/generate",
+                {
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                        "application/json"
+                    },
+
+                    body:JSON.stringify({
+                        prompt:prompt
+                    })
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if(!response.ok){
+
+            throw new Error(
+                data.details ||
+                data.error ||
+                "Server error"
+            );
+
+        }
+
+
+        if(
+            !data.result ||
+            !data.result.trim()
+        ){
+
+            throw new Error(
+                "AI returned an empty response."
+            );
+
+        }
+
+
+        result.innerText =
+            cleanTags(data.result);
+
+
+    }catch(error){
+
+        console.error(
+            "Product Tags AI Error:",
+            error
+        );
+
+
+        result.innerText =
+            "❌ Product tags नहीं बन सके.\n\n" +
+            "Error: " +
+            error.message;
+
+    }
+
 }
 
-let tags=[
-product,
-product+" Online",
-"Best "+product,
-"Original "+product,
-"Premium "+product,
-"Latest "+product,
-product+" India",
-product+" for Men",
-product+" for Women",
-product+" Store",
-product+" Sale",
-product+" Collection",
-product+" Fashion",
-product+" Trending",
-product+" New Arrival",
-product+" Shopping",
-product+" Quality",
-product+" Brand",
-product+" Offer",
-product+" Bestseller"
-];
 
-document.getElementById("result").innerHTML=tags.join(", ");
+/* =========================
+   CLEAN AI RESPONSE
+========================= */
+
+function cleanTags(text){
+
+    let cleaned =
+        text.trim();
+
+
+    cleaned =
+        cleaned.replace(
+            /^```[a-zA-Z]*\s*/i,
+            ""
+        );
+
+
+    cleaned =
+        cleaned.replace(
+            /\s*```$/i,
+            ""
+        );
+
+
+    return cleaned.trim();
 
 }
+
+
+/* =========================
+   COPY TAGS
+========================= */
 
 function copyTags(){
 
-let text=document.getElementById("result").innerText;
+    const result =
+        document.getElementById("result");
 
-navigator.clipboard.writeText(text);
 
-alert("Tags Copied Successfully!");
+    const text =
+        result.innerText.trim();
+
+
+    if(
+        text === "" ||
+        text.includes("Enter a product name")
+    ){
+
+        alert(
+            "पहले Product Tags generate करें।"
+        );
+
+        return;
+    }
+
+
+    if(
+        text.includes(
+            "❌ Product tags नहीं बन सके"
+        )
+    ){
+
+        alert(
+            "पहले Product Tags successfully generate करें।"
+        );
+
+        return;
+    }
+
+
+    navigator.clipboard
+        .writeText(text)
+
+        .then(function(){
+
+            alert(
+                "✅ Product Tags copied successfully!"
+            );
+
+        })
+
+        .catch(function(){
+
+            alert(
+                "❌ Copy नहीं हो सका।"
+            );
+
+        });
 
 }
 
 </script>
 
 </body>
-</html>
+
+  </html>
