@@ -40,21 +40,29 @@
     font-size:16px;
 }
 
-.generate-btn{
+.generate-btn,
+.copy-btn{
     width:100%;
     margin-top:20px;
     padding:14px;
     border:0;
     border-radius:8px;
-    background:#16a34a;
     color:white;
     font-size:17px;
     cursor:pointer;
 }
 
+.generate-btn{
+    background:#16a34a;
+}
+
 .generate-btn:disabled{
     opacity:.6;
     cursor:not-allowed;
+}
+
+.copy-btn{
+    background:#2563eb;
 }
 
 .result-box{
@@ -68,18 +76,6 @@
     white-space:pre-wrap;
     font-size:16px;
     line-height:1.8;
-}
-
-.copy-btn{
-    width:100%;
-    margin-top:15px;
-    padding:14px;
-    border:0;
-    border-radius:8px;
-    background:#2563eb;
-    color:white;
-    font-size:17px;
-    cursor:pointer;
 }
 
 .status{
@@ -159,7 +155,6 @@ placeholder="Example: Men"
 <option>Meesho</option>
 <option>Shopify</option>
 <option>Etsy</option>
-<option>Instagram</option>
 
 </select>
 
@@ -169,9 +164,7 @@ class="generate-btn"
 id="generateBtn"
 onclick="generateTags()"
 >
-
 🤖 Generate AI Product Tags
-
 </button>
 
 
@@ -193,9 +186,7 @@ AI product tags will appear here...
 class="copy-btn"
 onclick="copyTags()"
 >
-
 📋 Copy Tags
-
 </button>
 
 
@@ -208,48 +199,43 @@ onclick="copyTags()"
 <script>
 
 
-/* =====================================
+/* =========================================
    GEMINI BACKEND
-===================================== */
+========================================= */
 
 const API_URL =
 "https://ai-seller-toolkit-backend-1.onrender.com/generate";
 
 
 
-/* =====================================
+/* =========================================
    GENERATE TAGS
-===================================== */
+========================================= */
 
 async function generateTags(){
 
     const product =
-        document
-        .getElementById("product")
+        document.getElementById("product")
         .value
         .trim();
 
     const brand =
-        document
-        .getElementById("brand")
+        document.getElementById("brand")
         .value
         .trim();
 
     const category =
-        document
-        .getElementById("category")
+        document.getElementById("category")
         .value
         .trim();
 
     const audience =
-        document
-        .getElementById("audience")
+        document.getElementById("audience")
         .value
         .trim();
 
     const platform =
-        document
-        .getElementById("platform")
+        document.getElementById("platform")
         .value;
 
     const result =
@@ -274,12 +260,10 @@ async function generateTags(){
     button.disabled = true;
 
     button.innerText =
-        "⏳ AI Tags बना रहा है...";
-
+        "⏳ Generating...";
 
     status.innerText =
-        "AI product tags generate कर रहा है...";
-
+        "AI अच्छे product tags बना रहा है...";
 
     result.innerText =
         "⏳ Please wait...";
@@ -287,16 +271,18 @@ async function generateTags(){
 
 
     /*
-       STRICT AI PROMPT
+    =========================================
+    STRICT GEMINI PROMPT
+    =========================================
     */
 
     const prompt = `
 
-You are an expert eCommerce product tag generator.
+You are a professional eCommerce product-tag specialist.
 
-Generate product tags ONLY for the EXACT product supplied.
+Your task is to create ONLY useful search tags for the EXACT product.
 
-PRODUCT INFORMATION:
+PRODUCT INFORMATION
 
 Product Name:
 ${product}
@@ -314,158 +300,146 @@ Platform:
 ${platform}
 
 
-==============================
-STRICT PRODUCT TYPE RULES
-==============================
+=========================================
+ABSOLUTE RULES
+=========================================
 
-1. The exact product type must NEVER change.
+1. The Product Name is the most important information.
 
-2. Do NOT invent another product type.
+2. NEVER change the actual product type.
 
-3. If the product is "Black Cotton T-Shirt",
-   every tag must remain about a T-Shirt.
+3. NEVER replace one product type with another.
 
-4. NEVER create:
+4. Use ONLY information supplied by the user.
 
-shirt
-top
-polo
-dress
-hoodie
-sweater
-jacket
-trouser
-jeans
-
-unless that exact product type was supplied.
-
-
-==============================
-STRICT INFORMATION RULES
-==============================
-
-5. Use ONLY information supplied by the user.
-
-6. Do NOT invent:
-- color
-- material
-- size
-- gender
-- features
-- quality
-- benefits
-- specifications
-
-7. Brand may be used only if supplied.
-
-8. Audience may be used only if supplied.
-
-9. Category may be used only if supplied.
+5. Never invent:
+   color
+   material
+   gender
+   size
+   feature
+   specification
+   benefit
+   quality
+   price
+   offer
 
 
-==============================
-TAG QUALITY RULES
-==============================
+=========================================
+NO USELESS TAGS
+=========================================
 
-10. Create useful search tags.
+NEVER create tags containing these words
+unless the exact word was supplied by the user:
 
-11. Do NOT create meaningless variations.
-
-12. Do NOT simply rearrange the same words repeatedly.
-
-13. Do NOT create tags such as:
-
-Product
-Item
-Goods
-Gear
-Line
-Range
-Selection
-Collection
-Merchandise
-Garment
-Look
-Style
-Wear
-
-unless these words are explicitly part of the supplied product information.
-
-14. Do NOT use fake marketing words:
-
-Best
-Premium
-Amazing
-Excellent
-Luxury
-Trending
-Bestseller
-High Quality
-Original
-
-unless supplied by the user.
-
-15. Do NOT use:
-Online
-Store
-Shopping
-Sale
-Offer
-Buy
-Shop
-
-unless genuinely appropriate to the supplied platform or product information.
-
-16. Avoid duplicate or near-duplicate tags.
-
-17. Do not create spelling variations such as:
-
-Tshirt
-T-Shirt
-T Shirt
-
-for the same tag.
-
-Use one consistent spelling.
-
-18. Do NOT add numbers.
-
-19. Do NOT number the output.
-
-20. Do NOT add explanations.
+best
+premium
+amazing
+excellent
+luxury
+quality
+trending
+bestseller
+original
+fashion
+style
+look
+wear
+collection
+range
+line
+item
+product
+goods
+gear
+merchandise
+garment
+apparel
+store
+shopping
+online
+sale
+offer
+deal
+buy
+shop
 
 
-==============================
-IMPORTANT
-==============================
+=========================================
+NO REPETITION
+=========================================
+
+Do NOT create spelling variations.
+
+For example, these are duplicates:
+
+Black Cotton T-Shirt
+Black Cotton T Shirt
+Black Cotton Tshirt
+
+Use only ONE.
+
+Do not create the same product by simply changing
+the word order.
+
+Do not create unnecessary combinations.
+
+
+=========================================
+TAG QUALITY
+=========================================
+
+Each tag must add useful search meaning.
+
+Prefer combinations using:
+
+Product Name
+Brand
+Category
+Target Audience
+
+Only when those values were actually supplied.
+
+
+=========================================
+QUANTITY
+=========================================
+
+Create between 8 and 12 HIGH-QUALITY tags.
+
+IMPORTANT:
+
+Do NOT try to reach 20.
+
+Do NOT create bad tags just to increase the number.
+
+If only 8 useful tags are possible, return 8.
+
+If 10 useful tags are possible, return 10.
 
 Quality is more important than quantity.
 
-If only 8 useful tags are possible,
-return 8 tags.
 
-DO NOT create bad tags just to reach 20.
-
-
-==============================
+=========================================
 OUTPUT
-==============================
+=========================================
 
-Return ONLY the product tags.
+Return ONLY the tags.
 
 One tag per line.
 
-No numbers.
+Do NOT number them.
 
-No bullets.
+Do NOT use bullets.
 
-No explanations.
+Do NOT add explanations.
+
+Do NOT add headings.
 
 `;
 
 
     try{
-
 
         const response =
             await fetch(
@@ -478,8 +452,7 @@ No explanations.
                         "application/json"
                     },
 
-                    body:
-                    JSON.stringify({
+                    body:JSON.stringify({
                         prompt:prompt
                     })
                 }
@@ -513,12 +486,8 @@ No explanations.
         }
 
 
-        /*
-         * STRICT LOCAL FILTERING
-         */
-
         const tags =
-            filterTags(
+            cleanAndFilterTags(
                 data.result,
                 product,
                 brand,
@@ -530,7 +499,7 @@ No explanations.
         if(tags.length === 0){
 
             throw new Error(
-                "कोई valid product tag नहीं मिला।"
+                "AI response में कोई valid tag नहीं मिला।"
             );
 
         }
@@ -538,14 +507,15 @@ No explanations.
 
         result.innerText =
             tags
-            .map((tag,index)=>
+            .map(
+                (tag,index) =>
                 `${index + 1}. ${tag}`
             )
             .join("\n");
 
 
         status.innerText =
-            `✅ ${tags.length} valid product tags generated.`;
+            `✅ ${tags.length} high-quality tags generated.`;
 
 
     }
@@ -580,11 +550,11 @@ No explanations.
 
 
 
-/* =====================================
-   STRICT LOCAL FILTER
-===================================== */
+/* =========================================
+   FINAL LOCAL FILTER
+========================================= */
 
-function filterTags(
+function cleanAndFilterTags(
     text,
     product,
     brand,
@@ -593,76 +563,97 @@ function filterTags(
 ){
 
     let lines =
-        text
-        .split(/\n/)
-        .map(line =>
-            line
-            .replace(/^\s*[\d\-\.\)\:]+\s*/, "")
-            .trim()
-        )
-        .filter(Boolean);
+        text.split(/\n/);
 
 
     /*
-     * Remove markdown
-     */
+    Remove numbers and bullets
+    */
 
     lines =
-        lines.map(tag =>
-            tag
-            .replace(/\*\*/g,"")
-            .replace(/^["']|["']$/g,"")
-            .trim()
-        );
+        lines.map(function(line){
+
+            return line
+                .replace(
+                    /^\s*(\d+[\.\)\-:]|\-|\*)\s*/,
+                    ""
+                )
+                .trim();
+
+        });
 
 
     /*
-     * Remove duplicates
-     */
+    Remove empty lines
+    */
+
+    lines =
+        lines.filter(Boolean);
+
+
+    /*
+    Remove code formatting
+    */
+
+    lines =
+        lines.map(function(tag){
+
+            return tag
+                .replace(/```/g,"")
+                .replace(/\*\*/g,"")
+                .replace(/^["']|["']$/g,"")
+                .trim();
+
+        });
+
+
+    /*
+    Remove duplicates
+    */
 
     const unique = [];
 
     const seen = new Set();
 
 
-    for(const tag of lines){
+    lines.forEach(function(tag){
 
-        const normalized =
-            tag
-            .toLowerCase()
-            .replace(/[\s\-]+/g," ")
-            .trim();
+        const key =
+            normalizeTag(tag);
 
 
-        if(seen.has(normalized)){
-            continue;
+        if(!seen.has(key)){
+
+            seen.add(key);
+
+            unique.push(tag);
+
         }
 
+    });
 
-        seen.add(normalized);
-
-        unique.push(tag);
-
-    }
 
 
     /*
-     * Build allowed words
-     */
+    Product information
+    */
 
-    const source =
-        (
-            product + " " +
-            brand + " " +
-            category + " " +
-            audience
-        )
-        .toLowerCase();
+    const productWords =
+        getWords(product);
+
+    const brandWords =
+        getWords(brand);
+
+    const categoryWords =
+        getWords(category);
+
+    const audienceWords =
+        getWords(audience);
 
 
     /*
-     * Forbidden generic words
-     */
+    Words which are NOT useful
+    */
 
     const forbidden = [
 
@@ -671,130 +662,125 @@ function filterTags(
         "amazing",
         "excellent",
         "luxury",
+        "quality",
         "trending",
         "bestseller",
         "original",
-        "high quality",
-
-        "merchandise",
-        "garment",
-        "goods",
-        "gear",
-        "line",
-        "range",
-        "selection",
-        "collection",
 
         "fashion",
         "style",
         "look",
         "wear",
+        "collection",
+        "range",
+        "line",
+
+        "item",
+        "product",
+        "goods",
+        "gear",
+        "merchandise",
+        "garment",
         "apparel",
 
-        "online",
         "store",
         "shopping",
+        "online",
         "sale",
         "offer",
+        "deal",
         "buy",
         "shop"
 
     ];
 
 
-    /*
-     * Product type detection
-     */
-
-    const productLower =
-        product.toLowerCase();
+    const result = [];
 
 
-    const forbiddenProductTypes = [
+    unique.forEach(function(tag){
 
-        "shirt",
-        "top",
-        "polo",
-        "dress",
-        "hoodie",
-        "sweater",
-        "jacket",
-        "jeans",
-        "trouser"
+        if(result.length >= 12){
+            return;
+        }
 
-    ];
-
-
-    let filtered = [];
-
-
-    for(const tag of unique){
 
         const lower =
             tag.toLowerCase();
 
 
         /*
-         * Reject numbering
-         */
+        Reject forbidden words
+        */
 
-        if(
-            /^\d+[\.\)]/.test(tag)
-        ){
-            continue;
-        }
+        let invalid = false;
 
 
-        /*
-         * Reject marketing words
-         */
-
-        let bad = false;
-
-
-        for(const word of forbidden){
+        forbidden.forEach(function(word){
 
             if(
                 lower.includes(word) &&
-                !source.includes(word)
+                !product.toLowerCase().includes(word) &&
+                !category.toLowerCase().includes(word)
             ){
 
-                bad = true;
-                break;
+                invalid = true;
 
             }
 
-        }
+        });
 
 
-        if(bad){
-            continue;
+        if(invalid){
+            return;
         }
 
 
         /*
-         * Check product type
-         */
+        Reject tags that are too short
+        */
+
+        if(
+            tag.length < 3
+        ){
+            return;
+        }
+
+
+        /*
+        Reject obvious unrelated product types
+        */
+
+        const wrongTypes = [
+
+            "jeans",
+            "trouser",
+            "pants",
+            "dress",
+            "skirt",
+            "jacket",
+            "hoodie",
+            "sweater",
+            "shoes",
+            "sandals",
+            "saree",
+            "kurta",
+            "blazer",
+            "polo"
+
+        ];
+
 
         for(
-            const type
-            of forbiddenProductTypes
+            const wrong of wrongTypes
         ){
 
             if(
-                productLower.includes(type)
-                &&
-                type !== "shirt"
-                &&
-                lower.includes(type)
+                lower.includes(wrong) &&
+                !product.toLowerCase().includes(wrong)
             ){
 
-                /*
-                 * allowed only if exact
-                 * product information contains it
-                 */
-
-                continue;
+                return;
 
             }
 
@@ -802,115 +788,116 @@ function filterTags(
 
 
         /*
-         * Reject obviously unrelated
-         * product type words
-         */
+        Tag must contain at least
+        one important product word.
+        */
 
-        const productWords =
-            productLower
-            .split(/[\s\-]+/)
-            .filter(Boolean);
+        const importantWords = [
 
+            ...productWords,
+            ...brandWords,
+            ...categoryWords,
+            ...audienceWords
 
-        const tagHasProductWord =
-            productWords.some(word =>
-                word.length > 2 &&
-                lower.includes(word)
-            );
+        ];
 
 
-        const brandMatch =
-            brand &&
-            lower.includes(
-                brand.toLowerCase()
-            );
+        const hasRelevantWord =
+            importantWords.some(function(word){
+
+                return (
+                    word.length >= 3 &&
+                    lower.includes(word)
+                );
+
+            });
 
 
-        const categoryMatch =
-            category &&
-            lower.includes(
-                category.toLowerCase()
-            );
-
-
-        const audienceMatch =
-            audience &&
-            lower.includes(
-                audience.toLowerCase()
-            );
-
-
-        /*
-         * A valid tag should connect
-         * to product information.
-         */
-
-        if(
-            !tagHasProductWord &&
-            !brandMatch &&
-            !categoryMatch &&
-            !audienceMatch
-        ){
-
-            continue;
-
+        if(!hasRelevantWord){
+            return;
         }
 
 
         /*
-         * Remove spelling variations
-         */
+        Remove duplicate variations
+        */
 
-        const cleanKey =
-            lower
-            .replace(/tshirt/g,"t shirt")
-            .replace(/t-shirt/g,"t shirt")
-            .replace(/t shirt/g,"t shirt")
-            .replace(/\s+/g," ")
-            .trim();
+        const normalized =
+            normalizeTag(tag);
 
 
-        if(
-            filtered.some(existing =>
-                existing
-                .toLowerCase()
-                .replace(/tshirt/g,"t shirt")
-                .replace(/t-shirt/g,"t shirt")
-                .replace(/t shirt/g,"t shirt")
-                .replace(/\s+/g," ")
-                .trim()
-                === cleanKey
-            )
-        ){
+        const alreadySimilar =
+            result.some(function(existing){
 
-            continue;
+                return (
+                    normalizeTag(existing)
+                    === normalized
+                );
 
+            });
+
+
+        if(alreadySimilar){
+            return;
         }
 
 
-        filtered.push(tag);
+        result.push(tag);
+
+    });
 
 
-        /*
-         * Maximum 20
-         */
-
-        if(filtered.length >= 20){
-            break;
-        }
-
-    }
-
-
-    return filtered;
+    return result;
 
 }
 
 
 
-/* =====================================
-   COPY TAGS
-===================================== */
+/* =========================================
+   NORMALIZE TAG
+========================================= */
+
+function normalizeTag(tag){
+
+    return tag
+        .toLowerCase()
+        .replace(/t[\s\-]?shirt/g,"tshirt")
+        .replace(/\s+/g," ")
+        .replace(/[^a-z0-9 ]/g,"")
+        .trim();
+
+}
+
+
+
+/* =========================================
+   GET WORDS
+========================================= */
+
+function getWords(text){
+
+    if(!text){
+        return [];
+    }
+
+
+    return text
+        .toLowerCase()
+        .replace(/[^a-z0-9\s\-]/g," ")
+        .split(/[\s\-]+/)
+        .filter(function(word){
+
+            return word.length >= 3;
+
+        });
+
+}
+
+
+
+/* =========================================
+   COPY
+========================================= */
 
 async function copyTags(){
 
@@ -968,17 +955,23 @@ async function copyTags(){
                 "textarea"
             );
 
-        textarea.value = text;
+
+        textarea.value =
+            text;
+
 
         document.body.appendChild(
             textarea
         );
 
+
         textarea.select();
+
 
         document.execCommand(
             "copy"
         );
+
 
         textarea.remove();
 
