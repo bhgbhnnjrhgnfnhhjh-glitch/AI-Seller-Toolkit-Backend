@@ -3,83 +3,122 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>QR Code Generator</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <style>
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
 }
 
 body{
-background:#f4f7fb;
+    background:#f4f7fb;
+    min-height:100vh;
 }
 
 header{
-background:linear-gradient(90deg,#2563eb,#4f46e5);
-color:#fff;
-text-align:center;
-padding:18px;
-font-size:24px;
-font-weight:bold;
+    background:linear-gradient(90deg,#2563eb,#4f46e5);
+    color:white;
+    text-align:center;
+    padding:18px;
+    font-size:24px;
+    font-weight:bold;
 }
 
 .container{
-max-width:600px;
-margin:30px auto;
-background:#fff;
-padding:25px;
-border-radius:12px;
-box-shadow:0 5px 15px rgba(0,0,0,.15);
+    width:92%;
+    max-width:600px;
+    margin:30px auto;
+    background:white;
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 5px 18px rgba(0,0,0,.15);
 }
 
 label{
-display:block;
-margin-top:15px;
-font-weight:bold;
+    display:block;
+    margin-top:10px;
+    font-weight:bold;
+    color:#333;
 }
 
 input{
-width:100%;
-padding:12px;
-margin-top:6px;
-border:1px solid #ccc;
-border-radius:6px;
-font-size:16px;
+    width:100%;
+    padding:13px;
+    margin-top:8px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    font-size:16px;
+    outline:none;
+}
+
+input:focus{
+    border-color:#2563eb;
 }
 
 button{
-width:100%;
-padding:14px;
-margin-top:15px;
-background:#16a34a;
-color:#fff;
-font-size:18px;
-border:none;
-border-radius:6px;
-cursor:pointer;
+    width:100%;
+    padding:14px;
+    margin-top:15px;
+    border:none;
+    border-radius:8px;
+    font-size:17px;
+    font-weight:bold;
+    color:white;
+    cursor:pointer;
 }
 
-button:hover{
-background:#15803d;
+.generate{
+    background:#16a34a;
+}
+
+.generate:hover{
+    background:#15803d;
+}
+
+.download{
+    background:#2563eb;
+    display:none;
+}
+
+.clear{
+    background:#dc2626;
+    display:none;
 }
 
 #qrcode{
-margin-top:25px;
-display:flex;
-justify-content:center;
+    margin-top:25px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:20px;
 }
 
-#downloadBtn{
-display:none;
-background:#2563eb;
+#qrcode canvas,
+#qrcode img{
+    max-width:100%;
+    height:auto;
+}
+
+.message{
+    text-align:center;
+    margin-top:15px;
+    color:#555;
+    font-size:14px;
+}
+
+.footer{
+    text-align:center;
+    margin-top:20px;
+    color:#777;
+    font-size:13px;
 }
 </style>
-
 </head>
 
 <body>
@@ -90,64 +129,189 @@ background:#2563eb;
 
 <div class="container">
 
-<label>Enter Text / URL</label>
+<label for="qrText">
+Enter Text / URL
+</label>
 
 <input
-type="text"
-id="qrText"
-placeholder="https://example.com">
+    type="text"
+    id="qrText"
+    placeholder="https://google.com"
+    autocomplete="off"
+>
 
-<button onclick="generateQR()">
-Generate QR Code
+<button class="generate" onclick="generateQR()">
+    Generate QR Code
 </button>
 
 <div id="qrcode"></div>
 
-<button id="downloadBtn" onclick="downloadQR()">
-Download QR Code
+<p class="message" id="message"></p>
+
+<button
+    class="download"
+    id="downloadBtn"
+    onclick="downloadQR()">
+    ⬇️ Download QR Code
 </button>
+
+<button
+    class="clear"
+    id="clearBtn"
+    onclick="clearQR()">
+    🗑️ Clear
+</button>
+
+<div class="footer">
+    Generate QR codes for Text, Links and URLs
+</div>
 
 </div>
 
 <script>
 
+let qrGenerated = false;
+
 function generateQR(){
 
-let text=document.getElementById("qrText").value.trim();
+    const text = document
+        .getElementById("qrText")
+        .value
+        .trim();
 
-if(text==""){
-alert("Please enter text or URL.");
-return;
+    const qrContainer =
+        document.getElementById("qrcode");
+
+    const downloadBtn =
+        document.getElementById("downloadBtn");
+
+    const clearBtn =
+        document.getElementById("clearBtn");
+
+    const message =
+        document.getElementById("message");
+
+    if(text === ""){
+
+        alert("Please enter text or URL.");
+
+        return;
+    }
+
+    // पुराने QR को हटाएं
+    qrContainer.innerHTML = "";
+
+    message.innerText = "";
+
+    // नया QR Code बनाएं
+    try{
+
+        new QRCode(qrContainer, {
+
+            text: text,
+
+            width: 300,
+
+            height: 300,
+
+            colorDark: "#000000",
+
+            colorLight: "#ffffff",
+
+            correctLevel: QRCode.CorrectLevel.H
+
+        });
+
+        qrGenerated = true;
+
+        downloadBtn.style.display = "block";
+
+        clearBtn.style.display = "block";
+
+        message.innerText =
+            "✅ QR Code successfully generated!";
+
+    }
+
+    catch(error){
+
+        console.error(error);
+
+        message.innerText =
+            "❌ QR Code generate नहीं हो पाया।";
+
+        qrGenerated = false;
+    }
 }
 
-document.getElementById("qrcode").innerHTML="";
-
-new QRCode(document.getElementById("qrcode"),{
-text:text,
-width:220,
-height:220
-});
-
-setTimeout(function(){
-document.getElementById("downloadBtn").style.display="block";
-},500);
-
-}
 
 function downloadQR(){
 
-let img=document.querySelector("#qrcode img");
+    if(!qrGenerated){
 
-if(!img){
-alert("Generate QR Code first.");
-return;
+        alert("पहले QR Code Generate करें.");
+
+        return;
+    }
+
+    const canvas =
+        document.querySelector("#qrcode canvas");
+
+    const img =
+        document.querySelector("#qrcode img");
+
+    let imageURL = "";
+
+    // अगर Canvas मौजूद है
+    if(canvas){
+
+        imageURL =
+            canvas.toDataURL("image/png");
+
+    }
+
+    // अगर Image मौजूद है
+    else if(img){
+
+        imageURL = img.src;
+
+    }
+
+    else{
+
+        alert("QR Code image नहीं मिली.");
+
+        return;
+    }
+
+    const link =
+        document.createElement("a");
+
+    link.href = imageURL;
+
+    link.download = "My-QRCode.png";
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
 }
 
-let a=document.createElement("a");
-a.href=img.src;
-a.download="QRCode.png";
-a.click();
 
+function clearQR(){
+
+    document.getElementById("qrText").value = "";
+
+    document.getElementById("qrcode").innerHTML = "";
+
+    document.getElementById("message").innerText = "";
+
+    document.getElementById("downloadBtn").style.display = "none";
+
+    document.getElementById("clearBtn").style.display = "none";
+
+    qrGenerated = false;
 }
 
 </script>
