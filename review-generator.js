@@ -207,7 +207,18 @@ Do not return explanations.
 
 
         result.value = review;
+if (
+    review.toLowerCase().includes("five-star rating") ||
+    review.toLowerCase().includes("five star rating") ||
+    review.toLowerCase().includes("rating")
+) {
 
+    review =
+        product +
+        (brand ? " by " + brand : "") +
+        ".";
+
+}
 
     } catch (error) {
 
