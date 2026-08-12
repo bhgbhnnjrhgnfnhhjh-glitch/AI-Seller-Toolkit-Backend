@@ -19,8 +19,8 @@ async function generateReview() {
     if (product === "") {
 
         alert("Please enter Product Name.");
-
         return;
+
     }
 
 
@@ -29,40 +29,61 @@ async function generateReview() {
 
 
     const prompt = `
-You are a factual eCommerce review formatter.
+You are a factual eCommerce content writer.
 
-Your job is NOT to invent a customer experience.
+Create a very short product review sentence.
 
-Create a very short review using ONLY the information explicitly supplied below.
-
-PRODUCT NAME:
+PRODUCT:
 ${product}
 
 BRAND:
 ${brand || "Not specified"}
 
-RATING:
-${rating}
-
 STYLE:
 ${style}
 
 
-ABSOLUTE RULES
-==============
+IMPORTANT:
 
-1. NEVER invent facts.
+The rating is provided only for internal context.
 
-2. NEVER invent a customer experience.
+DO NOT mention the rating in the output.
 
-3. NEVER say that the customer purchased, used, tested,
+DO NOT write:
+- 5 star
+- five star
+- five out of five
+- 5/5
+- rating
+- rated
+- receives a rating
+- deserves a rating
+- merits a rating
+
+Do not mention any rating number or rating phrase.
+
+Do not invent customer experience.
+
+Do not say the customer purchased, used, tested,
 received or tried the product.
 
-4. NEVER describe product quality unless quality information
-was explicitly provided.
+Do not invent product quality.
 
-5. NEVER use these words or phrases:
+Do not invent:
+- comfort
+- durability
+- material
+- color
+- size
+- price
+- value for money
+- features
+- benefits
+- delivery
+- warranty
+- recommendation
 
+Do not use:
 excellent
 amazing
 best
@@ -71,74 +92,24 @@ premium
 high quality
 superb
 outstanding
-durable
-comfortable
-stylish
-beautiful
-worth the price
-value for money
-highly recommended
-recommended
 perfect
 impressive
-satisfied
-very satisfied
-exceeded expectations
+stylish
+comfortable
+durable
+recommended
 
-6. NEVER invent material, color, size, features, specifications,
-price, delivery, packaging, warranty or benefits.
+Use ONLY the Product Name and Brand supplied above.
 
-7. NEVER change the product type.
+Keep the exact product type.
 
-8. Keep the exact Product Name as supplied.
+Return ONLY ONE short factual sentence.
 
-9. Mention the Brand only if supplied.
+Example:
 
-10. The rating is ONLY a rating selected by the user.
-Do NOT use the rating as proof of product quality.
+Black Cotton T-Shirt by Fashion Hud.
 
-11. Do NOT say:
-"deserves a five-star rating"
-"merits a five-star rating"
-"five-star product"
-"excellent product"
-
-12. Do NOT turn the rating into a quality claim.
-
-13. Do not mention AI.
-
-14. Do not use emojis.
-
-15. Do not add explanations.
-
-16. Keep the review extremely short.
-
-17. If there is not enough information for a normal review,
-simply state the available product information.
-
-
-STYLE RULES
-===========
-
-Professional:
-Use formal factual wording.
-
-Customer Experience:
-DO NOT invent a customer experience.
-Use factual product wording instead.
-
-Short Review:
-Use one short factual sentence.
-
-
-OUTPUT
-======
-
-Return ONLY the review text.
-
-Do not return a heading.
-Do not return quotation marks.
-Do not return explanations.
+Do not add anything else.
 `;
 
 
@@ -189,48 +160,180 @@ Do not return explanations.
         }
 
 
+        /*
+        =====================================
+        IMPORTANT:
+        We don't trust the AI output blindly.
+        =====================================
+        */
+
         let review =
-            cleanReviewOutput(data.result);
+            data.result.trim();
 
 
         /*
-        ========================================
-        EXTRA SAFETY CHECK
-        ========================================
-
-        Remove common unsupported marketing claims
-        if Gemini adds them despite the prompt.
+        Remove markdown
         */
 
         review =
-            removeUnsafeClaims(review);
+            review.replace(
+                /^```[a-zA-Z]*\s*/i,
+                ""
+            );
+
+        review =
+            review.replace(
+                /\s*```$/i,
+                ""
+            );
 
 
-        result.value = review;
-// Remove rating information from final review
-review = review
-    .replace(/\bhas a rating of\s*\d+\s*\/\s*5\b/gi, "")
-    .replace(/\bwith a rating of\s*\d+\s*\/\s*5\b/gi, "")
-    .replace(/\breceives a\s*(?:five|5)[ -]?star rating\b/gi, "")
-    .replace(/\b(?:five|5)[ -]?star rating\b/gi, "")
-    .replace(/\brated\s*\d+\s*\/\s*5\b/gi, "")
-    .replace(/\brating\s*(?:is|of)\s*\d+\s*\/\s*5\b/gi, "")
-    .replace(/\s{2,}/g, " ")
-    .trim();
+        /*
+        =====================================
+        If AI mentions rating, discard its
+        generated sentence completely.
+        =====================================
+        */
+
+        const ratingWords = [
+
+            "rating",
+            "rated",
+            "five star",
+            "five-star",
+            "five out of five",
+            "5 star",
+            "5-star",
+            "5/5",
+            "four star",
+            "four-star",
+            "4 star",
+            "4-star",
+            "three star",
+            "three-star",
+            "3 star",
+            "3-star",
+            "two star",
+            "two-star",
+            "2 star",
+            "2-star",
+            "one star",
+            "one-star",
+            "1 star",
+            "1-star"
+
+        ];
 
 
-// If nothing useful remains, use factual product information
-if (review === "" || review.length < 5) {
-
-    review =
-        product +
-        (brand ? " by " + brand : "") +
-        ".";
-
-}
+        const lowerReview =
+            review.toLowerCase();
 
 
-result.value = review;
+        const containsRating =
+            ratingWords.some(
+                function(word) {
+
+                    return lowerReview.includes(word);
+
+                }
+            );
+
+
+        /*
+        =====================================
+        If rating detected, use our own
+        factual sentence.
+        =====================================
+        */
+
+        if (containsRating) {
+
+            review =
+                product +
+                (
+                    brand
+                        ? " by " + brand
+                        : ""
+                ) +
+                ".";
+
+        }
+
+
+        /*
+        =====================================
+        Remove common unsupported claims
+        =====================================
+        */
+
+        const unsafeWords = [
+
+            "excellent",
+            "amazing",
+            "best",
+            "great",
+            "premium",
+            "high quality",
+            "high-quality",
+            "superb",
+            "outstanding",
+            "perfect",
+            "impressive",
+            "stylish",
+            "comfortable",
+            "durable",
+            "recommended",
+            "worth the price",
+            "value for money"
+
+        ];
+
+
+        const hasUnsafeClaim =
+            unsafeWords.some(
+                function(word) {
+
+                    return review
+                        .toLowerCase()
+                        .includes(word);
+
+                }
+            );
+
+
+        /*
+        If AI generated an unsupported claim,
+        use the safe factual sentence.
+        */
+
+        if (hasUnsafeClaim) {
+
+            review =
+                product +
+                (
+                    brand
+                        ? " by " + brand
+                        : ""
+                ) +
+                ".";
+
+        }
+
+
+        /*
+        Final clean-up
+        */
+
+        review =
+            review
+                .replace(/\s{2,}/g, " ")
+                .trim();
+
+
+        result.value =
+            review;
+
+
     } catch (error) {
 
         console.error(
@@ -249,140 +352,14 @@ result.value = review;
 }
 
 
-/* =================================
-   CLEAN GEMINI RESPONSE
-================================= */
-
-function cleanReviewOutput(text) {
-
-    let cleaned =
-        text.trim();
-
-
-    // Remove markdown code fences
-
-    cleaned =
-        cleaned.replace(
-            /^```[a-zA-Z]*\s*/i,
-            ""
-        );
-
-
-    cleaned =
-        cleaned.replace(
-            /\s*```$/i,
-            ""
-        );
-
-
-    // Remove accidental quotation marks
-
-    cleaned =
-        cleaned.replace(/^["']|["']$/g, "");
-
-
-    return cleaned.trim();
-
-}
-
-
-/* =================================
-   REMOVE UNSAFE CLAIMS
-================================= */
-
-function removeUnsafeClaims(text) {
-
-    let cleaned =
-        text.trim();
-
-
-    const unsafePatterns = [
-
-        /\bexcellent\b/gi,
-
-        /\bamazing\b/gi,
-
-        /\bbest\b/gi,
-
-        /\bgreat\b/gi,
-
-        /\bpremium\b/gi,
-
-        /\bhigh[\s-]?quality\b/gi,
-
-        /\bsuperb\b/gi,
-
-        /\boutstanding\b/gi,
-
-        /\bdurable\b/gi,
-
-        /\bcomfortable\b/gi,
-
-        /\bstylish\b/gi,
-
-        /\bbeautiful\b/gi,
-
-        /\bworth the price\b/gi,
-
-        /\bvalue for money\b/gi,
-
-        /\bhighly recommended\b/gi,
-
-        /\brecommended\b/gi,
-
-        /\bperfect\b/gi,
-
-        /\bimpressive\b/gi,
-
-        /\bsatisfied\b/gi,
-
-        /\bvery satisfied\b/gi,
-
-        /\bexceeded expectations\b/gi,
-
-        /\bmerits a five-star rating\b/gi,
-
-        /\bdeserves a five-star rating\b/gi,
-
-        /\bfive-star product\b/gi
-
-    ];
-
-
-    unsafePatterns.forEach(function(pattern) {
-
-        cleaned =
-            cleaned.replace(pattern, "");
-
-    });
-
-
-    // Remove excessive spaces
-
-    cleaned =
-        cleaned.replace(/\s{2,}/g, " ");
-
-
-    // Clean awkward spaces before punctuation
-
-    cleaned =
-        cleaned.replace(/\s+([,.!?])/g, "$1");
-
-
-    return cleaned.trim();
-
-}
-
-
-/* =================================
+/* =========================
    COPY REVIEW
-================================= */
+========================= */
 
 function copyReview() {
 
     const result =
         document.getElementById("result");
-
 
     const text =
         result.value.trim();
@@ -395,6 +372,7 @@ function copyReview() {
         );
 
         return;
+
     }
 
 
@@ -409,6 +387,7 @@ function copyReview() {
         );
 
         return;
+
     }
 
 
@@ -431,4 +410,4 @@ function copyReview() {
 
         });
 
-    }
+        }
