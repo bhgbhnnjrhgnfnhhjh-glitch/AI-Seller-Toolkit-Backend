@@ -98,20 +98,24 @@ RATING GUIDELINES
 -----------------
 
 5 stars:
-Use positive but factual language based only on supplied information.
+Do NOT say "excellent", "best", "amazing", "high quality",
+"worth the price", "highly recommended" or similar claims
+unless the user explicitly provides those facts.
+
+If only Product Name, Brand and Rating are provided,
+write a simple factual review that mentions only those details.
 
 4 stars:
-Use generally positive language without inventing specific benefits.
+Do not invent positive product qualities.
 
 3 stars:
-Use neutral language and avoid making unsupported claims.
+Use neutral factual wording.
 
 2 stars:
-Use cautious language without inventing problems.
+Do not invent negative experiences or problems.
 
 1 star:
-Use neutral factual wording and do not invent negative experiences.
-
+Do not invent negative experiences or problems.
 
 STYLE GUIDELINES
 ----------------
