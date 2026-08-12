@@ -5,342 +5,197 @@
 
 <meta charset="UTF-8">
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
 <title>AI Product Tags Generator</title>
 
-<link
-    rel="stylesheet"
-    href="style.css"
->
-
 <style>
 
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f4f7fb;
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial,sans-serif;
 }
 
-
-/* =========================
-   HEADER
-========================= */
-
-header {
-    background: linear-gradient(
-        90deg,
-        #2563eb,
-        #4f46e5
-    );
-
-    color: white;
-
-    padding: 18px 20px;
-
-    display: flex;
-
-    justify-content: space-between;
-
-    align-items: center;
-
-    gap: 10px;
+body{
+    background:#f4f7fb;
+    color:#222;
 }
 
-header h1 {
-    margin: 0;
+/* HEADER */
 
-    font-size: 22px;
+header{
+    background:linear-gradient(90deg,#2563eb,#4f46e5);
+    color:white;
+    padding:16px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
 }
 
-header a {
-    color: white;
-
-    text-decoration: none;
-
-    font-size: 14px;
-
-    font-weight: bold;
+header h1{
+    font-size:20px;
 }
 
-
-/* =========================
-   MAIN
-========================= */
-
-.container {
-
-    width: 92%;
-
-    max-width: 700px;
-
-    margin: 30px auto;
-
+header a{
+    color:white;
+    text-decoration:none;
+    font-size:14px;
 }
 
+/* MAIN */
 
-/* =========================
-   CARD
-========================= */
-
-.card {
-
-    background: white;
-
-    padding: 25px;
-
-    border-radius: 14px;
-
-    box-shadow:
-        0 5px 18px rgba(0,0,0,0.12);
-
-    margin-bottom: 20px;
-
+.container{
+    max-width:700px;
+    margin:25px auto;
+    padding:15px;
 }
 
+/* CARD */
 
-.card h2 {
-
-    margin-top: 0;
-
-    margin-bottom: 20px;
-
-    text-align: center;
-
-    color: #2563eb;
-
-    font-size: 22px;
-
+.card{
+    background:white;
+    padding:22px;
+    margin-bottom:20px;
+    border-radius:12px;
+    box-shadow:0 5px 18px rgba(0,0,0,0.10);
 }
 
-
-/* =========================
-   LABEL
-========================= */
-
-label {
-
-    display: block;
-
-    font-weight: bold;
-
-    margin-bottom: 8px;
-
+.card h2{
+    text-align:center;
+    color:#2563eb;
+    margin-bottom:20px;
+    font-size:22px;
 }
 
+/* LABEL */
 
-/* =========================
-   INPUT
-========================= */
-
-input {
-
-    width: 100%;
-
-    padding: 14px;
-
-    border: 1px solid #d1d5db;
-
-    border-radius: 8px;
-
-    font-size: 16px;
-
-    outline: none;
-
-    box-sizing: border-box;
-
+label{
+    display:block;
+    margin-top:15px;
+    margin-bottom:7px;
+    font-weight:bold;
 }
 
+/* INPUT */
 
-input:focus {
-
-    border-color: #2563eb;
-
-    box-shadow:
-        0 0 0 2px rgba(37,99,235,0.1);
-
+input{
+    width:100%;
+    padding:13px;
+    border:1px solid #ccc;
+    border-radius:7px;
+    font-size:16px;
+    outline:none;
 }
 
-
-/* =========================
-   INFO
-========================= */
-
-.info {
-
-    margin-top: 15px;
-
-    padding: 14px;
-
-    background: #eff6ff;
-
-    border-left: 4px solid #2563eb;
-
-    border-radius: 6px;
-
-    font-size: 14px;
-
-    line-height: 1.6;
-
+input:focus{
+    border-color:#2563eb;
 }
 
+/* INFO */
 
-/* =========================
-   GENERATE BUTTON
-========================= */
-
-.generate-btn {
-
-    width: 100%;
-
-    padding: 14px;
-
-    margin-top: 20px;
-
-    border: none;
-
-    border-radius: 8px;
-
-    background: #16a34a;
-
-    color: white;
-
-    font-size: 17px;
-
-    font-weight: bold;
-
-    cursor: pointer;
-
+.info{
+    margin-top:15px;
+    background:#eff6ff;
+    border-left:4px solid #2563eb;
+    padding:12px;
+    border-radius:6px;
+    font-size:14px;
+    line-height:1.6;
 }
 
+/* BUTTON */
 
-.generate-btn:hover {
-
-    background: #15803d;
-
+button{
+    width:100%;
+    border:none;
+    border-radius:7px;
+    padding:14px;
+    margin-top:18px;
+    font-size:17px;
+    font-weight:bold;
+    color:white;
+    background:#16a34a;
+    cursor:pointer;
 }
 
-
-/* =========================
-   RESULT
-========================= */
-
-#result {
-
-    width: 100%;
-
-    min-height: 420px;
-
-    padding: 15px;
-
-    box-sizing: border-box;
-
-    background: #f8fafc;
-
-    border: 1px solid #d1d5db;
-
-    border-radius: 8px;
-
-    font-size: 16px;
-
-    line-height: 1.8;
-
-    white-space: pre-wrap;
-
-    overflow-y: auto;
-
+button:hover{
+    background:#15803d;
 }
 
-
-/* =========================
-   COPY BUTTON
-========================= */
-
-.copy-btn {
-
-    width: 100%;
-
-    padding: 14px;
-
-    margin-top: 15px;
-
-    border: none;
-
-    border-radius: 8px;
-
-    background: #2563eb;
-
-    color: white;
-
-    font-size: 17px;
-
-    font-weight: bold;
-
-    cursor: pointer;
-
+button:disabled{
+    background:#94a3b8;
+    cursor:not-allowed;
 }
 
+/* RESULT */
 
-.copy-btn:hover {
-
-    background: #1d4ed8;
-
+.result{
+    width:100%;
+    min-height:380px;
+    resize:vertical;
+    padding:15px;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    background:#f8fafc;
+    font-size:15px;
+    line-height:1.7;
+    outline:none;
 }
 
+/* COPY BUTTON */
 
-/* =========================
-   MOBILE
-========================= */
+.copy-btn{
+    background:#2563eb;
+}
 
-@media (max-width: 600px) {
+.copy-btn:hover{
+    background:#1d4ed8;
+}
 
-    header {
+/* STATUS */
 
-        padding: 15px;
+.status{
+    text-align:center;
+    margin-top:12px;
+    font-size:14px;
+    color:#555;
+}
 
+/* MOBILE */
+
+@media(max-width:600px){
+
+    header{
+        padding:13px;
     }
 
-    header h1 {
-
-        font-size: 18px;
-
+    header h1{
+        font-size:17px;
     }
 
-    header a {
-
-        font-size: 12px;
-
+    header a{
+        font-size:12px;
     }
 
-    .container {
-
-        width: 94%;
-
-        margin: 20px auto;
-
+    .container{
+        margin:15px auto;
+        padding:10px;
     }
 
-    .card {
-
-        padding: 18px;
-
+    .card{
+        padding:16px;
     }
 
-    .card h2 {
-
-        font-size: 20px;
-
+    .card h2{
+        font-size:19px;
     }
 
-    #result {
-
-        min-height: 400px;
-
-        font-size: 15px;
-
+    .result{
+        min-height:350px;
     }
 
 }
@@ -353,14 +208,14 @@ input:focus {
 <body>
 
 
+<!-- HEADER -->
+
 <header>
 
-<h1>
-🏷 AI Product Tags Generator
-</h1>
+<h1>🏷 AI Product Tags Generator</h1>
 
 <a href="tools.html">
-← Back to Tools
+⬅ Back to Tools
 </a>
 
 </header>
@@ -370,72 +225,75 @@ input:focus {
 <div class="container">
 
 
-<!-- =========================
-     INPUT CARD
-========================= -->
+<!-- INPUT CARD -->
 
 <div class="card">
 
-<h2>
-Create Product Tags
-</h2>
+<h2>Create Product Tags</h2>
 
 
-<label for="product">
+<label>
 Product Name
 </label>
 
 
 <input
-    type="text"
-    id="product"
-    placeholder="Example: Black Cotton T-Shirt"
+type="text"
+id="product"
+placeholder="Example: Black Cotton T-Shirt"
+autocomplete="off"
 >
 
 
 <div class="info">
 
-<strong>Important:</strong>
+<b>Important:</b>
 
-Product Name को जैसा लिखा जाएगा,
-उसी exact product name को tags में रखा जाएगा।
+Product Name में जो product type लिखा है,
+AI उसी product type को बनाए रखेगा।
 
 <br><br>
 
 Example:
 
-<strong>Black Cotton T-Shirt</strong>
+<b>Black Cotton T-Shirt</b>
 
-को:
+से AI
 
-Black T-Shirt
+<b>Black Cotton T-Shirt</b>
 
-या
+से जुड़े tags बनाएगा।
 
-Cotton T-Shirt
+<br><br>
 
-में नहीं बदला जाएगा।
+AI इसे किसी दूसरे product जैसे
+Shirt, Polo, Top आदि में नहीं बदलेगा।
 
 </div>
+
 
 
 <button
-    class="generate-btn"
-    type="button"
-    onclick="generateTags()"
+id="generateBtn"
+onclick="generateTags()"
 >
 
-🤖 Generate Product Tags
+🤖 Generate AI Product Tags
 
 </button>
+
+
+<div
+class="status"
+id="status">
+</div>
+
 
 </div>
 
 
 
-<!-- =========================
-     RESULT CARD
-========================= -->
+<!-- RESULT CARD -->
 
 <div class="card">
 
@@ -444,36 +302,558 @@ Generated Product Tags
 </h2>
 
 
-<div id="result">
-
-Product Name डालें और
-Generate Product Tags दबाएँ।
-
-</div>
+<textarea
+id="result"
+class="result"
+readonly
+placeholder="AI generated product tags यहाँ दिखाई देंगे..."
+></textarea>
 
 
 <button
-    class="copy-btn"
-    type="button"
-    onclick="copyTags()"
+id="copyBtn"
+class="copy-btn"
+onclick="copyTags()"
 >
 
 📋 Copy Tags
 
 </button>
 
-</div>
-
 
 </div>
 
 
+</div>
 
-<!-- =========================
-     JAVASCRIPT
-========================= -->
 
-<script src="product-tags-generator.js"></script>
+
+<script>
+
+
+/* =========================================
+   GENERATE PRODUCT TAGS
+========================================= */
+
+async function generateTags(){
+
+    const product =
+        document
+        .getElementById("product")
+        .value
+        .trim();
+
+
+    const result =
+        document
+        .getElementById("result");
+
+
+    const status =
+        document
+        .getElementById("status");
+
+
+    const button =
+        document
+        .getElementById("generateBtn");
+
+
+    /* CHECK PRODUCT */
+
+    if(product === ""){
+
+        alert(
+            "कृपया Product Name भरें।"
+        );
+
+        return;
+
+    }
+
+
+    /* LOADING */
+
+    button.disabled = true;
+
+    button.innerText =
+        "⏳ Generating AI Tags...";
+
+
+    status.innerText =
+        "AI product tags बना रहा है...";
+
+
+    result.value =
+        "⏳ Please wait...";
+
+
+    /* =========================================
+       AI PROMPT
+    ========================================= */
+
+    const prompt = `
+
+You are a professional eCommerce product tag specialist.
+
+Generate exactly 20 relevant product tags for the product below.
+
+PRODUCT NAME:
+${product}
+
+
+VERY IMPORTANT RULES:
+
+1. Generate exactly 20 tags.
+
+2. Every tag must be directly related to the exact Product Name.
+
+3. Preserve the exact product type.
+
+4. Do NOT change the product type.
+
+5. If the Product Name contains "T-Shirt",
+   every relevant tag must refer to T-Shirt.
+
+6. Do NOT change T-Shirt into:
+   Shirt
+   Polo
+   Top
+   Tee
+   Clothing
+   Apparel
+
+   unless that exact word is already present
+   in the Product Name.
+
+7. If the Product Name contains:
+   Black
+   Cotton
+   T-Shirt
+
+   you may create natural combinations
+   using those exact supplied terms.
+
+8. Do not invent:
+   brand names
+   sizes
+   patterns
+   designs
+   features
+   benefits
+   quality claims
+   material
+   colors
+   gender
+   specifications
+
+   unless they are present in the Product Name.
+
+9. Do NOT use fake marketing words.
+
+10. Do NOT use:
+   Best
+   Premium
+   Amazing
+   Luxury
+   Superior
+   High Quality
+   Bestseller
+   Trending
+   Viral
+   Must Buy
+
+11. Do NOT create:
+   Buy
+   Shop
+   Store
+   Online
+   Sale
+   Offer
+
+   tags unless they are genuinely useful
+   and directly relevant.
+
+12. Do not create unrelated keywords.
+
+13. Do not change the meaning of the product.
+
+14. Do not use another product type.
+
+15. Avoid unnecessary repetition.
+
+16. Do not create simple spelling variations.
+
+17. Do not create the same tag with:
+   T-Shirt
+   Tshirt
+   T Shirt
+
+   just to increase the number.
+
+18. Every tag should provide useful search value.
+
+19. Tags should be short and natural.
+
+20. Do not number the tags.
+
+21. Do not add explanations.
+
+22. Return ONLY the 20 product tags.
+
+23. Put each tag on a separate line.
+
+24. Do not use bullets.
+
+25. Do not use numbering.
+
+
+EXAMPLE:
+
+Product Name:
+Black Cotton T-Shirt
+
+
+GOOD TAGS:
+
+Black Cotton T-Shirt
+Black Cotton T-Shirt for Men
+Black Cotton T-Shirt Clothing
+Black Cotton T-Shirt Fashion
+Black Cotton T-Shirt Wear
+
+
+BAD TAGS:
+
+Best Black Cotton T-Shirt
+Premium Black Cotton T-Shirt
+Buy Black Cotton T-Shirt
+Black Shirt
+Black Polo
+Cotton Shirt
+
+
+FINAL OUTPUT:
+
+Return exactly 20 useful product tags,
+one tag per line.
+
+`;
+
+
+    /* =========================================
+       API REQUEST
+    ========================================= */
+
+    try{
+
+        const response =
+            await fetch(
+
+                "https://ai-seller-toolkit-backend-1.onrender.com/generate",
+
+                {
+
+                    method:"POST",
+
+                    headers:{
+                        "Content-Type":
+                        "application/json"
+                    },
+
+                    body:JSON.stringify({
+
+                        prompt:prompt
+
+                    })
+
+                }
+
+            );
+
+
+        /* RESPONSE JSON */
+
+        const data =
+            await response.json();
+
+
+        /* SERVER ERROR */
+
+        if(!response.ok){
+
+            throw new Error(
+
+                data.details ||
+                data.error ||
+                "Server error"
+
+            );
+
+        }
+
+
+        /* GET RESULT */
+
+        let text =
+            data.result || "";
+
+
+        if(!text.trim()){
+
+            throw new Error(
+                "AI ने कोई tags नहीं बनाए।"
+            );
+
+        }
+
+
+        /* =========================================
+           CLEAN RESULT
+        ========================================= */
+
+        let lines =
+            text
+            .split("\n")
+            .map(function(line){
+
+                return line
+                    .trim();
+
+            })
+            .filter(function(line){
+
+                return line !== "";
+
+            });
+
+
+        /* REMOVE NUMBERING */
+
+        lines =
+            lines.map(function(line){
+
+                return line.replace(
+                    /^\s*\d+[\.\)\-:]\s*/,
+                    ""
+                ).trim();
+
+            });
+
+
+        /* REMOVE BULLETS */
+
+        lines =
+            lines.map(function(line){
+
+                return line.replace(
+                    /^[•\-\*]\s*/,
+                    ""
+                ).trim();
+
+            });
+
+
+        /* REMOVE DUPLICATES */
+
+        const uniqueTags = [];
+
+        const seen = new Set();
+
+
+        lines.forEach(function(tag){
+
+            const clean =
+                tag.trim();
+
+
+            const key =
+                clean.toLowerCase();
+
+
+            if(
+                clean !== "" &&
+                !seen.has(key)
+            ){
+
+                seen.add(key);
+
+                uniqueTags.push(clean);
+
+            }
+
+        });
+
+
+        /* =========================================
+           EXACTLY MAX 20
+        ========================================= */
+
+        const finalTags =
+            uniqueTags.slice(0,20);
+
+
+        if(finalTags.length === 0){
+
+            throw new Error(
+                "Valid product tags नहीं मिले।"
+            );
+
+        }
+
+
+        /* DISPLAY */
+
+        result.value =
+            finalTags
+            .map(function(tag,index){
+
+                return (
+                    (index + 1) +
+                    ". " +
+                    tag
+                );
+
+            })
+            .join("\n");
+
+
+        status.innerText =
+            "✅ " +
+            finalTags.length +
+            " AI Product Tags generated.";
+
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Product Tags Error:",
+            error
+        );
+
+
+        result.value =
+            "❌ Product Tags generate नहीं हो सके.\n\n" +
+            "Error: " +
+            error.message;
+
+
+        status.innerText =
+            "❌ Generation failed. Please try again.";
+
+    }
+
+
+    finally{
+
+        button.disabled = false;
+
+        button.innerText =
+            "🤖 Generate AI Product Tags";
+
+    }
+
+}
+
+
+
+/* =========================================
+   COPY TAGS
+========================================= */
+
+async function copyTags(){
+
+    const result =
+        document
+        .getElementById("result");
+
+
+    const text =
+        result.value.trim();
+
+
+    if(
+        text === "" ||
+        text === "⏳ Please wait..."
+    ){
+
+        alert(
+            "पहले Product Tags generate करें।"
+        );
+
+        return;
+
+    }
+
+
+    if(
+        text.includes(
+            "❌ Product Tags generate नहीं हो सके"
+        )
+    ){
+
+        alert(
+            "पहले Product Tags successfully generate करें।"
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        await navigator
+        .clipboard
+        .writeText(text);
+
+
+        alert(
+            "✅ Product Tags copied successfully!"
+        );
+
+    }
+
+    catch(error){
+
+        /* FALLBACK COPY */
+
+        const textarea =
+            document.createElement(
+                "textarea"
+            );
+
+
+        textarea.value =
+            text;
+
+
+        document
+        .body
+        .appendChild(textarea);
+
+
+        textarea.select();
+
+
+        document.execCommand("copy");
+
+
+        textarea.remove();
+
+
+        alert(
+            "✅ Product Tags copied successfully!"
+        );
+
+    }
+
+}
+
+
+</script>
 
 
 </body>
