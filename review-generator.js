@@ -207,11 +207,20 @@ Do not return explanations.
 
 
         result.value = review;
-if (
-    review.toLowerCase().includes("five-star rating") ||
-    review.toLowerCase().includes("five star rating") ||
-    review.toLowerCase().includes("rating")
-) {
+// Remove rating information from final review
+review = review
+    .replace(/\bhas a rating of\s*\d+\s*\/\s*5\b/gi, "")
+    .replace(/\bwith a rating of\s*\d+\s*\/\s*5\b/gi, "")
+    .replace(/\breceives a\s*(?:five|5)[ -]?star rating\b/gi, "")
+    .replace(/\b(?:five|5)[ -]?star rating\b/gi, "")
+    .replace(/\brated\s*\d+\s*\/\s*5\b/gi, "")
+    .replace(/\brating\s*(?:is|of)\s*\d+\s*\/\s*5\b/gi, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+
+
+// If nothing useful remains, use factual product information
+if (review === "" || review.length < 5) {
 
     review =
         product +
@@ -220,6 +229,8 @@ if (
 
 }
 
+
+result.value = review;
     } catch (error) {
 
         console.error(
