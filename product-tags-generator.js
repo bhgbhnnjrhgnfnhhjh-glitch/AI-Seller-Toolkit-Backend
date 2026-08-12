@@ -66,6 +66,17 @@ Merchandise, Goods, Gear
 
 unless those words are explicitly present in
 the supplied information.
+Do not create synonyms or variations just to increase
+the number of tags.
+
+For example, do not create:
+Tshirt
+T-Shirt
+T Shirt
+
+as separate tags only to increase the count.
+
+Every tag must have a different and useful search meaning.
 "${product}"
 
 11. You may add useful search phrases AFTER the complete product name.
