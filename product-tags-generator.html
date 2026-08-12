@@ -4,125 +4,275 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
 <title>AI Product Tags Generator</title>
 
+<link
+    rel="stylesheet"
+    href="style.css"
+>
+
 <style>
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
+* {
+    box-sizing: border-box;
 }
 
-body{
-background:#f4f7fb;
+body {
+    margin: 0;
+    background: #f4f7fb;
+    font-family: Arial, sans-serif;
 }
 
-header{
-background:linear-gradient(90deg,#2563eb,#4f46e5);
-color:white;
-text-align:center;
-padding:18px;
-font-size:24px;
-font-weight:bold;
+header {
+    background: linear-gradient(
+        90deg,
+        #2563eb,
+        #4f46e5
+    );
+
+    color: white;
+
+    padding: 18px;
+
+    text-align: center;
 }
 
-.container{
-max-width:650px;
-margin:30px auto;
-background:white;
-padding:25px;
-border-radius:12px;
-box-shadow:0 5px 15px rgba(0,0,0,.15);
+header h1 {
+    margin: 0 0 10px;
+    font-size: 24px;
 }
 
-label{
-display:block;
-margin-top:15px;
-font-weight:bold;
+header a {
+    color: white;
+    text-decoration: none;
+    font-size: 15px;
 }
 
-input{
-width:100%;
-padding:12px;
-margin-top:8px;
-border:1px solid #ccc;
-border-radius:6px;
-font-size:16px;
+.container {
+    max-width: 700px;
+
+    margin: 30px auto;
+
+    padding: 20px;
 }
 
-button{
-width:100%;
-padding:14px;
-margin-top:20px;
-background:#16a34a;
-color:white;
-font-size:18px;
-border:none;
-border-radius:6px;
-cursor:pointer;
+.card {
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 5px 15px rgba(0,0,0,0.12);
+
+    margin-bottom: 20px;
 }
 
-button:hover{
-background:#15803d;
+.card h2 {
+    margin-top: 0;
+
+    text-align: center;
 }
 
-.result{
-margin-top:20px;
-background:#f8fafc;
-padding:15px;
-border-radius:8px;
-border:1px solid #ddd;
-white-space:pre-wrap;
-line-height:1.8;
-min-height:120px;
+label {
+    display: block;
+
+    margin-top: 15px;
+
+    margin-bottom: 7px;
+
+    font-weight: bold;
 }
 
-.copyBtn{
-background:#2563eb;
+input {
+    width: 100%;
+
+    padding: 13px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 7px;
+
+    font-size: 16px;
 }
 
-.copyBtn:hover{
-background:#1d4ed8;
+button {
+    width: 100%;
+
+    padding: 14px;
+
+    margin-top: 20px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    font-size: 17px;
+
+    cursor: pointer;
+
+    color: white;
+
+    background: #16a34a;
+}
+
+button:hover {
+    background: #15803d;
+}
+
+.copyBtn {
+    background: #2563eb;
+}
+
+.copyBtn:hover {
+    background: #1d4ed8;
+}
+
+#result {
+    width: 100%;
+
+    min-height: 400px;
+
+    padding: 15px;
+
+    background: #f8fafc;
+
+    border: 1px solid #ddd;
+
+    border-radius: 8px;
+
+    font-size: 16px;
+
+    line-height: 1.8;
+
+    white-space: pre-wrap;
+
+    overflow-wrap: break-word;
+}
+
+.info {
+    margin-top: 15px;
+
+    padding: 12px;
+
+    background: #eff6ff;
+
+    border-radius: 7px;
+
+    font-size: 14px;
+
+    line-height: 1.6;
 }
 
 </style>
 
 </head>
 
+
 <body>
 
+
 <header>
-🏷 AI Product Tags Generator
+
+<h1>🏷 AI Product Tags Generator</h1>
+
+<a href="tools.html">
+⬅ Back to Tools
+</a>
+
 </header>
 
 
 <div class="container">
 
-<label>Product Name</label>
+
+<!-- INPUT CARD -->
+
+<div class="card">
+
+<h2>
+Create Product Tags
+</h2>
+
+
+<label>
+Product Name
+</label>
+
 
 <input
-type="text"
-id="product"
-placeholder="Example: Cotton T-Shirt">
+    type="text"
+    id="product"
+    placeholder="Example: Black Cotton T-Shirt"
+>
 
 
-<button onclick="generateTags()">
+<div class="info">
 
-🤖 Generate AI Product Tags
+<strong>Important:</strong>
 
-</button>
+Product Name को जैसा लिखा है,
+वैसा ही पूरा Product Name tags में रखा जाएगा।
 
+<br><br>
 
-<div class="result" id="result">
-Enter a product name and click Generate.
+Example:
+
+<strong>Black Cotton T-Shirt</strong>
+
+का कोई tag सिर्फ
+<strong>Black T-Shirt</strong>
+या
+<strong>Cotton T-Shirt</strong>
+नहीं बनेगा।
+
 </div>
 
 
-<button class="copyBtn" onclick="copyTags()">
+<button
+    type="button"
+    onclick="generateTags()"
+>
+
+🤖 Generate Product Tags
+
+</button>
+
+</div>
+
+
+
+<!-- RESULT CARD -->
+
+<div class="card">
+
+<h2>
+Generated Product Tags
+</h2>
+
+
+<div
+    id="result"
+>
+
+Product Name डालकर
+Generate Product Tags दबाएँ।
+
+</div>
+
+
+<button
+    type="button"
+    class="copyBtn"
+    onclick="copyTags()"
+>
 
 📋 Copy Tags
 
@@ -131,247 +281,17 @@ Enter a product name and click Generate.
 </div>
 
 
-<script>
+</div>
 
-async function generateTags(){
 
-    const product =
-        document.getElementById("product")
-        .value
-        .trim();
+<!-- IMPORTANT:
+     केवल external JavaScript file
+     यहाँ load होगी.
+-->
 
+<script src="product-tags-generator.js"></script>
 
-    const result =
-        document.getElementById("result");
-
-
-    if(product === ""){
-
-        alert("Please enter product name.");
-
-        return;
-    }
-
-
-    result.innerText =
-        "⏳ AI product tags बनाए जा रहे हैं...";
-
-
-    const prompt = `
-You are a professional eCommerce product tag specialist.
-
-Generate exactly 20 relevant product tags for the following product.
-
-PRODUCT NAME:
-${product}
-
-STRICT RULES:
-
-1. Use only the information provided in the product name.
-
-2. Do not invent product specifications.
-
-3. Do not invent brand names.
-
-4. Do not invent colors.
-
-5. Do not invent material.
-
-6. Do not invent gender unless clearly included in the product name.
-
-7. Do not use unsupported claims such as:
-Premium, Best, Original, Bestseller, High Quality,
-Guaranteed, Latest or No.1.
-
-8. Keep the exact product type.
-
-9. Tags must be directly relevant to the product.
-
-10. Avoid unrelated product categories.
-
-11. Avoid duplicate tags.
-
-12. Do not use keyword stuffing.
-
-13. Suitable for eCommerce marketplaces.
-
-14. Return exactly 20 tags.
-
-15. Return only the tags as a numbered list.
-
-Example:
-
-1. Cotton T-Shirt
-2. Cotton T-Shirt Online
-3. Cotton T-Shirt Shopping
-
-Do not add explanations.
-Do not mention AI.
-`;
-
-
-    try{
-
-        const response =
-            await fetch(
-                "https://ai-seller-toolkit-backend-1.onrender.com/generate",
-                {
-                    method:"POST",
-
-                    headers:{
-                        "Content-Type":
-                        "application/json"
-                    },
-
-                    body:JSON.stringify({
-                        prompt:prompt
-                    })
-                }
-            );
-
-
-        const data =
-            await response.json();
-
-
-        if(!response.ok){
-
-            throw new Error(
-                data.details ||
-                data.error ||
-                "Server error"
-            );
-
-        }
-
-
-        if(
-            !data.result ||
-            !data.result.trim()
-        ){
-
-            throw new Error(
-                "AI returned an empty response."
-            );
-
-        }
-
-
-        result.innerText =
-            cleanTags(data.result);
-
-
-    }catch(error){
-
-        console.error(
-            "Product Tags AI Error:",
-            error
-        );
-
-
-        result.innerText =
-            "❌ Product tags नहीं बन सके.\n\n" +
-            "Error: " +
-            error.message;
-
-    }
-
-}
-
-
-/* =========================
-   CLEAN AI RESPONSE
-========================= */
-
-function cleanTags(text){
-
-    let cleaned =
-        text.trim();
-
-
-    cleaned =
-        cleaned.replace(
-            /^```[a-zA-Z]*\s*/i,
-            ""
-        );
-
-
-    cleaned =
-        cleaned.replace(
-            /\s*```$/i,
-            ""
-        );
-
-
-    return cleaned.trim();
-
-}
-
-
-/* =========================
-   COPY TAGS
-========================= */
-
-function copyTags(){
-
-    const result =
-        document.getElementById("result");
-
-
-    const text =
-        result.innerText.trim();
-
-
-    if(
-        text === "" ||
-        text.includes("Enter a product name")
-    ){
-
-        alert(
-            "पहले Product Tags generate करें।"
-        );
-
-        return;
-    }
-
-
-    if(
-        text.includes(
-            "❌ Product tags नहीं बन सके"
-        )
-    ){
-
-        alert(
-            "पहले Product Tags successfully generate करें।"
-        );
-
-        return;
-    }
-
-
-    navigator.clipboard
-        .writeText(text)
-
-        .then(function(){
-
-            alert(
-                "✅ Product Tags copied successfully!"
-            );
-
-        })
-
-        .catch(function(){
-
-            alert(
-                "❌ Copy नहीं हो सका।"
-            );
-
-        });
-
-}
-
-</script>
 
 </body>
 
-  </html>
+    </html>
