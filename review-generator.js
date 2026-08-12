@@ -16,6 +16,7 @@ async function generateReview() {
         document.getElementById("result");
 
 
+    // Product जरूरी है
     if (product === "") {
 
         alert("Please enter Product Name.");
@@ -24,97 +25,136 @@ async function generateReview() {
     }
 
 
+    // Loading message
     result.value =
-        "⏳ AI review बनाया जा रहा है...";
+        "⏳ AI customer review बना रहा है...";
 
 
+    // Gemini Prompt
     const prompt = `
-You are a factual eCommerce content writer.
+You are a professional eCommerce customer review writer.
 
-Create a very short product review sentence.
+Create ONE natural and realistic customer-style review
+using ONLY the information provided below.
 
-PRODUCT:
+PRODUCT INFORMATION
+-------------------
+
+Product Name:
 ${product}
 
-BRAND:
+Brand:
 ${brand || "Not specified"}
 
-STYLE:
+Rating:
+${rating}
+
+Review Style:
 ${style}
 
 
-IMPORTANT:
+STRICT RULES
+------------
 
-The rating is provided only for internal context.
+1. Use ONLY the information provided.
 
-DO NOT mention the rating in the output.
+2. Do NOT invent product specifications.
 
-DO NOT write:
-- 5 star
-- five star
-- five out of five
-- 5/5
-- rating
-- rated
-- receives a rating
-- deserves a rating
-- merits a rating
-
-Do not mention any rating number or rating phrase.
-
-Do not invent customer experience.
-
-Do not say the customer purchased, used, tested,
-received or tried the product.
-
-Do not invent product quality.
-
-Do not invent:
+3. Do NOT invent:
 - comfort
 - durability
-- material
-- color
+- softness
+- quality
+- fitting
 - size
+- weight
 - price
-- value for money
-- features
-- benefits
 - delivery
+- packaging
 - warranty
-- recommendation
+- return policy
+- performance
+- material benefits
 
-Do not use:
-excellent
-amazing
-best
-great
-premium
-high quality
-superb
-outstanding
-perfect
-impressive
-stylish
-comfortable
-durable
-recommended
+unless that information was explicitly provided.
 
-Use ONLY the Product Name and Brand supplied above.
+4. Do NOT say the product is "excellent",
+"amazing", "premium", "best", "superior"
+or "high quality" unless those facts were provided.
 
-Keep the exact product type.
+5. Do NOT create fake customer experiences.
 
-Return ONLY ONE short factual sentence.
+6. Do NOT claim that the customer used the product
+for a specific number of days.
 
-Example:
+7. Do NOT mention information that was not supplied.
 
-Black Cotton T-Shirt by Fashion Hud.
+8. Keep the exact product type.
 
-Do not add anything else.
+9. Use the exact brand name when provided.
+
+10. The review should sound natural and simple.
+
+11. Match the selected Review Style.
+
+12. Do not mention AI.
+
+13. Do not use emojis.
+
+14. Do not add fake prices or offers.
+
+15. Do not create fake specifications.
+
+16. The rating must be represented exactly as provided.
+
+17. Do not repeat the product name unnecessarily.
+
+
+REVIEW STYLE
+------------
+
+Professional:
+Write a clean and professional customer review.
+
+Customer Experience:
+Write a natural customer-style review based only
+on the supplied information.
+
+Short Review:
+Write a short review of approximately 1-2 sentences.
+
+Detailed Review:
+Write a somewhat detailed review using only
+the supplied information.
+
+
+IMPORTANT
+---------
+
+If very little product information is available,
+keep the review short rather than inventing information.
+
+The review can simply describe the supplied product,
+brand and rating.
+
+Do NOT create imaginary experiences.
+
+
+OUTPUT FORMAT
+-------------
+
+Rating: ${rating}
+
+[Customer review]
+
+
+Return ONLY the final review.
 `;
 
 
     try {
 
+        // Send request to Gemini Backend
         const response =
             await fetch(
                 "https://ai-seller-toolkit-backend-1.onrender.com/generate",
@@ -122,8 +162,7 @@ Do not add anything else.
                     method: "POST",
 
                     headers: {
-                        "Content-Type":
-                            "application/json"
+                        "Content-Type": "application/json"
                     },
 
                     body: JSON.stringify({
@@ -137,6 +176,7 @@ Do not add anything else.
             await response.json();
 
 
+        // Check server error
         if (!response.ok) {
 
             throw new Error(
@@ -148,6 +188,7 @@ Do not add anything else.
         }
 
 
+        // Check empty response
         if (
             !data.result ||
             !data.result.trim()
@@ -160,178 +201,11 @@ Do not add anything else.
         }
 
 
-        /*
-        =====================================
-        IMPORTANT:
-        We don't trust the AI output blindly.
-        =====================================
-        */
-
-        let review =
-            data.result.trim();
-
-
-        /*
-        Remove markdown
-        */
-
-        review =
-            review.replace(
-                /^```[a-zA-Z]*\s*/i,
-                ""
-            );
-
-        review =
-            review.replace(
-                /\s*```$/i,
-                ""
-            );
-
-
-        /*
-        =====================================
-        If AI mentions rating, discard its
-        generated sentence completely.
-        =====================================
-        */
-
-        const ratingWords = [
-
-            "rating",
-            "rated",
-            "five star",
-            "five-star",
-            "five out of five",
-            "5 star",
-            "5-star",
-            "5/5",
-            "four star",
-            "four-star",
-            "4 star",
-            "4-star",
-            "three star",
-            "three-star",
-            "3 star",
-            "3-star",
-            "two star",
-            "two-star",
-            "2 star",
-            "2-star",
-            "one star",
-            "one-star",
-            "1 star",
-            "1-star"
-
-        ];
-
-
-        const lowerReview =
-            review.toLowerCase();
-
-
-        const containsRating =
-            ratingWords.some(
-                function(word) {
-
-                    return lowerReview.includes(word);
-
-                }
-            );
-
-
-        /*
-        =====================================
-        If rating detected, use our own
-        factual sentence.
-        =====================================
-        */
-
-        if (containsRating) {
-
-            review =
-                product +
-                (
-                    brand
-                        ? " by " + brand
-                        : ""
-                ) +
-                ".";
-
-        }
-
-
-        /*
-        =====================================
-        Remove common unsupported claims
-        =====================================
-        */
-
-        const unsafeWords = [
-
-            "excellent",
-            "amazing",
-            "best",
-            "great",
-            "premium",
-            "high quality",
-            "high-quality",
-            "superb",
-            "outstanding",
-            "perfect",
-            "impressive",
-            "stylish",
-            "comfortable",
-            "durable",
-            "recommended",
-            "worth the price",
-            "value for money"
-
-        ];
-
-
-        const hasUnsafeClaim =
-            unsafeWords.some(
-                function(word) {
-
-                    return review
-                        .toLowerCase()
-                        .includes(word);
-
-                }
-            );
-
-
-        /*
-        If AI generated an unsupported claim,
-        use the safe factual sentence.
-        */
-
-        if (hasUnsafeClaim) {
-
-            review =
-                product +
-                (
-                    brand
-                        ? " by " + brand
-                        : ""
-                ) +
-                ".";
-
-        }
-
-
-        /*
-        Final clean-up
-        */
-
-        review =
-            review
-                .replace(/\s{2,}/g, " ")
-                .trim();
-
-
+        // Show result
         result.value =
-            review;
+            cleanReviewOutput(
+                data.result
+            );
 
 
     } catch (error) {
@@ -348,6 +222,36 @@ Do not add anything else.
             error.message;
 
     }
+
+}
+
+
+/* =========================
+   CLEAN AI RESPONSE
+========================= */
+
+function cleanReviewOutput(text) {
+
+    let cleaned =
+        text.trim();
+
+
+    // Remove markdown code fences
+    cleaned =
+        cleaned.replace(
+            /^```[a-zA-Z]*\s*/i,
+            ""
+        );
+
+
+    cleaned =
+        cleaned.replace(
+            /\s*```$/i,
+            ""
+        );
+
+
+    return cleaned.trim();
 
 }
 
@@ -383,7 +287,7 @@ function copyReview() {
     ) {
 
         alert(
-            "पहले Review successfully generate करें।"
+            "पहले review successfully generate करें।"
         );
 
         return;
@@ -394,7 +298,7 @@ function copyReview() {
     navigator.clipboard
         .writeText(text)
 
-        .then(function() {
+        .then(function () {
 
             alert(
                 "✅ Review copied successfully!"
@@ -402,7 +306,7 @@ function copyReview() {
 
         })
 
-        .catch(function() {
+        .catch(function () {
 
             alert(
                 "❌ Copy नहीं हो सका।"
@@ -410,4 +314,4 @@ function copyReview() {
 
         });
 
-        }
+}
