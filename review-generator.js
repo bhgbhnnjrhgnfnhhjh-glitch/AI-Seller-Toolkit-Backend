@@ -29,127 +29,116 @@ async function generateReview() {
 
 
     const prompt = `
-You are a professional eCommerce review writing assistant.
+You are a factual eCommerce review formatter.
 
-Create ONE natural-sounding customer review based ONLY on the information provided.
+Your job is NOT to invent a customer experience.
 
-PRODUCT INFORMATION
--------------------
+Create a very short review using ONLY the information explicitly supplied below.
 
-Product Name:
+PRODUCT NAME:
 ${product}
 
-Brand:
+BRAND:
 ${brand || "Not specified"}
 
-Rating:
+RATING:
 ${rating}
 
-Review Style:
+STYLE:
 ${style}
 
 
-STRICT RULES
-------------
+ABSOLUTE RULES
+==============
 
-1. Use ONLY the information provided.
+1. NEVER invent facts.
 
-2. Do NOT invent product features.
+2. NEVER invent a customer experience.
 
-3. Do NOT invent material.
+3. NEVER say that the customer purchased, used, tested,
+received or tried the product.
 
-4. Do NOT invent color.
+4. NEVER describe product quality unless quality information
+was explicitly provided.
 
-5. Do NOT invent size.
+5. NEVER use these words or phrases:
 
-6. Do NOT invent comfort.
+excellent
+amazing
+best
+great
+premium
+high quality
+superb
+outstanding
+durable
+comfortable
+stylish
+beautiful
+worth the price
+value for money
+highly recommended
+recommended
+perfect
+impressive
+satisfied
+very satisfied
+exceeded expectations
 
-7. Do NOT invent durability.
+6. NEVER invent material, color, size, features, specifications,
+price, delivery, packaging, warranty or benefits.
 
-8. Do NOT invent delivery experience.
+7. NEVER change the product type.
 
-9. Do NOT invent price or value for money.
+8. Keep the exact Product Name as supplied.
 
-10. Do NOT claim the customer actually used the product unless
-the user provided that information.
+9. Mention the Brand only if supplied.
 
-11. Do NOT create fake specifications.
+10. The rating is ONLY a rating selected by the user.
+Do NOT use the rating as proof of product quality.
 
-12. Do NOT create fake personal experiences.
+11. Do NOT say:
+"deserves a five-star rating"
+"merits a five-star rating"
+"five-star product"
+"excellent product"
 
-13. Keep the exact product name.
+12. Do NOT turn the rating into a quality claim.
 
-14. Mention the brand only when it is provided.
+13. Do not mention AI.
 
-15. The review should match the selected rating.
+14. Do not use emojis.
 
-16. Do not use exaggerated claims.
+15. Do not add explanations.
 
-17. Do not mention AI.
+16. Keep the review extremely short.
 
-18. Do not use emojis.
-
-19. Keep the review natural and concise.
-
-20. Do not invent information just to make the review longer.
+17. If there is not enough information for a normal review,
+simply state the available product information.
 
 
-RATING GUIDELINES
------------------
-
-5 stars:
-Do NOT say "excellent", "best", "amazing", "high quality",
-"worth the price", "highly recommended" or similar claims
-unless the user explicitly provides those facts.
-
-If only Product Name, Brand and Rating are provided,
-write a simple factual review that mentions only those details.
-
-4 stars:
-Do not invent positive product qualities.
-
-3 stars:
-Use neutral factual wording.
-
-2 stars:
-Do not invent negative experiences or problems.
-
-1 star:
-Do not invent negative experiences or problems.
-
-STYLE GUIDELINES
-----------------
+STYLE RULES
+===========
 
 Professional:
-Write a clean and professional review.
+Use formal factual wording.
 
 Customer Experience:
-Write a natural customer-style review, but do not invent personal experiences.
+DO NOT invent a customer experience.
+Use factual product wording instead.
 
 Short Review:
-Keep the review very short and concise.
+Use one short factual sentence.
 
 
-IMPORTANT
----------
+OUTPUT
+======
 
-This tool must NOT create fake customer experiences.
+Return ONLY the review text.
 
-If there is not enough information for a detailed review,
-write a short factual review using only the available information.
-
-
-OUTPUT FORMAT
--------------
-
-Return ONLY the review.
-
-Do not add:
-- Heading
-- Explanation
-- Notes
-- Numbering
-- Quotation marks
+Do not return a heading.
+Do not return quotation marks.
+Do not return explanations.
 `;
 
 
@@ -200,10 +189,24 @@ Do not add:
         }
 
 
-        result.value =
-            cleanReviewOutput(
-                data.result
-            );
+        let review =
+            cleanReviewOutput(data.result);
+
+
+        /*
+        ========================================
+        EXTRA SAFETY CHECK
+        ========================================
+
+        Remove common unsupported marketing claims
+        if Gemini adds them despite the prompt.
+        */
+
+        review =
+            removeUnsafeClaims(review);
+
+
+        result.value = review;
 
 
     } catch (error) {
@@ -224,15 +227,17 @@ Do not add:
 }
 
 
-/* =========================
-   CLEAN AI RESPONSE
-========================= */
+/* =================================
+   CLEAN GEMINI RESPONSE
+================================= */
 
 function cleanReviewOutput(text) {
 
     let cleaned =
         text.trim();
 
+
+    // Remove markdown code fences
 
     cleaned =
         cleaned.replace(
@@ -248,19 +253,114 @@ function cleanReviewOutput(text) {
         );
 
 
+    // Remove accidental quotation marks
+
+    cleaned =
+        cleaned.replace(/^["']|["']$/g, "");
+
+
     return cleaned.trim();
 
 }
 
 
-/* =========================
+/* =================================
+   REMOVE UNSAFE CLAIMS
+================================= */
+
+function removeUnsafeClaims(text) {
+
+    let cleaned =
+        text.trim();
+
+
+    const unsafePatterns = [
+
+        /\bexcellent\b/gi,
+
+        /\bamazing\b/gi,
+
+        /\bbest\b/gi,
+
+        /\bgreat\b/gi,
+
+        /\bpremium\b/gi,
+
+        /\bhigh[\s-]?quality\b/gi,
+
+        /\bsuperb\b/gi,
+
+        /\boutstanding\b/gi,
+
+        /\bdurable\b/gi,
+
+        /\bcomfortable\b/gi,
+
+        /\bstylish\b/gi,
+
+        /\bbeautiful\b/gi,
+
+        /\bworth the price\b/gi,
+
+        /\bvalue for money\b/gi,
+
+        /\bhighly recommended\b/gi,
+
+        /\brecommended\b/gi,
+
+        /\bperfect\b/gi,
+
+        /\bimpressive\b/gi,
+
+        /\bsatisfied\b/gi,
+
+        /\bvery satisfied\b/gi,
+
+        /\bexceeded expectations\b/gi,
+
+        /\bmerits a five-star rating\b/gi,
+
+        /\bdeserves a five-star rating\b/gi,
+
+        /\bfive-star product\b/gi
+
+    ];
+
+
+    unsafePatterns.forEach(function(pattern) {
+
+        cleaned =
+            cleaned.replace(pattern, "");
+
+    });
+
+
+    // Remove excessive spaces
+
+    cleaned =
+        cleaned.replace(/\s{2,}/g, " ");
+
+
+    // Clean awkward spaces before punctuation
+
+    cleaned =
+        cleaned.replace(/\s+([,.!?])/g, "$1");
+
+
+    return cleaned.trim();
+
+}
+
+
+/* =================================
    COPY REVIEW
-========================= */
+================================= */
 
 function copyReview() {
 
     const result =
         document.getElementById("result");
+
 
     const text =
         result.value.trim();
@@ -293,7 +393,7 @@ function copyReview() {
     navigator.clipboard
         .writeText(text)
 
-        .then(function () {
+        .then(function() {
 
             alert(
                 "✅ Review copied successfully!"
@@ -301,7 +401,7 @@ function copyReview() {
 
         })
 
-        .catch(function () {
+        .catch(function() {
 
             alert(
                 "❌ Copy नहीं हो सका।"
@@ -309,4 +409,4 @@ function copyReview() {
 
         });
 
-}
+    }
