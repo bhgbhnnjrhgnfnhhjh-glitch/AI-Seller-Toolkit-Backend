@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>AI Hashtag Generator</title>
+<title>AI Hashtag Generator - AI Seller Toolkit</title>
 
 <style>
+
 *{
     margin:0;
     padding:0;
@@ -28,13 +30,30 @@ header{
     font-weight:bold;
 }
 
+header a{
+    display:inline-block;
+    margin-top:8px;
+    color:white;
+    text-decoration:none;
+    font-size:14px;
+}
+
 .container{
     max-width:700px;
     margin:30px auto;
+    padding:25px;
+}
+
+.card{
     background:white;
     padding:25px;
     border-radius:12px;
     box-shadow:0 5px 15px rgba(0,0,0,.15);
+}
+
+h2{
+    text-align:center;
+    margin-bottom:20px;
 }
 
 label{
@@ -44,12 +63,19 @@ label{
     font-weight:bold;
 }
 
-input,select{
+input,
+select{
     width:100%;
     padding:12px;
     border:1px solid #ccc;
     border-radius:6px;
     font-size:16px;
+}
+
+input:focus,
+select:focus{
+    outline:none;
+    border-color:#2563eb;
 }
 
 button{
@@ -68,25 +94,29 @@ button:hover{
     background:#15803d;
 }
 
-.result{
-    margin-top:25px;
-    padding:15px;
-    background:#f9fafb;
-    border-radius:8px;
-    border:1px solid #ddd;
-    line-height:1.8;
-    min-height:100px;
-    white-space:pre-wrap;
-    word-break:break-word;
+button:disabled{
+    background:#94a3b8;
+    cursor:not-allowed;
 }
 
 .copyBtn{
     background:#2563eb;
-    margin-top:15px;
 }
 
 .copyBtn:hover{
     background:#1d4ed8;
+}
+
+.result{
+    margin-top:20px;
+    padding:18px;
+    background:#f8fafc;
+    border:1px solid #ddd;
+    border-radius:8px;
+    min-height:130px;
+    line-height:2;
+    word-break:break-word;
+    white-space:pre-wrap;
 }
 
 .status{
@@ -95,27 +125,66 @@ button:hover{
     font-size:14px;
     color:#555;
 }
+
+.success{
+    color:#15803d;
+}
+
+.error{
+    color:#dc2626;
+}
+
+.info{
+    margin-top:15px;
+    padding:12px;
+    background:#eff6ff;
+    border-radius:8px;
+    font-size:14px;
+    line-height:1.6;
+}
+
 </style>
 
 </head>
 
+
 <body>
 
+
 <header>
+
 #️⃣ AI Hashtag Generator
+
+<br>
+
+<a href="tools.html">⬅ Back to Tools</a>
+
 </header>
+
 
 <div class="container">
 
-<label>Product Name</label>
+
+<div class="card">
+
+
+<h2>Generate AI Hashtags</h2>
+
+
+<label>
+Product Name
+</label>
 
 <input
 type="text"
 id="product"
-placeholder="Example: Cotton T-Shirt"
+placeholder="Example: Black Cotton T-Shirt"
 >
 
-<label>Brand Name</label>
+
+<label>
+Brand Name
+</label>
 
 <input
 type="text"
@@ -123,7 +192,10 @@ id="brand"
 placeholder="Example: Fashion Hud"
 >
 
-<label>Category</label>
+
+<label>
+Category
+</label>
 
 <input
 type="text"
@@ -131,30 +203,44 @@ id="category"
 placeholder="Example: Men's Clothing"
 >
 
-<label>Platform</label>
+
+<label>
+Platform
+</label>
 
 <select id="platform">
 
 <option>Instagram</option>
+
 <option>Facebook</option>
+
 <option>Meesho</option>
+
 <option>Amazon</option>
+
 <option>Flipkart</option>
+
 <option>Shopify</option>
 
 </select>
+
 
 <button
 id="generateBtn"
 onclick="generateHashtags()"
 >
+
 🤖 Generate AI Hashtags
+
 </button>
+
 
 <div
 class="status"
 id="status"
-></div>
+>
+</div>
+
 
 <div
 class="result"
@@ -163,216 +249,345 @@ id="result"
 Your AI hashtags will appear here...
 </div>
 
+
 <button
 class="copyBtn"
-onclick="copyTags()"
+id="copyBtn"
+onclick="copyHashtags()"
 >
+
 📋 Copy Hashtags
+
 </button>
+
+
+<div class="info">
+
+<strong>Strict AI Filtering:</strong><br>
+
+Only hashtags related to your Product Name,
+Brand and Category will be accepted.
+
+Unrelated brands, fake claims, duplicates
+and spam hashtags are removed.
 
 </div>
 
+
+</div>
+
+</div>
+
+
 <script>
+
+
+/* =========================================
+   BACKEND URL
+========================================= */
+
+const API_URL =
+"https://ai-seller-toolkit-backend-1.onrender.com/generate";
+
+
+/* =========================================
+   MAIN GENERATOR
+========================================= */
 
 async function generateHashtags(){
 
     const product =
-        document.getElementById("product").value.trim();
+        document
+        .getElementById("product")
+        .value
+        .trim();
+
 
     const brand =
-        document.getElementById("brand").value.trim();
+        document
+        .getElementById("brand")
+        .value
+        .trim();
+
 
     const category =
-        document.getElementById("category").value.trim();
+        document
+        .getElementById("category")
+        .value
+        .trim();
+
 
     const platform =
-        document.getElementById("platform").value;
+        document
+        .getElementById("platform")
+        .value;
+
 
     const result =
         document.getElementById("result");
 
+
     const status =
         document.getElementById("status");
+
 
     const button =
         document.getElementById("generateBtn");
 
+
+    /* =====================================
+       VALIDATION
+    ===================================== */
 
     if(product === ""){
 
         alert("Please enter Product Name.");
 
         return;
+
     }
 
 
     button.disabled = true;
 
-    button.innerText = "⏳ Generating AI Hashtags...";
+    button.innerText =
+        "⏳ Generating...";
 
-    status.innerText = "AI is creating relevant hashtags...";
 
-    result.innerText = "⏳ Please wait...";
+    status.className =
+        "status";
 
+
+    status.innerText =
+        "AI is creating and checking hashtags...";
+
+
+    result.innerText =
+        "⏳ Please wait...";
+
+
+    /* =====================================
+       AI PROMPT
+    ===================================== */
 
     const prompt = `
 
-You are a professional eCommerce SEO and social media hashtag specialist.
+You are a strict eCommerce hashtag generator.
 
-Generate exactly 20 relevant hashtags for the product information provided below.
+Create relevant hashtags ONLY from the information
+provided by the user.
 
-PRODUCT INFORMATION:
+PRODUCT NAME:
+${product}
 
-Product Name: ${product}
+BRAND:
+${brand || "Not specified"}
 
-Brand: ${brand || "Not specified"}
+CATEGORY:
+${category || "Not specified"}
 
-Category: ${category || "Not specified"}
-
-Platform: ${platform}
+PLATFORM:
+${platform}
 
 
 STRICT RULES:
 
-1. Generate exactly 20 hashtags.
+1. Generate between 8 and 20 useful hashtags.
 
-2. Every hashtag must be directly relevant to the provided product,
-brand, category, or platform.
+2. Every hashtag must be directly related to the
+exact product information supplied by the user.
 
-3. Use ONLY the information provided above.
+3. NEVER invent another brand.
 
-4. NEVER invent or add another brand name.
+4. NEVER add Nike, Adidas, Puma, Apple, Samsung,
+Amazon or any other brand unless the user supplied
+that exact brand.
 
-5. NEVER mention brands that were not provided.
-For example, do NOT add Nike, Adidas, Puma, Samsung, Apple, etc.
+5. If Brand is provided, the brand hashtag may be used.
 
-6. Do not invent product specifications.
+6. If Brand is not provided, DO NOT invent a brand.
 
-7. Do not invent materials, colors, sizes, features, benefits,
-or quality claims.
+7. Preserve the actual product type.
 
-8. Avoid misleading hashtags.
+Example:
 
-9. Avoid generic spam hashtags such as:
-#Viral
-#MustBuy
-#Best
-#Amazing
-#Deal
-#Offer
-#Trending
-unless they are genuinely relevant to the provided information.
+Product:
+Black Cotton T-Shirt
 
-10. Do not use unrelated hashtags.
+Allowed:
+#BlackCottonTShirt
+#BlackTShirt
+#CottonTShirt
 
-11. Use simple, searchable hashtags.
+Do NOT change the product into:
+#ShirtDress
+#Polo
+#Jacket
+#Hoodie
 
-12. Do not number the hashtags.
+8. Only use material if it is explicitly present
+in the product name or supplied information.
 
-13. Do not add explanations.
+9. Only use color if it is explicitly present
+in the product name or supplied information.
 
-14. Return hashtags only.
+10. Only use gender/audience if explicitly present
+in the supplied information.
 
-15. Every hashtag must start with #.
+11. Do not invent:
+price
+discount
+quality
+premium
+best
+comfortable
+durable
+luxury
+sale
+offer
+bestseller
+viral
+trending
 
-16. Do not use duplicate hashtags.
+12. Do not use generic spam hashtags.
 
-17. Do not include punctuation other than the # symbol
-and normal letters/numbers inside each hashtag.
+13. Do not create unrelated hashtags.
 
-Example format:
+14. Do not create fake shopping claims.
+
+15. Do not repeat hashtags.
+
+16. Do not use numbers.
+
+17. Every hashtag must start with #.
+
+18. Use English letters only inside hashtags.
+
+19. Do not use spaces inside a hashtag.
+
+20. Do not add numbering.
+
+21. Do not add explanations.
+
+22. Return hashtags only.
+
+23. Return between 8 and 20 hashtags separated
+by spaces.
+
+EXAMPLE:
 
 #FashionHud
-#MensTshirt
-#BlackTshirt
-
-Return exactly 20 hashtags separated by spaces.
+#BlackCottonTShirt
+#BlackTShirt
+#CottonTShirt
+#MensTShirt
 
 `;
 
 
+    /* =====================================
+       API REQUEST
+    ===================================== */
+
     try{
 
-        const response = await fetch(
+        const response =
+            await fetch(
+                API_URL,
+                {
+                    method:"POST",
 
-            "https://ai-seller-toolkit-backend-1.onrender.com/generate",
+                    headers:{
+                        "Content-Type":
+                        "application/json"
+                    },
 
-            {
-                method:"POST",
-
-                headers:{
-                    "Content-Type":"application/json"
-                },
-
-                body:JSON.stringify({
-                    prompt:prompt
-                })
-            }
-
-        );
+                    body:JSON.stringify({
+                        prompt:prompt
+                    })
+                }
+            );
 
 
-        const data = await response.json();
+        let data;
+
+
+        try{
+
+            data =
+                await response.json();
+
+        }catch(jsonError){
+
+            throw new Error(
+                "Backend ने valid response नहीं दिया।"
+            );
+
+        }
 
 
         if(!response.ok){
 
             throw new Error(
-                data.error || "Server error"
+                data.details ||
+                data.error ||
+                "Server Error"
             );
 
         }
 
 
-        let text =
+        const aiText =
             data.result || "";
 
 
-        /*
-         * Extract hashtags from AI response.
-         */
+        if(!aiText.trim()){
 
-        let hashtags =
-            text.match(/#[A-Za-z0-9_]+/g) || [];
+            throw new Error(
+                "AI ने खाली response दिया।"
+            );
 
-
-        /*
-         * Remove duplicates.
-         */
-
-        hashtags =
-            [...new Set(hashtags)];
+        }
 
 
-        /*
-         * Keep maximum 20.
-         */
+        /* =================================
+           STRICT FILTERING
+        ================================= */
 
-        hashtags =
-            hashtags.slice(0,20);
+        const hashtags =
+            filterHashtags(
+                aiText,
+                product,
+                brand,
+                category
+            );
 
-
-        /*
-         * If AI returns fewer than expected,
-         * show the actual result instead of
-         * inventing hashtags.
-         */
 
         if(hashtags.length === 0){
 
             throw new Error(
-                "AI ने कोई valid hashtag नहीं बनाया।"
+                "AI response में कोई valid hashtag नहीं मिला।"
             );
 
         }
 
 
+        /* =================================
+           DISPLAY
+        ================================= */
+
         result.innerText =
-            hashtags.join(" ");
+            hashtags.join("\n");
+
+
+        status.className =
+            "status success";
 
 
         status.innerText =
-            `✅ ${hashtags.length} relevant AI hashtags generated.`;
+            "✅ " +
+            hashtags.length +
+            " valid AI hashtags generated.";
 
 
     }catch(error){
@@ -389,13 +604,19 @@ Return exactly 20 hashtags separated by spaces.
             error.message;
 
 
+        status.className =
+            "status error";
+
+
         status.innerText =
             "Please try again.";
 
 
     }finally{
 
-        button.disabled = false;
+        button.disabled =
+            false;
+
 
         button.innerText =
             "🤖 Generate AI Hashtags";
@@ -405,18 +626,203 @@ Return exactly 20 hashtags separated by spaces.
 }
 
 
-async function copyTags(){
+/* =========================================
+   STRICT HASHTAG FILTER
+========================================= */
+
+function filterHashtags(
+    text,
+    product,
+    brand,
+    category
+){
+
+    /* Get hashtags from AI response */
+
+    let matches =
+        text.match(
+            /#[A-Za-z0-9]+/g
+        ) || [];
+
+
+    /* Remove duplicates */
+
+    let unique = [];
+
+
+    matches.forEach(function(tag){
+
+        const clean =
+            tag.toLowerCase();
+
+
+        if(
+            !unique.some(
+                item =>
+                item.toLowerCase() === clean
+            )
+        ){
+
+            unique.push(tag);
+
+        }
+
+    });
+
+
+    /* =====================================
+       Build allowed words
+    ===================================== */
+
+    const source =
+        (
+            product +
+            " " +
+            brand +
+            " " +
+            category
+        )
+        .toLowerCase();
+
+
+    const words =
+        source
+        .replace(
+            /[^a-z0-9\s-]/g,
+            " "
+        )
+        .split(/\s+/)
+        .filter(
+            word =>
+            word.length >= 2
+        );
+
+
+    /* =====================================
+       Block unwanted terms
+    ===================================== */
+
+    const blocked = [
+
+        "best",
+        "premium",
+        "amazing",
+        "excellent",
+        "quality",
+        "luxury",
+        "viral",
+        "trending",
+        "offer",
+        "deal",
+        "sale",
+        "discount",
+        "bestseller",
+        "mustbuy",
+        "guaranteed",
+        "cheap",
+        "original",
+        "official"
+
+    ];
+
+
+    /* =====================================
+       Filter
+    ===================================== */
+
+    unique =
+        unique.filter(function(tag){
+
+            const value =
+                tag
+                .replace("#","")
+                .toLowerCase();
+
+
+            /* Block spam */
+
+            if(
+                blocked.some(
+                    word =>
+                    value.includes(word)
+                )
+            ){
+
+                return false;
+
+            }
+
+
+            /* Minimum length */
+
+            if(value.length < 2){
+
+                return false;
+
+            }
+
+
+            /*
+             * At least one meaningful source
+             * word must appear in hashtag.
+             */
+
+            const related =
+                words.some(function(word){
+
+                    return value.includes(word);
+
+                });
+
+
+            return related;
+
+        });
+
+
+    /* Maximum 20 */
+
+    return unique.slice(0,20);
+
+}
+
+
+/* =========================================
+   COPY
+========================================= */
+
+async function copyHashtags(){
+
+    const result =
+        document.getElementById("result");
+
 
     const text =
-        document.getElementById("result").innerText.trim();
+        result.innerText.trim();
 
 
     if(
-        !text ||
-        text === "Your AI hashtags will appear here..."
+        text === "" ||
+        text ===
+        "Your AI hashtags will appear here..."
     ){
 
-        alert("पहले AI Hashtags generate करें.");
+        alert(
+            "पहले AI Hashtags generate करें।"
+        );
+
+        return;
+
+    }
+
+
+    if(
+        text.startsWith("❌")
+    ){
+
+        alert(
+            "पहले valid hashtags generate करें।"
+        );
 
         return;
 
@@ -425,31 +831,45 @@ async function copyTags(){
 
     try{
 
-        await navigator.clipboard.writeText(text);
+        await navigator
+            .clipboard
+            .writeText(text);
+
 
         alert(
             "✅ Hashtags copied successfully!"
         );
 
+
     }catch(error){
 
-        /*
-         * Fallback for browsers where
-         * navigator.clipboard is unavailable.
-         */
+        /* Fallback */
 
         const textarea =
-            document.createElement("textarea");
+            document.createElement(
+                "textarea"
+            );
 
-        textarea.value = text;
 
-        document.body.appendChild(textarea);
+        textarea.value =
+            text;
+
+
+        document.body.appendChild(
+            textarea
+        );
+
 
         textarea.select();
 
-        document.execCommand("copy");
+
+        document.execCommand(
+            "copy"
+        );
+
 
         textarea.remove();
+
 
         alert(
             "✅ Hashtags copied successfully!"
@@ -461,5 +881,7 @@ async function copyTags(){
 
 </script>
 
+
 </body>
-  </html>
+
+    </html>
