@@ -79,10 +79,9 @@ textarea{
 <input
 type="text"
 id="product"
-placeholder="Example: Black Cotton T-Shirt"
+placeholder="Example: Cotton T-Shirt"
 autocomplete="off"
 >
-
 
 
 <label>Brand Name</label>
@@ -95,7 +94,6 @@ autocomplete="off"
 >
 
 
-
 <label>Category</label>
 
 <input
@@ -106,7 +104,6 @@ autocomplete="off"
 >
 
 
-
 <label>Material</label>
 
 <input
@@ -115,7 +112,6 @@ id="material"
 placeholder="Example: 100% Cotton"
 autocomplete="off"
 >
-
 
 
 <label>Target Audience</label>
@@ -130,7 +126,6 @@ autocomplete="off"
 </select>
 
 
-
 <label>Color</label>
 
 <input
@@ -139,7 +134,6 @@ id="color"
 placeholder="Example: Black"
 autocomplete="off"
 >
-
 
 
 <label>Extra Information</label>
@@ -151,20 +145,20 @@ placeholder="Example: Round neck, short sleeves"
 ></textarea>
 
 
-
 <div class="info-box">
 
-<strong>Important:</strong>
+<strong>Strict AI Filtering:</strong>
 
-AI केवल आपकी दी हुई जानकारी से factual features बनाएगा।
+<br>
+
+Only supplied product information will be used.
 
 <br><br>
 
-AI अपने आप price, discount, warranty, delivery,
-quality, comfort, durability या कोई दूसरी जानकारी नहीं बनाएगा।
+Fake specifications, marketing claims, duplicate features
+and invented information are automatically rejected.
 
 </div>
-
 
 
 <button
@@ -177,18 +171,15 @@ onclick="generateFeatures()"
 </button>
 
 
-
 <div
 id="status"
 class="status">
 </div>
 
 
-
 <h3 style="margin-top:25px;">
 ⭐ Generated Features
 </h3>
-
 
 
 <textarea
@@ -198,7 +189,6 @@ style="width:100%;"
 readonly
 placeholder="Your AI product features will appear here..."
 ></textarea>
-
 
 
 <button
@@ -220,9 +210,9 @@ onclick="copyFeatures()"
 <script>
 
 
-/* =========================================
-   GENERATE FEATURES
-========================================= */
+/* =====================================================
+   GENERATE PRODUCT FEATURES
+===================================================== */
 
 async function generateFeatures(){
 
@@ -231,36 +221,30 @@ async function generateFeatures(){
         .value
         .trim();
 
-
     const brand =
         document.getElementById("brand")
         .value
         .trim();
-
 
     const category =
         document.getElementById("category")
         .value
         .trim();
 
-
     const material =
         document.getElementById("material")
         .value
         .trim();
-
 
     const audience =
         document.getElementById("audience")
         .value
         .trim();
 
-
     const color =
         document.getElementById("color")
         .value
         .trim();
-
 
     const extra =
         document.getElementById("extra")
@@ -271,10 +255,8 @@ async function generateFeatures(){
     const result =
         document.getElementById("result");
 
-
     const status =
         document.getElementById("status");
-
 
     const button =
         document.getElementById("generateBtn");
@@ -296,260 +278,144 @@ async function generateFeatures(){
 
 
     status.innerText =
-        "AI is creating product features...";
+        "AI is creating and checking product features...";
 
 
     result.value =
         "⏳ Please wait...";
 
 
-    /* =====================================
-       STRICT PRODUCT FEATURES PROMPT
-    ===================================== */
+    /* =================================================
+       STRICT AI PROMPT
+    ================================================= */
 
     const prompt = `
 
-You are a professional eCommerce product features writer.
+You are an eCommerce product feature writer.
 
-Your task is to create useful CUSTOMER-FACING product features.
+Create short factual customer-facing product features.
 
-Use ONLY the information supplied below.
+IMPORTANT:
+Do NOT return the input fields.
 
-PRODUCT INFORMATION
-===================
+NEVER output:
 
 Product Name:
+Brand:
+Category:
+Material:
+Target Audience:
+Color:
+
+The Product Name is ONLY used to understand the product.
+
+Create features ONLY from these supplied facts.
+
+PRODUCT:
 ${product}
 
-Brand:
+BRAND:
 ${brand || "Not specified"}
 
-Category:
+CATEGORY:
 ${category || "Not specified"}
 
-Material:
+MATERIAL:
 ${material || "Not specified"}
 
-Target Audience:
+TARGET AUDIENCE:
 ${audience || "Not specified"}
 
-Color:
+COLOR:
 ${color || "Not specified"}
 
-Extra Information:
+EXTRA INFORMATION:
 ${extra || "Not specified"}
 
 
-VERY IMPORTANT
-==============
+STRICT RULES:
 
-The output must contain actual PRODUCT FEATURES.
+1. Never invent information.
 
-DO NOT simply copy the field names.
+2. Never assume missing information.
 
-DO NOT output:
+3. Never add price.
 
-Product: ...
-Brand: ...
-Category: ...
-Material: ...
-Target Audience: ...
-Color: ...
+4. Never add discount.
 
-Instead convert factual information into natural
-customer-facing feature statements.
+5. Never add warranty.
+
+6. Never add delivery information.
+
+7. Never add size.
+
+8. Never add weight.
+
+9. Never add dimensions.
+
+10. Never add fit.
+
+11. Never add durability.
+
+12. Never add comfort.
+
+13. Never add quality claims.
+
+14. Never add certifications.
+
+15. Never add washing instructions.
+
+16. Never add package contents.
+
+17. Never add benefits unless explicitly supplied.
+
+18. Never mention another brand.
+
+19. Never compare products.
+
+20. Never mention AI.
+
+21. Do not use emojis.
+
+22. Do not repeat facts.
+
+23. Do not use Product Name itself as a feature.
 
 
-CORRECT EXAMPLES
-================
-
-If Material is:
-100% Cotton
-
-Write:
+GOOD OUTPUT EXAMPLES:
 
 Made from 100% Cotton
-
-
-If Color is:
-Black
-
-Write:
-
 Black Color
-
-
-If Target Audience is:
-Men
-
-Write:
-
 Suitable for Men
-
-
-If Category is:
-Men's Clothing
-
-Write:
-
 Men's Clothing Category
+From the brand Fashion Hud
+
+BAD OUTPUT:
+
+Product Name: Cotton T-Shirt
+Brand: Fashion Hud
+Category: Men's Clothing
+Material: 100% Cotton
+Target Audience: Men
+Color: Black
 
 
-If Brand is:
-Fashion Hud
-
-Write:
-
-Fashion Hud Brand
-
-
-IMPORTANT DATA RULES
-====================
-
-1. NEVER invent information.
-
-2. NEVER assume missing information.
-
-3. Use ONLY supplied information.
-
-4. Do not create benefits that were not provided.
-
-5. Do not create marketing claims.
-
-6. Do not say:
-Premium
-Best
-Excellent
-High Quality
-Durable
-Comfortable
-Soft
-Stylish
-Trendy
-Luxury
-Perfect
-Long Lasting
-
-unless those exact claims are present in Extra Information.
-
-7. Do not invent price.
-
-8. Do not invent discount.
-
-9. Do not invent warranty.
-
-10. Do not invent delivery information.
-
-11. Do not invent size.
-
-12. Do not invent weight.
-
-13. Do not invent dimensions.
-
-14. Do not invent fit.
-
-15. Do not invent pattern.
-
-16. Do not invent sleeve type.
-
-17. Do not invent neck type.
-
-18. Do not invent pocket details.
-
-19. Do not invent washing instructions.
-
-20. Do not invent package contents.
-
-21. Do not mention other brands.
-
-22. Do not compare with other products.
-
-23. Do not mention AI.
-
-24. Do not use emojis.
-
-
-PRODUCT NAME RULE
-=================
-
-The Product Name identifies the product.
-
-Do NOT use the Product Name itself as a feature.
-
-For example:
-
-Product Name:
-Black Cotton T-Shirt
-
-DO NOT output:
-
-Black Cotton T-Shirt
-
-Instead create features from the actual supplied
-attributes such as:
-
-Made from 100% Cotton
-Black Color
-Suitable for Men
-
-
-FEATURE QUALITY
-===============
-
-Each feature must provide a useful factual detail.
-
-Do not repeat the same information.
-
-Do not create multiple versions of the same feature.
-
-For example, these are duplicates:
-
-Made from Cotton
-Cotton Material
-Cotton Fabric
-
-Use only:
-
-Made from Cotton
-
-
-NUMBER OF FEATURES
-==================
-
-Create ONLY as many features as can be supported
-by the supplied information.
-
-Do NOT invent information to reach 10 features.
-
-If 5 valid features are available, return 5.
-
-If 4 valid features are available, return 4.
-
-Quality is more important than quantity.
-
-
-OUTPUT FORMAT
-=============
+OUTPUT:
 
 Return ONLY a numbered list.
 
-Use this format:
+Example:
 
 1. Made from 100% Cotton
 2. Black Color
 3. Suitable for Men
 4. Men's Clothing Category
-5. Fashion Hud Brand
+5. From the brand Fashion Hud
 
-No introduction.
-
-No conclusion.
-
+No heading.
 No explanation.
-
-No headings.
-
-No emojis.
+No introduction.
+No conclusion.
 
 `;
 
@@ -561,6 +427,7 @@ No emojis.
             "https://ai-seller-toolkit-backend-1.onrender.com/generate",
 
             {
+
                 method:"POST",
 
                 headers:{
@@ -568,8 +435,11 @@ No emojis.
                 },
 
                 body:JSON.stringify({
+
                     prompt:prompt
+
                 })
+
             }
 
         );
@@ -595,9 +465,11 @@ No emojis.
         if(!response.ok){
 
             throw new Error(
+
                 data.details ||
                 data.error ||
                 "Server error"
+
             );
 
         }
@@ -609,29 +481,61 @@ No emojis.
         ){
 
             throw new Error(
-                "AI ने कोई product feature नहीं बनाया।"
+                "AI ने कोई result नहीं दिया।"
             );
 
         }
 
 
-        let text =
-            cleanFeatures(
-                data.result
+        /*
+         =================================================
+         HARD FRONTEND FILTER
+         =================================================
+        */
+
+        const aiText =
+            data.result.trim();
+
+
+        const finalFeatures =
+            strictFeatureFilter({
+
+                product,
+                brand,
+                category,
+                material,
+                audience,
+                color,
+                extra,
+
+                aiText
+
+            });
+
+
+        if(finalFeatures.length === 0){
+
+            throw new Error(
+                "कोई valid factual feature नहीं मिला।"
             );
+
+        }
 
 
         result.value =
-            text;
+            finalFeatures
+                .map(
+                    (item,index) =>
+                    `${index + 1}. ${item}`
+                )
+                .join("\n");
 
 
         status.innerText =
-            "✅ Product Features generated successfully.";
-
-    }
+            `✅ ${finalFeatures.length} valid product features generated.`;
 
 
-    catch(error){
+    }catch(error){
 
         console.error(
             "Product Features Error:",
@@ -664,46 +568,225 @@ No emojis.
 
 
 
-/* =========================================
-   CLEAN RESPONSE
-========================================= */
+/* =====================================================
+   HARD STRICT FILTER
+===================================================== */
 
-function cleanFeatures(text){
+function strictFeatureFilter(data){
 
-    let cleaned =
-        text.trim();
+    const {
+
+        product,
+        brand,
+        category,
+        material,
+        audience,
+        color,
+        extra,
+        aiText
+
+    } = data;
 
 
-    cleaned =
-        cleaned.replace(
-            /^```[a-zA-Z]*\s*/i,
-            ""
+    /*
+     ---------------------------------------------
+     First create ONLY facts that actually exist.
+     ---------------------------------------------
+    */
+
+    const validFacts = [];
+
+
+    if(brand){
+
+        validFacts.push(
+            "From the brand " + brand
         );
 
+    }
 
-    cleaned =
-        cleaned.replace(
-            /\s*```$/i,
-            ""
+
+    if(category){
+
+        validFacts.push(
+            category + " Category"
         );
 
+    }
 
-    cleaned =
-        cleaned.replace(
-            /^#+\s*(Product Features|Features)\s*:?\s*/i,
-            ""
+
+    if(material){
+
+        validFacts.push(
+            "Made from " + material
         );
 
+    }
 
-    return cleaned.trim();
+
+    if(audience){
+
+        validFacts.push(
+            "Suitable for " + audience
+        );
+
+    }
+
+
+    if(color){
+
+        validFacts.push(
+            color + " Color"
+        );
+
+    }
+
+
+    /*
+     ---------------------------------------------
+     Extra Information
+     ---------------------------------------------
+    */
+
+    if(extra){
+
+        const extraParts =
+            extra
+            .split(/[,;\n]+/)
+            .map(
+                item => item.trim()
+            )
+            .filter(Boolean);
+
+
+        extraParts.forEach(function(item){
+
+            if(
+                item.length > 0 &&
+                !containsDangerousClaim(item)
+            ){
+
+                validFacts.push(item);
+
+            }
+
+        });
+
+    }
+
+
+    /*
+     ---------------------------------------------
+     Remove duplicates
+     ---------------------------------------------
+    */
+
+    const uniqueFacts = [];
+
+
+    validFacts.forEach(function(fact){
+
+        const normalized =
+            fact
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g," ")
+            .trim();
+
+
+        const alreadyExists =
+            uniqueFacts.some(function(existing){
+
+                return normalizeText(existing) === normalized;
+
+            });
+
+
+        if(!alreadyExists){
+
+            uniqueFacts.push(fact);
+
+        }
+
+    });
+
+
+    /*
+     ---------------------------------------------
+     Maximum 10
+     ---------------------------------------------
+    */
+
+    return uniqueFacts.slice(0,10);
 
 }
 
 
 
-/* =========================================
+/* =====================================================
+   NORMALIZE TEXT
+===================================================== */
+
+function normalizeText(text){
+
+    return text
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g," ")
+        .trim();
+
+}
+
+
+
+/* =====================================================
+   BLOCK UNSUPPORTED CLAIMS
+===================================================== */
+
+function containsDangerousClaim(text){
+
+    const blockedWords = [
+
+        "premium",
+        "best",
+        "amazing",
+        "excellent",
+        "superior",
+        "high quality",
+        "top quality",
+        "durable",
+        "comfortable",
+        "comfort",
+        "soft",
+        "luxury",
+        "perfect",
+        "stylish",
+        "trendy",
+        "long lasting",
+        "waterproof",
+        "guaranteed",
+        "guarantee",
+        "eco friendly",
+        "skin friendly",
+        "breathable"
+
+    ];
+
+
+    const lower =
+        text.toLowerCase();
+
+
+    return blockedWords.some(
+        word =>
+        lower.includes(word)
+    );
+
+}
+
+
+
+/* =====================================================
    COPY FEATURES
-========================================= */
+===================================================== */
 
 async function copyFeatures(){
 
@@ -748,14 +831,13 @@ async function copyFeatures(){
 
         await navigator.clipboard.writeText(text);
 
+
         alert(
             "✅ Product Features copied successfully!"
         );
 
-    }
 
-
-    catch(error){
+    }catch(error){
 
         const textarea =
             document.createElement("textarea");
