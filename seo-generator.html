@@ -10,9 +10,84 @@
 
 <link rel="stylesheet" href="style.css">
 
+<style>
+
+.seo-box{
+    max-width:700px;
+    margin:30px auto;
+    padding:25px;
+    background:white;
+    border-radius:12px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.15);
+}
+
+.seo-box label{
+    display:block;
+    margin-top:15px;
+    margin-bottom:6px;
+    font-weight:bold;
+}
+
+.seo-box input,
+.seo-box select,
+.seo-box textarea{
+    width:100%;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:7px;
+    font-size:16px;
+    box-sizing:border-box;
+}
+
+.seo-box button{
+    width:100%;
+    padding:14px;
+    margin-top:20px;
+    border:none;
+    border-radius:7px;
+    background:#16a34a;
+    color:white;
+    font-size:17px;
+    cursor:pointer;
+}
+
+.seo-box button:hover{
+    background:#15803d;
+}
+
+.seo-box button:disabled{
+    background:#999;
+    cursor:not-allowed;
+}
+
+#result{
+    margin-top:15px;
+    min-height:250px;
+    line-height:1.8;
+    resize:vertical;
+}
+
+#status{
+    margin-top:12px;
+    text-align:center;
+    font-weight:bold;
+}
+
+.copy-button{
+    background:#2563eb !important;
+}
+
+.copy-button:hover{
+    background:#1d4ed8 !important;
+}
+
+</style>
+
 </head>
 
+
 <body>
+
 
 <header>
 
@@ -27,72 +102,83 @@
 
 <h2>🔍 AI SEO Keyword Generator</h2>
 
-<p>Generate Powerful SEO Keywords for Your Products</p>
+<p>Generate Relevant SEO Keywords for Your Products</p>
 
 </section>
 
 
-<section class="tools">
+<div class="seo-box">
 
-<div class="card">
 
-<label>Product Name</label>
+<label>
+Product Name
+</label>
 
 <input
 type="text"
 id="product"
-placeholder="Example: Cotton T-Shirt">
+placeholder="Example: Cotton T-Shirt"
+>
 
 
-<br><br>
-
-
-<label>Category</label>
+<label>
+Category
+</label>
 
 <input
 type="text"
 id="category"
-placeholder="Example: Men's Clothing">
+placeholder="Example: Men's Clothing"
+>
 
 
-<br><br>
-
-
-<label>Brand Name</label>
+<label>
+Brand Name
+</label>
 
 <input
 type="text"
 id="brand"
-placeholder="Example: Fashion Hud">
+placeholder="Example: Fashion Hud"
+>
 
 
-<br><br>
-
-
-<label>Main Keyword</label>
+<label>
+Main Keyword
+</label>
 
 <input
 type="text"
 id="keyword"
-placeholder="Example: Black Cotton T-Shirt">
+placeholder="Example: Black Cotton T-Shirt"
+>
 
 
-<br><br>
-
-
-<label>Target Marketplace</label>
+<label>
+Target Marketplace
+</label>
 
 <select id="marketplace">
 
-<option value="Amazon">Amazon</option>
+<option value="Amazon">
+Amazon
+</option>
 
-<option value="Flipkart">Flipkart</option>
+<option value="Flipkart">
+Flipkart
+</option>
 
-<option value="Meesho">Meesho</option>
+<option value="Meesho">
+Meesho
+</option>
 
-<option value="Shopify">Shopify</option>
+<option value="Shopify">
+Shopify
+</option>
 
-<option value="Etsy">Etsy</option>
+<option value="Etsy">
+Etsy
+</option>
 
 <option value="All Marketplaces">
 All Marketplaces
@@ -101,42 +187,42 @@ All Marketplaces
 </select>
 
 
-<br><br>
-
-
-<button onclick="generateSEO()">
+<button
+id="generateBtn"
+type="button"
+>
 
 🤖 Generate SEO Keywords
 
 </button>
 
 
-<br><br>
+<div id="status"></div>
 
 
-<h3>🔍 Generated SEO Keywords</h3>
+<label>
+Generated SEO Keywords
+</label>
 
 <textarea
 id="result"
-rows="15"
-style="width:100%;"
 readonly
-placeholder="Your AI generated SEO keywords will appear here...">
-</textarea>
+placeholder="Your AI SEO keywords will appear here..."
+></textarea>
 
 
-<br><br>
-
-
-<button onclick="copySEO()">
+<button
+id="copyBtn"
+class="copy-button"
+type="button"
+>
 
 📋 Copy Keywords
 
 </button>
 
-</div>
 
-</section>
+</div>
 
 
 <script src="seo-generator.js"></script>
