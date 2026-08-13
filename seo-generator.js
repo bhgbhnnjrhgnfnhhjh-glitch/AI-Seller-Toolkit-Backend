@@ -1,6 +1,6 @@
 /* =========================================
-   AI SEO KEYWORD GENERATOR
-   ========================================= */
+   AI SEO KEYWORD GENERATOR - FINAL
+========================================= */
 
 async function generateSEO() {
 
@@ -13,7 +13,7 @@ async function generateSEO() {
     const brand =
         document.getElementById("brand").value.trim();
 
-    const keyword =
+    const mainKeyword =
         document.getElementById("keyword").value.trim();
 
     const marketplace =
@@ -34,8 +34,7 @@ async function generateSEO() {
 
     }
 
-
-    if (keyword === "") {
+    if (mainKeyword === "") {
 
         alert("Please enter Main Keyword.");
         return;
@@ -52,9 +51,10 @@ async function generateSEO() {
     ========================= */
 
     const prompt = `
-You are a professional eCommerce SEO keyword specialist.
+You are a strict eCommerce SEO keyword generator.
 
-Generate useful SEO keywords for the supplied product information.
+Create useful SEO keywords using ONLY the exact information
+provided below.
 
 PRODUCT INFORMATION
 -------------------
@@ -69,145 +69,179 @@ Brand:
 ${brand || "Not specified"}
 
 Main Keyword:
-${keyword}
+${mainKeyword}
 
-Target Marketplace:
+Marketplace:
 ${marketplace}
+
+
+VERY IMPORTANT
+--------------
+
+The information above is the ONLY source of truth.
+
+Do NOT guess.
+
+Do NOT paraphrase important product words.
+
+Do NOT replace words with synonyms.
+
+Do NOT change singular/plural meaning.
+
+Do NOT change gender/audience meaning.
+
+For example:
+
+"Men's Clothing"
+
+MUST NOT become:
+
+"Man Clothing"
+"Men Clothing"
+"Male Clothing"
+"Mens Wear"
+
+unless that exact wording was supplied.
 
 
 STRICT RULES
 ------------
 
-1. Use ONLY the information provided.
+1. Generate up to 20 SEO keywords.
 
-2. Do NOT invent information.
+2. Quality is more important than quantity.
 
-3. Do NOT invent:
-- colors
-- materials
-- sizes
-- features
-- benefits
-- quality claims
-- product specifications
-- prices
-- discounts
-- offers
-- delivery information
+3. It is completely acceptable to return fewer than 20
+keywords.
 
-4. Do NOT add another brand.
+4. Every keyword must contain words taken directly from
+the supplied Product Name, Category, Brand or Main Keyword.
 
-5. If Brand is provided, use ONLY that exact brand.
+5. Do NOT invent words.
 
-6. Do NOT add brands such as:
-Nike, Adidas, Puma, Apple, Samsung, etc.
+6. Do NOT use synonyms.
 
-7. Keep the exact product type.
+7. Do NOT change:
+Men's -> Man
+Men's -> Mens
+Women's -> Woman
+Women's -> Womens
 
-8. Do NOT change the product into another product.
+8. Keep product terminology accurate.
 
-9. Keywords must be directly related to:
-- Product Name
-- Category
-- Brand
-- Main Keyword
+9. Do NOT invent:
+color
+material
+size
+feature
+benefit
+quality
+price
+discount
+offer
+delivery
+warranty
+specification
 
-10. Do NOT create fake search claims.
+10. Do NOT add unrelated brands.
 
-11. Do NOT use words such as:
+11. Do NOT add:
+Nike
+Adidas
+Puma
+Apple
+Samsung
+etc.
+
+12. Do NOT create marketing claims such as:
+
 Best
-Amazing
 Premium
+Amazing
 Cheap
-No.1
 Top
+No.1
 Bestseller
 Guaranteed
+Excellent
+Trending
+Viral
 
-unless they were explicitly supplied.
+13. Do NOT add words such as:
 
-12. Do NOT create duplicate keywords.
-
-13. Do NOT create the same keyword with only minor
-punctuation or capitalization changes.
-
-For example, these count as duplicates:
-
-Black Cotton T-Shirt
-black cotton t-shirt
-Black Cotton Tshirt
-
-Only one should be used.
-
-14. Do NOT create keyword variations by randomly
-changing word order.
-
-15. Do NOT add:
-Online
 Buy
+Online
 Shop
 Store
 Sale
 Offer
+Deal
 
-unless these words are genuinely relevant to the
-provided information and marketplace context.
+unless that exact word was supplied in the input.
 
-16. Keep keywords natural and searchable.
+14. Do NOT create search-intent phrases by guessing.
 
-17. Do not add explanations.
+15. Do NOT reverse words randomly.
 
-18. Do not add numbering.
+16. Do NOT create awkward phrases.
 
-19. Return keywords only.
+17. Do NOT create duplicate keywords.
 
-20. Generate up to 20 keywords.
-
-21. Quality is more important than quantity.
-
-22. If only 8 unique useful keywords are possible,
-return only 8.
-
-23. Do NOT force the result to 20 keywords.
-
-24. Every keyword must be directly supported by the
-provided information.
-
-25. Do not repeat the exact same information unnecessarily.
-
-
-KEYWORD PRIORITY
-----------------
-
-Use information in this order:
-
-1. Main Keyword
-2. Product Name
-3. Category
-4. Brand
-5. Valid combinations of the above
-
-Do not combine fields in a way that creates a
-meaning not present in the supplied information.
-
-
-OUTPUT FORMAT
--------------
-
-Return ONLY the keywords.
-
-Example:
+18. These should be considered duplicates:
 
 Black Cotton T-Shirt
-Cotton T-Shirt
-Black T-Shirt
-Cotton Clothing
-Fashion Hud
-Fashion Hud T-Shirt
+Black Cotton Tshirt
+Black Cotton T Shirt
 
-No numbers.
-No bullets.
-No explanations.
+Only ONE may be returned.
+
+19. Do NOT create duplicate keywords by changing
+capitalization.
+
+20. Do NOT create duplicate keywords by changing hyphens.
+
+21. Brand alone is NOT useful as an SEO product keyword.
+
+Therefore do NOT return:
+
+${brand || "Brand"}
+
+as a standalone keyword.
+
+22. Category alone is NOT useful unless it is directly
+connected to the supplied product.
+
+23. Do NOT create:
+
+Man Clothing
+
+when the supplied category is:
+
+Men's Clothing
+
+24. Do NOT create:
+
+Fashion Hud Man Clothing
+
+if "Man Clothing" was not supplied.
+
+25. Brand + exact supplied product combinations are allowed.
+
+26. Product + exact supplied category combinations are allowed
+only when they form a natural keyword.
+
+27. Return keywords only.
+
+28. Do not add numbers.
+
+29. Do not add bullets.
+
+30. Do not add explanations.
+
+OUTPUT
+------
+
+Return one keyword per line.
 `;
 
 
@@ -234,7 +268,7 @@ No explanations.
 
 
         /* =========================
-           READ API RESPONSE
+           READ RESPONSE
         ========================= */
 
         let data;
@@ -243,7 +277,7 @@ No explanations.
 
             data = await response.json();
 
-        } catch (jsonError) {
+        } catch (error) {
 
             throw new Error(
                 "Backend ने valid response नहीं दिया।"
@@ -268,7 +302,7 @@ No explanations.
 
 
         /* =========================
-           CHECK RESULT
+           CHECK AI RESULT
         ========================= */
 
         if (
@@ -285,23 +319,23 @@ No explanations.
 
 
         /* =========================
-           CLEAN + FILTER
+           STRICT FILTER
         ========================= */
 
         const keywords =
-            cleanAndFilterKeywords(
+            strictKeywordFilter(
                 data.result,
                 product,
                 category,
                 brand,
-                keyword
+                mainKeyword
             );
 
 
         if (keywords.length === 0) {
 
             throw new Error(
-                "AI ने कोई valid SEO keyword नहीं बनाया।"
+                "AI ने दिए गए information से कोई valid keyword नहीं बनाया।"
             );
 
         }
@@ -314,12 +348,14 @@ No explanations.
         result.value =
             keywords
                 .map(
-                    function(item, index) {
+                    function(keyword, index) {
+
                         return (
                             (index + 1) +
                             ". " +
-                            item
+                            keyword
                         );
+
                     }
                 )
                 .join("\n");
@@ -344,10 +380,10 @@ No explanations.
 
 
 /* =========================================
-   CLEAN + STRICT FILTER
-   ========================================= */
+   STRICT KEYWORD FILTER
+========================================= */
 
-function cleanAndFilterKeywords(
+function strictKeywordFilter(
     text,
     product,
     category,
@@ -355,316 +391,563 @@ function cleanAndFilterKeywords(
     mainKeyword
 ) {
 
+    /* =========================
+       INPUT PHRASES
+    ========================= */
+
+    const sourcePhrases = [
+        product,
+        category,
+        brand,
+        mainKeyword
+    ].filter(Boolean);
+
+
+    /*
+     * Build exact source vocabulary.
+     */
+
+    const sourceWords =
+        new Set();
+
+
+    sourcePhrases.forEach(
+        function(phrase) {
+
+            tokenizeExact(phrase)
+                .forEach(
+                    function(word) {
+
+                        sourceWords.add(word);
+
+                    }
+                );
+
+        }
+    );
+
+
+    /* =========================
+       SPECIAL EXACT PHRASES
+    ========================= */
+
+    const exactCategory =
+        normalizePhrase(category);
+
+    const exactProduct =
+        normalizePhrase(product);
+
+    const exactBrand =
+        normalizePhrase(brand);
+
+    const exactMainKeyword =
+        normalizePhrase(mainKeyword);
+
+
+    /* =========================
+       SPLIT AI RESPONSE
+    ========================= */
+
     let lines =
-        text
-            .split(/\r?\n/)
-            .map(function(line) {
-
-                return line
-                    .trim()
-                    .replace(
-                        /^\d+[\.\)\-:\s]+/,
-                        ""
-                    )
-                    .replace(
-                        /^[-•*]\s*/,
-                        ""
-                    )
-                    .trim();
-
-            })
-            .filter(Boolean);
+        text.split(/\r?\n/);
 
 
-    const result = [];
+    const finalKeywords = [];
 
     const seen = new Set();
 
 
-    /* =========================
-       Forbidden words
-    ========================= */
+    lines.forEach(
+        function(line) {
 
-    const forbiddenWords = [
-
-        "amazing",
-        "premium",
-        "best",
-        "cheap",
-        "no.1",
-        "no1",
-        "top",
-        "bestseller",
-        "guaranteed",
-        "guarantee",
-        "excellent",
-        "high quality",
-        "super quality",
-        "must buy",
-        "viral",
-        "trending",
-        "offer",
-        "discount",
-        "sale"
-
-    ];
+            let value =
+                line.trim();
 
 
-    lines.forEach(function(line) {
+            /* Remove numbering */
 
-        let value =
-            line
-                .replace(/^["']|["']$/g, "")
-                .trim();
-
-
-        if (!value) {
-            return;
-        }
+            value =
+                value.replace(
+                    /^\s*\d+[\.\)\-:]\s*/,
+                    ""
+                );
 
 
-        /* Remove accidental numbering */
+            /* Remove bullets */
 
-        value =
-            value.replace(
-                /^\d+[\.\)\-:\s]+/,
-                ""
-            ).trim();
-
-
-        /* Remove bullets */
-
-        value =
-            value.replace(
-                /^[-•*]\s*/,
-                ""
-            ).trim();
+            value =
+                value.replace(
+                    /^\s*[-•*]\s*/,
+                    ""
+                );
 
 
-        /* Too long = probably sentence */
-
-        if (
-            value.length > 100
-        ) {
-            return;
-        }
+            value =
+                value.trim();
 
 
-        /* Remove punctuation at end */
-
-        value =
-            value.replace(
-                /[.,;:!?]+$/g,
-                ""
-            ).trim();
+            if (!value) {
+                return;
+            }
 
 
-        if (!value) {
-            return;
-        }
+            /* Remove quotes */
+
+            value =
+                value.replace(
+                    /^["']|["']$/g,
+                    ""
+                ).trim();
 
 
-        /* =========================
-           Forbidden claim filter
-        ========================= */
-
-        const lower =
-            value.toLowerCase();
-
-
-        for (
-            const word of forbiddenWords
-        ) {
+            /* =========================
+               BASIC VALIDATION
+            ========================= */
 
             if (
-                lower.includes(word)
+                value.length < 2 ||
+                value.length > 80
             ) {
 
                 return;
 
             }
 
-        }
+
+            /* Reject sentences */
+
+            if (
+                value.includes(". ") ||
+                value.includes("!") ||
+                value.includes("?")
+            ) {
+
+                return;
+
+            }
 
 
-        /* =========================
-           Reject hashtag
-        ========================= */
+            /* Reject hashtags */
 
-        if (
-            value.startsWith("#")
-        ) {
+            if (
+                value.startsWith("#")
+            ) {
 
-            return;
+                return;
 
-        }
+            }
 
 
-        /* =========================
-           Reject sentence-like text
-        ========================= */
+            /* =========================
+               FORBIDDEN WORDS
+            ========================= */
 
-        if (
-            lower.startsWith("this ") ||
-            lower.startsWith("the product") ||
-            lower.startsWith("our ") ||
-            lower.startsWith("it is ")
-        ) {
-
-            return;
-
-        }
+            const lower =
+                value.toLowerCase();
 
 
-        /* =========================
-           Normalized duplicate key
-        ========================= */
+            const forbidden = [
 
-        const normalized =
-            normalizeKeyword(value);
+                "best",
+                "premium",
+                "amazing",
+                "excellent",
+                "cheap",
+                "top",
+                "no.1",
+                "no1",
+                "bestseller",
+                "guaranteed",
+                "guarantee",
+                "trending",
+                "viral",
+                "must buy",
+                "deal",
+                "offer",
+                "discount",
+                "sale",
+                "buy",
+                "shop",
+                "store",
+                "online"
 
-
-        if (
-            normalized === ""
-        ) {
-
-            return;
-
-        }
-
-
-        if (
-            seen.has(normalized)
-        ) {
-
-            return;
-
-        }
-
-
-        /* =========================
-           Check supported words
-        ========================= */
-
-        const sourceWords =
-            getSourceWords(
-                product,
-                category,
-                brand,
-                mainKeyword
-            );
+            ];
 
 
-        const keywordWords =
-            normalized
-                .split(" ")
-                .filter(Boolean);
+            for (
+                const word of forbidden
+            ) {
 
-
-        /*
-         * Every important word in the keyword
-         * must come from supplied information.
-         */
-
-        const unsupported =
-            keywordWords.some(
-                function(word) {
-
-                    return !sourceWords.has(
+                if (
+                    containsWholePhrase(
+                        lower,
                         word
-                    );
+                    )
+                ) {
+
+                    return;
 
                 }
-            );
+
+            }
 
 
-        if (unsupported) {
+            /* =========================
+               NORMALIZE
+            ========================= */
 
-            return;
+            const normalized =
+                normalizeKeyword(value);
+
+
+            if (!normalized) {
+                return;
+            }
+
+
+            /* =========================
+               DUPLICATE CHECK
+            ========================= */
+
+            if (
+                seen.has(normalized)
+            ) {
+
+                return;
+
+            }
+
+
+            /* =========================
+               EXACT WORD VALIDATION
+            ========================= */
+
+            const words =
+                normalized.split(" ");
+
+
+            let invalidWord =
+                false;
+
+
+            for (
+                const word of words
+            ) {
+
+                if (
+                    !sourceWords.has(word)
+                ) {
+
+                    invalidWord = true;
+                    break;
+
+                }
+
+            }
+
+
+            if (invalidWord) {
+
+                return;
+
+            }
+
+
+            /* =========================
+               GENDER SAFETY
+            ========================= */
+
+            if (
+                exactCategory.includes(
+                    "men s clothing"
+                )
+            ) {
+
+                if (
+                    normalized.includes(
+                        "man clothing"
+                    )
+                ) {
+
+                    return;
+
+                }
+
+                if (
+                    normalized.includes(
+                        "men clothing"
+                    )
+                ) {
+
+                    return;
+
+                }
+
+                if (
+                    normalized.includes(
+                        "male clothing"
+                    )
+                ) {
+
+                    return;
+
+                }
+
+            }
+
+
+            /* =========================
+               IMPORTANT:
+               Do not allow changed
+               gender wording.
+            ========================= */
+
+            if (
+                normalized.includes("man")
+            ) {
+
+                const categoryHasMan =
+                    sourceWords.has("man");
+
+                const productHasMan =
+                    tokenizeExact(product)
+                        .includes("man");
+
+                const keywordHasMan =
+                    tokenizeExact(mainKeyword)
+                        .includes("man");
+
+
+                if (
+                    !categoryHasMan &&
+                    !productHasMan &&
+                    !keywordHasMan
+                ) {
+
+                    return;
+
+                }
+
+            }
+
+
+            /* =========================
+               BRAND ALONE FILTER
+            ========================= */
+
+            if (
+                exactBrand &&
+                normalized === exactBrand
+            ) {
+
+                return;
+
+            }
+
+
+            /* =========================
+               CATEGORY ALONE FILTER
+            ========================= */
+
+            if (
+                exactCategory &&
+                normalized === exactCategory
+            ) {
+
+                return;
+
+            }
+
+
+            /* =========================
+               VERY SHORT GENERIC TERMS
+            ========================= */
+
+            if (
+                words.length === 1
+            ) {
+
+                /*
+                 * Single-word keywords are allowed
+                 * only when they are directly useful
+                 * and not just a standalone brand.
+                 */
+
+                if (
+                    normalized === exactBrand
+                ) {
+
+                    return;
+
+                }
+
+            }
+
+
+            /* =========================
+               SAVE
+            ========================= */
+
+            seen.add(normalized);
+
+            finalKeywords.push(value);
+
 
         }
-
-
-        seen.add(normalized);
-
-        result.push(value);
-
-
-    });
+    );
 
 
     /* Maximum 20 */
 
-    return result.slice(0, 20);
+    return finalKeywords.slice(0, 20);
+
+}
+
+
+/* =========================================
+   TOKENIZE EXACT SOURCE
+========================================= */
+
+function tokenizeExact(text) {
+
+    if (!text) {
+        return [];
+    }
+
+
+    return normalizeKeyword(text)
+        .split(" ")
+        .filter(Boolean);
 
 }
 
 
 /* =========================================
    NORMALIZE KEYWORD
-   ========================================= */
+========================================= */
 
 function normalizeKeyword(text) {
 
     return text
         .toLowerCase()
+
+        /*
+         * Keep apostrophe information
+         * temporarily.
+         */
+
+        .replace(
+            /['’]/g,
+            " "
+        )
+
+        /*
+         * Normalize hyphens.
+         */
+
         .replace(
             /[-_/]+/g,
             " "
         )
+
+        /*
+         * Remove punctuation.
+         */
+
         .replace(
             /[^a-z0-9\s]/gi,
             ""
         )
+
+        /*
+         * Treat T-Shirt / Tshirt / T Shirt
+         * as the same keyword.
+         */
+
         .replace(
-            /\b(tshirt|tshirts)\b/g,
+            /\bt[\s-]*shirt\b/g,
             "tshirt"
         )
+
+        .replace(
+            /\btshirts\b/g,
+            "tshirt"
+        )
+
+        .replace(
+            /\btshirt\b/g,
+            "tshirt"
+        )
+
+        /*
+         * Normalize mens/mens.
+         */
+
+        .replace(
+            /\bmens\b/g,
+            "men"
+        )
+
+        /*
+         * Normalize spaces.
+         */
+
         .replace(
             /\s+/g,
             " "
         )
+
         .trim();
 
 }
 
 
 /* =========================================
-   SOURCE WORDS
-   ========================================= */
+   NORMALIZE PHRASE
+========================================= */
 
-function getSourceWords(
-    product,
-    category,
-    brand,
-    mainKeyword
-) {
+function normalizePhrase(text) {
 
-    const source =
-        [
-            product,
-            category,
-            brand,
-            mainKeyword
-        ]
-            .filter(Boolean)
-            .join(" ");
-
-
-    const words =
-        normalizeKeyword(source)
-            .split(" ")
-            .filter(Boolean);
-
-
-    return new Set(words);
+    return normalizeKeyword(
+        text || ""
+    );
 
 }
 
 
 /* =========================================
-   COPY SEO KEYWORDS
-   ========================================= */
+   WHOLE PHRASE CHECK
+========================================= */
+
+function containsWholePhrase(
+    text,
+    phrase
+) {
+
+    const escaped =
+        phrase.replace(
+            /[.*+?^${}()|[\]\\]/g,
+            "\\$&"
+        );
+
+
+    const regex =
+        new RegExp(
+            "(^|\\s)" +
+            escaped +
+            "(\\s|$)",
+            "i"
+        );
+
+
+    return regex.test(text);
+
+}
+
+
+/* =========================================
+   COPY SEO
+========================================= */
 
 function copySEO() {
 
@@ -711,19 +994,23 @@ function copySEO() {
         navigator.clipboard
             .writeText(text)
 
-            .then(function() {
+            .then(
+                function() {
 
-                alert(
-                    "✅ SEO Keywords copied successfully!"
-                );
+                    alert(
+                        "✅ SEO Keywords copied successfully!"
+                    );
 
-            })
+                }
+            )
 
-            .catch(function() {
+            .catch(
+                function() {
 
-                fallbackCopySEO(text);
+                    fallbackCopySEO(text);
 
-            });
+                }
+            );
 
     } else {
 
@@ -736,7 +1023,7 @@ function copySEO() {
 
 /* =========================================
    COPY FALLBACK
-   ========================================= */
+========================================= */
 
 function fallbackCopySEO(text) {
 
@@ -787,4 +1074,4 @@ function fallbackCopySEO(text) {
         textarea
     );
 
-    }
+}
