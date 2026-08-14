@@ -10,22 +10,76 @@
 
 <link rel="stylesheet" href="style.css">
 
+<style>
+
+.description-box{
+    width:100%;
+    min-height:320px;
+    padding:15px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    font-size:16px;
+    line-height:1.7;
+    resize:vertical;
+    background:#f8fafc;
+}
+
+.status{
+    margin-top:12px;
+    text-align:center;
+    font-size:14px;
+    color:#555;
+}
+
+.generate-btn{
+    width:100%;
+}
+
+.copy-btn{
+    width:100%;
+    background:#2563eb;
+}
+
+.copy-btn:hover{
+    background:#1d4ed8;
+}
+
+.clear-btn{
+    width:100%;
+    background:#64748b;
+}
+
+.clear-btn:hover{
+    background:#475569;
+}
+
+.char-count{
+    margin-top:8px;
+    text-align:right;
+    font-size:13px;
+    color:#666;
+}
+
+</style>
+
 </head>
 
+
 <body>
+
 
 <header>
 
 <h1>🤖 AI Seller Toolkit</h1>
 
-<a href="tools.html">⬅ Back</a>
+<a href="tools.html">⬅ Back to Tools</a>
 
 </header>
 
 
 <section class="hero">
 
-<h2>AI Product Description Generator</h2>
+<h2>📝 AI Product Description Generator</h2>
 
 <p>Create Professional Product Descriptions with AI</p>
 
@@ -36,15 +90,23 @@
 
 <div class="card">
 
+
 <label>Product Name</label>
 
 <input
 type="text"
 id="product"
-placeholder="Example: Cotton T-Shirt">
+placeholder="Example: Cotton T-Shirt"
+>
 
 
-<br><br>
+<label>Brand Name</label>
+
+<input
+type="text"
+id="brand"
+placeholder="Example: Fashion Hud"
+>
 
 
 <label>Category</label>
@@ -52,21 +114,8 @@ placeholder="Example: Cotton T-Shirt">
 <input
 type="text"
 id="category"
-placeholder="Example: Men's Clothing">
-
-
-<br><br>
-
-
-<label>Brand</label>
-
-<input
-type="text"
-id="brand"
-placeholder="Example: Fashion Hud">
-
-
-<br><br>
+placeholder="Example: Men's Clothing"
+>
 
 
 <label>Material</label>
@@ -74,10 +123,25 @@ placeholder="Example: Fashion Hud">
 <input
 type="text"
 id="material"
-placeholder="Example: 100% Cotton">
+placeholder="Example: 100% Cotton"
+>
 
 
-<br><br>
+<label>Target Audience</label>
+
+<select id="audience">
+
+<option value="">Not Specified</option>
+
+<option value="Men">Men</option>
+
+<option value="Women">Women</option>
+
+<option value="Kids">Kids</option>
+
+<option value="Unisex">Unisex</option>
+
+</select>
 
 
 <label>Color</label>
@@ -85,53 +149,109 @@ placeholder="Example: 100% Cotton">
 <input
 type="text"
 id="color"
-placeholder="Example: Black">
-
-
-<br><br>
+placeholder="Example: Black"
+>
 
 
 <label>Features</label>
 
 <textarea
 id="features"
-rows="5"
-placeholder="Example: Comfortable, Durable, Stylish, Lightweight">
+rows="4"
+placeholder="Example: Round neck, short sleeves">
 </textarea>
 
 
-<br><br>
+<label>Extra Information</label>
+
+<textarea
+id="extra"
+rows="4"
+placeholder="Only enter information you want to mention in the description">
+</textarea>
 
 
-<button onclick="generateDescription()">
+<label>Marketplace</label>
+
+<select id="marketplace">
+
+<option value="Amazon">Amazon</option>
+
+<option value="Flipkart">Flipkart</option>
+
+<option value="Meesho">Meesho</option>
+
+<option value="Shopify">Shopify</option>
+
+<option value="Etsy">Etsy</option>
+
+<option value="All Marketplaces">
+All Marketplaces
+</option>
+
+</select>
+
+
+<button
+id="generateBtn"
+class="generate-btn"
+onclick="generateDescription()"
+>
 
 🤖 Generate AI Description
 
 </button>
 
 
-<br><br>
+<div
+class="status"
+id="status"
+>
+</div>
 
 
-<h3>Generated AI Description</h3>
+<br>
+
+
+<h3>📝 Generated Product Description</h3>
+
 
 <textarea
 id="result"
-rows="15"
-style="width:100%;"
+class="description-box"
 readonly
-placeholder="Your AI generated description will appear here...">
-</textarea>
+placeholder="Your AI generated product description will appear here..."
+></textarea>
 
 
-<br><br>
+<div
+class="char-count"
+id="charCount"
+>
+0 characters
+</div>
 
 
-<button onclick="copyDescription()">
+<button
+id="copyBtn"
+class="copy-btn"
+onclick="copyDescription()"
+>
 
 📋 Copy Description
 
 </button>
+
+
+<button
+class="clear-btn"
+onclick="clearDescription()"
+>
+
+🗑 Clear
+
+</button>
+
 
 </div>
 
