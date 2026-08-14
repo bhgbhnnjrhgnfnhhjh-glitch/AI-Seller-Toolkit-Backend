@@ -25,38 +25,34 @@ async function generateTerms() {
         document.getElementById("generateBtn");
 
 
-    // Basic validation
-    if (website === "") {
+    // ==============================
+    // VALIDATION
+    // ==============================
 
+    if (!website) {
         alert("Please enter Website Name.");
-
         return;
     }
 
-
-    if (url === "") {
-
+    if (!url) {
         alert("Please enter Website URL.");
-
         return;
     }
 
-
-    if (email === "") {
-
+    if (!email) {
         alert("Please enter Contact Email.");
-
         return;
     }
 
-
-    if (country === "") {
-
+    if (!country) {
         alert("Please enter Country.");
-
         return;
     }
 
+
+    // ==============================
+    // LOADING
+    // ==============================
 
     button.disabled = true;
 
@@ -70,21 +66,22 @@ async function generateTerms() {
         "⏳ Please wait...";
 
 
-    /*
-    ==========================================
-    STRICT AI PROMPT
-    ==========================================
-    */
+    // ==============================
+    // STRICT AI PROMPT
+    // ==============================
 
     const prompt = `
 
 You are a professional website Terms and Conditions
 drafting assistant.
 
-Create a clear and simple Terms & Conditions document
-using ONLY the information provided below.
+Create a simple GENERAL Terms and Conditions draft.
 
-WEBSITE INFORMATION:
+IMPORTANT:
+This is an informational template only.
+Do not provide legal advice.
+
+USER PROVIDED INFORMATION:
 
 Website Name:
 ${website}
@@ -93,7 +90,7 @@ Website URL:
 ${url}
 
 Company Name:
-${company || "Not specified"}
+${company || "Not provided"}
 
 Contact Email:
 ${email}
@@ -102,119 +99,220 @@ Country:
 ${country}
 
 
-STRICT RULES:
+VERY STRICT RULES:
 
-1. Use ONLY the information provided above.
+1. Use ONLY information explicitly provided above.
 
-2. Never invent company information.
+2. Never invent any information.
 
-3. Never invent a physical address.
+3. Never guess missing information.
 
-4. Never invent a phone number.
+4. Never create a physical address.
 
-5. Never invent a registration number.
+5. Never create a phone number.
 
-6. Never invent a GST number.
+6. Never create a GST number.
 
-7. Never invent a license number.
+7. Never create a registration number.
 
-8. Never invent a legal entity.
+8. Never create a license number.
 
-9. Never invent another brand name.
+9. Never create a tax number.
 
-10. Never mention another company.
+10. Never create a legal entity type.
 
-11. Never invent payment methods.
+11. Never create a company registration detail.
 
-12. Never invent refund policies.
+12. Never create a payment method.
 
-13. Never invent shipping policies.
+13. Never create a refund policy.
 
-14. Never invent delivery times.
+14. Never create a cancellation policy.
 
-15. Never invent prices.
+15. Never create a shipping policy.
 
-16. Never invent guarantees.
+16. Never create a delivery promise.
 
-17. Never invent warranties.
+17. Never create a warranty.
 
-18. Never claim that a lawyer reviewed the document.
+18. Never create a guarantee.
 
-19. Never claim that this document guarantees legal compliance.
+19. Never create a price.
 
-20. Do not invent specific laws or legal sections.
+20. Never create a discount.
 
-21. Do not invent court names.
+21. Never create an offer.
 
-22. Do not invent jurisdiction details
-that were not provided.
+22. Never create a governing law.
 
-23. Use the exact Website Name.
+23. Never create a jurisdiction.
 
-24. Use the exact Website URL.
+24. Never create a court name.
 
-25. Use the exact Company Name if provided.
+25. Never say that the Terms comply with
+any specific country's law.
 
-26. Use the exact Contact Email.
+26. Never say that a lawyer reviewed these Terms.
 
-27. Use the exact Country.
+27. Never claim legal compliance.
 
-28. Keep the language simple and professional.
+28. Never claim legal validity.
 
-29. Do not use emojis.
+29. Never invent intellectual property ownership.
 
-30. Do not add promotional language.
+30. Do not say that all website content is owned
+by the company unless ownership was explicitly
+provided by the user.
 
-31. Do not make false legal claims.
+31. Do not create a copyright claim.
 
-32. Do not create fake contact information.
+32. Do not create a trademark claim.
 
-33. If information is missing, do not guess it.
+33. Do not create a privacy policy.
 
-34. Use placeholders such as
-"Not specified" only when necessary.
+34. Do not create a cookie policy.
 
-35. The document should be a general informational
-Terms & Conditions draft, not personalized legal advice.
+35. Do not create a data protection policy.
 
-36. Include these general sections where appropriate:
+36. Do not create sections that require
+information that was not provided.
 
-- Introduction
-- Use of Website
-- User Responsibilities
-- Intellectual Property
-- Prohibited Activities
-- Website Availability
-- Limitation of Liability
-- Changes to Terms
-- Contact Information
+37. Do not mention another company or brand.
 
-37. Do not create sections that require information
-that was not provided.
+38. Keep the exact Website Name.
 
-38. Do not invent specific refund, cancellation,
-shipping or payment rules.
+39. Keep the exact Website URL.
 
-39. Do not invent a physical business address.
+40. Keep the exact Company Name if provided.
 
-40. Do not invent an effective date.
+41. Keep the exact Contact Email.
 
-OUTPUT:
+42. Country may be shown only as the
+provided business information.
 
-Write a clean Terms & Conditions document.
+43. Do NOT use Country to automatically
+create a governing-law section.
 
-Use headings and short paragraphs.
+44. Use simple professional English.
 
-Return ONLY the Terms & Conditions document.
+45. Do not use emojis.
 
-Do not explain your process.
+46. Do not use promotional language.
 
-Do not mention AI.
+47. Do not mention AI.
+
+48. Do not include instructions to the user.
+
+49. Do not explain how the document was created.
+
+50. Return only the Terms and Conditions draft.
+
+
+CREATE ONLY THESE GENERAL SECTIONS:
+
+1. Introduction
+
+2. Use of Website
+
+3. User Responsibilities
+
+4. Prohibited Activities
+
+5. Website Availability
+
+6. Changes to Terms
+
+7. Contact Information
+
+
+SECTION RULES:
+
+Introduction:
+Mention only the Website Name and Website URL.
+
+Use of Website:
+State only that users should use the website
+lawfully and responsibly.
+Do not invent specific laws.
+
+User Responsibilities:
+Keep this general.
+Do not invent account requirements,
+payment requirements, or personal-data rules.
+
+Prohibited Activities:
+Mention only general prohibited misuse such as
+attempting to damage or disrupt the website.
+
+Website Availability:
+State that website availability may change
+because of maintenance or technical reasons.
+Do not create guarantees.
+
+Changes to Terms:
+State that the Terms may be updated.
+Do not create a specific effective date.
+
+Contact Information:
+Show only:
+
+Company Name: ${company || "Not provided"}
+
+Website Name: ${website}
+
+Website URL: ${url}
+
+Contact Email: ${email}
+
+Country: ${country}
+
+
+OUTPUT FORMAT:
+
+# Terms and Conditions
+
+## Introduction
+
+[Text]
+
+## Use of Website
+
+[Text]
+
+## User Responsibilities
+
+[Text]
+
+## Prohibited Activities
+
+[Text]
+
+## Website Availability
+
+[Text]
+
+## Changes to Terms
+
+[Text]
+
+## Contact Information
+
+Company Name: ...
+Website Name: ...
+Website URL: ...
+Contact Email: ...
+Country: ...
+
+Return ONLY the document.
 
 `;
 
 
     try {
+
+        // ==============================
+        // BACKEND API
+        // ==============================
 
         const response = await fetch(
 
@@ -242,7 +340,8 @@ Do not mention AI.
         if (!response.ok) {
 
             throw new Error(
-                data.error || "Backend API Error"
+                data.error ||
+                "Backend API Error"
             );
 
         }
@@ -261,15 +360,13 @@ Do not mention AI.
         }
 
 
-        /*
-        ==========================================
-        BASIC CLEANING
-        ==========================================
-        */
+        // ==============================
+        // CLEAN MARKDOWN CODE BLOCK
+        // ==============================
 
         text =
             text.replace(
-                /^```[a-zA-Z]*\s*/i,
+                /^```(?:markdown|text)?\s*/i,
                 ""
             );
 
@@ -280,11 +377,9 @@ Do not mention AI.
             );
 
 
-        /*
-        ==========================================
-        REMOVE AI META TEXT
-        ==========================================
-        */
+        // ==============================
+        // REMOVE AI INTRODUCTION
+        // ==============================
 
         text =
             text.replace(
@@ -295,19 +390,135 @@ Do not mention AI.
 
         text =
             text.replace(
-                /^Sure.*?:\s*/i,
+                /^Sure[,:\s].*?\n/i,
+                ""
+            );
+
+
+        // ==============================
+        // STRICT LOCAL FILTER
+        // ==============================
+
+        const dangerousPatterns = [
+
+            /governing law/gi,
+
+            /jurisdiction/gi,
+
+            /court of/gi,
+
+            /legal compliance/gi,
+
+            /legally compliant/gi,
+
+            /law of india/gi,
+
+            /laws of india/gi,
+
+            /applicable law/gi,
+
+            /applicable laws/gi,
+
+            /registration number/gi,
+
+            /gst number/gi,
+
+            /license number/gi,
+
+            /lawyer reviewed/gi,
+
+            /legal advice/gi
+
+        ];
+
+
+        /*
+        Remove sections that AI should
+        never create automatically.
+        */
+
+        text =
+            text.replace(
+                /##\s*Governing Law[\s\S]*?(?=##\s|$)/gi,
+                ""
+            );
+
+
+        text =
+            text.replace(
+                /##\s*Intellectual Property[\s\S]*?(?=##\s|$)/gi,
+                ""
+            );
+
+
+        text =
+            text.replace(
+                /##\s*Limitation of Liability[\s\S]*?(?=##\s|$)/gi,
                 ""
             );
 
 
         /*
-        ==========================================
-        FINAL OUTPUT
-        ==========================================
+        Remove dangerous individual lines.
         */
 
-        result.value =
+        const lines =
+            text.split(/\r?\n/);
+
+
+        const cleanLines =
+            lines.filter(line => {
+
+                return !dangerousPatterns.some(
+                    pattern => pattern.test(line)
+                );
+
+            });
+
+
+        text =
+            cleanLines.join("\n");
+
+
+        // ==============================
+        // NORMALIZE SPACING
+        // ==============================
+
+        text =
+            text.replace(
+                /\n{3,}/g,
+                "\n\n"
+            );
+
+
+        text =
             text.trim();
+
+
+        // ==============================
+        // FINAL SAFETY CHECK
+        // ==============================
+
+        if (
+            /governing law/i.test(text) ||
+            /jurisdiction/i.test(text) ||
+            /court of/i.test(text) ||
+            /laws of india/i.test(text)
+        ) {
+
+            throw new Error(
+                "AI output में unsupported legal information मिली। कृपया फिर से Generate करें।"
+            );
+
+        }
+
+
+        // ==============================
+        // SHOW RESULT
+        // ==============================
+
+        result.value =
+            text;
 
 
         status.innerText =
@@ -349,11 +560,9 @@ Do not mention AI.
 }
 
 
-/*
-==========================================
-COPY TERMS
-==========================================
-*/
+// ==========================================
+// COPY TERMS
+// ==========================================
 
 async function copyTerms() {
 
@@ -391,15 +600,10 @@ async function copyTerms() {
             "✅ Terms & Conditions copied successfully!"
         );
 
-
     }
 
 
     catch (error) {
-
-        /*
-        Fallback copy
-        */
 
         const textarea =
             document.createElement("textarea");
@@ -417,7 +621,9 @@ async function copyTerms() {
         textarea.select();
 
 
-        document.execCommand("copy");
+        document.execCommand(
+            "copy"
+        );
 
 
         textarea.remove();
