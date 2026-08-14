@@ -31,40 +31,38 @@ async function generateBulletPoints() {
         document.getElementById("generateBtn");
 
 
-    // Product Name जरूरी है
     if (product === "") {
 
         alert("Please enter Product Name.");
 
         return;
+
     }
 
 
-    // Loading
     button.disabled = true;
 
     button.innerText =
         "⏳ Generating AI Bullet Points...";
 
     status.innerText =
-        "AI product information तैयार कर रहा है...";
+        "AI bullet points बना रहा है...";
 
     result.innerText =
         "⏳ Please wait...";
 
 
     /*
-     * AI Prompt
-     *
-     * केवल user द्वारा दी गई information
-     * का उपयोग करने के लिए strict rules.
-     */
+    ==========================================
+    STRICT AI PROMPT
+    ==========================================
+    */
 
     const prompt = `
 
 You are a professional eCommerce product listing writer.
 
-Create exactly 5 short and professional product bullet points.
+Create exactly 5 short product bullet points.
 
 PRODUCT INFORMATION:
 
@@ -84,95 +82,111 @@ Color:
 ${color || "Not specified"}
 
 Target Audience:
-${audience}
+${audience || "Not specified"}
 
 Known Features:
 ${features || "Not specified"}
 
 
-STRICT RULES:
+VERY STRICT RULES:
 
-1. Generate exactly 5 bullet points.
+1. Use ONLY the information provided above.
 
-2. Use ONLY the information provided above.
+2. Never invent information.
 
-3. Do NOT invent any information.
+3. Never guess missing information.
 
-4. Do NOT invent product specifications.
+4. Never add a new feature.
 
-5. Do NOT invent comfort claims.
+5. Never add a new material.
 
-6. Do NOT invent durability claims.
+6. Never add a new color.
 
-7. Do NOT invent quality claims.
+7. Never add a new size.
 
-8. Do NOT invent performance claims.
+8. Never add a new design.
 
-9. Do NOT invent size information.
+9. Never add a new specification.
 
-10. Do NOT invent design details.
+10. Never add price.
 
-11. Do NOT invent features that were not provided.
+11. Never add discount.
 
-12. Do NOT invent price.
+12. Never add offer.
 
-13. Do NOT invent discount.
+13. Never add delivery information.
 
-14. Do NOT invent offers.
+14. Never add warranty.
 
-15. Do NOT invent delivery information.
+15. Never add certification.
 
-16. Do NOT invent warranty information.
+16. Never add customer experience.
 
-17. Do NOT invent certifications.
+17. Never claim that the product is comfortable
+unless comfort was explicitly provided.
 
-18. Do NOT invent material information.
+18. Never claim that the product is durable
+unless durability was explicitly provided.
 
-19. Do NOT invent color information.
+19. Never claim that the product is premium.
 
-20. Do NOT mention another brand.
+20. Never claim that the product is high quality.
 
-21. Do NOT mention Nike, Adidas, Puma, Samsung,
-Apple or any other brand unless it is provided by the user.
+21. Never claim that the product is best.
 
-22. Keep the exact Product Name.
+22. Never claim that the product is amazing.
 
-23. Keep the exact Brand Name if provided.
+23. Never claim that the product is perfect.
 
-24. Use simple eCommerce language.
+24. Never mention another brand.
 
-25. Keep each bullet point short.
+25. Never add Nike, Adidas, Puma, Reebok,
+Samsung, Apple or any other brand
+unless it was explicitly provided.
 
-26. Do not use emojis.
+26. Keep the exact brand name.
 
-27. Do not add explanations.
+27. Keep the exact product name.
 
-28. Do not add headings.
+28. Keep the exact material if provided.
 
-29. Do not number the bullet points.
+29. Keep the exact color if provided.
 
-30. Each line must start with "-".
+30. Keep the exact category if provided.
 
-31. Do not create fake customer experiences.
+31. Do not unnecessarily repeat the same information.
 
-32. Do not use words such as:
-Best, Premium, Amazing, Excellent, High Quality,
-Guaranteed, Perfect, Luxury, Superior
-unless the user explicitly provided them.
+32. Do not write explanations.
 
-33. If information is missing, simply do not mention it.
+33. Do not write a heading.
 
-34. Never guess missing information.
+34. Do not use emojis.
+
+35. Do not use hashtags.
+
+36. Do not use promotional language.
+
+37. Do not use words such as:
+Best, Premium, Amazing, Excellent,
+Superior, Luxury, Perfect, Guaranteed.
+
+38. Do not add information just to make
+the bullet point longer.
+
+39. If information is missing, simply leave
+that information out.
+
+40. Create exactly 5 useful factual bullet points.
 
 OUTPUT FORMAT:
 
-- Bullet point 1
-- Bullet point 2
-- Bullet point 3
-- Bullet point 4
-- Bullet point 5
+- Product name and brand
+- Category
+- Material
+- Color
+- Known features
 
-Return ONLY the 5 bullet points.
+Return ONLY 5 bullet points.
 
 `;
 
@@ -205,102 +219,173 @@ Return ONLY the 5 bullet points.
         if (!response.ok) {
 
             throw new Error(
-                data.error || "Server error"
+                data.error || "Backend API Error"
             );
 
         }
 
 
         let text =
-            data.result || "";
+            String(data.result || "").trim();
+
+
+        if (!text) {
+
+            throw new Error(
+                "AI ने कोई bullet points नहीं बनाए।"
+            );
+
+        }
 
 
         /*
-         * साफ करें
-         */
-
-        text =
-            text.replace(/\r/g, "");
-
-
-        /*
-         * केवल lines लें
-         */
+        ==========================================
+        CLEAN AI RESPONSE
+        ==========================================
+        */
 
         let lines =
             text
-            .split("\n")
+            .split(/\r?\n/)
             .map(line => line.trim())
             .filter(line => line.length > 0);
 
 
         /*
-         * Markdown bullets को साफ करें
-         */
+        Remove headings
+        */
 
-        let bullets = [];
+        lines =
+            lines.filter(line => {
 
-        lines.forEach(line => {
+                const lower =
+                    line.toLowerCase();
 
-            line =
-                line.replace(
-                    /^[-•*]\s*/,
-                    ""
+                return !(
+                    lower === "bullet points" ||
+                    lower === "product features" ||
+                    lower === "features:" ||
+                    lower === "bullet points:"
                 );
 
-            line =
-                line.replace(
-                    /^\d+[\.\)]\s*/,
-                    ""
-                );
-
-            if (line.length > 0) {
-
-                bullets.push(line);
-
-            }
-
-        });
+            });
 
 
         /*
-         * Duplicate हटाएँ
-         */
+        Remove numbering and bullet symbols
+        */
+
+        let bullets =
+            lines.map(line => {
+
+                return line
+                    .replace(
+                        /^[-•*]\s*/,
+                        ""
+                    )
+                    .replace(
+                        /^\d+[\.\):\-]\s*/,
+                        ""
+                    )
+                    .trim();
+
+            });
+
+
+        /*
+        Remove empty lines
+        */
+
+        bullets =
+            bullets.filter(
+                bullet => bullet.length > 0
+            );
+
+
+        /*
+        Remove duplicates
+        */
 
         bullets =
             [...new Set(bullets)];
 
 
         /*
-         * Maximum 5
-         */
+        Maximum 5
+        */
 
         bullets =
             bullets.slice(0, 5);
 
 
         /*
-         * Strict validation
-         */
+        ==========================================
+        STRICT LOCAL FILTER
+        ==========================================
+        */
 
-        const forbiddenWords = [
+        const forbiddenPhrases = [
 
             "best",
             "premium",
             "amazing",
             "excellent",
             "high quality",
-            "guaranteed",
-            "perfect",
-            "luxury",
+            "high-quality",
             "superior",
+            "luxury",
+            "perfect",
+            "guaranteed",
+            "guarantee",
+            "comfortable",
+            "comfort",
+            "durable",
+            "durability",
+            "soft",
+            "lightweight",
+            "stylish",
+            "trendy",
+            "fashionable",
+            "premium quality",
+            "best quality",
+            "best seller",
+            "bestseller",
+            "special offer",
+            "limited offer",
             "discount",
-            "offer",
+            "sale",
+            "deal",
             "free delivery",
             "fast delivery",
-            "warranty"
+            "cash on delivery",
+            "warranty",
+            "certified"
 
         ];
+
+
+        /*
+        IMPORTANT:
+        Some words may actually be provided
+        by the user. Therefore we only block
+        them if they were NOT provided.
+        */
+
+        const providedText = (
+
+            product +
+            " " +
+            brand +
+            " " +
+            category +
+            " " +
+            material +
+            " " +
+            color +
+            " " +
+            features
+
+        ).toLowerCase();
 
 
         bullets =
@@ -309,43 +394,198 @@ Return ONLY the 5 bullet points.
                 const lower =
                     bullet.toLowerCase();
 
-                return !forbiddenWords.some(
-                    word => lower.includes(word)
-                );
+                for (
+                    const phrase
+                    of forbiddenPhrases
+                ) {
+
+                    if (
+                        lower.includes(phrase) &&
+                        !providedText.includes(phrase)
+                    ) {
+
+                        return false;
+
+                    }
+
+                }
+
+                return true;
 
             });
 
 
         /*
-         * अगर 5 valid bullets नहीं हैं
-         * तो AI को दोबारा call करने के बजाय
-         * सुरक्षित तरीके से error दिखाएँ।
-         */
+        ==========================================
+        REMOVE COMMON AI FILLER
+        ==========================================
+        */
 
-        if (bullets.length !== 5) {
+        bullets =
+            bullets.filter(bullet => {
+
+                const lower =
+                    bullet.toLowerCase();
+
+                if (
+                    lower.startsWith(
+                        "this product"
+                    )
+                ) {
+                    return false;
+                }
+
+                if (
+                    lower.startsWith(
+                        "this t-shirt"
+                    )
+                ) {
+                    return false;
+                }
+
+                if (
+                    lower.startsWith(
+                        "the product"
+                    )
+                ) {
+                    return false;
+                }
+
+                return true;
+
+            });
+
+
+        /*
+        ==========================================
+        SAFETY FALLBACK
+        ==========================================
+        */
+
+        if (bullets.length < 5) {
+
+            const safeBullets = [];
+
+
+            if (brand && product) {
+
+                safeBullets.push(
+                    brand + " " + product
+                );
+
+            } else if (product) {
+
+                safeBullets.push(
+                    product
+                );
+
+            }
+
+
+            if (category) {
+
+                safeBullets.push(
+                    category
+                );
+
+            }
+
+
+            if (material) {
+
+                safeBullets.push(
+                    "Material: " + material
+                );
+
+            }
+
+
+            if (color) {
+
+                safeBullets.push(
+                    "Color: " + color
+                );
+
+            }
+
+
+            if (features) {
+
+                safeBullets.push(
+                    "Features: " + features
+                );
+
+            }
+
+
+            /*
+            Add only unique safe values
+            */
+
+            safeBullets.forEach(item => {
+
+                if (
+                    !bullets.some(
+                        existing =>
+                        existing.toLowerCase() ===
+                        item.toLowerCase()
+                    )
+                ) {
+
+                    bullets.push(item);
+
+                }
+
+            });
+
+        }
+
+
+        /*
+        Maximum 5 final points
+        */
+
+        bullets =
+            [...new Set(bullets)]
+            .slice(0, 5);
+
+
+        /*
+        If still fewer than 5,
+        do not invent information.
+        */
+
+        if (bullets.length < 5) {
 
             throw new Error(
-                "AI ने 5 valid और सुरक्षित bullet points नहीं बनाए। कृपया फिर से Generate करें।"
+                "दी गई जानकारी से 5 सुरक्षित bullet points नहीं बनाए जा सके।"
             );
 
         }
 
 
         /*
-         * Final output
-         */
+        ==========================================
+        FINAL OUTPUT
+        ==========================================
+        */
 
         result.innerText =
             bullets
-            .map(bullet => "- " + bullet)
+            .map(
+                bullet => "- " + bullet
+            )
             .join("\n");
 
 
         status.innerText =
-            "✅ 5 safe AI bullet points generated.";
+            "✅ 5 factual AI bullet points generated.";
 
 
-    } catch (error) {
+    }
+
+
+    catch (error) {
 
         console.error(
             "Bullet Points Generator Error:",
@@ -362,7 +602,10 @@ Return ONLY the 5 bullet points.
         status.innerText =
             "Please try again.";
 
-    } finally {
+    }
+
+
+    finally {
 
         button.disabled = false;
 
@@ -375,13 +618,16 @@ Return ONLY the 5 bullet points.
 
 
 /*
- * Copy Bullet Points
- */
+==========================================
+COPY BULLET POINTS
+==========================================
+*/
 
 async function copyBulletPoints() {
 
     const result =
         document.getElementById("result");
+
 
     const text =
         result.innerText.trim();
@@ -394,7 +640,7 @@ async function copyBulletPoints() {
     ) {
 
         alert(
-            "पहले AI Bullet Points generate करें."
+            "पहले Bullet Points generate करें."
         );
 
         return;
@@ -404,33 +650,49 @@ async function copyBulletPoints() {
 
     try {
 
-        await navigator.clipboard.writeText(text);
+        await navigator.clipboard.writeText(
+            text
+        );
+
 
         alert(
             "✅ Bullet Points copied successfully!"
         );
 
-    } catch (error) {
+
+    }
+
+    catch (error) {
 
         /*
-         * Clipboard fallback
-         */
+        Fallback copy
+        */
 
         const textarea =
-            document.createElement("textarea");
+            document.createElement(
+                "textarea"
+            );
+
 
         textarea.value =
             text;
+
 
         document.body.appendChild(
             textarea
         );
 
+
         textarea.select();
 
-        document.execCommand("copy");
+
+        document.execCommand(
+            "copy"
+        );
+
 
         textarea.remove();
+
 
         alert(
             "✅ Bullet Points copied successfully!"
@@ -438,4 +700,4 @@ async function copyBulletPoints() {
 
     }
 
-}
+        }
