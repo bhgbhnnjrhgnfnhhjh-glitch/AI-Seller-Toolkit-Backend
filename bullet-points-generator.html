@@ -1,162 +1,375 @@
-<!DOCTYPE html>
+
+line-height<!DOCTYPE html>
 <html lang="en">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>AI Bullet Points Generator</title>
 
+<link rel="stylesheet" href="style.css">
+
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
+
+.generator-container{
+    max-width:700px;
+    margin:30px auto;
+    background:#ffffff;
+    padding:25px;
+    border-radius:14px;
+    box-shadow:0 5px 18px rgba(0,0,0,0.12);
 }
 
-body{
-background:#f4f7fb;
+.generator-container h2{
+    text-align:center;
+    color:#2563eb;
+    margin-bottom:25px;
 }
 
-header{
-background:linear-gradient(90deg,#2563eb,#4f46e5);
-color:white;
-text-align:center;
-padding:18px;
-font-size:24px;
-font-weight:bold;
+.form-group{
+    margin-bottom:16px;
 }
 
-.container{
-max-width:700px;
-margin:30px auto;
-background:white;
-padding:25px;
-border-radius:12px;
-box-shadow:0 5px 15px rgba(0,0,0,.15);
+.form-group label{
+    display:block;
+    font-weight:bold;
+    margin-bottom:7px;
 }
 
-label{
-display:block;
-margin-top:15px;
-font-weight:bold;
+.form-group input,
+.form-group select,
+.form-group textarea{
+
+    width:100%;
+    padding:12px;
+
+    border:1px solid #d1d5db;
+    border-radius:7px;
+
+    font-size:16px;
+
+    outline:none;
 }
 
-input{
-width:100%;
-padding:12px;
-margin-top:6px;
-border:1px solid #ccc;
-border-radius:6px;
-font-size:16px;
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus{
+
+    border-color:#2563eb;
 }
 
-button{
-width:100%;
-padding:14px;
-margin-top:20px;
-background:#16a34a;
-color:white;
-font-size:18px;
-border:none;
-border-radius:6px;
-cursor:pointer;
+.generate-btn{
+
+    width:100%;
+    padding:14px;
+
+    background:#16a34a;
+    color:white;
+
+    border:none;
+    border-radius:7px;
+
+    font-size:18px;
+    font-weight:bold;
+
+    cursor:pointer;
 }
 
-button:hover{
-background:#15803d;
+.generate-btn:hover{
+    background:#15803d;
 }
 
-.result{
-margin-top:20px;
-padding:15px;
-background:#f8fafc;
-border:1px solid #ddd;
-border-radius:8px;
-line-height:2;
-white-space:pre-line;
+.generate-btn:disabled{
+    background:#9ca3af;
+    cursor:not-allowed;
 }
 
-.copyBtn{
-background:#2563eb;
-margin-top:10px;
+.status{
+
+    text-align:center;
+
+    margin-top:15px;
+
+    font-size:14px;
+    color:#555;
+
 }
 
-.copyBtn:hover{
-background:#1d4ed8;
+.result-box{
+
+    margin-top:20px;
+
+    padding:16px;
+
+    background:#f8fafc;
+
+    border:1px solid #d1d5db;
+
+    border-radius:8px;
+
+    min-height:180px;
+
+    white-space:pre-wrap;
+
+    word-break:break-word;
+
+    line-height:1.8;
+
+    font-size:16px;
 }
+
+.copy-btn{
+
+    width:100%;
+
+    margin-top:12px;
+
+    padding:13px;
+
+    background:#2563eb;
+
+    color:white;
+
+    border:none;
+
+    border-radius:7px;
+
+    font-size:17px;
+
+    cursor:pointer;
+}
+
+.copy-btn:hover{
+    background:#1d4ed8;
+}
+
+.info-box{
+
+    margin-top:18px;
+
+    padding:14px;
+
+    background:#eff6ff;
+
+    border-left:4px solid #2563eb;
+
+    border-radius:6px;
+
+    font-size:14px;
+
+    line-height:1.6;
+}
+
 </style>
 
 </head>
 
+
 <body>
 
+
 <header>
-📌 AI Bullet Points Generator
+
+<h1>🤖 AI Seller Toolkit</h1>
+
+<a href="tools.html">⬅ Back to Tools</a>
+
 </header>
 
-<div class="container">
 
-<label>Product Name</label>
-<input type="text" id="product" placeholder="Example: Cotton T-Shirt">
+<section class="hero">
 
-<label>Brand Name</label>
-<input type="text" id="brand" placeholder="Example: Fashion Hud">
+<h2>📌 AI Bullet Points Generator</h2>
 
-<label>Material</label>
-<input type="text" id="material" placeholder="Example: 100% Cotton">
+<p>Create Professional Product Bullet Points with AI</p>
 
-<button onclick="generateBullets()">
-Generate Bullet Points
-</button>
+</section>
 
-<div class="result" id="result">
-Your bullet points will appear here...
+
+<div class="generator-container">
+
+
+<h2>Create Product Bullet Points</h2>
+
+
+<div class="form-group">
+
+<label for="product">
+Product Name
+</label>
+
+<input
+type="text"
+id="product"
+placeholder="Example: Cotton T-Shirt"
+>
+
 </div>
 
-<button class="copyBtn" onclick="copyBullets()">
-Copy Bullet Points
-</button>
+
+<div class="form-group">
+
+<label for="brand">
+Brand Name
+</label>
+
+<input
+type="text"
+id="brand"
+placeholder="Example: Fashion Hud"
+>
 
 </div>
 
-<script>
 
-function generateBullets(){
+<div class="form-group">
 
-let product=document.getElementById("product").value.trim();
-let brand=document.getElementById("brand").value.trim();
-let material=document.getElementById("material").value.trim();
+<label for="category">
+Category
+</label>
 
-if(product==""){
-alert("Please enter Product Name.");
-return;
-}
+<input
+type="text"
+id="category"
+placeholder="Example: Men's Clothing"
+>
 
-let bullets=
-"✔ Premium "+product+"\n\n"+
-"✔ Brand: "+(brand || "Generic")+"\n\n"+
-"✔ Material: "+(material || "High Quality")+"\n\n"+
-"✔ Soft, Comfortable & Durable\n\n"+
-"✔ Perfect for Daily Use\n\n"+
-"✔ Stylish Design & Premium Finish\n\n"+
-"✔ Easy to Wash & Maintain\n\n"+
-"✔ Ideal for Amazon, Flipkart, Meesho & Shopify";
+</div>
 
-document.getElementById("result").innerText=bullets;
 
-}
+<div class="form-group">
 
-function copyBullets(){
+<label for="material">
+Material
+</label>
 
-let text=document.getElementById("result").innerText;
+<input
+type="text"
+id="material"
+placeholder="Example: 100% Cotton"
+>
 
-navigator.clipboard.writeText(text);
+</div>
 
-alert("Bullet Points Copied Successfully!");
 
-}
+<div class="form-group">
 
-</script>
+<label for="color">
+Color
+</label>
+
+<input
+type="text"
+id="color"
+placeholder="Example: Black"
+>
+
+</div>
+
+
+<div class="form-group">
+
+<label for="audience">
+Target Audience
+</label>
+
+<select id="audience">
+
+<option value="Men">Men</option>
+
+<option value="Women">Women</option>
+
+<option value="Kids">Kids</option>
+
+<option value="Unisex">Unisex</option>
+
+</select>
+
+</div>
+
+
+<div class="form-group">
+
+<label for="features">
+Known Features
+</label>
+
+<textarea
+id="features"
+rows="4"
+placeholder="Example: Round neck, short sleeves"
+></textarea>
+
+</div>
+
+
+<button
+class="generate-btn"
+id="generateBtn"
+onclick="generateBulletPoints()"
+>
+
+🤖 Generate AI Bullet Points
+
+</button>
+
+
+<div
+class="status"
+id="status"
+></div>
+
+
+<div
+class="result-box"
+id="result"
+>
+
+Your AI generated bullet points will appear here...
+
+</div>
+
+
+<button
+class="copy-btn"
+onclick="copyBulletPoints()"
+>
+
+📋 Copy Bullet Points
+
+</button>
+
+
+<div class="info-box">
+
+<strong>🛡️ Safe AI Filtering</strong>
+
+<br>
+
+AI केवल आपके द्वारा दी गई Product Name, Brand, Category,
+Material, Color, Audience और Features की जानकारी का उपयोग करेगा।
+
+<br><br>
+
+❌ Fake claims नहीं<br>
+
+❌ दूसरा brand नहीं<br>
+
+❌ Fake price या offer नहीं<br>
+
+❌ बिना जानकारी के features नहीं
+
+</div>
+
+
+</div>
+
+
+<script src="bullet-points-generator.js"></script>
+
 
 </body>
-  </html>
+
+</html>
