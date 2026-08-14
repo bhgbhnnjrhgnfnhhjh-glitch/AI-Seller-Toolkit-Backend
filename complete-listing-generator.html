@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Complete Product Listing Generator</title>
+<title>AI Complete Product Listing Generator</title>
 
 <link rel="stylesheet" href="style.css">
 
@@ -16,7 +16,7 @@
 
 <header>
 
-<h1>🚀 Complete Product Listing Generator</h1>
+<h1>🚀 AI Complete Product Listing Generator</h1>
 
 <a href="tools.html">⬅ Back to Tools</a>
 
@@ -27,7 +27,7 @@
 
 <h2>🚀 Complete Product Listing Generator</h2>
 
-<p>Create a Complete eCommerce Product Listing with AI</p>
+<p>Create SEO Title, Description, Bullet Points, Features, Keywords, Hashtags and Tags</p>
 
 </section>
 
@@ -36,15 +36,16 @@
 
 <div class="card">
 
+<h2>📦 Product Information</h2>
+
+
 <label>Product Name</label>
 
 <input
 type="text"
 id="product"
-placeholder="Example: Cotton T-Shirt">
-
-
-<br><br>
+placeholder="Example: Cotton T-Shirt"
+>
 
 
 <label>Brand Name</label>
@@ -52,10 +53,8 @@ placeholder="Example: Cotton T-Shirt">
 <input
 type="text"
 id="brand"
-placeholder="Example: Fashion Hud">
-
-
-<br><br>
+placeholder="Example: Fashion Hud"
+>
 
 
 <label>Category</label>
@@ -63,10 +62,8 @@ placeholder="Example: Fashion Hud">
 <input
 type="text"
 id="category"
-placeholder="Example: Men's Clothing">
-
-
-<br><br>
+placeholder="Example: Men's Clothing"
+>
 
 
 <label>Material</label>
@@ -74,10 +71,17 @@ placeholder="Example: Men's Clothing">
 <input
 type="text"
 id="material"
-placeholder="Example: 100% Cotton">
+placeholder="Example: 100% Cotton"
+>
 
 
-<br><br>
+<label>Target Audience</label>
+
+<input
+type="text"
+id="audience"
+placeholder="Example: Men"
+>
 
 
 <label>Color</label>
@@ -85,144 +89,111 @@ placeholder="Example: 100% Cotton">
 <input
 type="text"
 id="color"
-placeholder="Example: Black">
+placeholder="Example: Black"
+>
 
 
-<br><br>
+<label>Extra Features</label>
+
+<textarea
+id="features"
+rows="4"
+placeholder="Example: Round neck, short sleeves">
+</textarea>
 
 
-<label>Target Audience</label>
+<label>Marketplace</label>
 
-<select id="audience">
+<select id="marketplace">
 
-<option value="Men">Men</option>
+<option value="Amazon">Amazon</option>
 
-<option value="Women">Women</option>
+<option value="Flipkart">Flipkart</option>
 
-<option value="Kids">Kids</option>
+<option value="Meesho">Meesho</option>
 
-<option value="Unisex">Unisex</option>
+<option value="Shopify">Shopify</option>
+
+<option value="Etsy">Etsy</option>
+
+<option value="All Marketplaces">
+All Marketplaces
+</option>
 
 </select>
 
 
-<br><br>
-
-
-<label>Extra Product Information</label>
-
-<textarea
-id="extra"
-rows="5"
-placeholder="Example: Comfortable, durable, lightweight, stylish">
-</textarea>
-
-
-<br><br>
-
-
-<button onclick="generateListing()">
+<button
+type="button"
+id="generateBtn"
+onclick="generateListing()"
+>
 
 🚀 Generate Complete Listing
 
 </button>
 
 
-<hr>
+<p
+id="status"
+style="text-align:center;margin-top:10px;"
+>
+</p>
+
+</div>
 
 
-<h3>📝 SEO Product Title</h3>
+<div class="card">
+
+<h2>📋 Complete Product Listing</h2>
+
 
 <textarea
-id="titleResult"
-rows="5"
+id="result"
+rows="35"
 style="width:100%;"
 readonly
-placeholder="AI generated product titles will appear here...">
-</textarea>
+placeholder="Your complete product listing will appear here..."
+></textarea>
 
 
-<h3>📄 Product Description</h3>
-
-<textarea
-id="descriptionResult"
-rows="10"
-style="width:100%;"
-readonly
-placeholder="AI generated product description will appear here...">
-</textarea>
-
-
-<h3>📌 Bullet Points</h3>
-
-<textarea
-id="bulletResult"
-rows="10"
-style="width:100%;"
-readonly
-placeholder="AI generated bullet points will appear here...">
-</textarea>
-
-
-<h3>⭐ Product Features</h3>
-
-<textarea
-id="featureResult"
-rows="10"
-style="width:100%;"
-readonly
-placeholder="AI generated product features will appear here...">
-</textarea>
-
-
-<h3>🔍 SEO Keywords</h3>
-
-<textarea
-id="keywordResult"
-rows="10"
-style="width:100%;"
-readonly
-placeholder="AI generated SEO keywords will appear here...">
-</textarea>
-
-
-<h3>#️⃣ Hashtags</h3>
-
-<textarea
-id="hashtagResult"
-rows="8"
-style="width:100%;"
-readonly
-placeholder="AI generated hashtags will appear here...">
-</textarea>
-
-
-<h3>🏷 Product Tags</h3>
-
-<textarea
-id="tagResult"
-rows="8"
-style="width:100%;"
-readonly
-placeholder="AI generated product tags will appear here...">
-</textarea>
-
-
-<br><br>
-
-
-<button onclick="copyAll()">
+<button
+type="button"
+onclick="copyListing()"
+>
 
 📋 Copy Complete Listing
 
 </button>
 
 
-<button onclick="clearAll()">
+</div>
 
-🗑 Clear
 
-</button>
+<div class="card">
+
+<h3>🛡️ Strict AI Filtering</h3>
+
+<p>
+AI केवल आपके द्वारा दी गई Product Name, Brand, Category,
+Material, Audience, Color और Features की जानकारी का उपयोग करेगा।
+</p>
+
+<p>❌ Fake claims नहीं</p>
+
+<p>❌ दूसरा brand नहीं</p>
+
+<p>❌ Fake price नहीं</p>
+
+<p>❌ Fake discount या offer नहीं</p>
+
+<p>❌ Manufacturer का दावा नहीं</p>
+
+<p>❌ Premium / Best / Amazing जैसे unsupported claims नहीं</p>
+
+<p>❌ Features या specifications invent नहीं होंगे</p>
+
+<p>✅ केवल दी गई जानकारी का उपयोग होगा</p>
 
 </div>
 
