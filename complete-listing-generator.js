@@ -1,227 +1,240 @@
 async function generateListing() {
 
-    const product = document.getElementById("product").value.trim();
-    const brand = document.getElementById("brand").value.trim();
-    const category = document.getElementById("category").value.trim();
-    const material = document.getElementById("material").value.trim();
-    const color = document.getElementById("color").value.trim();
-    const audience = document.getElementById("audience").value;
-    const extra = document.getElementById("extra").value.trim();
+    const product =
+        document.getElementById("product").value.trim();
 
-    if (product === "" || category === "") {
-        alert("कृपया Product Name और Category भरें।");
+    const brand =
+        document.getElementById("brand").value.trim();
+
+    const category =
+        document.getElementById("category").value.trim();
+
+    const material =
+        document.getElementById("material").value.trim();
+
+    const audience =
+        document.getElementById("audience").value.trim();
+
+    const color =
+        document.getElementById("color").value.trim();
+
+    const features =
+        document.getElementById("features").value.trim();
+
+    const marketplace =
+        document.getElementById("marketplace").value;
+
+    const result =
+        document.getElementById("result");
+
+    const status =
+        document.getElementById("status");
+
+    const button =
+        document.getElementById("generateBtn");
+
+
+    // Product Name जरूरी है
+    if (product === "") {
+
+        alert("Please enter Product Name.");
+
         return;
     }
 
-    const titleResult = document.getElementById("titleResult");
-    const descriptionResult = document.getElementById("descriptionResult");
-    const bulletResult = document.getElementById("bulletResult");
-    const featureResult = document.getElementById("featureResult");
-    const keywordResult = document.getElementById("keywordResult");
-    const hashtagResult = document.getElementById("hashtagResult");
-    const tagResult = document.getElementById("tagResult");
 
-    titleResult.value = "⏳ Generating...";
-    descriptionResult.value = "⏳ Generating...";
-    bulletResult.value = "⏳ Generating...";
-    featureResult.value = "⏳ Generating...";
-    keywordResult.value = "⏳ Generating...";
-    hashtagResult.value = "⏳ Generating...";
-    tagResult.value = "⏳ Generating...";
+    // Loading
+    button.disabled = true;
+
+    button.innerText =
+        "⏳ Generating Listing...";
+
+    status.innerText =
+        "⏳ AI complete product listing बना रहा है...";
+
+    result.value = "";
+
 
     const prompt = `
-You are an expert eCommerce product listing specialist.
 
-Create a professional marketplace listing using ONLY the facts supplied by the user.
+You are a professional eCommerce product listing writer.
 
-========================
+Create a complete product listing using ONLY the information provided below.
+
 PRODUCT INFORMATION
-========================
 
-Product Name: ${product}
-Brand: ${brand || "Not specified"}
-Category: ${category}
-Material: ${material || "Not specified"}
-Color: ${color || "Not specified"}
-Target Audience: ${audience}
-Extra Information: ${extra || "Not specified"}
+Product Name:
+${product}
 
-========================
-CRITICAL ACCURACY RULES
-========================
+Brand:
+${brand || "Not provided"}
 
-1. NEVER invent product information.
+Category:
+${category || "Not provided"}
 
-2. NEVER assume specifications.
+Material:
+${material || "Not provided"}
 
-3. NEVER add benefits that were not supplied.
+Target Audience:
+${audience || "Not provided"}
 
-4. NEVER add:
-   - Premium
-   - Best
-   - Excellent
-   - Superior
-   - Luxury
-   - Durable
-   - Long-lasting
-   - Soft
-   - Comfortable
-   - Breathable
-   - Lightweight
-   - Waterproof
-   - Guaranteed
-   - High Quality
+Color:
+${color || "Not provided"}
 
-   unless the user explicitly provided that information.
+Extra Features:
+${features || "Not provided"}
 
-5. Keep the exact product type.
+Marketplace:
+${marketplace}
 
-   Example:
-   If Product Name says "T-Shirt", always use "T-Shirt".
-   NEVER change "T-Shirt" to "Shirt", "Top", "Tee" or another product type
-   unless that exact alternative is part of the supplied product information.
 
-6. Do not create synonyms that can change the actual product type.
+VERY IMPORTANT STRICT RULES:
 
-7. Do not create unsupported specifications such as:
-   size, weight, fit, sleeve type, neck type, pattern, washing instructions,
-   warranty, certification, country of origin, package contents, etc.
+1. Use ONLY the information provided above.
 
-8. Do not create fake claims.
+2. Do NOT invent any information.
 
-9. Do not repeat the same sentence or fact unnecessarily.
+3. Do NOT invent product specifications.
 
-10. The description must sound natural and professional.
+4. Do NOT invent size.
 
-11. SEO keywords must describe the actual product.
+5. Do NOT invent weight.
 
-12. Do NOT create keywords for a different product.
+6. Do NOT invent dimensions.
 
-   Example:
-   For "Cotton T-Shirt", do NOT create:
-   "cotton shirt"
-   "formal shirt"
-   "dress shirt"
-   unless those exact terms are part of the supplied product information.
+7. Do NOT invent price.
 
-13. Do not use keyword stuffing.
+8. Do NOT invent discount.
 
-14. Do not mention AI or content generation.
+9. Do NOT invent offers.
 
-15. Do not use emojis inside the generated listing.
+10. Do NOT invent delivery information.
 
-========================
-SEO PRODUCT TITLE
-========================
+11. Do NOT invent warranty.
 
-Create exactly 3 different SEO-friendly product titles.
+12. Do NOT invent return information.
 
-Rules:
-- Keep the exact product type.
-- Include brand when available.
-- Include material when available.
-- Include color when available.
-- Include target audience when relevant.
-- Do not add unsupported features.
-- Titles must sound natural.
-- Avoid keyword stuffing.
+13. Do NOT invent manufacturer information.
 
-========================
-PRODUCT DESCRIPTION
-========================
+14. Do NOT change the brand name.
 
-Write one natural product description of approximately 100-150 words.
+15. Do NOT add another brand.
 
-Rules:
-- Do not repeat the same information again and again.
-- Mention the brand, product type, category, material, color and audience naturally.
-- Do not invent benefits.
-- Do not add unsupported specifications.
-- Do not use exaggerated marketing language.
-- Keep it suitable for marketplace listings.
+16. Do NOT claim that the brand is the manufacturer unless explicitly provided.
 
-========================
-BULLET POINTS
-========================
+17. Do NOT use unsupported words such as:
+Premium, Best, Amazing, High Quality, Superior, Luxury, Guaranteed.
 
-Create exactly 5 concise bullet points.
+18. Do NOT make health or performance claims.
 
-Each bullet must contain a useful factual attribute.
+19. Do NOT claim comfort, durability or quality unless explicitly provided.
 
-Do not repeat the same fact unnecessarily.
+20. Do NOT create fake customer experience.
 
-========================
-PRODUCT FEATURES
-========================
+21. Do NOT create fake reviews.
 
-Create exactly 10 product features.
+22. Do NOT repeat the same keyword unnecessarily.
 
-Use actual supplied facts first.
+23. Keep the exact Product Name.
 
-If fewer than 10 independent facts are available, create additional entries only by presenting the same supplied information in a different factual attribute format.
+24. Keep the exact Brand Name.
 
-Do NOT invent new features.
+25. Keep the exact Material.
 
-Do NOT use fake benefits.
+26. Keep the exact Color.
 
-========================
-SEO KEYWORDS
-========================
+27. Keep the exact Target Audience.
 
-Create exactly 20 SEO keywords.
+28. If information is missing, simply do not include that information.
 
-Rules:
-- Every keyword must be directly relevant to the exact product.
-- Preserve the exact product type.
-- Use combinations of supplied brand, product, category, material, color and audience.
-- Avoid unrelated product types.
-- Avoid keyword stuffing.
-- Do not use unsupported claims.
+29. The listing must be factual and easy to understand.
 
-========================
-HASHTAGS
-========================
+30. Do not mention AI.
 
-Create exactly 10 relevant hashtags.
+31. Do not explain these rules.
 
-Only use the supplied product information.
+32. Return ONLY the requested product listing.
 
-========================
-PRODUCT TAGS
-========================
 
-Create exactly 15 relevant product tags.
+OUTPUT FORMAT:
 
-Only use supplied information.
+SEO PRODUCT TITLES:
 
-Do not create unrelated product types.
+1. [Title]
+2. [Title]
+3. [Title]
 
-========================
-OUTPUT FORMAT
-========================
-
-Return ONLY these headings:
-
-SEO PRODUCT TITLE:
 
 PRODUCT DESCRIPTION:
 
+[Write a factual description using only provided information.]
+
+
 BULLET POINTS:
+
+1. [Fact]
+2. [Fact]
+3. [Fact]
+4. [Fact]
+5. [Fact]
+
 
 PRODUCT FEATURES:
 
+1. [Feature]
+2. [Feature]
+3. [Feature]
+4. [Feature]
+5. [Feature]
+
+
 SEO KEYWORDS:
+
+1. [Keyword]
+2. [Keyword]
+3. [Keyword]
+4. [Keyword]
+5. [Keyword]
+6. [Keyword]
+7. [Keyword]
+8. [Keyword]
+9. [Keyword]
+10. [Keyword]
+
 
 HASHTAGS:
 
+1. #[Hashtag]
+2. #[Hashtag]
+3. #[Hashtag]
+4. #[Hashtag]
+5. #[Hashtag]
+
+
 PRODUCT TAGS:
+
+1. [Tag]
+2. [Tag]
+3. [Tag]
+4. [Tag]
+5. [Tag]
+6. [Tag]
+7. [Tag]
+8. [Tag]
+9. [Tag]
+10. [Tag]
+
 `;
+
 
     try {
 
         const response = await fetch(
+
             "https://ai-seller-toolkit-backend-1.onrender.com/generate",
+
             {
+
                 method: "POST",
 
                 headers: {
@@ -231,209 +244,120 @@ PRODUCT TAGS:
                 body: JSON.stringify({
                     prompt: prompt
                 })
+
             }
+
         );
 
-        const data = await response.json();
 
         if (!response.ok) {
+
             throw new Error(
-                data.details ||
-                data.error ||
-                "Server error"
+                "Server Error: " + response.status
             );
+
         }
 
-        const text = data.result || "";
 
-        if (!text.trim()) {
-            throw new Error("AI returned an empty response.");
+        const data =
+            await response.json();
+
+
+        // Backend से answer लेना
+        let answer =
+            data.response ||
+            data.text ||
+            data.result ||
+            data.output;
+
+
+        if (!answer) {
+
+            throw new Error(
+                "AI response नहीं मिला।"
+            );
+
         }
 
-        titleResult.value = extractSection(
-            text,
-            "SEO PRODUCT TITLE:",
-            "PRODUCT DESCRIPTION:"
+
+        // Result दिखाएँ
+        result.value =
+            answer.trim();
+
+
+        status.innerText =
+            "✅ Complete Product Listing successfully generated.";
+
+
+    } catch (error) {
+
+        console.error(
+            "Complete Listing Error:",
+            error
         );
 
-        descriptionResult.value = extractSection(
-            text,
-            "PRODUCT DESCRIPTION:",
-            "BULLET POINTS:"
+
+        result.value =
+            "❌ Listing generate नहीं हो सकी.\n\n" +
+            "कृपया कुछ देर बाद फिर कोशिश करें।";
+
+
+        status.innerText =
+            "❌ Error: Backend API से response नहीं मिला.";
+
+
+    } finally {
+
+        button.disabled = false;
+
+        button.innerText =
+            "🚀 Generate Complete Listing";
+
+    }
+
+}
+
+
+// Copy Complete Listing
+async function copyListing() {
+
+    const result =
+        document.getElementById("result");
+
+    const text =
+        result.value.trim();
+
+
+    if (text === "") {
+
+        alert(
+            "पहले Complete Product Listing generate करें।"
         );
 
-        bulletResult.value = extractSection(
-            text,
-            "BULLET POINTS:",
-            "PRODUCT FEATURES:"
-        );
+        return;
 
-        featureResult.value = extractSection(
-            text,
-            "PRODUCT FEATURES:",
-            "SEO KEYWORDS:"
-        );
+    }
 
-        keywordResult.value = extractSection(
-            text,
-            "SEO KEYWORDS:",
-            "HASHTAGS:"
-        );
 
-        hashtagResult.value = extractSection(
-            text,
-            "HASHTAGS:",
-            "PRODUCT TAGS:"
-        );
+    try {
 
-        tagResult.value = extractSection(
-            text,
-            "PRODUCT TAGS:",
-            null
+        await navigator.clipboard.writeText(text);
+
+        alert(
+            "✅ Complete Product Listing copied!"
         );
 
     } catch (error) {
 
-        console.error("Listing AI Error:", error);
+        // पुराने browser के लिए fallback
+        result.select();
 
-        const message =
-            "❌ AI listing नहीं बन सकी.\n\n" +
-            "Error: " +
-            error.message;
+        document.execCommand("copy");
 
-        titleResult.value = message;
-        descriptionResult.value = message;
-        bulletResult.value = message;
-        featureResult.value = message;
-        keywordResult.value = message;
-        hashtagResult.value = message;
-        tagResult.value = message;
-    }
-}
-
-
-function extractSection(text, startHeading, endHeading) {
-
-    const start = text.indexOf(startHeading);
-
-    if (start === -1) {
-        return "";
-    }
-
-    const contentStart =
-        start + startHeading.length;
-
-    let end;
-
-    if (endHeading) {
-        end = text.indexOf(
-            endHeading,
-            contentStart
+        alert(
+            "✅ Complete Product Listing copied!"
         );
-    } else {
-        end = text.length;
+
     }
 
-    if (end === -1) {
-        end = text.length;
-    }
-
-    return text
-        .substring(contentStart, end)
-        .trim();
-}
-
-
-function copyAll() {
-
-    const title =
-        document.getElementById("titleResult").value;
-
-    const description =
-        document.getElementById("descriptionResult").value;
-
-    const bullets =
-        document.getElementById("bulletResult").value;
-
-    const features =
-        document.getElementById("featureResult").value;
-
-    const keywords =
-        document.getElementById("keywordResult").value;
-
-    const hashtags =
-        document.getElementById("hashtagResult").value;
-
-    const tags =
-        document.getElementById("tagResult").value;
-
-
-    if (title.trim() === "") {
-        alert("पहले Complete Listing generate करें।");
-        return;
-    }
-
-
-    const completeListing =
-`SEO PRODUCT TITLE:
-${title}
-
-PRODUCT DESCRIPTION:
-${description}
-
-BULLET POINTS:
-${bullets}
-
-PRODUCT FEATURES:
-${features}
-
-SEO KEYWORDS:
-${keywords}
-
-HASHTAGS:
-${hashtags}
-
-PRODUCT TAGS:
-${tags}`;
-
-
-    navigator.clipboard
-        .writeText(completeListing)
-
-        .then(function () {
-
-            alert(
-                "✅ Complete Listing copied successfully!"
-            );
-
-        })
-
-        .catch(function () {
-
-            alert(
-                "❌ Copy नहीं हो सका।"
-            );
-
-        });
-}
-
-
-function clearAll() {
-
-    document.getElementById("product").value = "";
-    document.getElementById("brand").value = "";
-    document.getElementById("category").value = "";
-    document.getElementById("material").value = "";
-    document.getElementById("color").value = "";
-    document.getElementById("extra").value = "";
-
-    document.getElementById("audience").selectedIndex = 0;
-
-    document.getElementById("titleResult").value = "";
-    document.getElementById("descriptionResult").value = "";
-    document.getElementById("bulletResult").value = "";
-    document.getElementById("featureResult").value = "";
-    document.getElementById("keywordResult").value = "";
-    document.getElementById("hashtagResult").value = "";
-    document.getElementById("tagResult").value = "";
 }
