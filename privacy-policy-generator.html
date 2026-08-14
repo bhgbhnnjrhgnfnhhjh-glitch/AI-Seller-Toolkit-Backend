@@ -10,85 +10,298 @@
 
 <link rel="stylesheet" href="style.css">
 
+<style>
+
+.privacy-container{
+    max-width:800px;
+    margin:30px auto;
+}
+
+.privacy-card{
+    background:#fff;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 5px 15px rgba(0,0,0,.12);
+    margin-bottom:20px;
+}
+
+.privacy-card h2{
+    margin-bottom:20px;
+    color:#2563eb;
+}
+
+.privacy-card label{
+    display:block;
+    margin-top:15px;
+    margin-bottom:6px;
+    font-weight:bold;
+}
+
+.privacy-card input{
+    width:100%;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    font-size:16px;
+}
+
+.generate-btn{
+    width:100%;
+    padding:14px;
+    margin-top:20px;
+    border:none;
+    border-radius:7px;
+    background:#16a34a;
+    color:white;
+    font-size:17px;
+    cursor:pointer;
+}
+
+.generate-btn:hover{
+    background:#15803d;
+}
+
+.generate-btn:disabled{
+    background:#999;
+    cursor:not-allowed;
+}
+
+.status{
+    margin-top:12px;
+    text-align:center;
+    font-size:14px;
+    color:#555;
+}
+
+.result{
+    width:100%;
+    min-height:450px;
+    padding:15px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    background:#f8fafc;
+    font-size:15px;
+    line-height:1.7;
+    resize:vertical;
+}
+
+.copy-btn{
+    width:100%;
+    padding:13px;
+    margin-top:15px;
+    border:none;
+    border-radius:7px;
+    background:#2563eb;
+    color:white;
+    font-size:17px;
+    cursor:pointer;
+}
+
+.copy-btn:hover{
+    background:#1d4ed8;
+}
+
+.filter-box{
+    margin-top:18px;
+    padding:14px;
+    background:#eff6ff;
+    border-left:4px solid #2563eb;
+    border-radius:6px;
+    font-size:14px;
+    line-height:1.7;
+}
+
+</style>
+
 </head>
+
 
 <body>
 
+
 <header>
 
-<h1>🌍 AI Privacy Policy Generator</h1>
+<h1>🔐 AI Privacy Policy Generator</h1>
 
 <a href="tools.html">⬅ Back to Tools</a>
 
 </header>
 
-<div class="container">
 
-<div class="card">
+<div class="privacy-container">
 
-<h2>Create Privacy Policy</h2>
 
-<label>Website Name</label>
+<!-- INPUT -->
+
+<div class="privacy-card">
+
+<h2>🔐 Create Privacy Policy</h2>
+
+
+<label for="website">
+Website Name
+</label>
+
 <input
 type="text"
 id="website"
-placeholder="Example: AI Seller Toolkit">
+placeholder="Example: AI Seller Toolkit"
+>
 
-<label>Website URL</label>
+
+<label for="url">
+Website URL
+</label>
+
 <input
 type="text"
 id="url"
-placeholder="Example: https://example.com">
+placeholder="https://example.com"
+>
 
-<label>Company Name</label>
+
+<label for="company">
+Company Name
+</label>
+
 <input
 type="text"
 id="company"
-placeholder="Example: AI Seller Toolkit">
+placeholder="Example: AI Seller Toolkit"
+>
 
-<label>Contact Email</label>
+
+<label for="email">
+Contact Email
+</label>
+
 <input
 type="email"
 id="email"
-placeholder="Example: support@example.com">
+placeholder="support@example.com"
+>
 
-<label>Country</label>
+
+<label for="country">
+Country
+</label>
+
 <input
 type="text"
 id="country"
-placeholder="Example: India">
+placeholder="Example: India"
+>
 
-<button onclick="generatePolicy()">
 
-Generate Privacy Policy
+<button
+class="generate-btn"
+id="generateBtn"
+onclick="generatePrivacyPolicy()"
+>
+
+🤖 Generate AI Privacy Policy
 
 </button>
 
+
+<div
+class="status"
+id="status">
 </div>
 
-<div class="card">
 
-<h2>Generated Privacy Policy</h2>
+</div>
+
+
+<!-- RESULT -->
+
+<div class="privacy-card">
+
+<h2>📄 Generated Privacy Policy</h2>
+
 
 <textarea
 id="result"
-rows="18"
+class="result"
 readonly
-placeholder="Your Privacy Policy will appear here...">
-</textarea>
+placeholder="Your AI generated Privacy Policy will appear here..."
+></textarea>
 
-<button onclick="copyPolicy()">
+
+<button
+class="copy-btn"
+onclick="copyPrivacyPolicy()"
+>
 
 📋 Copy Privacy Policy
 
 </button>
 
-</div>
+
+<div class="filter-box">
+
+<strong>🛡️ Strict AI Filtering</strong>
+
+<br><br>
+
+AI केवल आपके द्वारा दी गई जानकारी का उपयोग करेगा।
+
+<br>
+
+❌ Fake personal-data collection नहीं
+
+<br>
+
+❌ Fake cookies नहीं
+
+<br>
+
+❌ Fake analytics नहीं
+
+<br>
+
+❌ Fake third-party services नहीं
+
+<br>
+
+❌ Fake payment information नहीं
+
+<br>
+
+❌ Fake data retention period नहीं
+
+<br>
+
+❌ Fake privacy laws नहीं
+
+<br>
+
+❌ GDPR/CCPA जैसे कानून अपने-आप नहीं
+
+<br>
+
+❌ Fake security claims नहीं
+
+<br>
+
+❌ Fake effective date नहीं
+
+<br>
+
+❌ दूसरा brand/company नहीं
 
 </div>
+
+
+</div>
+
+
+</div>
+
 
 <script src="privacy-policy-generator.js"></script>
 
+
 </body>
 
-</html>
+  </html>
