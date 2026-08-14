@@ -1,33 +1,19 @@
 async function generateTerms() {
 
-    const website =
-        document.getElementById("website").value.trim();
+    const website = document.getElementById("website").value.trim();
+    const url = document.getElementById("url").value.trim();
+    const company = document.getElementById("company").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const country = document.getElementById("country").value.trim();
 
-    const url =
-        document.getElementById("url").value.trim();
-
-    const company =
-        document.getElementById("company").value.trim();
-
-    const email =
-        document.getElementById("email").value.trim();
-
-    const country =
-        document.getElementById("country").value.trim();
-
-    const result =
-        document.getElementById("result");
-
-    const status =
-        document.getElementById("status");
-
-    const button =
-        document.getElementById("generateBtn");
+    const result = document.getElementById("result");
+    const status = document.getElementById("status");
+    const button = document.getElementById("generateBtn");
 
 
-    // ==============================
+    // =========================
     // VALIDATION
-    // ==============================
+    // =========================
 
     if (!website) {
         alert("Please enter Website Name.");
@@ -50,38 +36,28 @@ async function generateTerms() {
     }
 
 
-    // ==============================
+    // =========================
     // LOADING
-    // ==============================
+    // =========================
 
     button.disabled = true;
-
-    button.innerText =
-        "⏳ Generating AI Terms...";
-
-    status.innerText =
-        "AI Terms & Conditions बना रहा है...";
-
-    result.value =
-        "⏳ Please wait...";
+    button.innerText = "⏳ Generating...";
+    status.innerText = "AI Terms तैयार कर रहा है...";
+    result.value = "⏳ Please wait...";
 
 
-    // ==============================
-    // STRICT AI PROMPT
-    // ==============================
+    // =========================
+    // VERY STRICT PROMPT
+    // =========================
 
     const prompt = `
 
-You are a professional website Terms and Conditions
-drafting assistant.
+Create a SIMPLE GENERAL website Terms and Conditions draft.
 
-Create a simple GENERAL Terms and Conditions draft.
-
-IMPORTANT:
 This is an informational template only.
-Do not provide legal advice.
+It is NOT legal advice.
 
-USER PROVIDED INFORMATION:
+USER INFORMATION:
 
 Website Name:
 ${website}
@@ -99,129 +75,95 @@ Country:
 ${country}
 
 
-VERY STRICT RULES:
+IMPORTANT:
 
-1. Use ONLY information explicitly provided above.
+Use ONLY the information explicitly provided above.
 
-2. Never invent any information.
+Do NOT invent information.
 
-3. Never guess missing information.
+Do NOT infer information.
 
-4. Never create a physical address.
+Do NOT make legal assumptions.
 
-5. Never create a phone number.
+Do NOT create legal claims.
 
-6. Never create a GST number.
+Do NOT create country-specific legal claims.
 
-7. Never create a registration number.
+Do NOT create any legal jurisdiction.
 
-8. Never create a license number.
+Do NOT create governing law.
 
-9. Never create a tax number.
+Do NOT mention Indian law.
 
-10. Never create a legal entity type.
+Do NOT mention applicable law.
 
-11. Never create a company registration detail.
+Do NOT mention courts.
 
-12. Never create a payment method.
+Do NOT mention lawyers.
 
-13. Never create a refund policy.
+Do NOT mention legal compliance.
 
-14. Never create a cancellation policy.
+Do NOT mention legal validity.
 
-15. Never create a shipping policy.
+Do NOT mention registration.
 
-16. Never create a delivery promise.
+Do NOT mention GST.
 
-17. Never create a warranty.
+Do NOT mention licenses.
 
-18. Never create a guarantee.
+Do NOT mention physical address.
 
-19. Never create a price.
+Do NOT mention phone numbers.
 
-20. Never create a discount.
+Do NOT mention payment methods.
 
-21. Never create an offer.
+Do NOT mention refunds.
 
-22. Never create a governing law.
+Do NOT mention cancellation policies.
 
-23. Never create a jurisdiction.
+Do NOT mention shipping.
 
-24. Never create a court name.
+Do NOT mention delivery.
 
-25. Never say that the Terms comply with
-any specific country's law.
+Do NOT mention warranty.
 
-26. Never say that a lawyer reviewed these Terms.
+Do NOT mention guarantees.
 
-27. Never claim legal compliance.
+Do NOT mention prices.
 
-28. Never claim legal validity.
+Do NOT mention discounts.
 
-29. Never invent intellectual property ownership.
+Do NOT mention offers.
 
-30. Do not say that all website content is owned
-by the company unless ownership was explicitly
-provided by the user.
+Do NOT create Intellectual Property ownership claims.
 
-31. Do not create a copyright claim.
+Do NOT create copyright ownership claims.
 
-32. Do not create a trademark claim.
+Do NOT create trademark ownership claims.
 
-33. Do not create a privacy policy.
+Do NOT create Limitation of Liability sections.
 
-34. Do not create a cookie policy.
+Do NOT create Privacy Policy sections.
 
-35. Do not create a data protection policy.
+Do NOT create Cookie Policy sections.
 
-36. Do not create sections that require
-information that was not provided.
+Do NOT create Data Protection sections.
 
-37. Do not mention another company or brand.
+Do NOT create sections that were not requested.
 
-38. Keep the exact Website Name.
-
-39. Keep the exact Website URL.
-
-40. Keep the exact Company Name if provided.
-
-41. Keep the exact Contact Email.
-
-42. Country may be shown only as the
-provided business information.
-
-43. Do NOT use Country to automatically
-create a governing-law section.
-
-44. Use simple professional English.
-
-45. Do not use emojis.
-
-46. Do not use promotional language.
-
-47. Do not mention AI.
-
-48. Do not include instructions to the user.
-
-49. Do not explain how the document was created.
-
-50. Return only the Terms and Conditions draft.
+IMPORTANT:
+The Country field is ONLY contact/business information.
+Never use the Country to create a legal statement.
 
 
-CREATE ONLY THESE GENERAL SECTIONS:
+CREATE ONLY THESE 7 SECTIONS:
 
 1. Introduction
-
 2. Use of Website
-
 3. User Responsibilities
-
 4. Prohibited Activities
-
 5. Website Availability
-
 6. Changes to Terms
-
 7. Contact Information
 
 
@@ -231,93 +173,73 @@ Introduction:
 Mention only the Website Name and Website URL.
 
 Use of Website:
-State only that users should use the website
-lawfully and responsibly.
-Do not invent specific laws.
+Write a simple statement that users should use the website responsibly.
 
 User Responsibilities:
-Keep this general.
-Do not invent account requirements,
-payment requirements, or personal-data rules.
+Write only a general responsibility statement.
 
 Prohibited Activities:
-Mention only general prohibited misuse such as
-attempting to damage or disrupt the website.
+Mention only general website misuse such as attempting to damage,
+disrupt, or misuse the website.
 
 Website Availability:
-State that website availability may change
-because of maintenance or technical reasons.
-Do not create guarantees.
+Mention only that the website may sometimes be unavailable
+because of maintenance or technical issues.
 
 Changes to Terms:
-State that the Terms may be updated.
-Do not create a specific effective date.
+Mention only that the Terms may be updated from time to time.
 
 Contact Information:
-Show only:
+Show exactly the following information:
 
 Company Name: ${company || "Not provided"}
-
 Website Name: ${website}
-
 Website URL: ${url}
-
 Contact Email: ${email}
-
 Country: ${country}
 
 
-OUTPUT FORMAT:
+OUTPUT RULES:
+
+Return ONLY the document.
+
+Use exactly these headings:
 
 # Terms and Conditions
 
 ## Introduction
 
-[Text]
-
 ## Use of Website
-
-[Text]
 
 ## User Responsibilities
 
-[Text]
-
 ## Prohibited Activities
-
-[Text]
 
 ## Website Availability
 
-[Text]
-
 ## Changes to Terms
-
-[Text]
 
 ## Contact Information
 
-Company Name: ...
-Website Name: ...
-Website URL: ...
-Contact Email: ...
-Country: ...
+Do not create any other heading.
 
-Return ONLY the document.
+Do not add explanations before or after the document.
+
+Do not mention AI.
+
+Do not use emojis.
 
 `;
 
 
     try {
 
-        // ==============================
+        // =========================
         // BACKEND API
-        // ==============================
+        // =========================
 
         const response = await fetch(
-
             "https://ai-seller-toolkit-backend-1.onrender.com/generate",
-
             {
                 method: "POST",
 
@@ -329,226 +251,203 @@ Return ONLY the document.
                     prompt: prompt
                 })
             }
-
         );
 
 
-        const data =
-            await response.json();
+        const data = await response.json();
 
 
         if (!response.ok) {
 
             throw new Error(
-                data.error ||
-                "Backend API Error"
+                data.error || "Backend API Error"
             );
 
         }
 
 
-        let text =
-            String(data.result || "").trim();
+        let text = String(
+            data.result || ""
+        ).trim();
 
 
         if (!text) {
 
             throw new Error(
-                "AI ने Terms & Conditions नहीं बनाए।"
+                "AI ने कोई Terms & Conditions नहीं बनाया।"
             );
 
         }
 
 
-        // ==============================
-        // CLEAN MARKDOWN CODE BLOCK
-        // ==============================
+        // =========================
+        // REMOVE CODE BLOCKS
+        // =========================
 
-        text =
-            text.replace(
-                /^```(?:markdown|text)?\s*/i,
-                ""
-            );
+        text = text.replace(
+            /^```(?:markdown|text)?\s*/i,
+            ""
+        );
 
-        text =
-            text.replace(
-                /\s*```$/i,
-                ""
-            );
+        text = text.replace(
+            /\s*```$/i,
+            ""
+        );
 
 
-        // ==============================
-        // REMOVE AI INTRODUCTION
-        // ==============================
+        // =========================
+        // REMOVE UNWANTED SECTIONS
+        // =========================
 
-        text =
-            text.replace(
-                /^Here is.*?:\s*/i,
-                ""
-            );
+        const forbiddenSections = [
 
-
-        text =
-            text.replace(
-                /^Sure[,:\s].*?\n/i,
-                ""
-            );
-
-
-        // ==============================
-        // STRICT LOCAL FILTER
-        // ==============================
-
-        const dangerousPatterns = [
-
-            /governing law/gi,
-
-            /jurisdiction/gi,
-
-            /court of/gi,
-
-            /legal compliance/gi,
-
-            /legally compliant/gi,
-
-            /law of india/gi,
-
-            /laws of india/gi,
-
-            /applicable law/gi,
-
-            /applicable laws/gi,
-
-            /registration number/gi,
-
-            /gst number/gi,
-
-            /license number/gi,
-
-            /lawyer reviewed/gi,
-
-            /legal advice/gi
+            "Governing Law",
+            "Jurisdiction",
+            "Intellectual Property",
+            "Limitation of Liability",
+            "Privacy Policy",
+            "Cookie Policy",
+            "Data Protection",
+            "Refund Policy",
+            "Cancellation Policy",
+            "Shipping Policy",
+            "Payment Policy",
+            "Warranty"
 
         ];
 
 
-        /*
-        Remove sections that AI should
-        never create automatically.
-        */
+        for (const section of forbiddenSections) {
 
-        text =
-            text.replace(
-                /##\s*Governing Law[\s\S]*?(?=##\s|$)/gi,
-                ""
+            const regex = new RegExp(
+                "##\\s*" +
+                section.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") +
+                "[\\s\\S]*?(?=##\\s|$)",
+                "gi"
             );
 
+            text = text.replace(regex, "");
 
-        text =
-            text.replace(
-                /##\s*Intellectual Property[\s\S]*?(?=##\s|$)/gi,
-                ""
-            );
+        }
 
 
-        text =
-            text.replace(
-                /##\s*Limitation of Liability[\s\S]*?(?=##\s|$)/gi,
-                ""
-            );
+        // =========================
+        // REMOVE DANGEROUS SENTENCES
+        // =========================
+
+        const forbiddenPatterns = [
+
+            /governing law/gi,
+            /jurisdiction/gi,
+            /laws of india/gi,
+            /indian law/gi,
+            /applicable law/gi,
+            /applicable laws/gi,
+            /court/gi,
+            /lawyer/gi,
+            /legal advice/gi,
+            /legal compliance/gi,
+            /legal validity/gi,
+            /registration number/gi,
+            /gst number/gi,
+            /license number/gi,
+            /physical address/gi,
+            /limitation of liability/gi,
+            /intellectual property/gi,
+            /copyright ownership/gi,
+            /trademark ownership/gi
+
+        ];
 
 
-        /*
-        Remove dangerous individual lines.
-        */
+        const cleanLines = text
+            .split(/\r?\n/)
+            .filter(line => {
 
-        const lines =
-            text.split(/\r?\n/);
-
-
-        const cleanLines =
-            lines.filter(line => {
-
-                return !dangerousPatterns.some(
+                return !forbiddenPatterns.some(
                     pattern => pattern.test(line)
                 );
 
             });
 
 
-        text =
-            cleanLines.join("\n");
+        text = cleanLines.join("\n");
 
 
-        // ==============================
-        // NORMALIZE SPACING
-        // ==============================
+        // =========================
+        // REMOVE EXTRA BLANK LINES
+        // =========================
 
-        text =
-            text.replace(
-                /\n{3,}/g,
-                "\n\n"
+        text = text.replace(
+            /\n{3,}/g,
+            "\n\n"
+        );
+
+
+        text = text.trim();
+
+
+        // =========================
+        // FINAL SAFETY CHECK
+        // =========================
+
+        const stillUnsafe = [
+
+            /governing law/i,
+            /jurisdiction/i,
+            /laws of india/i,
+            /indian law/i,
+            /intellectual property/i,
+            /limitation of liability/i,
+            /legal compliance/i,
+            /registration number/i,
+            /gst number/i,
+            /license number/i
+
+        ];
+
+
+        const unsafeFound =
+            stillUnsafe.some(
+                pattern => pattern.test(text)
             );
 
 
-        text =
-            text.trim();
-
-
-        // ==============================
-        // FINAL SAFETY CHECK
-        // ==============================
-
-        if (
-            /governing law/i.test(text) ||
-            /jurisdiction/i.test(text) ||
-            /court of/i.test(text) ||
-            /laws of india/i.test(text)
-        ) {
+        if (unsafeFound) {
 
             throw new Error(
-                "AI output में unsupported legal information मिली। कृपया फिर से Generate करें।"
+                "AI output में अनचाही legal information मिली। कृपया फिर से Generate करें।"
             );
 
         }
 
 
-        // ==============================
+        // =========================
         // SHOW RESULT
-        // ==============================
+        // =========================
 
-        result.value =
-            text;
-
+        result.value = text;
 
         status.innerText =
             "✅ Terms & Conditions successfully generated.";
 
 
-    }
-
-
-    catch (error) {
+    } catch (error) {
 
         console.error(
             "Terms Generator Error:",
             error
         );
 
-
         result.value =
             "❌ Terms & Conditions generate नहीं हो सके.\n\n" +
             "Error: " +
             error.message;
 
-
         status.innerText =
             "Please try again.";
 
-    }
-
-
-    finally {
+    } finally {
 
         button.disabled = false;
 
@@ -560,15 +459,14 @@ Return ONLY the document.
 }
 
 
-// ==========================================
+// =====================================
 // COPY TERMS
-// ==========================================
+// =====================================
 
 async function copyTerms() {
 
     const result =
         document.getElementById("result");
-
 
     const text =
         result.value.trim();
@@ -595,39 +493,26 @@ async function copyTerms() {
             text
         );
 
-
         alert(
             "✅ Terms & Conditions copied successfully!"
         );
 
-    }
-
-
-    catch (error) {
+    } catch (error) {
 
         const textarea =
             document.createElement("textarea");
 
-
-        textarea.value =
-            text;
-
+        textarea.value = text;
 
         document.body.appendChild(
             textarea
         );
 
-
         textarea.select();
 
-
-        document.execCommand(
-            "copy"
-        );
-
+        document.execCommand("copy");
 
         textarea.remove();
-
 
         alert(
             "✅ Terms & Conditions copied successfully!"
