@@ -1,4 +1,4 @@
-async function generatePolicy() {
+async function generatePrivacyPolicy() {
 
     const website =
         document.getElementById("website").value.trim();
@@ -18,59 +18,70 @@ async function generatePolicy() {
     const result =
         document.getElementById("result");
 
+    const status =
+        document.getElementById("status");
 
-    // =========================
+    const button =
+        document.getElementById("generateBtn");
+
+
+    // ==============================
     // VALIDATION
-    // =========================
+    // ==============================
 
-    if (
-        website === "" ||
-        url === "" ||
-        company === "" ||
-        email === "" ||
-        country === ""
-    ) {
-
-        alert("Please fill all fields.");
+    if (!website) {
+        alert("Please enter Website Name.");
         return;
+    }
 
+    if (!url) {
+        alert("Please enter Website URL.");
+        return;
+    }
+
+    if (!email) {
+        alert("Please enter Contact Email.");
+        return;
+    }
+
+    if (!country) {
+        alert("Please enter Country.");
+        return;
     }
 
 
-    // Basic email validation
-
-    const emailPattern =
-        /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!emailPattern.test(email)) {
-
-        alert("Please enter a valid email address.");
-        return;
-
-    }
-
-
-    // =========================
+    // ==============================
     // LOADING
-    // =========================
+    // ==============================
+
+    button.disabled = true;
+
+    button.innerText =
+        "⏳ Generating Privacy Policy...";
+
+    status.innerText =
+        "AI Privacy Policy बना रहा है...";
 
     result.value =
-        "⏳ Generating Privacy Policy...\n\nPlease wait.";
+        "⏳ Please wait...";
 
 
-    // =========================
-    // AI PROMPT
-    // =========================
+    // ==============================
+    // STRICT AI PROMPT
+    // ==============================
 
     const prompt = `
-You are a professional eCommerce and website privacy policy
-drafting assistant.
 
-Create a clean, professional and easy-to-read Privacy Policy
-for the website using ONLY the information provided below.
+Create a SIMPLE GENERAL Privacy Policy draft.
 
-WEBSITE DETAILS
-===============
+This is an informational template only.
+It is NOT legal advice.
+
+IMPORTANT:
+
+Use ONLY information explicitly provided below.
+
+WEBSITE INFORMATION:
 
 Website Name:
 ${website}
@@ -79,7 +90,7 @@ Website URL:
 ${url}
 
 Company Name:
-${company}
+${company || "Not provided"}
 
 Contact Email:
 ${email}
@@ -88,272 +99,231 @@ Country:
 ${country}
 
 
-IMPORTANT ACCURACY RULES
-========================
+VERY STRICT RULES:
 
-1. Never invent facts.
+1. Never invent information.
 
-2. Never invent a physical address.
+2. Never guess information.
 
-3. Never invent a phone number.
+3. Never assume what personal data the website collects.
 
-4. Never invent a company registration number.
+4. Never say that the website collects names,
+emails, phone numbers, addresses, IP addresses,
+device information, cookies, or any other data
+unless the user explicitly provided that information.
 
-5. Never invent a Data Protection Officer.
+5. Never invent cookies.
 
-6. Never invent payment processors.
+6. Never invent Google Analytics.
 
-7. Never invent analytics services.
+7. Never invent advertising services.
 
-8. Never invent advertising services.
+8. Never invent payment services.
 
-9. Never invent cookies.
+9. Never invent social media integrations.
 
 10. Never invent third-party services.
 
-11. Never invent newsletter subscriptions.
+11. Never invent data retention periods.
 
-12. Never invent user accounts.
+12. Never invent security systems.
 
-13. Never invent forms.
+13. Never claim that data is encrypted.
 
-14. Never invent file uploads.
+14. Never claim that the website is secure.
 
-15. Never invent specific personal information
-that the website collects.
+15. Never invent data sharing practices.
 
-16. Never claim legal compliance with a specific law
-unless that law has been explicitly provided by the user.
+16. Never invent international data transfers.
 
-17. Never make security guarantees.
+17. Never invent children's data practices.
 
-18. Never make promises about data retention periods
-unless the user has provided them.
+18. Never invent privacy rights.
 
-19. Never create fake contact information.
+19. Never mention GDPR.
 
-20. Do not change the supplied website URL.
+20. Never mention CCPA.
 
-21. Do not change the supplied contact email.
+21. Never mention any specific privacy law.
 
-22. Do not change the supplied company name.
+22. Never claim legal compliance.
 
-23. Do not mention that the policy was created by AI.
+23. Never claim legal validity.
 
-24. Do not repeat the same paragraph across multiple sections.
+24. Never claim that a lawyer reviewed this policy.
 
-25. Keep every section useful and relevant.
+25. Never create a physical address.
 
-26. If a specific practice has not been provided,
-use careful wording such as:
+26. Never create a phone number.
 
-"The website's actual use of this technology should be
-reviewed and this section updated accordingly."
+27. Never create a GST number.
 
-Do NOT say that the website definitely uses that technology.
+28. Never create a registration number.
 
-27. Do not use the phrase
-"the website may process information as necessary to
-provide its services" repeatedly.
+29. Never create a license number.
 
-28. Each section should have its own purpose.
+30. Never create a fake effective date.
 
-29. Keep the Privacy Policy suitable as a general website
-template, but clearly state that it must be reviewed and
-customized according to actual practices and applicable laws.
+31. Never create another company or brand name.
 
+32. Never create a governing law.
 
-LEGAL DISCLAIMER
-================
+33. Never create a jurisdiction.
 
-Near the beginning of the document, include:
+34. Never create a court name.
 
-"This Privacy Policy is a general informational template
-and is not legal advice. It should be reviewed and
-customized according to the website's actual data
-practices and applicable laws."
+35. Never create a legal section that was not requested.
 
+36. Never create a Privacy Officer unless provided.
 
-REQUIRED SECTIONS
-=================
+37. Never create a Data Protection Officer unless provided.
 
-Create the following sections:
+38. Never create a security officer unless provided.
 
-1. Privacy Policy
-2. Effective Date
-3. Introduction
-4. Information We Collect
-5. How We Use Information
-6. Cookies and Similar Technologies
-7. Third-Party Services
-8. Data Security
-9. Data Retention
-10. User Privacy Rights
-11. Children's Privacy
-12. International Data Transfers
-13. Changes to This Privacy Policy
-14. Contact Us
-15. Important Disclaimer
+39. Country is only general contact/business information.
+Do not use Country to create a legal statement.
 
+40. Keep the exact Website Name.
 
-SECTION GUIDANCE
-================
+41. Keep the exact Website URL.
 
-SECTION 1 — Privacy Policy
+42. Keep the exact Company Name if provided.
 
-Clearly identify the document as the Privacy Policy
-for the supplied website.
+43. Keep the exact Contact Email.
 
-SECTION 2 — Effective Date
+44. Keep the exact Country.
 
-Do not invent a date.
+45. Use simple professional English.
 
-Write:
+46. Do not use emojis.
 
-"Effective Date: [Insert effective date]"
+47. Do not use promotional language.
 
-SECTION 3 — Introduction
+48. Do not mention AI.
 
-Mention:
-- Website Name
-- Company Name
-- Website URL
-- Country
+49. Do not add notes for the website owner.
 
-Do not invent any other company information.
+50. Do not add placeholders such as
+[Insert date] or [Add information].
 
-SECTION 4 — Information We Collect
+51. Do not tell the user to customize individual sections.
 
-Explain that the actual categories of information
-collected depend on how the website is configured.
+52. Return only the Privacy Policy document.
 
-Do not claim specific personal data is definitely collected.
 
-Give a short note explaining that the website owner
-should update this section according to actual practices.
+CREATE ONLY THESE SECTIONS:
 
-SECTION 5 — How We Use Information
+1. Introduction
 
-Explain general possible purposes carefully,
-without claiming that every purpose definitely applies.
+2. Information We Collect
 
-Examples may include:
-- operating the website
-- responding to inquiries
-- improving services
+3. How We Use Information
 
-Use conditional wording where necessary.
+4. Cookies and Similar Technologies
 
-SECTION 6 — Cookies and Similar Technologies
+5. Third-Party Services
 
-Do not claim that cookies are definitely used.
+6. Data Security
 
-State that the website owner should update this section
-if cookies or similar technologies are actually used.
+7. Data Retention
 
-SECTION 7 — Third-Party Services
+8. Changes to This Privacy Policy
 
-Do not name Google, Meta, payment providers,
-analytics providers or any other third party.
+9. Contact Us
 
-State that this section should be updated if
-third-party services are actually used.
 
-SECTION 8 — Data Security
+SECTION RULES:
 
-Explain generally that reasonable measures may be used
-to protect information, but do not guarantee security.
+Introduction:
+Mention only Website Name and Website URL.
 
-SECTION 9 — Data Retention
+Information We Collect:
+Because no data collection information was provided,
+state clearly that this template does not specify
+particular categories of personal information collected.
 
-Do not invent a retention period.
+Do not invent any data categories.
 
-Explain that retention depends on actual business
-and legal requirements and should be specified by
-the website owner.
+How We Use Information:
+State only that actual uses depend on the website's
+real services and practices.
 
-SECTION 10 — User Privacy Rights
+Do not invent purposes.
 
-Use general wording.
+Cookies and Similar Technologies:
+State only that this policy does not confirm whether
+cookies or similar technologies are used.
 
-Do not guarantee a specific legal right in every country.
+Do not claim that cookies are used.
 
-Explain that applicable privacy rights depend on
-the user's location and applicable law.
+Third-Party Services:
+State only that no specific third-party services
+are identified in the provided information.
 
-SECTION 11 — Children's Privacy
+Do not name any service.
 
-Do not invent an age restriction.
+Data Security:
+Do not claim specific security measures.
+State only that actual security practices depend
+on the website's real implementation.
 
-Use neutral wording and advise the website owner
-to customize this section according to actual practices
-and applicable laws.
+Data Retention:
+Do not create a retention period.
+State only that actual retention depends on
+the website's real practices.
 
-SECTION 12 — International Data Transfers
+Changes to This Privacy Policy:
+State that this Privacy Policy may be updated
+from time to time.
 
-Do not claim that international transfers occur.
+Do not create an effective date.
 
-Explain that this section should be reviewed if
-information is transferred across countries.
+Contact Us:
+Show exactly:
 
-SECTION 13 — Changes
+Company Name: ${company || "Not provided"}
 
-Explain that the policy may be updated from time to time.
+Website Name: ${website}
 
-Do not invent a notification method.
+Website URL: ${url}
 
-SECTION 14 — Contact Us
+Contact Email: ${email}
 
-Use ONLY:
+Country: ${country}
 
-Company Name:
-${company}
 
-Email:
-${email}
+OUTPUT:
 
-Website:
-${url}
+# Privacy Policy
 
-Do not add a physical address or phone number.
+## Introduction
 
-SECTION 15 — Important Disclaimer
+## Information We Collect
 
-Clearly state that this is a general informational template,
-not legal advice, and should be reviewed by the website owner
-according to actual practices and applicable laws.
+## How We Use Information
 
+## Cookies and Similar Technologies
 
-OUTPUT RULES
-============
+## Third-Party Services
 
-Return ONLY the Privacy Policy.
+## Data Security
 
-Do not use code fences.
+## Data Retention
 
-Do not add commentary before the Privacy Policy.
+## Changes to This Privacy Policy
 
-Do not add commentary after the Privacy Policy.
+## Contact Us
 
-Use clear headings.
+Return ONLY the document.
 
-Keep the document professional.
-
-Avoid unnecessary repetition.
-
-Do not use fake information.
-
-Do not invent legal compliance.
-
-Do not invent data collection practices.
 `;
 
 
-    // =========================
-    // API REQUEST
-    // =========================
-
     try {
+
+        // ==============================
+        // BACKEND API
+        // ==============================
 
         const response = await fetch(
             "https://ai-seller-toolkit-backend-1.onrender.com/generate",
@@ -371,62 +341,243 @@ Do not invent data collection practices.
         );
 
 
-        let data;
+        const data =
+            await response.json();
 
-        try {
-
-            data = await response.json();
-
-        } catch (jsonError) {
-
-            throw new Error(
-                "Server returned an invalid response."
-            );
-
-        }
-
-
-        // =========================
-        // SERVER ERROR
-        // =========================
 
         if (!response.ok) {
 
             throw new Error(
-                data.details ||
-                data.error ||
-                `Server error (${response.status})`
+                data.error || "Backend API Error"
             );
 
         }
 
 
-        // =========================
-        // EMPTY RESPONSE
-        // =========================
+        let text =
+            String(data.result || "").trim();
 
-        if (
-            !data.result ||
-            typeof data.result !== "string" ||
-            data.result.trim() === ""
-        ) {
+
+        if (!text) {
 
             throw new Error(
-                "AI returned an empty response."
+                "AI ने Privacy Policy नहीं बनाई।"
             );
 
         }
 
 
-        // =========================
-        // CLEAN RESULT
-        // =========================
+        // ==============================
+        // REMOVE CODE BLOCKS
+        // ==============================
+
+        text = text.replace(
+            /^```(?:markdown|text)?\s*/i,
+            ""
+        );
+
+        text = text.replace(
+            /\s*```$/i,
+            ""
+        );
+
+
+        // ==============================
+        // REMOVE AI INTRO
+        // ==============================
+
+        text = text.replace(
+            /^Here is.*?:\s*/i,
+            ""
+        );
+
+        text = text.replace(
+            /^Sure[,:\s].*?\n/i,
+            ""
+        );
+
+
+        // ==============================
+        // REMOVE FORBIDDEN SECTIONS
+        // ==============================
+
+        const forbiddenSections = [
+
+            "Effective Date",
+            "Children's Privacy",
+            "International Data Transfers",
+            "User Privacy Rights",
+            "Governing Law",
+            "Jurisdiction",
+            "Limitation of Liability",
+            "Intellectual Property",
+            "Legal Disclaimer",
+            "Privacy Officer",
+            "Data Protection Officer"
+
+        ];
+
+
+        for (const section of forbiddenSections) {
+
+            const escaped =
+                section.replace(
+                    /[.*+?^${}()|[\]\\]/g,
+                    "\\$&"
+                );
+
+            const regex =
+                new RegExp(
+                    "##\\s*" +
+                    escaped +
+                    "[\\s\\S]*?(?=##\\s|$)",
+                    "gi"
+                );
+
+            text =
+                text.replace(regex, "");
+
+        }
+
+
+        // ==============================
+        // REMOVE DANGEROUS LINES
+        // ==============================
+
+        const forbiddenPatterns = [
+
+            /effective date/gi,
+
+            /gdpr/gi,
+
+            /ccpa/gi,
+
+            /governing law/gi,
+
+            /jurisdiction/gi,
+
+            /laws of india/gi,
+
+            /indian law/gi,
+
+            /applicable law/gi,
+
+            /legal compliance/gi,
+
+            /legal validity/gi,
+
+            /lawyer reviewed/gi,
+
+            /privacy officer/gi,
+
+            /data protection officer/gi,
+
+            /registration number/gi,
+
+            /gst number/gi,
+
+            /license number/gi,
+
+            /physical address/gi,
+
+            /phone number/gi,
+
+            /google analytics/gi
+
+        ];
+
+
+        const cleanLines =
+            text
+                .split(/\r?\n/)
+                .filter(line => {
+
+                    return !forbiddenPatterns.some(
+                        pattern =>
+                            pattern.test(line)
+                    );
+
+                });
+
+
+        text =
+            cleanLines.join("\n");
+
+
+        // ==============================
+        // CLEAN SPACING
+        // ==============================
+
+        text =
+            text.replace(
+                /\n{3,}/g,
+                "\n\n"
+            );
+
+
+        text =
+            text.trim();
+
+
+        // ==============================
+        // FINAL SAFETY CHECK
+        // ==============================
+
+        const unsafePatterns = [
+
+            /effective date/i,
+
+            /gdpr/i,
+
+            /ccpa/i,
+
+            /governing law/i,
+
+            /jurisdiction/i,
+
+            /laws of india/i,
+
+            /indian law/i,
+
+            /legal compliance/i,
+
+            /legal validity/i,
+
+            /google analytics/i
+
+        ];
+
+
+        const unsafeFound =
+            unsafePatterns.some(
+                pattern =>
+                    pattern.test(text)
+            );
+
+
+        if (unsafeFound) {
+
+            throw new Error(
+                "AI output में अनचानी privacy/legal information मिली। फिर से Generate करें।"
+            );
+
+        }
+
+
+        // ==============================
+        // SHOW RESULT
+        // ==============================
 
         result.value =
-            cleanPolicyOutput(data.result);
+            text;
+
+        status.innerText =
+            "✅ Privacy Policy successfully generated.";
 
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
         console.error(
             "Privacy Policy Generator Error:",
@@ -439,157 +590,97 @@ Do not invent data collection practices.
             "Error: " +
             error.message;
 
+
+        status.innerText =
+            "Please try again.";
+
+    }
+
+    finally {
+
+        button.disabled = false;
+
+        button.innerText =
+            "🤖 Generate AI Privacy Policy";
+
     }
 
 }
 
 
-/* =====================================================
-   CLEAN AI OUTPUT
-===================================================== */
+// ==========================================
+// COPY PRIVACY POLICY
+// ==========================================
 
-function cleanPolicyOutput(text) {
-
-    let cleaned =
-        text.trim();
-
-
-    // Remove markdown code fences
-
-    cleaned =
-        cleaned.replace(
-            /^```(?:text|markdown)?\s*/i,
-            ""
-        );
-
-
-    cleaned =
-        cleaned.replace(
-            /\s*```$/i,
-            ""
-        );
-
-
-    // Remove accidental leading/trailing whitespace
-
-    cleaned =
-        cleaned.trim();
-
-
-    return cleaned;
-
-}
-
-
-/* =====================================================
-   COPY PRIVACY POLICY
-===================================================== */
-
-function copyPolicy() {
+async function copyPrivacyPolicy() {
 
     const result =
         document.getElementById("result");
+
 
     const text =
         result.value.trim();
 
 
-    if (text === "") {
+    if (
+        !text ||
+        text ===
+        "Your AI generated Privacy Policy will appear here..."
+    ) {
 
         alert(
-            "पहले Privacy Policy generate करें।"
+            "पहले Privacy Policy generate करें."
         );
 
         return;
 
     }
-
-
-    if (
-        text.includes(
-            "❌ Privacy Policy generate नहीं हो सकी"
-        )
-    ) {
-
-        alert(
-            "पहले एक valid Privacy Policy generate करें।"
-        );
-
-        return;
-
-    }
-
-
-    // Clipboard API
-
-    if (
-        navigator.clipboard &&
-        navigator.clipboard.writeText
-    ) {
-
-        navigator.clipboard
-            .writeText(text)
-
-            .then(function () {
-
-                alert(
-                    "✅ Privacy Policy copied successfully!"
-                );
-
-            })
-
-            .catch(function () {
-
-                fallbackCopy(text);
-
-            });
-
-    } else {
-
-        fallbackCopy(text);
-
-    }
-
-}
-
-
-/* =====================================================
-   FALLBACK COPY
-===================================================== */
-
-function fallbackCopy(text) {
-
-    const textarea =
-        document.createElement("textarea");
-
-    textarea.value = text;
-
-    textarea.style.position = "fixed";
-    textarea.style.left = "-9999px";
-
-    document.body.appendChild(textarea);
-
-    textarea.focus();
-    textarea.select();
 
 
     try {
 
-        document.execCommand("copy");
+        await navigator.clipboard.writeText(
+            text
+        );
+
 
         alert(
             "✅ Privacy Policy copied successfully!"
         );
 
-    } catch (error) {
+
+    }
+
+    catch (error) {
+
+        const textarea =
+            document.createElement("textarea");
+
+
+        textarea.value =
+            text;
+
+
+        document.body.appendChild(
+            textarea
+        );
+
+
+        textarea.select();
+
+
+        document.execCommand(
+            "copy"
+        );
+
+
+        textarea.remove();
+
 
         alert(
-            "❌ Copy नहीं हो सका। कृपया manually copy करें।"
+            "✅ Privacy Policy copied successfully!"
         );
 
     }
 
-
-    document.body.removeChild(textarea);
-
-        }
+}
