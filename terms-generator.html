@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
@@ -10,9 +10,114 @@
 
 <link rel="stylesheet" href="style.css">
 
+<style>
+
+.terms-container{
+    max-width:800px;
+    margin:30px auto;
+}
+
+.terms-card{
+    background:#fff;
+    padding:25px;
+    border-radius:12px;
+    box-shadow:0 5px 15px rgba(0,0,0,.12);
+    margin-bottom:20px;
+}
+
+.terms-card h2{
+    margin-bottom:20px;
+    color:#2563eb;
+}
+
+.terms-card label{
+    display:block;
+    margin-top:15px;
+    margin-bottom:6px;
+    font-weight:bold;
+}
+
+.terms-card input{
+    width:100%;
+    padding:12px;
+    border:1px solid #ccc;
+    border-radius:6px;
+    font-size:16px;
+}
+
+.generate-btn{
+    width:100%;
+    padding:14px;
+    margin-top:20px;
+    border:none;
+    border-radius:7px;
+    background:#16a34a;
+    color:white;
+    font-size:17px;
+    cursor:pointer;
+}
+
+.generate-btn:hover{
+    background:#15803d;
+}
+
+.generate-btn:disabled{
+    background:#999;
+    cursor:not-allowed;
+}
+
+.status{
+    margin-top:12px;
+    text-align:center;
+    font-size:14px;
+    color:#555;
+}
+
+.result{
+    width:100%;
+    min-height:420px;
+    padding:15px;
+    border:1px solid #ccc;
+    border-radius:8px;
+    background:#f8fafc;
+    font-size:15px;
+    line-height:1.7;
+    resize:vertical;
+}
+
+.copy-btn{
+    width:100%;
+    padding:13px;
+    margin-top:15px;
+    border:none;
+    border-radius:7px;
+    background:#2563eb;
+    color:white;
+    font-size:17px;
+    cursor:pointer;
+}
+
+.copy-btn:hover{
+    background:#1d4ed8;
+}
+
+.filter-box{
+    margin-top:18px;
+    padding:14px;
+    background:#eff6ff;
+    border-left:4px solid #2563eb;
+    border-radius:6px;
+    font-size:14px;
+    line-height:1.7;
+}
+
+</style>
+
 </head>
 
+
 <body>
+
 
 <header>
 
@@ -22,53 +127,163 @@
 
 </header>
 
-<div class="container">
 
-<div class="card">
+<div class="terms-container">
 
-<h2>Create Terms & Conditions</h2>
 
-<label>Website Name</label>
-<input type="text" id="website" placeholder="Example: AI Seller Toolkit">
+<!-- INPUT CARD -->
 
-<label>Website URL</label>
-<input type="text" id="url" placeholder="https://example.com">
+<div class="terms-card">
 
-<label>Company Name</label>
-<input type="text" id="company" placeholder="Example: AI Seller Toolkit">
+<h2>📜 Create Terms & Conditions</h2>
 
-<label>Contact Email</label>
-<input type="email" id="email" placeholder="support@example.com">
 
-<label>Country</label>
-<input type="text" id="country" placeholder="Example: India">
+<label for="website">
+Website Name
+</label>
 
-<button onclick="generateTerms()">
-Generate Terms & Conditions
+<input
+type="text"
+id="website"
+placeholder="Example: AI Seller Toolkit"
+>
+
+
+<label for="url">
+Website URL
+</label>
+
+<input
+type="text"
+id="url"
+placeholder="https://example.com"
+>
+
+
+<label for="company">
+Company Name
+</label>
+
+<input
+type="text"
+id="company"
+placeholder="Example: AI Seller Toolkit"
+>
+
+
+<label for="email">
+Contact Email
+</label>
+
+<input
+type="email"
+id="email"
+placeholder="support@example.com"
+>
+
+
+<label for="country">
+Country
+</label>
+
+<input
+type="text"
+id="country"
+placeholder="Example: India"
+>
+
+
+<button
+class="generate-btn"
+id="generateBtn"
+onclick="generateTerms()"
+>
+
+🤖 Generate AI Terms & Conditions
+
 </button>
+
+
+<div
+class="status"
+id="status">
+</div>
+
 
 </div>
 
-<div class="card">
 
-<h2>Generated Terms & Conditions</h2>
+<!-- RESULT CARD -->
+
+<div class="terms-card">
+
+<h2>📄 Generated Terms & Conditions</h2>
+
 
 <textarea
 id="result"
-rows="18"
+class="result"
 readonly
-placeholder="Terms & Conditions will appear here...">
-</textarea>
+placeholder="Your AI generated Terms & Conditions will appear here..."
+></textarea>
 
-<button onclick="copyTerms()">
-📋 Copy Terms
+
+<button
+class="copy-btn"
+onclick="copyTerms()"
+>
+
+📋 Copy Terms & Conditions
+
 </button>
 
-</div>
+
+<div class="filter-box">
+
+<strong>🛡️ Strict AI Filtering</strong>
+
+<br>
+
+AI केवल आपके द्वारा दी गई Website Name,
+Website URL, Company Name, Email और Country
+की जानकारी का उपयोग करेगा।
+
+<br>
+
+❌ Fake company information नहीं
+
+<br>
+
+❌ Fake legal claims नहीं
+
+<br>
+
+❌ Fake contact information नहीं
+
+<br>
+
+❌ दूसरा company/brand name नहीं
+
+<br>
+
+❌ मनगढ़ंत address या registration number नहीं
+
+<br>
+
+❌ Fake guarantee नहीं
 
 </div>
+
+
+</div>
+
+
+</div>
+
 
 <script src="terms-generator.js"></script>
 
+
 </body>
-</html>
+
+  </html>
