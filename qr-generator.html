@@ -8,6 +8,7 @@
 
 <title>QR Code Generator</title>
 
+<!-- QR Code Library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <style>
@@ -27,9 +28,9 @@ body{
 header{
     background:linear-gradient(90deg,#2563eb,#4f46e5);
     color:white;
-    text-align:center;
     padding:18px;
-    font-size:24px;
+    text-align:center;
+    font-size:23px;
     font-weight:bold;
 }
 
@@ -37,10 +38,14 @@ header{
     width:92%;
     max-width:600px;
     margin:30px auto;
+}
+
+.card{
     background:white;
-    padding:25px;
+    padding:22px;
     border-radius:15px;
-    box-shadow:0 5px 18px rgba(0,0,0,.15);
+    box-shadow:0 5px 18px rgba(0,0,0,.12);
+    margin-bottom:20px;
 }
 
 h2{
@@ -51,15 +56,14 @@ h2{
 
 label{
     display:block;
-    margin-top:10px;
     font-weight:bold;
+    margin-bottom:8px;
     color:#333;
 }
 
 input{
     width:100%;
-    padding:13px;
-    margin-top:8px;
+    padding:14px;
     border:1px solid #ccc;
     border-radius:8px;
     font-size:16px;
@@ -76,18 +80,14 @@ button{
     margin-top:15px;
     border:none;
     border-radius:8px;
-    font-size:17px;
-    font-weight:bold;
     color:white;
+    font-size:16px;
+    font-weight:bold;
     cursor:pointer;
 }
 
 .generate{
     background:#16a34a;
-}
-
-.generate:hover{
-    background:#15803d;
 }
 
 .download{
@@ -100,30 +100,38 @@ button{
     display:none;
 }
 
-/* QR BOX */
+.status{
+    text-align:center;
+    margin-top:15px;
+    font-size:15px;
+    color:#333;
+}
 
-.qr-wrapper{
+/* QR AREA */
+
+.qr-area{
     display:none;
-    margin-top:25px;
+    margin-top:20px;
+    text-align:center;
+}
+
+.qr-box{
+    display:inline-block;
+    background:#ffffff;
     padding:25px;
-    background:white;
     border:1px solid #ddd;
     border-radius:12px;
-    justify-content:center;
-    align-items:center;
 }
 
 /*
-   Important:
-   QR के चारों तरफ white space रखा गया है।
+Important:
+QR के चारों तरफ सफेद जगह रखी गई है।
 */
 
 #qrcode{
+    width:300px;
+    height:300px;
     background:white;
-    padding:15px;
-    display:flex;
-    justify-content:center;
-    align-items:center;
 }
 
 #qrcode canvas{
@@ -138,29 +146,24 @@ button{
     height:300px !important;
 }
 
-.message{
-    text-align:center;
+.scan-message{
     margin-top:15px;
-    color:#555;
+    padding:12px;
+    background:#f0fdf4;
+    border:1px solid #bbf7d0;
+    border-radius:8px;
+    color:#166534;
     font-size:14px;
-    line-height:1.6;
 }
 
-.instructions{
+.info{
     margin-top:20px;
     padding:15px;
-    background:#f1f5f9;
+    background:#f8fafc;
     border-radius:10px;
-    color:#444;
     font-size:14px;
     line-height:1.7;
-}
-
-.footer{
-    text-align:center;
-    margin-top:20px;
-    color:#777;
-    font-size:13px;
+    color:#555;
 }
 
 </style>
@@ -178,11 +181,16 @@ button{
 
 <div class="container">
 
+
+<!-- GENERATOR CARD -->
+
+<div class="card">
+
 <h2>Generate QR Code</h2>
 
 
 <label for="qrText">
-Enter Text / URL
+Text / URL
 </label>
 
 
@@ -204,18 +212,42 @@ Enter Text / URL
 
 
 <div
-    class="qr-wrapper"
-    id="qrWrapper">
+    class="status"
+    id="status">
+</div>
 
-    <div id="qrcode"></div>
 
 </div>
 
 
-<p
-    class="message"
-    id="message">
-</p>
+<!-- QR RESULT -->
+
+<div
+    class="card qr-area"
+    id="qrArea">
+
+
+<h2>
+Your QR Code
+</h2>
+
+
+<div class="qr-box">
+
+<div id="qrcode"></div>
+
+</div>
+
+
+<div class="scan-message">
+
+✅ QR Code Ready to Scan
+
+<br>
+
+Use your phone Camera or QR Scanner.
+
+</div>
 
 
 <button
@@ -233,18 +265,23 @@ Enter Text / URL
     id="clearBtn"
     onclick="clearQR()">
 
-    🗑️ Clear
+    🗑️ Clear QR Code
 
 </button>
 
 
-<div class="instructions">
+</div>
 
-<strong>How to test:</strong>
 
-<br>
+<!-- INFORMATION -->
 
-1. Enter a website URL or text.
+<div class="card info">
+
+<strong>How to use:</strong>
+
+<br><br>
+
+1. Enter a URL or text.
 
 <br>
 
@@ -252,18 +289,15 @@ Enter Text / URL
 
 <br>
 
-3. Scan the QR using your phone camera.
+3. QR Code will appear.
 
 <br>
 
-4. The original URL or text should appear.
+4. Scan it using your phone Camera or QR Scanner.
 
-</div>
+<br>
 
-
-<div class="footer">
-
-Generate QR codes for Text, Links and URLs
+5. Use Download to save the QR image.
 
 </div>
 
@@ -273,94 +307,103 @@ Generate QR codes for Text, Links and URLs
 
 <script>
 
-let qrGenerated = false;
+/* =====================================
+   QR GENERATOR
+===================================== */
 
+let qrReady = false;
 
-/* =========================
-   GENERATE QR
-========================= */
 
 function generateQR(){
 
+    const input =
+        document.getElementById("qrText");
+
     const text =
-        document
-        .getElementById("qrText")
-        .value
-        .trim();
+        input.value.trim();
 
 
-    const qrContainer =
-        document
-        .getElementById("qrcode");
+    const qr =
+        document.getElementById("qrcode");
 
 
-    const qrWrapper =
-        document
-        .getElementById("qrWrapper");
+    const qrArea =
+        document.getElementById("qrArea");
+
+
+    const status =
+        document.getElementById("status");
 
 
     const downloadBtn =
-        document
-        .getElementById("downloadBtn");
+        document.getElementById("downloadBtn");
 
 
     const clearBtn =
-        document
-        .getElementById("clearBtn");
+        document.getElementById("clearBtn");
 
 
-    const message =
-        document
-        .getElementById("message");
-
+    /* Empty check */
 
     if(text === ""){
 
-        alert("Please enter text or URL.");
+        status.innerText =
+            "❌ Please enter text or URL.";
+
+        status.style.color = "#dc2626";
+
+        input.focus();
 
         return;
+
     }
 
 
-    /* पुराने QR को हटाएं */
+    /* Clear previous QR */
 
-    qrContainer.innerHTML = "";
-
-
-    message.innerText = "";
+    qr.innerHTML = "";
 
 
     try{
 
-        new QRCode(qrContainer, {
+        /*
+        Error correction M gives
+        good balance between size
+        and scanning reliability.
+        */
 
-            text: text,
+        new QRCode(qr,{
 
-            width: 300,
+            text:text,
 
-            height: 300,
+            width:300,
 
-            colorDark: "#000000",
+            height:300,
 
-            colorLight: "#ffffff",
+            colorDark:"#000000",
 
-            correctLevel: QRCode.CorrectLevel.M
+            colorLight:"#ffffff",
+
+            correctLevel:QRCode.CorrectLevel.M
 
         });
 
 
-        qrGenerated = true;
+        qrReady = true;
 
 
-        qrWrapper.style.display = "flex";
+        qrArea.style.display = "block";
 
         downloadBtn.style.display = "block";
 
         clearBtn.style.display = "block";
 
 
-        message.innerText =
-            "✅ QR Code successfully generated. अब इसे Camera से scan करें।";
+        status.innerText =
+            "✅ QR Code successfully generated.";
+
+        status.style.color = "#15803d";
+
 
     }
 
@@ -369,61 +412,71 @@ function generateQR(){
         console.error(error);
 
 
-        qrGenerated = false;
+        qrReady = false;
 
 
-        message.innerText =
-            "❌ QR Code generate नहीं हो पाया।";
+        status.innerText =
+            "❌ QR Code generate नहीं हो पाया.";
+
+        status.style.color = "#dc2626";
 
     }
 
 }
 
 
-/* =========================
-   DOWNLOAD QR
-========================= */
+/* =====================================
+   DOWNLOAD
+===================================== */
 
 function downloadQR(){
 
-    if(!qrGenerated){
+    if(!qrReady){
 
         alert("पहले QR Code Generate करें.");
 
         return;
+
     }
 
 
     const canvas =
-        document.querySelector("#qrcode canvas");
+        document.querySelector(
+            "#qrcode canvas"
+        );
 
 
-    const img =
-        document.querySelector("#qrcode img");
+    const image =
+        document.querySelector(
+            "#qrcode img"
+        );
 
 
-    let imageURL = "";
+    let url = "";
 
 
     if(canvas){
 
-        imageURL =
-            canvas.toDataURL("image/png");
+        url =
+            canvas.toDataURL(
+                "image/png"
+            );
 
     }
 
-    else if(img){
+    else if(image){
 
-        imageURL =
-            img.src;
+        url =
+            image.src;
 
     }
 
     else{
 
-        alert("QR Code image नहीं मिली.");
+        alert("QR image नहीं मिली.");
 
         return;
+
     }
 
 
@@ -431,23 +484,27 @@ function downloadQR(){
         document.createElement("a");
 
 
-    link.href = imageURL;
+    link.href = url;
 
-    link.download = "AI-Seller-Toolkit-QRCode.png";
+
+    link.download =
+        "AI-Seller-Toolkit-QR-Code.png";
 
 
     document.body.appendChild(link);
 
+
     link.click();
+
 
     document.body.removeChild(link);
 
 }
 
 
-/* =========================
-   CLEAR QR
-========================= */
+/* =====================================
+   CLEAR
+===================================== */
 
 function clearQR(){
 
@@ -462,12 +519,7 @@ function clearQR(){
 
 
     document
-        .getElementById("message")
-        .innerText = "";
-
-
-    document
-        .getElementById("qrWrapper")
+        .getElementById("qrArea")
         .style.display = "none";
 
 
@@ -481,7 +533,12 @@ function clearQR(){
         .style.display = "none";
 
 
-    qrGenerated = false;
+    document
+        .getElementById("status")
+        .innerText = "";
+
+
+    qrReady = false;
 
 }
 
