@@ -1,14 +1,112 @@
-/* ======================================
-   AI Seller Toolkit
-   Main script.js
-====================================== */
+/* ============================================
+   AI SELLER TOOLKIT
+   COMMON script.js
+   Version: 2.0
+
+   मुख्य काम:
+   ✅ सभी Tools के Copy success popup हटाना
+   ✅ छोटा green success message दिखाना
+   ✅ Dark Mode
+   ✅ Search
+   ✅ Scroll To Top
+   ✅ Tool animations
+   ============================================ */
 
 
-/* ======================================
-   START BUTTON
-====================================== */
+/* ============================================
+   1. COPY SUCCESS TOAST
+   ============================================ */
 
-const startBtn = document.getElementById("startBtn");
+function showCopySuccess(message) {
+
+    // पुराना message हटाएँ
+    const oldToast = document.getElementById("copyToast");
+
+    if (oldToast) {
+        oldToast.remove();
+    }
+
+    // नया message
+    const toast = document.createElement("div");
+
+    toast.id = "copyToast";
+    toast.className = "copy-toast";
+
+    toast.innerText = message || "✅ Copied successfully!";
+
+    document.body.appendChild(toast);
+
+    // 2 सेकंड बाद हटाएँ
+    setTimeout(function () {
+
+        if (toast) {
+            toast.remove();
+        }
+
+    }, 2000);
+}
+
+
+/* ============================================
+   2. OLD ALERT POPUP CONTROL
+   ============================================ */
+
+/*
+   पुराने Tools में Copy button के अंदर
+   alert("Copied successfully!")
+   लगा हुआ हो सकता है।
+
+   यह code केवल COPY वाले success alert को
+   छोटा message बनाएगा।
+
+   बाकी जरूरी alerts वैसे ही काम करेंगे।
+*/
+
+const originalAlert = window.alert;
+
+window.alert = function (message) {
+
+    const text = String(message || "").toLowerCase();
+
+    const isCopyMessage =
+        text.includes("copied") ||
+        text.includes("copy successfully") ||
+        text.includes("copy success") ||
+        text.includes("copied successfully");
+
+    if (isCopyMessage) {
+
+        showCopySuccess(
+            "✅ Copied successfully!"
+        );
+
+        return;
+    }
+
+    // बाकी alerts पुराने तरीके से चलेंगे
+    originalAlert(message);
+};
+
+
+/* ============================================
+   3. PAGE LOADED
+   ============================================ */
+
+window.addEventListener("load", function () {
+
+    console.log(
+        "✅ AI Seller Toolkit Loaded Successfully"
+    );
+
+});
+
+
+/* ============================================
+   4. START BUTTON
+   ============================================ */
+
+const startBtn =
+    document.getElementById("startBtn");
 
 if (startBtn) {
 
@@ -21,25 +119,17 @@ if (startBtn) {
 }
 
 
-/* ======================================
-   PAGE LOADED
-====================================== */
+/* ============================================
+   5. SCROLL TO TOP
+   ============================================ */
 
-window.addEventListener("load", function () {
-
-    console.log("AI Seller Toolkit Loaded Successfully");
-
-});
-
-
-/* ======================================
-   SCROLL TO TOP BUTTON
-====================================== */
-
-const topBtn = document.createElement("button");
+const topBtn =
+    document.createElement("button");
 
 topBtn.id = "topBtn";
 topBtn.innerHTML = "⬆";
+
+topBtn.style.display = "none";
 
 document.body.appendChild(topBtn);
 
@@ -61,7 +151,7 @@ window.addEventListener("scroll", function () {
 });
 
 
-/* Scroll Top */
+/* Scroll */
 
 topBtn.addEventListener("click", function () {
 
@@ -76,18 +166,22 @@ topBtn.addEventListener("click", function () {
 });
 
 
-/* ======================================
-   TOOL COUNTER
-====================================== */
+/* ============================================
+   6. TOOL COUNTER
+   ============================================ */
 
-const toolCards = document.querySelectorAll(".card");
+const toolCards =
+    document.querySelectorAll(".card");
 
-console.log("Total Tools : " + toolCards.length);
+console.log(
+    "Total Tools : " +
+    toolCards.length
+);
 
 
-/* ======================================
-   FADE ANIMATION
-====================================== */
+/* ============================================
+   7. CARD FADE
+   ============================================ */
 
 toolCards.forEach(function (card) {
 
@@ -96,22 +190,314 @@ toolCards.forEach(function (card) {
 });
 
 
-/* ======================================
-   WELCOME MESSAGE
-====================================== */
+/* ============================================
+   8. DARK MODE
+   ============================================ */
 
-setTimeout(function () {
-
-    console.log("Welcome to AI Seller Toolkit");
-
-}, 1000);
+const darkBtn =
+    document.getElementById("darkModeBtn");
 
 
-/* ======================================
-   CURRENT YEAR
-====================================== */
+/* Load saved theme */
 
-const footer = document.querySelector("footer p");
+if (
+    localStorage.getItem("theme") === "dark"
+) {
+
+    document.body.classList.add(
+        "dark-mode"
+    );
+
+}
+
+
+/* Dark button */
+
+if (darkBtn) {
+
+    darkBtn.addEventListener(
+        "click",
+        function () {
+
+            document.body.classList.toggle(
+                "dark-mode"
+            );
+
+
+            if (
+                document.body.classList.contains(
+                    "dark-mode"
+                )
+            ) {
+
+                localStorage.setItem(
+                    "theme",
+                    "dark"
+                );
+
+            } else {
+
+                localStorage.setItem(
+                    "theme",
+                    "light"
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* ============================================
+   9. TOOL SEARCH
+   ============================================ */
+
+const searchBox =
+    document.getElementById("searchTools");
+
+if (searchBox) {
+
+    searchBox.addEventListener(
+        "keyup",
+        function () {
+
+            const value =
+                searchBox.value.toLowerCase();
+
+            const cards =
+                document.querySelectorAll(".card");
+
+
+            cards.forEach(function (card) {
+
+                const text =
+                    card.innerText.toLowerCase();
+
+
+                if (
+                    text.indexOf(value) > -1
+                ) {
+
+                    card.style.display =
+                        "block";
+
+                } else {
+
+                    card.style.display =
+                        "none";
+
+                }
+
+            });
+
+        }
+    );
+
+}
+
+
+/* ============================================
+   10. BUTTON HOVER
+   ============================================ */
+
+const buttons =
+    document.querySelectorAll("button");
+
+buttons.forEach(function (btn) {
+
+    btn.addEventListener(
+        "mouseenter",
+        function () {
+
+            btn.style.transform =
+                "scale(1.03)";
+
+        }
+    );
+
+
+    btn.addEventListener(
+        "mouseleave",
+        function () {
+
+            btn.style.transform =
+                "scale(1)";
+
+        }
+    );
+
+});
+
+
+/* ============================================
+   11. CARD HOVER
+   ============================================ */
+
+const cards =
+    document.querySelectorAll(".card");
+
+cards.forEach(function (card) {
+
+    card.addEventListener(
+        "mouseenter",
+        function () {
+
+            card.style.transition =
+                ".3s";
+
+            card.style.transform =
+                "translateY(-8px)";
+
+        }
+    );
+
+
+    card.addEventListener(
+        "mouseleave",
+        function () {
+
+            card.style.transform =
+                "translateY(0px)";
+
+        }
+    );
+
+});
+
+
+/* ============================================
+   12. COMMON COPY FUNCTION
+   ============================================ */
+
+/*
+   नए Tools में चाहें तो:
+
+   copyText("यह text है", "Title copied!");
+
+   इस्तेमाल कर सकते हैं।
+*/
+
+function copyText(text, successMessage) {
+
+    if (!text) {
+
+        showCopySuccess(
+            "❌ Copy करने के लिए text नहीं है"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        navigator.clipboard &&
+        navigator.clipboard.writeText
+    ) {
+
+        navigator.clipboard.writeText(text)
+
+            .then(function () {
+
+                showCopySuccess(
+                    successMessage ||
+                    "✅ Copied successfully!"
+                );
+
+            })
+
+            .catch(function () {
+
+                fallbackCopy(text);
+
+            });
+
+    } else {
+
+        fallbackCopy(text);
+
+    }
+
+}
+
+
+/* ============================================
+   13. FALLBACK COPY
+   ============================================ */
+
+function fallbackCopy(text) {
+
+    const textarea =
+        document.createElement("textarea");
+
+    textarea.value = text;
+
+    textarea.style.position =
+        "fixed";
+
+    textarea.style.left =
+        "-9999px";
+
+    document.body.appendChild(
+        textarea
+    );
+
+    textarea.focus();
+
+    textarea.select();
+
+
+    try {
+
+        const success =
+            document.execCommand("copy");
+
+
+        if (success) {
+
+            showCopySuccess(
+                "✅ Copied successfully!"
+            );
+
+        } else {
+
+            showCopySuccess(
+                "❌ Copy नहीं हो पाया"
+            );
+
+        }
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Copy Error:",
+            error
+        );
+
+        showCopySuccess(
+            "❌ Copy नहीं हो पाया"
+        );
+
+    }
+
+
+    document.body.removeChild(
+        textarea
+    );
+
+}
+
+
+/* ============================================
+   14. CURRENT YEAR
+   ============================================ */
+
+const footer =
+    document.querySelector("footer p");
 
 if (footer) {
 
@@ -123,461 +509,26 @@ if (footer) {
 }
 
 
-/* ======================================
-   DARK MODE
-====================================== */
-
-const darkBtn = document.getElementById("darkModeBtn");
-
-if (localStorage.getItem("theme") === "dark") {
-
-    document.body.classList.add("dark-mode");
-
-}
-
-
-if (darkBtn) {
-
-    darkBtn.addEventListener("click", function () {
-
-        document.body.classList.toggle("dark-mode");
-
-        if (document.body.classList.contains("dark-mode")) {
-
-            localStorage.setItem("theme", "dark");
-
-        } else {
-
-            localStorage.setItem("theme", "light");
-
-        }
-
-    });
-
-}
-
-
-/* ======================================
-   TOOL SEARCH
-====================================== */
-
-const searchBox = document.getElementById("searchTools");
-
-if (searchBox) {
-
-    searchBox.addEventListener("keyup", function () {
-
-        let value = searchBox.value.toLowerCase();
-
-        let cards = document.querySelectorAll(".card");
-
-        cards.forEach(function (card) {
-
-            let text = card.innerText.toLowerCase();
-
-            if (text.indexOf(value) > -1) {
-
-                card.style.display = "block";
-
-            } else {
-
-                card.style.display = "none";
-
-            }
-
-        });
-
-    });
-
-}
-
-
-/* ======================================
-   BUTTON HOVER
-====================================== */
-
-const buttons = document.querySelectorAll("button");
-
-buttons.forEach(function (btn) {
-
-    btn.addEventListener("mouseenter", function () {
-
-        btn.style.transform = "scale(1.03)";
-
-    });
-
-    btn.addEventListener("mouseleave", function () {
-
-        btn.style.transform = "scale(1)";
-
-    });
-
-});
-
-
-/* ======================================
-   CARD ANIMATION
-====================================== */
-
-const cards = document.querySelectorAll(".card");
-
-cards.forEach(function (card) {
-
-    card.addEventListener("mouseenter", function () {
-
-        card.style.transition = ".3s";
-
-        card.style.transform = "translateY(-8px)";
-
-    });
-
-    card.addEventListener("mouseleave", function () {
-
-        card.style.transform = "translateY(0px)";
-
-    });
-
-});
-
-
-/* ======================================
-   COPY SUCCESS MESSAGE
-   No popup alert
-====================================== */
-
-function showCopySuccess(message = "✅ Copied successfully!") {
-
-    let oldToast = document.getElementById("copyToast");
-
-    if (oldToast) {
-
-        oldToast.remove();
-
-    }
-
-
-    const toast = document.createElement("div");
-
-    toast.id = "copyToast";
-
-    toast.className = "copy-toast";
-
-    toast.innerText = message;
-
-    document.body.appendChild(toast);
-
-
-    setTimeout(function () {
-
-        toast.remove();
-
-    }, 2000);
-
-}
-
-
-/* ======================================
-   COMPLETE LISTING GENERATOR
-====================================== */
-
-function generateListing() {
-
-    let product =
-        document.getElementById("product").value.trim();
-
-    let brand =
-        document.getElementById("brand").value.trim();
-
-    let category =
-        document.getElementById("category").value.trim();
-
-    let material =
-        document.getElementById("material").value.trim();
-
-    let color =
-        document.getElementById("color").value.trim();
-
-    let audience =
-        document.getElementById("audience").value;
-
-
-    if (product === "") {
-
-        alert("Please enter Product Name");
-
-        return;
-
-    }
-
-
-    /* ==================================
-       SEO TITLE
-    ================================== */
-
-    document.getElementById("titleResult").innerText =
-
-        product +
-
-        (brand ? " by " + brand : "") +
-
-        (color ? " - " + color : "");
-
-
-    /* ==================================
-       DESCRIPTION
-    ================================== */
-
-    document.getElementById("descriptionResult").innerText =
-
-        product +
-
-        (brand
-            ? " from " + brand
-            : "") +
-
-        " is a " +
-
-        (category || "product") +
-
-        (material
-            ? " made of " + material
-            : "") +
-
-        (color
-            ? " in " + color
-            : "") +
-
-        (audience
-            ? ". Suitable for " + audience
-            : "") +
-
-        ".";
-
-
-    /* ==================================
-       BULLET POINTS
-    ================================== */
-
-    document.getElementById("bulletResult").innerText =
-
-        "✔ Brand: " +
-        (brand || "Not specified") +
-
-        "\n✔ Product: " +
-        product +
-
-        "\n✔ Category: " +
-        (category || "Not specified") +
-
-        "\n✔ Material: " +
-        (material || "Not specified") +
-
-        "\n✔ Color: " +
-        (color || "Not specified") +
-
-        (audience
-            ? "\n✔ Suitable for: " + audience
-            : "");
-
-
-    /* ==================================
-       PRODUCT FEATURES
-    ================================== */
-
-    document.getElementById("featureResult").innerText =
-
-        "1. Brand: " +
-        (brand || "Not specified") +
-
-        "\n2. Product: " +
-        product +
-
-        "\n3. Category: " +
-        (category || "Not specified") +
-
-        "\n4. Material: " +
-        (material || "Not specified") +
-
-        "\n5. Color: " +
-        (color || "Not specified") +
-
-        (audience
-            ? "\n6. Suitable For: " + audience
-            : "");
-
-
-    /* ==================================
-       SEO KEYWORDS
-    ================================== */
-
-    document.getElementById("keywordResult").innerText =
-
-        product +
-
-        (brand
-            ? ", " + brand
-            : "") +
-
-        (category
-            ? ", " + category
-            : "") +
-
-        (material
-            ? ", " + material
-            : "") +
-
-        (color
-            ? ", " + color
-            : "") +
-
-        (audience
-            ? ", " + audience
-            : "");
-
-
-    /* ==================================
-       HASHTAGS
-    ================================== */
-
-    let hash = product.replace(/\s+/g, "");
-
-    let brandHash =
-        brand.replace(/\s+/g, "");
-
-    document.getElementById("hashtagResult").innerText =
-
-        "#" + hash +
-
-        (brandHash
-            ? " #" + brandHash
-            : "");
-
-
-    /* ==================================
-       PRODUCT TAGS
-    ================================== */
-
-    document.getElementById("tagResult").innerText =
-
-        product +
-
-        (brand
-            ? ", " + brand
-            : "") +
-
-        (category
-            ? ", " + category
-            : "") +
-
-        (material
-            ? ", " + material
-            : "") +
-
-        (color
-            ? ", " + color
-            : "");
-
-}
-
-
-/* ======================================
-   COPY COMPLETE LISTING
-====================================== */
-
-function copyAll() {
-
-    let text =
-
-        document.getElementById("titleResult").innerText +
-
-        "\n\n" +
-
-        document.getElementById("descriptionResult").innerText +
-
-        "\n\n" +
-
-        document.getElementById("bulletResult").innerText +
-
-        "\n\n" +
-
-        document.getElementById("featureResult").innerText +
-
-        "\n\n" +
-
-        document.getElementById("keywordResult").innerText +
-
-        "\n\n" +
-
-        document.getElementById("hashtagResult").innerText +
-
-        "\n\n" +
-
-        document.getElementById("tagResult").innerText;
-
-
-    navigator.clipboard.writeText(text)
-
-        .then(function () {
-
-            /* बड़ा popup नहीं आएगा */
-
-            showCopySuccess("✅ Complete Listing copied!");
-
-        })
-
-        .catch(function () {
-
-            showCopySuccess("❌ Copy नहीं हो पाया");
-
-        });
-
-}
-
-
-/* ======================================
-   CLEAR COMPLETE LISTING
-====================================== */
-
-function clearAll() {
-
-    document.getElementById("product").value = "";
-
-    document.getElementById("brand").value = "";
-
-    document.getElementById("category").value = "";
-
-    document.getElementById("material").value = "";
-
-    document.getElementById("color").value = "";
-
-    document.getElementById("audience").selectedIndex = 0;
-
-
-    document.getElementById("titleResult").innerText = "";
-
-    document.getElementById("descriptionResult").innerText = "";
-
-    document.getElementById("bulletResult").innerText = "";
-
-    document.getElementById("featureResult").innerText = "";
-
-    document.getElementById("keywordResult").innerText = "";
-
-    document.getElementById("hashtagResult").innerText = "";
-
-    document.getElementById("tagResult").innerText = "";
-
-}
-
-
-/* ======================================
-   CONSOLE
-====================================== */
-
-console.log("Dark Mode Ready");
-
-console.log("Search Ready");
-
-console.log("Animation Ready");
-
-console.log("Copy System Ready");
+/* ============================================
+   15. CONSOLE
+   ============================================ */
+
+console.log(
+    "✅ Dark Mode Ready"
+);
+
+console.log(
+    "✅ Search Ready"
+);
+
+console.log(
+    "✅ Animation Ready"
+);
+
+console.log(
+    "✅ Common Copy System Ready"
+);
+
+console.log(
+    "✅ Copy Popup Fix Ready"
+);
