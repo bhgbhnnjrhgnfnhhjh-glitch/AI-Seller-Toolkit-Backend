@@ -1,52 +1,121 @@
-/* =========================================
+/* =========================================================
+   AI SELLER TOOLKIT
    AI BULLET POINTS GENERATOR
-   FINAL WORKING VERSION
-========================================= */
+   FINAL VERSION
+========================================================= */
+
+
+/* =========================================================
+   GENERATE AI BULLET POINTS
+========================================================= */
 
 async function generateBulletPoints() {
 
-    const product = document.getElementById("product").value.trim();
-    const brand = document.getElementById("brand").value.trim();
-    const category = document.getElementById("category").value.trim();
-    const material = document.getElementById("material").value.trim();
-    const color = document.getElementById("color").value.trim();
-    const audience = document.getElementById("audience").value.trim();
-    const features = document.getElementById("features").value.trim();
+    const product =
+        document.getElementById("product");
 
-    const result = document.getElementById("result");
-    const status = document.getElementById("status");
-    const button = document.getElementById("generateBtn");
+    const brand =
+        document.getElementById("brand");
 
-    /* ==============================
+    const category =
+        document.getElementById("category");
+
+    const material =
+        document.getElementById("material");
+
+    const color =
+        document.getElementById("color");
+
+    const audience =
+        document.getElementById("audience");
+
+    const features =
+        document.getElementById("features");
+
+    const result =
+        document.getElementById("result");
+
+    const status =
+        document.getElementById("status");
+
+    const button =
+        document.getElementById("generateBtn");
+
+
+    /* =====================================================
        CHECK ELEMENTS
-    ============================== */
+    ===================================================== */
 
-    if (!result || !status || !button) {
-        alert("Tool में कुछ जरूरी element नहीं मिला।");
+    if (
+        !product ||
+        !brand ||
+        !category ||
+        !material ||
+        !color ||
+        !audience ||
+        !features ||
+        !result ||
+        !status ||
+        !button
+    ) {
+
+        console.error(
+            "Bullet Points Generator: Required HTML element missing."
+        );
+
         return;
     }
 
-    /* ==============================
+
+    /* =====================================================
+       GET VALUES
+    ===================================================== */
+
+    const productValue =
+        product.value.trim();
+
+    const brandValue =
+        brand.value.trim();
+
+    const categoryValue =
+        category.value.trim();
+
+    const materialValue =
+        material.value.trim();
+
+    const colorValue =
+        color.value.trim();
+
+    const audienceValue =
+        audience.value.trim();
+
+    const featuresValue =
+        features.value.trim();
+
+
+    /* =====================================================
        VALIDATION
-    ============================== */
+    ===================================================== */
 
-    if (product === "") {
+    if (productValue === "") {
 
-        alert("कृपया Product Name भरें।");
+        status.innerText =
+            "⚠️ Please enter Product Name.";
 
-        document.getElementById("product").focus();
+        product.focus();
 
         return;
     }
 
-    /* ==============================
+
+    /* =====================================================
        LOADING
-    ============================== */
+    ===================================================== */
 
     button.disabled = true;
 
     button.innerText =
-        "⏳ Generating...";
+        "⏳ Generating AI Bullet Points...";
 
     status.innerText =
         "AI bullet points बना रहा है...";
@@ -54,344 +123,720 @@ async function generateBulletPoints() {
     result.innerText =
         "⏳ Please wait...";
 
-    /* ==============================
-       PROMPT
-    ============================== */
+
+    /* =====================================================
+       AI PROMPT
+    ===================================================== */
 
     const prompt = `
+
 You are a professional eCommerce product listing writer.
 
-Create exactly 5 factual product bullet points.
+Create exactly 5 short factual product bullet points.
 
 PRODUCT INFORMATION:
 
-Product Name: ${product}
-Brand: ${brand || "Not specified"}
-Category: ${category || "Not specified"}
-Material: ${material || "Not specified"}
-Color: ${color || "Not specified"}
-Target Audience: ${audience || "Not specified"}
-Known Features: ${features || "Not specified"}
+Product Name:
+${productValue}
+
+Brand:
+${brandValue || "Not specified"}
+
+Category:
+${categoryValue || "Not specified"}
+
+Material:
+${materialValue || "Not specified"}
+
+Color:
+${colorValue || "Not specified"}
+
+Target Audience:
+${audienceValue || "Not specified"}
+
+Known Features:
+${featuresValue || "Not specified"}
+
 
 STRICT RULES:
 
-- Use ONLY the information provided above.
-- Do not invent any information.
-- Do not invent specifications.
-- Do not invent size.
-- Do not invent weight.
-- Do not invent price.
-- Do not invent discount.
-- Do not invent offers.
-- Do not invent warranty.
-- Do not invent delivery information.
-- Do not invent certifications.
-- Do not invent reviews.
-- Do not mention another brand.
-- Do not use promotional claims.
-- Do not use words like Best, Premium, Amazing, Excellent, Perfect or Guaranteed.
-- Do not add features that were not provided.
-- Keep the exact product name.
-- Keep the exact brand name.
-- Keep the exact material.
-- Keep the exact color.
-- Keep the exact category.
-- Do not use emojis.
-- Do not use hashtags.
-- Do not write explanations.
-- Do not write a heading.
+1. Use ONLY information provided above.
 
-Create exactly 5 short factual bullet points.
+2. Never invent information.
+
+3. Never guess missing information.
+
+4. Never add a new feature.
+
+5. Never add a new material.
+
+6. Never add a new color.
+
+7. Never add a new size.
+
+8. Never add a new design.
+
+9. Never add a new specification.
+
+10. Never add price.
+
+11. Never add discount.
+
+12. Never add offer.
+
+13. Never add delivery information.
+
+14. Never add warranty.
+
+15. Never add certification.
+
+16. Never add customer reviews.
+
+17. Never add customer experience.
+
+18. Never claim comfort unless comfort is explicitly provided.
+
+19. Never claim durability unless durability is explicitly provided.
+
+20. Never claim premium quality.
+
+21. Never claim best quality.
+
+22. Never claim amazing quality.
+
+23. Never claim perfect quality.
+
+24. Never claim guaranteed results.
+
+25. Never mention another brand.
+
+26. Never invent a brand.
+
+27. Keep the exact Product Name.
+
+28. Keep the exact Brand Name if provided.
+
+29. Keep the exact Category if provided.
+
+30. Keep the exact Material if provided.
+
+31. Keep the exact Color if provided.
+
+32. Use the Known Features only if provided.
+
+33. Do not use emojis.
+
+34. Do not use hashtags.
+
+35. Do not use promotional language.
+
+36. Do not write explanations.
+
+37. Do not write an introduction.
+
+38. Do not write a heading.
+
+39. Do not repeat the same information unnecessarily.
+
+40. Do not add information from your own knowledge.
+
+OUTPUT:
+
+Return exactly 5 short bullet points.
+
+Use this format:
+
+- Bullet point 1
+- Bullet point 2
+- Bullet point 3
+- Bullet point 4
+- Bullet point 5
 
 Return ONLY the 5 bullet points.
+
 `;
 
-    /* ==============================
+
+    /* =====================================================
        API REQUEST
-    ============================== */
+    ===================================================== */
 
     try {
 
-        const response = await fetch(
-            "https://ai-seller-toolkit-backend-1.onrender.com/generate",
-            {
-                method: "POST",
+        const response =
+            await fetch(
+                "https://ai-seller-toolkit-backend-1.onrender.com/generate",
+                {
+                    method: "POST",
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
 
-                body: JSON.stringify({
-                    prompt: prompt
-                })
-            }
-        );
+                    body: JSON.stringify({
+                        prompt: prompt
+                    })
+                }
+            );
 
-        /* ==============================
-           SERVER CHECK
-        ============================== */
+
+        /* =================================================
+           RESPONSE CHECK
+        ================================================= */
 
         if (!response.ok) {
 
+            let errorMessage =
+                "Backend API Error";
+
+            try {
+
+                const errorData =
+                    await response.json();
+
+                errorMessage =
+                    errorData.error ||
+                    errorMessage;
+
+            }
+
+            catch (e) {
+                // Ignore JSON error
+            }
+
+
             throw new Error(
-                "Server Error: " + response.status
+                errorMessage
             );
         }
 
-        const data = await response.json();
 
-        if (!data || !data.result) {
+        const data =
+            await response.json();
 
-            throw new Error(
-                "AI ने कोई result नहीं दिया।"
-            );
-        }
 
         let text =
-            String(data.result).trim();
+            String(
+                data.result || ""
+            ).trim();
 
-        /* ==============================
+
+        if (!text) {
+
+            throw new Error(
+                "AI ने कोई bullet points नहीं बनाए।"
+            );
+        }
+
+
+        /* =================================================
            CLEAN RESPONSE
-        ============================== */
+        ================================================= */
 
-        text = text
-            .replace(/```[\s\S]*?```/g, "")
-            .replace(/^Bullet Points:?/i, "")
-            .trim();
+        let lines =
+            text
+                .split(/\r?\n/)
+                .map(
+                    line =>
+                        line.trim()
+                )
+                .filter(
+                    line =>
+                        line.length > 0
+                );
 
-        let bullets = text
-            .split(/\r?\n/)
-            .map(function(line) {
 
-                return line
-                    .replace(/^[-•*]\s*/, "")
-                    .replace(/^\d+[\.\):\-]\s*/, "")
-                    .trim();
+        /* =================================================
+           REMOVE COMMON HEADINGS
+        ================================================= */
 
-            })
-            .filter(function(line) {
+        lines =
+            lines.filter(
+                function(line) {
 
-                return line.length > 0;
+                    const lower =
+                        line
+                            .toLowerCase()
+                            .replace(
+                                /[:\-]/g,
+                                ""
+                            )
+                            .trim();
 
-            });
+                    return !(
+                        lower === "bullet points" ||
+                        lower === "bullet point" ||
+                        lower === "product features" ||
+                        lower === "features" ||
+                        lower === "features list"
+                    );
 
-        /* ==============================
+                }
+            );
+
+
+        /* =================================================
+           REMOVE BULLET / NUMBER SYMBOLS
+        ================================================= */
+
+        let bullets =
+            lines.map(
+                function(line) {
+
+                    return line
+                        .replace(
+                            /^[-•*]\s*/,
+                            ""
+                        )
+                        .replace(
+                            /^\d+[\.\):\-]\s*/,
+                            ""
+                        )
+                        .trim();
+
+                }
+            );
+
+
+        /* =================================================
+           REMOVE EMPTY VALUES
+        ================================================= */
+
+        bullets =
+            bullets.filter(
+                function(bullet) {
+
+                    return (
+                        bullet.length > 0
+                    );
+
+                }
+            );
+
+
+        /* =================================================
            REMOVE DUPLICATES
-        ============================== */
+        ================================================= */
 
-        bullets = [...new Set(bullets)];
+        bullets =
+            [
+                ...new Set(
+                    bullets.map(
+                        bullet =>
+                            bullet.trim()
+                    )
+                )
+            ];
 
-        /* ==============================
-           REMOVE UNSAFE CLAIMS
-        ============================== */
 
-        const forbidden = [
+        /* =================================================
+           FORBIDDEN CLAIMS
+        ================================================= */
+
+        const forbiddenPhrases = [
 
             "best",
-            "premium",
-            "amazing",
-            "excellent",
-            "perfect",
-            "superior",
-            "luxury",
-            "guaranteed",
             "bestseller",
             "best seller",
+            "premium",
+            "premium quality",
+            "amazing",
+            "excellent",
+            "excellent quality",
+            "superior",
+            "luxury",
+            "perfect",
+            "perfect choice",
+            "guaranteed",
+            "guarantee",
             "high quality",
             "high-quality",
+            "top quality",
+            "top-quality",
+            "world class",
+            "world-class",
+            "unbeatable",
+            "must have",
+            "must-have",
+            "highly recommended",
+            "comfortable",
+            "comfort",
+            "durable",
+            "durability",
+            "soft",
+            "lightweight",
             "stylish",
             "trendy",
             "fashionable",
-            "durable",
-            "durability",
-            "comfortable",
-            "comfort",
+            "special offer",
+            "limited offer",
             "discount",
-            "offer",
             "sale",
+            "deal",
             "free delivery",
             "fast delivery",
+            "cash on delivery",
             "warranty",
-            "certified"
-
+            "certified",
+            "certification",
+            "customer satisfaction"
         ];
+
+
+        /* =================================================
+           INFORMATION PROVIDED BY USER
+        ================================================= */
 
         const providedText = (
 
-            product + " " +
-            brand + " " +
-            category + " " +
-            material + " " +
-            color + " " +
-            features
+            productValue +
+            " " +
+            brandValue +
+            " " +
+            categoryValue +
+            " " +
+            materialValue +
+            " " +
+            colorValue +
+            " " +
+            audienceValue +
+            " " +
+            featuresValue
 
         ).toLowerCase();
 
-        bullets = bullets.filter(function(bullet) {
 
-            const lower =
-                bullet.toLowerCase();
+        /* =================================================
+           FILTER FALSE CLAIMS
+        ================================================= */
 
-            for (const word of forbidden) {
+        bullets =
+            bullets.filter(
+                function(bullet) {
 
-                if (
-                    lower.includes(word) &&
-                    !providedText.includes(word)
-                ) {
+                    const lower =
+                        bullet.toLowerCase();
 
-                    return false;
+
+                    for (
+                        const phrase
+                        of forbiddenPhrases
+                    ) {
+
+                        if (
+                            lower.includes(
+                                phrase
+                            ) &&
+                            !providedText.includes(
+                                phrase
+                            )
+                        ) {
+
+                            return false;
+                        }
+
+                    }
+
+
+                    return true;
+
                 }
-            }
+            );
 
-            return true;
-        });
 
-        /* ==============================
-           SAFE FALLBACK
-        ============================== */
+        /* =================================================
+           REMOVE AI FILLER
+        ================================================= */
+
+        bullets =
+            bullets.filter(
+                function(bullet) {
+
+                    const lower =
+                        bullet.toLowerCase();
+
+
+                    const unwantedStarts = [
+
+                        "this product",
+                        "the product",
+                        "this item",
+                        "this product offers",
+                        "here is",
+                        "here's",
+                        "sure",
+                        "certainly"
+
+                    ];
+
+
+                    for (
+                        const phrase
+                        of unwantedStarts
+                    ) {
+
+                        if (
+                            lower.startsWith(
+                                phrase
+                            )
+                        ) {
+
+                            return false;
+
+                        }
+
+                    }
+
+
+                    return true;
+
+                }
+            );
+
+
+        /* =================================================
+           MAXIMUM 5
+        ================================================= */
+
+        bullets =
+            bullets.slice(0, 5);
+
+
+        /* =================================================
+           SAFE LOCAL FALLBACK
+        ================================================= */
 
         const safeBullets = [];
 
-        if (brand && product) {
+
+        if (
+            brandValue &&
+            productValue
+        ) {
 
             safeBullets.push(
-                brand + " " + product
+                "Brand: " +
+                brandValue +
+                " | Product: " +
+                productValue
             );
 
-        } else if (product) {
-
-            safeBullets.push(
-                product
-            );
         }
 
-        if (category) {
+        else if (productValue) {
 
             safeBullets.push(
-                "Category: " + category
+                "Product: " +
+                productValue
             );
+
         }
 
-        if (material) {
+
+        if (categoryValue) {
 
             safeBullets.push(
-                "Material: " + material
+                "Category: " +
+                categoryValue
             );
+
         }
 
-        if (color) {
+
+        if (materialValue) {
 
             safeBullets.push(
-                "Color: " + color
+                "Material: " +
+                materialValue
             );
+
         }
 
-        if (features) {
+
+        if (colorValue) {
 
             safeBullets.push(
-                "Features: " + features
+                "Color: " +
+                colorValue
             );
+
         }
 
-        /* ==============================
-           ADD SAFE INFORMATION
-        ============================== */
 
-        safeBullets.forEach(function(item) {
+        if (audienceValue) {
 
-            if (
-                !bullets.some(function(existing) {
+            safeBullets.push(
+                "Target Audience: " +
+                audienceValue
+            );
 
-                    return existing.toLowerCase() ===
-                        item.toLowerCase();
+        }
 
-                })
-            ) {
 
-                bullets.push(item);
+        if (featuresValue) {
+
+            safeBullets.push(
+                "Features: " +
+                featuresValue
+            );
+
+        }
+
+
+        /* =================================================
+           ADD SAFE VALUES IF AI RETURNED LESS THAN 5
+        ================================================= */
+
+        safeBullets.forEach(
+            function(item) {
+
+                if (
+                    bullets.length >= 5
+                ) {
+                    return;
+                }
+
+
+                const exists =
+                    bullets.some(
+                        function(existing) {
+
+                            return (
+                                existing
+                                    .toLowerCase() ===
+                                item
+                                    .toLowerCase()
+                            );
+
+                        }
+                    );
+
+
+                if (!exists) {
+
+                    bullets.push(
+                        item
+                    );
+
+                }
+
             }
+        );
 
-        });
 
-        /* ==============================
-           FINAL 5
-        ============================== */
+        /* =================================================
+           FINAL UNIQUE LIST
+        ================================================= */
 
         bullets =
-            [...new Set(bullets)]
-            .slice(0, 5);
+            [
+                ...new Set(
+                    bullets
+                )
+            ].slice(0, 5);
 
-        if (bullets.length < 5) {
+
+        /* =================================================
+           FINAL CHECK
+        ================================================= */
+
+        if (
+            bullets.length < 5
+        ) {
 
             throw new Error(
-                "दी गई जानकारी से 5 सुरक्षित bullet points नहीं बन सके।"
+                "दी गई जानकारी से 5 सुरक्षित bullet points नहीं बनाए जा सके।"
             );
+
         }
 
-        /* ==============================
+
+        /* =================================================
            SHOW RESULT
-        ============================== */
+        ================================================= */
 
         result.innerText =
             bullets
-                .map(function(bullet) {
-
-                    return "- " + bullet;
-
-                })
+                .map(
+                    bullet =>
+                        "- " + bullet
+                )
                 .join("\n");
 
+
         status.innerText =
-            "✅ 5 bullet points successfully generated.";
+            "✅ 5 factual AI bullet points generated.";
+
 
     }
+
 
     catch (error) {
 
         console.error(
-            "Bullet Points Error:",
+            "Bullet Points Generator Error:",
             error
         );
 
+
         result.innerText =
-            "❌ Bullet Points generate नहीं हो सके।\n\n" +
+            "❌ Bullet points generate नहीं हो सके.\n\n" +
             "Error: " +
             error.message;
+
 
         status.innerText =
             "Please try again.";
 
     }
 
+
     finally {
 
-        button.disabled = false;
+        button.disabled =
+            false;
 
         button.innerText =
             "🤖 Generate AI Bullet Points";
 
     }
+
 }
 
 
-/* =========================================
+/* =========================================================
    COPY BULLET POINTS
-========================================= */
+   IMPORTANT:
+   NO POPUP / NO ALERT
+========================================================= */
 
 async function copyBulletPoints() {
 
     const result =
         document.getElementById("result");
 
-    if (!result) {
+    const status =
+        document.getElementById("status");
 
-        alert("Result box नहीं मिला।");
+
+    if (
+        !result ||
+        !status
+    ) {
 
         return;
+
     }
+
 
     const text =
         result.innerText.trim();
+
+
+    /* =====================================================
+       CHECK EMPTY RESULT
+    ===================================================== */
 
     if (
         !text ||
@@ -399,25 +844,33 @@ async function copyBulletPoints() {
         "Your AI generated bullet points will appear here..."
     ) {
 
-        alert(
-            "पहले Bullet Points Generate करें।"
-        );
+        status.innerText =
+            "⚠️ पहले Bullet Points generate करें।";
 
         return;
+
     }
 
-    if (text.startsWith("❌")) {
 
-        alert(
-            "पहले सही Bullet Points Generate करें।"
-        );
+    /* =====================================================
+       CHECK ERROR RESULT
+    ===================================================== */
+
+    if (
+        text.startsWith("❌")
+    ) {
+
+        status.innerText =
+            "⚠️ पहले सही Bullet Points generate करें।";
 
         return;
+
     }
 
-    /* ==============================
-       MODERN COPY
-    ============================== */
+
+    /* =====================================================
+       CLIPBOARD COPY
+    ===================================================== */
 
     try {
 
@@ -426,46 +879,74 @@ async function copyBulletPoints() {
             navigator.clipboard.writeText
         ) {
 
-            await navigator.clipboard.writeText(text);
+            await navigator.clipboard.writeText(
+                text
+            );
 
-            alert(
-                "✅ Bullet Points copied successfully!"
+        }
+
+        else {
+
+            fallbackCopyBulletPoints(
+                text
             );
 
             return;
+
         }
 
-        /* ==============================
-           FALLBACK COPY
-        ============================== */
 
-        fallbackCopy(text);
+        /* =================================================
+           SUCCESS MESSAGE
+           NO POPUP
+        ================================================= */
+
+        showCopyStatus(
+            status,
+            "✅ Bullet Points copied successfully!"
+        );
 
     }
+
 
     catch (error) {
 
-        console.error(
-            "Copy Error:",
+        console.warn(
+            "Clipboard API failed:",
             error
         );
 
-        fallbackCopy(text);
+
+        fallbackCopyBulletPoints(
+            text
+        );
+
     }
+
 }
 
 
-/* =========================================
+/* =========================================================
    FALLBACK COPY
-========================================= */
+========================================================= */
 
-function fallbackCopy(text) {
+function fallbackCopyBulletPoints(
+    text
+) {
+
+    const status =
+        document.getElementById("status");
+
 
     const textarea =
-        document.createElement("textarea");
+        document.createElement(
+            "textarea"
+        );
+
 
     textarea.value =
         text;
+
 
     textarea.style.position =
         "fixed";
@@ -476,50 +957,135 @@ function fallbackCopy(text) {
     textarea.style.top =
         "0";
 
+    textarea.style.opacity =
+        "0";
+
+
     document.body.appendChild(
         textarea
     );
+
 
     textarea.focus();
 
     textarea.select();
 
+    textarea.setSelectionRange(
+        0,
+        textarea.value.length
+    );
+
+
     try {
 
-        const success =
-            document.execCommand("copy");
+        const successful =
+            document.execCommand(
+                "copy"
+            );
 
-        if (success) {
 
-            alert(
+        if (
+            successful
+        ) {
+
+            showCopyStatus(
+                status,
                 "✅ Bullet Points copied successfully!"
             );
 
-        } else {
+        }
 
-            alert(
+        else {
+
+            showCopyStatus(
+                status,
                 "❌ Copy नहीं हो सका।"
             );
+
         }
 
     }
 
     catch (error) {
 
-        alert(
+        console.error(
+            "Fallback Copy Error:",
+            error
+        );
+
+
+        showCopyStatus(
+            status,
             "❌ Copy नहीं हो सका।"
         );
 
     }
 
+
     textarea.remove();
+
 }
 
 
-/* =========================================
-   PAGE LOADED
-========================================= */
+/* =========================================================
+   COPY STATUS
+   AUTO HIDE AFTER 2.5 SECONDS
+========================================================= */
 
-console.log(
-    "✅ Bullet Points Generator Ready"
+function showCopyStatus(
+    status,
+    message
+) {
+
+    if (!status) {
+        return;
+    }
+
+
+    status.innerText =
+        message;
+
+
+    /* Remove old timer */
+
+    if (
+        window.bulletCopyTimer
+    ) {
+
+        clearTimeout(
+            window.bulletCopyTimer
+        );
+
+    }
+
+
+    /* Hide after 2.5 seconds */
+
+    window.bulletCopyTimer =
+        setTimeout(
+            function() {
+
+                status.innerText =
+                    "";
+
+            },
+            2500
+        );
+
+}
+
+
+/* =========================================================
+   PAGE READY
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        console.log(
+            "✅ AI Bullet Points Generator Ready"
+        );
+
+    }
 );
