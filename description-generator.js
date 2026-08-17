@@ -479,7 +479,7 @@ async function copyDescription() {
             );
 
             showCopyMessage(
-                "✅ Product Description copied!",
+                
                 true
             );
 
