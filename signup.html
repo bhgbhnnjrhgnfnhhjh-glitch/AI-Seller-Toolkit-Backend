@@ -1,299 +1,413 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
-    <title>Sign Up - AI Seller Toolkit</title>
+<title>Sign Up - AI Seller Toolkit</title><style>
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
 
-        body {
-            min-height: 100vh;
-            background: #f4f7fb;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+body {
 
-        .signup-box {
-            width: 100%;
-            max-width: 420px;
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.12);
-        }
+    min-height: 100vh;
 
-        .logo {
-            text-align: center;
-            font-size: 28px;
-            font-weight: bold;
-            color: #2563eb;
-            margin-bottom: 10px;
-        }
+    background: #f4f7fb;
 
-        h2 {
-            text-align: center;
-            margin-bottom: 25px;
-            color: #222;
-        }
+    display: flex;
 
-        label {
-            display: block;
-            margin-top: 15px;
-            margin-bottom: 7px;
-            font-weight: bold;
-        }
+    justify-content: center;
 
-        input {
-            width: 100%;
-            padding: 13px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 16px;
-            outline: none;
-        }
+    align-items: center;
 
-        input:focus {
-            border-color: #2563eb;
-        }
+    padding: 20px;
 
-        button {
-            width: 100%;
-            padding: 14px;
-            margin-top: 22px;
-            border: none;
-            border-radius: 8px;
-            background: #16a34a;
-            color: white;
-            font-size: 17px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+}
 
-        button:disabled {
-            background: #9ca3af;
-            cursor: not-allowed;
-        }
+.signup-box {
 
-        .message {
-            text-align: center;
-            margin-top: 15px;
-            font-size: 14px;
-            min-height: 20px;
-        }
+    width: 100%;
 
-        .login-link {
-            text-align: center;
-            margin-top: 20px;
-        }
+    max-width: 420px;
 
-        .login-link a {
-            color: #2563eb;
-            text-decoration: none;
-            font-weight: bold;
-        }
+    background: white;
 
-        .home-link {
-            display: block;
-            text-align: center;
-            margin-top: 15px;
-            color: #555;
-            text-decoration: none;
-        }
-    </style>
-</head>
+    padding: 30px;
 
-<body>
+    border-radius: 15px;
 
-<div class="signup-box">
+    box-shadow:
+        0 5px 20px rgba(0,0,0,0.12);
 
-    <div class="logo">
-        🤖 AI Seller Toolkit
-    </div>
+}
 
-    <h2>Create Account</h2>
+.logo {
 
-    <form id="signupForm">
+    text-align: center;
 
-        <label for="email">
-            Email
-        </label>
+    font-size: 28px;
 
-        <input
-            type="email"
-            id="email"
-            placeholder="Enter your email"
-            autocomplete="email"
-            required
-        >
+    font-weight: bold;
 
-        <label for="password">
-            Password
-        </label>
+    color: #2563eb;
 
-        <input
-            type="password"
-            id="password"
-            placeholder="Minimum 6 characters"
-            autocomplete="new-password"
-            minlength="6"
-            required
-        >
+    margin-bottom: 10px;
 
-        <label for="confirmPassword">
-            Confirm Password
-        </label>
+}
 
-        <input
-            type="password"
-            id="confirmPassword"
-            placeholder="Enter password again"
-            autocomplete="new-password"
-            minlength="6"
-            required
-        >
+h2 {
 
-        <button
-            type="submit"
-            id="signupBtn"
-        >
-            Create Account
-        </button>
+    text-align: center;
 
-    </form>
+    margin-bottom: 25px;
 
-    <div
-        class="message"
-        id="message"
-    ></div>
+    color: #222;
 
-    <div class="login-link">
-        Already have an account?
-        <a href="login.html">Login</a>
-    </div>
+}
 
-    <a
-        class="home-link"
-        href="index.html"
-    >
-        ← Back to Home
-    </a>
+label {
 
-</div>
+    display: block;
 
+    margin-top: 15px;
 
-<script type="module">
+    margin-bottom: 7px;
+
+    font-weight: bold;
+
+}
+
+input {
+
+    width: 100%;
+
+    padding: 13px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 8px;
+
+    font-size: 16px;
+
+    outline: none;
+
+}
+
+input:focus {
+
+    border-color: #2563eb;
+
+}
+
+button {
+
+    width: 100%;
+
+    padding: 14px;
+
+    margin-top: 22px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #16a34a;
+
+    color: white;
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+}
+
+button:disabled {
+
+    background: #9ca3af;
+
+    cursor: not-allowed;
+
+}
+
+.message {
+
+    text-align: center;
+
+    margin-top: 15px;
+
+    font-size: 14px;
+
+    min-height: 20px;
+
+}
+
+.login-link {
+
+    text-align: center;
+
+    margin-top: 20px;
+
+}
+
+.login-link a {
+
+    color: #2563eb;
+
+    text-decoration: none;
+
+    font-weight: bold;
+
+}
+
+.home-link {
+
+    display: block;
+
+    text-align: center;
+
+    margin-top: 15px;
+
+    color: #555;
+
+    text-decoration: none;
+
+}
+
+</style></head><body><div class="signup-box"><div class="logo">🤖 AI Seller Toolkit
+
+</div><h2>
+Create Account
+</h2><form id="signupForm"><label for="email">
+Email
+</label><input
+type="email"
+id="email"
+placeholder="Enter your email"
+autocomplete="email"
+required
+
+«»
+
+<label for="password">
+Password
+</label><input
+type="password"
+id="password"
+placeholder="Minimum 6 characters"
+autocomplete="new-password"
+minlength="6"
+required
+
+«»
+
+<label for="confirmPassword">
+Confirm Password
+</label><input
+type="password"
+id="confirmPassword"
+placeholder="Enter password again"
+autocomplete="new-password"
+minlength="6"
+required
+
+«»
+
+<button
+type="submit"
+id="signupBtn"
+
+«»
+
+Create Account
+
+</button></form><div
+class="message"
+id="message"
+></div><div class="login-link">Already have an account?
+
+<a href="login.html">
+Login
+</a></div><a
+class="home-link"
+href="index.html"
+
+«»
+
+← Back to Home
+
+</a></div><script type="module">
+
 
 import {
+
     auth,
+
     createUserWithEmailAndPassword
+
 } from "./firebase-config.js";
 
 
 const signupForm =
     document.getElementById("signupForm");
 
+
 const emailInput =
     document.getElementById("email");
+
 
 const passwordInput =
     document.getElementById("password");
 
+
 const confirmPasswordInput =
     document.getElementById("confirmPassword");
 
+
 const signupBtn =
     document.getElementById("signupBtn");
+
 
 const message =
     document.getElementById("message");
 
 
 signupForm.addEventListener(
+
     "submit",
+
     async function(event) {
 
+
         event.preventDefault();
+
 
         const email =
             emailInput.value.trim();
 
+
         const password =
             passwordInput.value;
+
 
         const confirmPassword =
             confirmPasswordInput.value;
 
 
-        if (password !== confirmPassword) {
+        message.innerText = "";
 
-            message.style.color = "#dc2626";
+
+        if (!email) {
+
+            message.style.color =
+                "#dc2626";
 
             message.innerText =
-                "❌ Password और Confirm Password अलग हैं।";
+                "❌ Please enter your email.";
 
             return;
+
         }
 
 
-        if (password.length < 6) {
+        if (
+            password.length < 6
+        ) {
 
-            message.style.color = "#dc2626";
+            message.style.color =
+                "#dc2626";
 
             message.innerText =
                 "❌ Password कम से कम 6 characters का होना चाहिए।";
 
             return;
+
         }
 
 
-        signupBtn.disabled = true;
+        if (
+            password !== confirmPassword
+        ) {
+
+            message.style.color =
+                "#dc2626";
+
+            message.innerText =
+                "❌ Password और Confirm Password अलग हैं।";
+
+            return;
+
+        }
+
+
+        signupBtn.disabled =
+            true;
+
 
         signupBtn.innerText =
             "⏳ Creating Account...";
 
-        message.innerText = "";
-
 
         try {
 
+
             await createUserWithEmailAndPassword(
+
                 auth,
+
                 email,
+
                 password
+
             );
 
 
             message.style.color =
                 "#16a34a";
 
+
             message.innerText =
                 "✅ Account successfully created!";
 
 
+            /*
+            =====================================
+            IMPORTANT
+            =====================================
+
+            profile.html मौजूद नहीं है।
+
+            इसलिए Signup के बाद सीधे
+            login.html पर भेज रहे हैं।
+
+            =====================================
+            */
+
+
             setTimeout(
+
                 function() {
 
+
                     window.location.href =
-                        "profile.html";
+                        "login.html";
+
 
                 },
+
                 1000
+
             );
 
 
         }
 
+
         catch(error) {
+
 
             console.error(
                 "Signup Error:",
@@ -305,61 +419,78 @@ signupForm.addEventListener(
                 "#dc2626";
 
 
-            if (
-                error.code ===
-                "auth/email-already-in-use"
-            ) {
+            switch(error.code) {
 
-                message.innerText =
-                    "❌ इस Email से account पहले से बना हुआ है।";
+
+                case
+                "auth/email-already-in-use":
+
+
+                    message.innerText =
+                        "❌ इस Email से account पहले से बना हुआ है।";
+
+                    break;
+
+
+                case
+                "auth/invalid-email":
+
+
+                    message.innerText =
+                        "❌ Email सही नहीं है।";
+
+                    break;
+
+
+                case
+                "auth/weak-password":
+
+
+                    message.innerText =
+                        "❌ Password बहुत कमजोर है।";
+
+                    break;
+
+
+                case
+                "auth/network-request-failed":
+
+
+                    message.innerText =
+                        "❌ Internet connection check करें।";
+
+                    break;
+
+
+                default:
+
+
+                    message.innerText =
+                        "❌ Account नहीं बन पाया: " +
+                        error.message;
 
             }
 
-            else if (
-                error.code ===
-                "auth/invalid-email"
-            ) {
-
-                message.innerText =
-                    "❌ Email सही नहीं है।";
-
-            }
-
-            else if (
-                error.code ===
-                "auth/weak-password"
-            ) {
-
-                message.innerText =
-                    "❌ Password बहुत कमजोर है।";
-
-            }
-
-            else {
-
-                message.innerText =
-                    "❌ Account नहीं बन पाया: " +
-                    error.message;
-
-            }
 
         }
 
 
         finally {
 
+
             signupBtn.disabled =
                 false;
+
 
             signupBtn.innerText =
                 "Create Account";
 
+
         }
 
+
     }
+
 );
 
-</script>
-<!-- Firebase Signup Page -->
-</body>
-</html>
+</script></body></html>
