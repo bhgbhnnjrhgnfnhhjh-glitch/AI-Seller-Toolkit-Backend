@@ -4,7 +4,11 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
 <title>AI Product Description Generator</title>
 
@@ -12,52 +16,231 @@
 
 <style>
 
-.description-box{
-    width:100%;
-    min-height:320px;
-    padding:15px;
-    border:1px solid #ccc;
-    border-radius:8px;
-    font-size:16px;
-    line-height:1.7;
-    resize:vertical;
-    background:#f8fafc;
+.generator-container {
+
+    max-width: 750px;
+
+    margin: 30px auto;
+
+    background: #ffffff;
+
+    padding: 25px;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 5px 18px rgba(0,0,0,0.12);
+
 }
 
-.status{
-    margin-top:12px;
-    text-align:center;
-    font-size:14px;
-    color:#555;
+.generator-container h2 {
+
+    text-align: center;
+
+    color: #2563eb;
+
+    margin-bottom: 25px;
+
 }
 
-.generate-btn{
-    width:100%;
+.form-group {
+
+    margin-bottom: 16px;
+
 }
 
-.copy-btn{
-    width:100%;
-    background:#2563eb;
+.form-group label {
+
+    display: block;
+
+    font-weight: bold;
+
+    margin-bottom: 7px;
+
 }
 
-.copy-btn:hover{
-    background:#1d4ed8;
+.form-group input,
+.form-group select,
+.form-group textarea {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 12px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 7px;
+
+    font-size: 16px;
+
+    outline: none;
+
 }
 
-.clear-btn{
-    width:100%;
-    background:#64748b;
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+
+    border-color: #2563eb;
+
 }
 
-.clear-btn:hover{
-    background:#475569;
+.generate-btn {
+
+    width: 100%;
+
+    padding: 14px;
+
+    background: #16a34a;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 7px;
+
+    font-size: 18px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
 }
 
-.char-count{
-    margin-top:8px;
-    text-align:right;
-    font-size:13px;
-    color:#666;
+.generate-btn:hover {
+
+    background: #15803d;
+
+}
+
+.generate-btn:disabled {
+
+    background: #9ca3af;
+
+    cursor: not-allowed;
+
+}
+
+.status {
+
+    text-align: center;
+
+    margin-top: 15px;
+
+    min-height: 22px;
+
+    font-size: 14px;
+
+    color: #555;
+
+}
+
+.result-box {
+
+    width: 100%;
+
+    min-height: 280px;
+
+    margin-top: 20px;
+
+    padding: 16px;
+
+    box-sizing: border-box;
+
+    background: #f8fafc;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 8px;
+
+    resize: vertical;
+
+    white-space: pre-wrap;
+
+    word-break: break-word;
+
+    line-height: 1.8;
+
+    font-size: 16px;
+
+    font-family: Arial, sans-serif;
+
+}
+
+.copy-btn {
+
+    width: 100%;
+
+    margin-top: 12px;
+
+    padding: 13px;
+
+    background: #2563eb;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 7px;
+
+    font-size: 17px;
+
+    cursor: pointer;
+
+}
+
+.copy-btn:hover {
+
+    background: #1d4ed8;
+
+}
+
+.clear-btn {
+
+    width: 100%;
+
+    margin-top: 10px;
+
+    padding: 13px;
+
+    background: #dc2626;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 7px;
+
+    font-size: 17px;
+
+    cursor: pointer;
+
+}
+
+.clear-btn:hover {
+
+    background: #b91c1c;
+
+}
+
+.info-box {
+
+    margin-top: 18px;
+
+    padding: 14px;
+
+    background: #eff6ff;
+
+    border-left: 4px solid #2563eb;
+
+    border-radius: 6px;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+
 }
 
 </style>
@@ -81,121 +264,192 @@
 
 <h2>📝 AI Product Description Generator</h2>
 
-<p>Create Professional Product Descriptions with AI</p>
+<p>
+Create Professional Product Descriptions with AI
+</p>
 
 </section>
 
 
-<section class="tools">
-
-<div class="card">
+<div class="generator-container">
 
 
-<label>Product Name</label>
-
-<input
-type="text"
-id="product"
-placeholder="Example: Cotton T-Shirt"
->
+<h2>
+Create Product Description
+</h2>
 
 
-<label>Brand Name</label>
+<div class="form-group">
+
+<label for="product">
+Product Name
+</label>
 
 <input
-type="text"
-id="brand"
-placeholder="Example: Fashion Hud"
+    type="text"
+    id="product"
+    placeholder="Example: Cotton T-Shirt"
 >
 
+</div>
 
-<label>Category</label>
+
+<div class="form-group">
+
+<label for="brand">
+Brand Name
+</label>
 
 <input
-type="text"
-id="category"
-placeholder="Example: Men's Clothing"
+    type="text"
+    id="brand"
+    placeholder="Example: Fashion Hud"
 >
 
+</div>
 
-<label>Material</label>
+
+<div class="form-group">
+
+<label for="category">
+Category
+</label>
 
 <input
-type="text"
-id="material"
-placeholder="Example: 100% Cotton"
+    type="text"
+    id="category"
+    placeholder="Example: Men's Clothing"
 >
 
+</div>
 
-<label>Target Audience</label>
+
+<div class="form-group">
+
+<label for="material">
+Material
+</label>
+
+<input
+    type="text"
+    id="material"
+    placeholder="Example: 100% Cotton"
+>
+
+</div>
+
+
+<div class="form-group">
+
+<label for="audience">
+Target Audience
+</label>
 
 <select id="audience">
 
-<option value="">Not Specified</option>
+<option value="Men">
+Men
+</option>
 
-<option value="Men">Men</option>
+<option value="Women">
+Women
+</option>
 
-<option value="Women">Women</option>
+<option value="Kids">
+Kids
+</option>
 
-<option value="Kids">Kids</option>
-
-<option value="Unisex">Unisex</option>
-
-</select>
-
-
-<label>Color</label>
-
-<input
-type="text"
-id="color"
-placeholder="Example: Black"
->
-
-
-<label>Features</label>
-
-<textarea
-id="features"
-rows="4"
-placeholder="Example: Round neck, short sleeves">
-</textarea>
-
-
-<label>Extra Information</label>
-
-<textarea
-id="extra"
-rows="4"
-placeholder="Only enter information you want to mention in the description">
-</textarea>
-
-
-<label>Marketplace</label>
-
-<select id="marketplace">
-
-<option value="Amazon">Amazon</option>
-
-<option value="Flipkart">Flipkart</option>
-
-<option value="Meesho">Meesho</option>
-
-<option value="Shopify">Shopify</option>
-
-<option value="Etsy">Etsy</option>
-
-<option value="All Marketplaces">
-All Marketplaces
+<option value="Unisex">
+Unisex
 </option>
 
 </select>
 
+</div>
+
+
+<div class="form-group">
+
+<label for="color">
+Color
+</label>
+
+<input
+    type="text"
+    id="color"
+    placeholder="Example: Black"
+>
+
+</div>
+
+
+<div class="form-group">
+
+<label for="features">
+Known Features
+</label>
+
+<textarea
+    id="features"
+    rows="4"
+    placeholder="Example: Round neck, short sleeves"
+></textarea>
+
+</div>
+
+
+<div class="form-group">
+
+<label for="extra">
+Extra Information
+</label>
+
+<textarea
+    id="extra"
+    rows="4"
+    placeholder="Enter only information you know about the product"
+></textarea>
+
+</div>
+
+
+<div class="form-group">
+
+<label for="marketplace">
+Marketplace
+</label>
+
+<select id="marketplace">
+
+<option value="Amazon">
+Amazon
+</option>
+
+<option value="Flipkart">
+Flipkart
+</option>
+
+<option value="Meesho">
+Meesho
+</option>
+
+<option value="Shopify">
+Shopify
+</option>
+
+<option value="Etsy">
+Etsy
+</option>
+
+</select>
+
+</div>
+
 
 <button
-id="generateBtn"
-class="generate-btn"
-onclick="generateDescription()"
+    type="button"
+    class="generate-btn"
+    id="generateBtn"
 >
 
 🤖 Generate AI Description
@@ -204,38 +458,24 @@ onclick="generateDescription()"
 
 
 <div
-class="status"
-id="status"
->
-</div>
-
-
-<br>
-
-
-<h3>📝 Generated Product Description</h3>
+    class="status"
+    id="status"
+    aria-live="polite"
+></div>
 
 
 <textarea
-id="result"
-class="description-box"
-readonly
-placeholder="Your AI generated product description will appear here..."
+    class="result-box"
+    id="result"
+    readonly
+    placeholder="Your AI generated product description will appear here..."
 ></textarea>
 
 
-<div
-class="char-count"
-id="charCount"
->
-0 characters
-</div>
-
-
 <button
-id="copyBtn"
-class="copy-btn"
-onclick="copyDescription()"
+    type="button"
+    class="copy-btn"
+    id="copyBtn"
 >
 
 📋 Copy Description
@@ -244,21 +484,70 @@ onclick="copyDescription()"
 
 
 <button
-class="clear-btn"
-onclick="clearDescription()"
+    type="button"
+    class="clear-btn"
+    id="clearBtn"
 >
 
-🗑 Clear
+🗑️ Clear
 
 </button>
 
 
+<div class="info-box">
+
+<strong>
+🛡️ Safe AI Filtering
+</strong>
+
+<br><br>
+
+AI केवल आपके द्वारा दी गई जानकारी का उपयोग करेगा।
+
+<br><br>
+
+❌ Fake claims नहीं
+
+<br>
+
+❌ दूसरा brand नहीं
+
+<br>
+
+❌ Fake price या offer नहीं
+
+<br>
+
+❌ बिना जानकारी के features नहीं
+
+<br>
+
+❌ Fake warranty या delivery information नहीं
+
 </div>
 
-</section>
-<script src="description-generator.js"></script>
-<script src="no-popup.js"></script>
+
+</div>
+
+
+<!--
+IMPORTANT SCRIPT ORDER
+
+1. no-popup.js
+2. description-generator.js
+-->
+
+<script
+    src="no-popup.js"
+    defer
+></script>
+
+<script
+    src="description-generator.js"
+    defer
+></script>
+
 
 </body>
 
-  </html>
+</html>
