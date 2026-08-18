@@ -4,115 +4,177 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
 <title>AI Product Title Generator</title>
 
-<link rel="stylesheet" href="style.css">
+<link
+    rel="stylesheet"
+    href="style.css"
+>
 
 </head>
 
+
 <body>
+
 
 <header>
 
-<h1>🤖 AI Seller Toolkit</h1>
+    <h1>🤖 AI Seller Toolkit</h1>
 
-<a href="tools.html">⬅ Back</a>
+    <a href="tools.html">
+        ⬅ Back
+    </a>
 
 </header>
 
 
 <section class="hero">
 
-<h2>AI Product Title Generator</h2>
+    <h2>
+        AI Product Title Generator
+    </h2>
 
-<p>Create High Converting Product Titles with AI</p>
+    <p>
+        Create High Converting Product Titles with AI
+    </p>
 
 </section>
 
 
 <section class="tools">
 
-<div class="card">
-
-<label>Product Name</label>
-
-<input
-type="text"
-id="product"
-placeholder="Example: Cotton T-Shirt">
+    <div class="card">
 
 
-<br><br>
+        <!-- PRODUCT NAME -->
+
+        <label for="product">
+            Product Name
+        </label>
+
+        <input
+            type="text"
+            id="product"
+            placeholder="Example: Cotton T-Shirt"
+        >
 
 
-<label>Category</label>
-
-<input
-type="text"
-id="category"
-placeholder="Example: Men's Clothing">
+        <br><br>
 
 
-<br><br>
+        <!-- CATEGORY -->
+
+        <label for="category">
+            Category
+        </label>
+
+        <input
+            type="text"
+            id="category"
+            placeholder="Example: Men's Clothing"
+        >
 
 
-<label>Brand</label>
-
-<input
-type="text"
-id="brand"
-placeholder="Example: Fashion Hud">
+        <br><br>
 
 
-<br><br>
+        <!-- BRAND -->
+
+        <label for="brand">
+            Brand
+        </label>
+
+        <input
+            type="text"
+            id="brand"
+            placeholder="Example: Fashion Hud"
+        >
 
 
-<label>Main Keyword</label>
-
-<input
-type="text"
-id="keyword"
-placeholder="Example: Black Cotton T-Shirt">
+        <br><br>
 
 
-<br><br>
+        <!-- MAIN KEYWORD -->
+
+        <label for="keyword">
+            Main Keyword
+        </label>
+
+        <input
+            type="text"
+            id="keyword"
+            placeholder="Example: Black Cotton T-Shirt"
+        >
 
 
-<button onclick="generateTitle()">
-
-🤖 Generate AI Title
-
-</button>
+        <br><br>
 
 
-<h3>Generated AI Title</h3>
+        <!-- GENERATE BUTTON -->
 
-<textarea
-id="result"
-rows="10"
-readonly
-style="width:100%;"
-placeholder="Your AI generated titles will appear here...">
-</textarea>
+        <button
+            type="button"
+            onclick="generateTitle()"
+        >
 
+            🤖 Generate AI Title
 
-<br><br>
+        </button>
 
 
-<button onclick="copyTitle()">
+        <h3>
+            Generated AI Title
+        </h3>
 
-📋 Copy Title
 
-</button>
+        <!-- RESULT -->
 
-</div>
+        <textarea
+            id="result"
+            rows="10"
+            readonly
+            style="width:100%;"
+            placeholder="Your AI generated titles will appear here..."
+        ></textarea>
+
+
+        <br><br>
+
+
+        <!-- COPY BUTTON -->
+
+        <button
+            type="button"
+            onclick="copyTitle()"
+        >
+
+            📋 Copy Title
+
+        </button>
+
+
+    </div>
 
 </section>
 
 
-<!-- AI JavaScript -->
+<!-- =====================================
+     NO POPUP SCRIPT
+     पहले load होगा
+===================================== -->
+
+<script src="no-popup.js"></script>
+
+
+<!-- =====================================
+     TITLE GENERATOR SCRIPT
+===================================== -->
 
 <script src="title-generator.js"></script>
 
