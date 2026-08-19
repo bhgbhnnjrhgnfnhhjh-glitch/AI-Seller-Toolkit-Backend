@@ -1,287 +1,423 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport"
-content="width=device-width, initial-scale=1.0">
-
-<title>Login - AI Seller Toolkit</title><link rel="stylesheet" href="style.css"><style>
-
-*{
-    box-sizing:border-box;
-}
-
-body{
-    margin:0;
-    font-family:Arial, sans-serif;
-    background:#f3f4f6;
-}
-
-.login-container{
-
-    width:90%;
-    max-width:430px;
-
-    margin:60px auto;
-
-    background:white;
-
-    padding:30px;
-
-    border-radius:15px;
-
-    box-shadow:0 5px 20px rgba(0,0,0,0.12);
-}
-
-.login-container h2{
-
-    text-align:center;
-
-    margin-bottom:25px;
-
-    color:#2563eb;
-}
-
-.form-group{
-
-    margin-bottom:18px;
-}
-
-.form-group label{
-
-    display:block;
-
-    margin-bottom:7px;
-
-    font-weight:bold;
-}
-
-.form-group input{
-
-    width:100%;
-
-    padding:13px;
-
-    border:1px solid #d1d5db;
-
-    border-radius:8px;
-
-    font-size:16px;
-
-    outline:none;
-}
-
-.form-group input:focus{
-
-    border-color:#2563eb;
-}
-
-.login-btn{
-
-    width:100%;
-
-    padding:14px;
-
-    border:none;
-
-    border-radius:8px;
-
-    background:#2563eb;
-
-    color:white;
-
-    font-size:17px;
-
-    font-weight:bold;
-
-    cursor:pointer;
-}
-
-.login-btn:hover{
-
-    background:#1d4ed8;
-}
-
-.login-btn:disabled{
-
-    background:#9ca3af;
-
-    cursor:not-allowed;
-}
-
-.message{
-
-    margin-top:15px;
-
-    text-align:center;
-
-    font-size:14px;
-
-    min-height:22px;
-}
-
-.links{
-
-    text-align:center;
-
-    margin-top:20px;
-
-    line-height:2;
-}
-
-.links a{
-
-    color:#2563eb;
-
-    text-decoration:none;
-
-    font-weight:bold;
-}
-
-.links a:hover{
-
-    text-decoration:underline;
-}
-
-.logo{
-
-    text-align:center;
-
-    font-size:28px;
-
-    margin-bottom:10px;
-}
-
-</style></head><body><header><h1>🤖 AI Seller Toolkit</h1><a href="index.html">← Back to Home</a>
-
-</header><div class="login-container"><div class="logo">
-🔐
-</div><h2>Login to Your Account</h2><form id="loginForm"><div class="form-group"><label for="email">
-Email
-</label><input
-type="email"
-id="email"
-placeholder="Enter your email"
-required
-autocomplete="email"
-
-«»
-
-</div><div class="form-group"><label for="password">
-Password
-</label><input
-type="password"
-id="password"
-placeholder="Enter your password"
-required
-autocomplete="current-password"
-
-«»
-
-</div><button
-type="submit"
-class="login-btn"
-id="loginBtn"
-
-«»
-
-🔐 Login
-
-</button></form><div
-class="message"
-id="message"
-></div><div class="links"><p>
-Don't have an account?
-<a href="signup.html">
-Create Account
-</a>
-</p><p>
-<a href="index.html">
-← Back to Home
-</a>
-</p></div></div><script type="module">
-
-import {
-    getAuth,
-    signInWithEmailAndPassword
-}
-from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
-
-
-import {
-    app
-}
-from "./firebase-config.js";
-
-
-const auth =
-    getAuth(app);
-
-
-const loginForm =
-    document.getElementById("loginForm");
-
-
-const emailInput =
-    document.getElementById("email");
-
-
-const passwordInput =
-    document.getElementById("password");
-
-
-const loginBtn =
-    document.getElementById("loginBtn");
-
-
-const message =
-    document.getElementById("message");
-
-
-loginForm.addEventListener(
-    "submit",
-    async function(event){
-
-        event.preventDefault();
-
-
-        const email =
-            emailInput.value.trim();
-
-
-        const password =
-            passwordInput.value;
-
-
-        if(!email){
-
-            message.innerText =
-                "Please enter your email.";
-
-            return;
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login - AI Seller Toolkit</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-
-        if(!password){
-
-            message.innerText =
-                "Please enter your password.";
-
-            return;
-
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            background: #f3f4f6;
         }
 
+        /* Header */
+        header {
+            background: #2563eb;
+            color: white;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-        loginBtn.disabled = true;
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+        }
 
-        loginBtn.innerText =
-            "⏳ Logging in...";
+        .home-btn {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+        }
 
-        message.innerText =
-            "Please wait...";
+        /* Main */
+        main {
+            min-height: calc(100vh - 60px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.10);
+        }
+
+        .icon {
+            text-align: center;
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #2563eb;
+            margin-bottom: 25px;
+            font-size: 24px;
+        }
+
+        label {
+            display: block;
+            margin-top: 16px;
+            margin-bottom: 7px;
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 2px rgba(37,99,235,0.10);
+        }
+
+        .password-row {
+            position: relative;
+        }
+
+        .password-row input {
+            padding-right: 65px;
+        }
+
+        .show-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            color: #2563eb;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .login-btn {
+            width: 100%;
+            margin-top: 24px;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: #2563eb;
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .login-btn:hover {
+            background: #1d4ed8;
+        }
+
+        .login-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        .forgot {
+            text-align: right;
+            margin-top: 12px;
+        }
+
+        .forgot button {
+            border: none;
+            background: none;
+            color: #2563eb;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .message {
+            min-height: 22px;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 22px;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .signup-link a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-home {
+            display: block;
+            text-align: center;
+            margin-top: 18px;
+            color: #555;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        @media (max-width: 480px) {
+
+            header {
+                padding: 14px 15px;
+            }
+
+            .logo {
+                font-size: 17px;
+            }
+
+            .home-btn {
+                font-size: 12px;
+            }
+
+            .login-box {
+                padding: 24px 20px;
+            }
+
+            h2 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">
+        🤖 AI Seller Toolkit
+    </div>
+
+    <a href="index.html" class="home-btn">
+        ← Back to Home
+    </a>
+
+</header>
 
 
-        try{
+<main>
+
+    <div class="login-box">
+
+        <div class="icon">
+            🔐
+        </div>
+
+        <h2>
+            Login to Your Account
+        </h2>
 
 
-            const userCredential =
+        <form id="loginForm">
+
+            <label for="email">
+                Email
+            </label>
+
+            <input
+                type="email"
+                id="email"
+                placeholder="Enter your email"
+                autocomplete="email"
+                required
+            >
+
+
+            <label for="password">
+                Password
+            </label>
+
+            <div class="password-row">
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter your password"
+                    autocomplete="current-password"
+                    required
+                >
+
+                <button
+                    type="button"
+                    class="show-password"
+                    id="showPassword"
+                >
+                    Show
+                </button>
+
+            </div>
+
+
+            <div class="forgot">
+
+                <button
+                    type="button"
+                    id="forgotPassword"
+                >
+                    Forgot Password?
+                </button>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="login-btn"
+                id="loginBtn"
+            >
+                🔐 Login
+            </button>
+
+        </form>
+
+
+        <div
+            class="message"
+            id="message"
+        ></div>
+
+
+        <div class="signup-link">
+
+            Don't have an account?
+
+            <a href="signup.html">
+                Create Account
+            </a>
+
+        </div>
+
+
+        <a
+            href="index.html"
+            class="back-home"
+        >
+            ← Back to Home
+        </a>
+
+    </div>
+
+</main>
+
+
+<script type="module">
+
+    import {
+        auth,
+        signInWithEmailAndPassword,
+        sendPasswordResetEmail
+    } from "./firebase-config.js";
+
+
+    const loginForm =
+        document.getElementById("loginForm");
+
+    const emailInput =
+        document.getElementById("email");
+
+    const passwordInput =
+        document.getElementById("password");
+
+    const loginBtn =
+        document.getElementById("loginBtn");
+
+    const message =
+        document.getElementById("message");
+
+    const showPassword =
+        document.getElementById("showPassword");
+
+    const forgotPassword =
+        document.getElementById("forgotPassword");
+
+
+    /* Show / Hide Password */
+
+    showPassword.addEventListener(
+        "click",
+        function () {
+
+            if (passwordInput.type === "password") {
+
+                passwordInput.type = "text";
+
+                showPassword.innerText = "Hide";
+
+            } else {
+
+                passwordInput.type = "password";
+
+                showPassword.innerText = "Show";
+
+            }
+
+        }
+    );
+
+
+    /* Login */
+
+    loginForm.addEventListener(
+        "submit",
+        async function (event) {
+
+            event.preventDefault();
+
+
+            const email =
+                emailInput.value.trim();
+
+            const password =
+                passwordInput.value;
+
+
+            if (!email || !password) {
+
+                message.style.color = "#dc2626";
+
+                message.innerText =
+                    "❌ कृपया Email और Password भरें।";
+
+                return;
+            }
+
+
+            loginBtn.disabled = true;
+
+            loginBtn.innerText =
+                "⏳ Logging in...";
+
+            message.innerText = "";
+
+
+            try {
+
                 await signInWithEmailAndPassword(
                     auth,
                     email,
@@ -289,119 +425,190 @@ loginForm.addEventListener(
                 );
 
 
-            const user =
-                userCredential.user;
+                message.style.color =
+                    "#16a34a";
+
+                message.innerText =
+                    "✅ Login सफल हुआ!";
 
 
-            localStorage.setItem(
-                "userEmail",
-                user.email || email
-            );
+                /*
+                 * Login के बाद index.html पर जाएँ।
+                 * इससे profile.html का 404 नहीं आएगा।
+                 */
 
+                setTimeout(
+                    function () {
 
-            message.innerText =
-                "✅ Login successful!";
+                        window.location.href =
+                            "index.html";
 
+                    },
+                    800
+                );
 
-            setTimeout(
-                function(){
-
-                    window.location.href =
-                        "tools.html";
-
-                },
-                700
-            );
-
-
-        }
-
-
-        catch(error){
-
-            console.error(
-                "Firebase Login Error:",
-                error
-            );
-
-
-            let errorMessage =
-                "Login failed. Please try again.";
-
-
-            switch(error.code){
-
-                case "auth/invalid-email":
-
-                    errorMessage =
-                        "❌ Email address is invalid.";
-
-                    break;
-
-
-                case "auth/invalid-credential":
-
-                    errorMessage =
-                        "❌ Email or password is incorrect.";
-
-                    break;
-
-
-                case "auth/user-not-found":
-
-                    errorMessage =
-                        "❌ This account does not exist.";
-
-                    break;
-
-
-                case "auth/wrong-password":
-
-                    errorMessage =
-                        "❌ Password is incorrect.";
-
-                    break;
-
-
-                case "auth/user-disabled":
-
-                    errorMessage =
-                        "❌ This account has been disabled.";
-
-                    break;
-
-
-                case "auth/too-many-requests":
-
-                    errorMessage =
-                        "❌ Too many attempts. Please try again later.";
-
-                    break;
-
-
-                default:
-
-                    errorMessage =
-                        "❌ Login failed: " +
-                        (error.message || "Unknown error");
 
             }
 
+            catch (error) {
 
-            message.innerText =
-                errorMessage;
+                console.error(
+                    "Login Error:",
+                    error
+                );
 
 
-            loginBtn.disabled =
-                false;
+                message.style.color =
+                    "#dc2626";
 
 
-            loginBtn.innerText =
-                "🔐 Login";
+                if (
+                    error.code ===
+                    "auth/invalid-credential"
+                ) {
+
+                    message.innerText =
+                        "❌ Email या Password गलत है।";
+
+                }
+
+                else if (
+                    error.code ===
+                    "auth/user-not-found"
+                ) {
+
+                    message.innerText =
+                        "❌ इस Email से कोई account नहीं मिला।";
+
+                }
+
+                else if (
+                    error.code ===
+                    "auth/wrong-password"
+                ) {
+
+                    message.innerText =
+                        "❌ Password गलत है।";
+
+                }
+
+                else if (
+                    error.code ===
+                    "auth/invalid-email"
+                ) {
+
+                    message.innerText =
+                        "❌ Email सही नहीं है।";
+
+                }
+
+                else {
+
+                    message.innerText =
+                        "❌ Login नहीं हो पाया। कृपया दोबारा कोशिश करें।";
+
+                }
+
+            }
+
+            finally {
+
+                loginBtn.disabled = false;
+
+                loginBtn.innerText =
+                    "🔐 Login";
+
+            }
 
         }
+    );
 
-    }
-);
 
-</script></body></html>
+    /* Forgot Password */
+
+    forgotPassword.addEventListener(
+        "click",
+        async function () {
+
+            const email =
+                emailInput.value.trim();
+
+
+            if (!email) {
+
+                message.style.color =
+                    "#dc2626";
+
+                message.innerText =
+                    "❌ पहले अपना Email डालें।";
+
+                emailInput.focus();
+
+                return;
+            }
+
+
+            try {
+
+                await sendPasswordResetEmail(
+                    auth,
+                    email
+                );
+
+
+                message.style.color =
+                    "#16a34a";
+
+                message.innerText =
+                    "✅ Password reset link आपके Email पर भेज दिया गया है।";
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Reset Password Error:",
+                    error
+                );
+
+
+                message.style.color =
+                    "#dc2626";
+
+
+                if (
+                    error.code ===
+                    "auth/user-not-found"
+                ) {
+
+                    message.innerText =
+                        "❌ इस Email से account नहीं मिला।";
+
+                }
+
+                else if (
+                    error.code ===
+                    "auth/invalid-email"
+                ) {
+
+                    message.innerText =
+                        "❌ Email सही नहीं है।";
+
+                }
+
+                else {
+
+                    message.innerText =
+                        "❌ Password reset नहीं हो पाया।";
+
+                }
+
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+</html>
