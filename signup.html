@@ -1,279 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
-
-<title>Signup - AI Seller Toolkit</title>
+<title>Sign Up - AI Seller Toolkit</title>
 
 <style>
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
 }
 
-body {
-    font-family: Arial, sans-serif;
-    min-height: 100vh;
-    background: #f3f4f6;
+body{
+    font-family:Arial,sans-serif;
+    min-height:100vh;
+    background:#f3f6fb;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
 }
 
-header {
-    background: #2563eb;
-    color: white;
-    padding: 16px 20px;
-
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.signup-box{
+    width:100%;
+    max-width:420px;
+    background:white;
+    padding:30px;
+    border-radius:16px;
+    box-shadow:0 8px 30px rgba(0,0,0,.12);
 }
 
-.logo {
-    font-size: 20px;
-    font-weight: bold;
+.logo{
+    text-align:center;
+    font-size:25px;
+    font-weight:bold;
+    color:#2563eb;
+    margin-bottom:10px;
 }
 
-.home-link {
-    color: white;
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: bold;
+.icon{
+    text-align:center;
+    font-size:40px;
+    margin-bottom:5px;
 }
 
-main {
-    min-height: calc(100vh - 60px);
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    padding: 20px;
+h2{
+    text-align:center;
+    color:#222;
+    margin-bottom:25px;
 }
 
-.signup-box {
-    width: 100%;
-    max-width: 420px;
-
-    background: white;
-
-    padding: 30px;
-
-    border-radius: 16px;
-
-    box-shadow:
-        0 8px 30px rgba(0,0,0,0.10);
+label{
+    display:block;
+    margin:15px 0 7px;
+    font-weight:bold;
+    color:#333;
 }
 
-.icon {
-    text-align: center;
-    font-size: 42px;
-    margin-bottom: 10px;
+input{
+    width:100%;
+    padding:14px;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    font-size:16px;
+    outline:none;
 }
 
-h1 {
-    text-align: center;
-
-    color: #2563eb;
-
-    font-size: 25px;
-
-    margin-bottom: 25px;
+input:focus{
+    border-color:#2563eb;
 }
 
-label {
-    display: block;
-
-    margin-top: 15px;
-    margin-bottom: 7px;
-
-    font-weight: bold;
-
-    color: #333;
+button{
+    width:100%;
+    padding:14px;
+    margin-top:22px;
+    border:0;
+    border-radius:8px;
+    background:#16a34a;
+    color:white;
+    font-size:17px;
+    font-weight:bold;
+    cursor:pointer;
 }
 
-input {
-    width: 100%;
-
-    padding: 13px;
-
-    border: 1px solid #d1d5db;
-
-    border-radius: 8px;
-
-    font-size: 16px;
-
-    outline: none;
+button:disabled{
+    background:#9ca3af;
 }
 
-input:focus {
-    border-color: #2563eb;
+.message{
+    margin-top:15px;
+    text-align:center;
+    font-size:14px;
+    line-height:1.5;
+    min-height:25px;
 }
 
-.signup-btn {
-    width: 100%;
-
-    margin-top: 24px;
-
-    padding: 14px;
-
-    border: none;
-
-    border-radius: 8px;
-
-    background: #16a34a;
-
-    color: white;
-
-    font-size: 17px;
-
-    font-weight: bold;
-
-    cursor: pointer;
+.login-link{
+    text-align:center;
+    margin-top:22px;
 }
 
-.signup-btn:disabled {
-    background: #9ca3af;
-
-    cursor: not-allowed;
+.login-link a{
+    color:#2563eb;
+    font-weight:bold;
+    text-decoration:none;
 }
 
-.message {
-    min-height: 24px;
-
-    margin-top: 15px;
-
-    text-align: center;
-
-    font-size: 14px;
-
-    line-height: 1.5;
+.home-link{
+    display:block;
+    text-align:center;
+    margin-top:18px;
+    color:#555;
+    text-decoration:none;
 }
 
-.login-link {
-    text-align: center;
-
-    margin-top: 22px;
-
-    color: #555;
-
-    font-size: 14px;
-}
-
-.login-link a {
-    color: #2563eb;
-
-    text-decoration: none;
-
-    font-weight: bold;
-}
-
-.back-home {
-    display: block;
-
-    text-align: center;
-
-    margin-top: 18px;
-
-    color: #555;
-
-    text-decoration: none;
-
-    font-size: 14px;
-}
-
-@media (max-width: 480px) {
-
-    header {
-        padding: 14px;
+@media(max-width:480px){
+    .signup-box{
+        padding:24px 20px;
     }
-
-    .logo {
-        font-size: 17px;
-    }
-
-    .home-link {
-        font-size: 12px;
-    }
-
-    .signup-box {
-        padding: 25px 20px;
-    }
-
 }
-
 </style>
-
 </head>
-
 
 <body>
 
+<div class="signup-box">
 
-<header>
+    <div class="icon">📝</div>
 
     <div class="logo">
         🤖 AI Seller Toolkit
     </div>
 
-    <a
-        href="index.html"
-        class="home-link"
-    >
-        ← Back to Home
-    </a>
-
-</header>
-
-
-<main>
-
-<div class="signup-box">
-
-    <div class="icon">
-        📝
-    </div>
-
-    <h1>
-        Create Account
-    </h1>
-
+    <h2>Create Account</h2>
 
     <form id="signupForm">
 
-
-        <label for="email">
-            Email
-        </label>
+        <label for="email">Email</label>
 
         <input
-            type="text"
+            type="email"
             id="email"
             placeholder="Enter your email"
             autocomplete="email"
             required
         >
 
-
-        <label for="password">
-            Password
-        </label>
+        <label for="password">Password</label>
 
         <input
             type="password"
             id="password"
             placeholder="Minimum 6 characters"
             autocomplete="new-password"
+            minlength="6"
             required
         >
-
 
         <label for="confirmPassword">
             Confirm Password
@@ -284,299 +168,258 @@ input:focus {
             id="confirmPassword"
             placeholder="Enter password again"
             autocomplete="new-password"
+            minlength="6"
             required
         >
-
 
         <button
             type="submit"
             id="signupBtn"
-            class="signup-btn"
         >
             📝 Create Account
         </button>
 
-
     </form>
 
-
-    <div
-        id="message"
-        class="message"
-    ></div>
-
+    <div id="message" class="message"></div>
 
     <div class="login-link">
-
         Already have an account?
-
-        <a href="login.html">
-            Login
-        </a>
-
+        <a href="login.html">Login</a>
     </div>
 
-
-    <a
-        href="index.html"
-        class="back-home"
-    >
+    <a href="index.html" class="home-link">
         ← Back to Home
     </a>
 
-
 </div>
-
-</main>
 
 
 <script type="module">
 
-import {
-    auth,
-    createUserWithEmailAndPassword
-} from "./firebase-config.js";
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
 
+import {
+    getAuth,
+    createUserWithEmailAndPassword
+}
+from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+
+
+/* Firebase Configuration */
+
+const firebaseConfig = {
+
+    apiKey: "AIzaSyCRFKO2RT8cyoKoNR3wWdEaQHZIezQf1Ns",
+
+    authDomain:
+        "ai-seller-toolkit.firebaseapp.com",
+
+    projectId:
+        "ai-seller-toolkit",
+
+    storageBucket:
+        "ai-seller-toolkit.firebasestorage.app",
+
+    messagingSenderId:
+        "49741472114",
+
+    appId:
+        "1:49741472114:web:95c5b95d79d0f023a3bdeb"
+};
+
+
+/* Start Firebase */
+
+const app =
+    initializeApp(firebaseConfig);
+
+const auth =
+    getAuth(app);
+
+
+/* Get HTML Elements */
 
 const form =
     document.getElementById("signupForm");
 
-const emailInput =
+const email =
     document.getElementById("email");
 
-const passwordInput =
+const password =
     document.getElementById("password");
 
-const confirmPasswordInput =
+const confirmPassword =
     document.getElementById("confirmPassword");
 
-const signupBtn =
+const button =
     document.getElementById("signupBtn");
 
 const message =
     document.getElementById("message");
 
 
-function showError(text) {
+/* Signup */
 
-    message.style.color = "#dc2626";
+form.addEventListener("submit", async function(event){
 
-    message.textContent = text;
-}
+    event.preventDefault();
 
+    const emailValue =
+        email.value.trim();
 
-function showSuccess(text) {
+    const passwordValue =
+        password.value;
 
-    message.style.color = "#16a34a";
-
-    message.textContent = text;
-}
-
-
-form.addEventListener(
-    "submit",
-    async function(event) {
-
-        event.preventDefault();
+    const confirmValue =
+        confirmPassword.value;
 
 
-        const email =
-            emailInput.value.trim();
+    /* Check password */
 
-        const password =
-            passwordInput.value;
+    if(passwordValue.length < 6){
 
-        const confirmPassword =
-            confirmPasswordInput.value;
+        message.style.color = "#dc2626";
 
+        message.innerText =
+            "❌ Password कम से कम 6 characters का होना चाहिए।";
 
-        /* Check Email */
-
-        if (!email) {
-
-            showError(
-                "❌ कृपया Email डालें।"
-            );
-
-            emailInput.focus();
-
-            return;
-        }
+        return;
+    }
 
 
-        /* Simple Email Check */
+    /* Check confirm password */
 
-        if (
-            !email.includes("@") ||
-            !email.includes(".")
-        ) {
+    if(passwordValue !== confirmValue){
 
-            showError(
-                "❌ कृपया सही Email डालें।"
-            );
+        message.style.color = "#dc2626";
 
-            emailInput.focus();
+        message.innerText =
+            "❌ दोनों Password समान नहीं हैं।";
 
-            return;
-        }
+        return;
+    }
 
 
-        /* Check Password */
+    button.disabled = true;
 
-        if (password.length < 6) {
+    button.innerText =
+        "⏳ Creating Account...";
 
-            showError(
-                "❌ Password कम से कम 6 characters का होना चाहिए।"
-            );
-
-            passwordInput.focus();
-
-            return;
-        }
+    message.innerText = "";
 
 
-        /* Check Confirm Password */
+    try{
 
-        if (password !== confirmPassword) {
-
-            showError(
-                "❌ दोनों Password एक जैसे नहीं हैं।"
-            );
-
-            confirmPasswordInput.focus();
-
-            return;
-        }
-
-
-        signupBtn.disabled = true;
-
-        signupBtn.textContent =
-            "⏳ Account बन रहा है...";
-
-        message.textContent = "";
-
-
-        try {
-
-            const result =
-                await createUserWithEmailAndPassword(
-                    auth,
-                    email,
-                    password
-                );
-
-
-            console.log(
-                "Firebase Signup Success:",
-                result.user
+        const userCredential =
+            await createUserWithEmailAndPassword(
+                auth,
+                emailValue,
+                passwordValue
             );
 
 
-            showSuccess(
-                "✅ Account सफलतापूर्वक बन गया!"
-            );
+        console.log(
+            "Firebase User:",
+            userCredential.user
+        );
 
 
-            form.reset();
+        message.style.color =
+            "#16a34a";
+
+        message.innerText =
+            "✅ Account successfully created!";
 
 
-            /*
-             * profile.html पर नहीं भेजेंगे।
-             * क्योंकि अभी profile.html उपलब्ध नहीं है।
-             */
-
-            setTimeout(
-                function() {
-
-                    window.location.href =
-                        "index.html";
-
-                },
-                1200
-            );
+        button.innerText =
+            "✅ Account Created";
 
 
-        }
+        /* Go to home */
 
-        catch(error) {
+        setTimeout(function(){
 
-            console.error(
-                "Firebase Signup Error:",
-                error
-            );
+            window.location.href =
+                "index.html";
 
+        },1500);
 
-            if (
-                error.code ===
-                "auth/email-already-in-use"
-            ) {
-
-                showError(
-                    "❌ इस Email से Account पहले से बना हुआ है।"
-                );
-
-            }
-
-            else if (
-                error.code ===
-                "auth/invalid-email"
-            ) {
-
-                showError(
-                    "❌ Email सही नहीं है।"
-                );
-
-            }
-
-            else if (
-                error.code ===
-                "auth/weak-password"
-            ) {
-
-                showError(
-                    "❌ Password बहुत कमजोर है। कम से कम 6 characters रखें।"
-                );
-
-            }
-
-            else if (
-                error.code ===
-                "auth/operation-not-allowed"
-            ) {
-
-                showError(
-                    "❌ Firebase में Email/Password Login बंद है।"
-                );
-
-            }
-
-            else {
-
-                showError(
-                    "❌ Signup Error: " +
-                    error.message
-                );
-
-            }
-
-        }
-
-        finally {
-
-            signupBtn.disabled = false;
-
-            signupBtn.textContent =
-                "📝 Create Account";
-
-        }
 
     }
-);
+
+    catch(error){
+
+        console.error(
+            "Firebase Signup Error:",
+            error
+        );
+
+
+        message.style.color =
+            "#dc2626";
+
+
+        if(error.code ===
+            "auth/email-already-in-use"){
+
+            message.innerText =
+                "❌ इस Email से account पहले से बना हुआ है।";
+
+        }
+
+        else if(error.code ===
+            "auth/invalid-email"){
+
+            message.innerText =
+                "❌ Email सही नहीं है।";
+
+        }
+
+        else if(error.code ===
+            "auth/weak-password"){
+
+            message.innerText =
+                "❌ Password बहुत कमजोर है।";
+
+        }
+
+        else if(error.code ===
+            "auth/network-request-failed"){
+
+            message.innerText =
+                "❌ Internet connection की समस्या है।";
+
+        }
+
+        else if(error.code ===
+            "auth/operation-not-allowed"){
+
+            message.innerText =
+                "❌ Firebase में Email/Password Login Enabled नहीं है।";
+
+        }
+
+        else{
+
+            message.innerText =
+                "❌ Firebase Error: " +
+                error.code +
+                " | " +
+                error.message;
+        }
+
+
+        button.disabled = false;
+
+        button.innerText =
+            "📝 Create Account";
+    }
+
+});
 
 </script>
 
-
 </body>
-
 </html>
