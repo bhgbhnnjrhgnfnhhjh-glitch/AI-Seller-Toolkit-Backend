@@ -1,5 +1,3 @@
-:::writing{variant="document" id="58321" title="firebase-config.js"}
-```javascript
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
 
 import {
@@ -9,7 +7,6 @@ import {
     sendPasswordResetEmail,
     signOut,
     onAuthStateChanged
-    sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
 
