@@ -1,212 +1,265 @@
+
+### 2️⃣ नया `login.html`
+
+```text
+:::writing{variant="document" id="74106" title="login.html"}
+```html
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Login - AI Seller Toolkit</title>
+<meta charset="UTF-8">
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-        body {
-            font-family: Arial, sans-serif;
-            min-height: 100vh;
-            background: #f3f4f6;
-        }
+<title>Login - AI Seller Toolkit</title>
 
-        /* Header */
-        header {
-            background: #2563eb;
-            color: white;
-            padding: 16px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+<style>
 
-        .logo {
-            font-size: 20px;
-            font-weight: bold;
-        }
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-        .home-btn {
-            color: white;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: bold;
-        }
+body {
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    background: #f3f4f6;
+}
 
-        /* Main */
-        main {
-            min-height: calc(100vh - 60px);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
+header {
+    background: #2563eb;
+    color: white;
+    padding: 16px 20px;
 
-        .login-box {
-            width: 100%;
-            max-width: 400px;
-            background: white;
-            padding: 30px;
-            border-radius: 14px;
-            box-shadow: 0 5px 25px rgba(0,0,0,0.10);
-        }
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 
-        .icon {
-            text-align: center;
-            font-size: 42px;
-            margin-bottom: 10px;
-        }
+.logo {
+    font-size: 20px;
+    font-weight: bold;
+}
 
-        h2 {
-            text-align: center;
-            color: #2563eb;
-            margin-bottom: 25px;
-            font-size: 24px;
-        }
+.home-link {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+}
 
-        label {
-            display: block;
-            margin-top: 16px;
-            margin-bottom: 7px;
-            font-weight: bold;
-            color: #333;
-            font-size: 14px;
-        }
+main {
+    min-height: calc(100vh - 60px);
 
-        input {
-            width: 100%;
-            padding: 13px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            font-size: 16px;
-            outline: none;
-        }
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-        input:focus {
-            border-color: #2563eb;
-            box-shadow: 0 0 0 2px rgba(37,99,235,0.10);
-        }
+    padding: 20px;
+}
 
-        .password-row {
-            position: relative;
-        }
+.login-box {
+    width: 100%;
+    max-width: 420px;
 
-        .password-row input {
-            padding-right: 65px;
-        }
+    background: white;
 
-        .show-password {
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            border: none;
-            background: transparent;
-            color: #2563eb;
-            font-weight: bold;
-            cursor: pointer;
-            padding: 5px;
-        }
+    padding: 30px;
 
-        .login-btn {
-            width: 100%;
-            margin-top: 24px;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            background: #2563eb;
-            color: white;
-            font-size: 17px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+    border-radius: 16px;
 
-        .login-btn:hover {
-            background: #1d4ed8;
-        }
+    box-shadow:
+        0 8px 30px rgba(0,0,0,0.10);
+}
 
-        .login-btn:disabled {
-            background: #9ca3af;
-            cursor: not-allowed;
-        }
+.icon {
+    text-align: center;
+    font-size: 45px;
+    margin-bottom: 10px;
+}
 
-        .forgot {
-            text-align: right;
-            margin-top: 12px;
-        }
+h1 {
+    text-align: center;
+    color: #2563eb;
+    font-size: 24px;
+    margin-bottom: 25px;
+}
 
-        .forgot button {
-            border: none;
-            background: none;
-            color: #2563eb;
-            cursor: pointer;
-            font-size: 14px;
-        }
+label {
+    display: block;
 
-        .message {
-            min-height: 22px;
-            text-align: center;
-            margin-top: 15px;
-            font-size: 14px;
-            line-height: 1.4;
-        }
+    margin-top: 15px;
+    margin-bottom: 7px;
 
-        .signup-link {
-            text-align: center;
-            margin-top: 22px;
-            color: #555;
-            font-size: 14px;
-        }
+    font-weight: bold;
+    color: #333;
+}
 
-        .signup-link a {
-            color: #2563eb;
-            text-decoration: none;
-            font-weight: bold;
-        }
+input {
+    width: 100%;
 
-        .back-home {
-            display: block;
-            text-align: center;
-            margin-top: 18px;
-            color: #555;
-            text-decoration: none;
-            font-size: 14px;
-        }
+    padding: 13px;
 
-        @media (max-width: 480px) {
+    border: 1px solid #d1d5db;
 
-            header {
-                padding: 14px 15px;
-            }
+    border-radius: 8px;
 
-            .logo {
-                font-size: 17px;
-            }
+    font-size: 16px;
 
-            .home-btn {
-                font-size: 12px;
-            }
+    outline: none;
+}
 
-            .login-box {
-                padding: 24px 20px;
-            }
+input:focus {
+    border-color: #2563eb;
+}
 
-            h2 {
-                font-size: 22px;
-            }
-        }
-    </style>
+.password-box {
+    position: relative;
+}
+
+.password-box input {
+    padding-right: 65px;
+}
+
+.show-btn {
+    position: absolute;
+
+    right: 8px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    border: none;
+    background: transparent;
+
+    color: #2563eb;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.login-btn {
+    width: 100%;
+
+    margin-top: 22px;
+
+    padding: 14px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #2563eb;
+
+    color: white;
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.login-btn:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
+.forgot {
+    text-align: right;
+    margin-top: 12px;
+}
+
+.forgot button {
+    border: none;
+
+    background: transparent;
+
+    color: #2563eb;
+
+    font-size: 14px;
+
+    cursor: pointer;
+}
+
+.message {
+    min-height: 24px;
+
+    text-align: center;
+
+    margin-top: 15px;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+}
+
+.signup {
+    text-align: center;
+
+    margin-top: 22px;
+
+    color: #555;
+
+    font-size: 14px;
+}
+
+.signup a {
+    color: #2563eb;
+
+    text-decoration: none;
+
+    font-weight: bold;
+}
+
+.back-home {
+    display: block;
+
+    text-align: center;
+
+    margin-top: 18px;
+
+    color: #555;
+
+    text-decoration: none;
+
+    font-size: 14px;
+}
+
+@media (max-width: 480px) {
+
+    header {
+        padding: 14px;
+    }
+
+    .logo {
+        font-size: 17px;
+    }
+
+    .home-link {
+        font-size: 12px;
+    }
+
+    .login-box {
+        padding: 25px 20px;
+    }
+
+}
+
+</style>
+
 </head>
 
+
 <body>
+
 
 <header>
 
@@ -214,7 +267,10 @@
         🤖 AI Seller Toolkit
     </div>
 
-    <a href="index.html" class="home-btn">
+    <a
+        href="index.html"
+        class="home-link"
+    >
         ← Back to Home
     </a>
 
@@ -223,392 +279,404 @@
 
 <main>
 
-    <div class="login-box">
+<div class="login-box">
 
-        <div class="icon">
-            🔐
-        </div>
+    <div class="icon">
+        🔐
+    </div>
 
-        <h2>
-            Login to Your Account
-        </h2>
+    <h1>
+        Login to Your Account
+    </h1>
 
 
-        <form id="loginForm">
+    <form id="loginForm">
 
-            <label for="email">
-                Email
-            </label>
+
+        <label for="email">
+            Email
+        </label>
+
+        <input
+            type="email"
+            id="email"
+            placeholder="Enter your email"
+            autocomplete="email"
+            required
+        >
+
+
+        <label for="password">
+            Password
+        </label>
+
+
+        <div class="password-box">
 
             <input
-                type="email"
-                id="email"
-                placeholder="Enter your email"
-                autocomplete="email"
+                type="password"
+                id="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
                 required
             >
 
-
-            <label for="password">
-                Password
-            </label>
-
-            <div class="password-row">
-
-                <input
-                    type="password"
-                    id="password"
-                    placeholder="Enter your password"
-                    autocomplete="current-password"
-                    required
-                >
-
-                <button
-                    type="button"
-                    class="show-password"
-                    id="showPassword"
-                >
-                    Show
-                </button>
-
-            </div>
-
-
-            <div class="forgot">
-
-                <button
-                    type="button"
-                    id="forgotPassword"
-                >
-                    Forgot Password?
-                </button>
-
-            </div>
-
-
             <button
-                type="submit"
-                class="login-btn"
-                id="loginBtn"
+                type="button"
+                id="showPassword"
+                class="show-btn"
             >
-                🔐 Login
+                Show
             </button>
-
-        </form>
-
-
-        <div
-            class="message"
-            id="message"
-        ></div>
-
-
-        <div class="signup-link">
-
-            Don't have an account?
-
-            <a href="signup.html">
-                Create Account
-            </a>
 
         </div>
 
 
-        <a
-            href="index.html"
-            class="back-home"
+        <div class="forgot">
+
+            <button
+                type="button"
+                id="forgotPassword"
+            >
+                Forgot Password?
+            </button>
+
+        </div>
+
+
+        <button
+            type="submit"
+            id="loginBtn"
+            class="login-btn"
         >
-            ← Back to Home
+            🔐 Login
+        </button>
+
+
+    </form>
+
+
+    <div
+        id="message"
+        class="message"
+    ></div>
+
+
+    <div class="signup">
+
+        Don't have an account?
+
+        <a href="signup.html">
+            Create Account
         </a>
 
     </div>
+
+
+    <a
+        href="index.html"
+        class="back-home"
+    >
+        ← Back to Home
+    </a>
+
+
+</div>
 
 </main>
 
 
 <script type="module">
 
-    import {
-        auth,
-        signInWithEmailAndPassword,
-        sendPasswordResetEmail
-    } from "./firebase-config.js";
+import {
+    auth,
+    signInWithEmailAndPassword,
+    sendPasswordResetEmail
+} from "./firebase-config.js";
 
 
-    const loginForm =
-        document.getElementById("loginForm");
+const form =
+    document.getElementById("loginForm");
 
-    const emailInput =
-        document.getElementById("email");
+const email =
+    document.getElementById("email");
 
-    const passwordInput =
-        document.getElementById("password");
+const password =
+    document.getElementById("password");
 
-    const loginBtn =
-        document.getElementById("loginBtn");
+const loginBtn =
+    document.getElementById("loginBtn");
 
-    const message =
-        document.getElementById("message");
+const message =
+    document.getElementById("message");
 
-    const showPassword =
-        document.getElementById("showPassword");
+const showPassword =
+    document.getElementById("showPassword");
 
-    const forgotPassword =
-        document.getElementById("forgotPassword");
+const forgotPassword =
+    document.getElementById("forgotPassword");
 
 
-    /* Show / Hide Password */
 
-    showPassword.addEventListener(
-        "click",
-        function () {
+/* SHOW / HIDE PASSWORD */
 
-            if (passwordInput.type === "password") {
+showPassword.addEventListener(
+    "click",
+    function () {
 
-                passwordInput.type = "text";
+        if (password.type === "password") {
 
-                showPassword.innerText = "Hide";
+            password.type = "text";
 
-            } else {
+            showPassword.textContent = "Hide";
 
-                passwordInput.type = "password";
+        } else {
 
-                showPassword.innerText = "Show";
+            password.type = "password";
 
-            }
+            showPassword.textContent = "Show";
 
         }
-    );
+
+    }
+);
 
 
-    /* Login */
 
-    loginForm.addEventListener(
-        "submit",
-        async function (event) {
+/* LOGIN */
 
-            event.preventDefault();
+form.addEventListener(
+    "submit",
+    async function (event) {
 
-
-            const email =
-                emailInput.value.trim();
-
-            const password =
-                passwordInput.value;
+        event.preventDefault();
 
 
-            if (!email || !password) {
+        const userEmail =
+            email.value.trim();
 
-                message.style.color = "#dc2626";
-
-                message.innerText =
-                    "❌ कृपया Email और Password भरें।";
-
-                return;
-            }
+        const userPassword =
+            password.value;
 
 
-            loginBtn.disabled = true;
+        if (!userEmail || !userPassword) {
 
-            loginBtn.innerText =
-                "⏳ Logging in...";
+            message.style.color = "#dc2626";
 
-            message.innerText = "";
+            message.textContent =
+                "❌ Email और Password भरें।";
+
+            return;
+        }
 
 
-            try {
+        loginBtn.disabled = true;
 
+        loginBtn.textContent =
+            "⏳ Login हो रहा है...";
+
+        message.textContent = "";
+
+
+        try {
+
+            const result =
                 await signInWithEmailAndPassword(
                     auth,
-                    email,
-                    password
+                    userEmail,
+                    userPassword
                 );
 
 
-                message.style.color =
-                    "#16a34a";
-
-                message.innerText =
-                    "✅ Login सफल हुआ!";
-
-
-                /*
-                 * Login के बाद index.html पर जाएँ।
-                 * इससे profile.html का 404 नहीं आएगा।
-                 */
-
-                setTimeout(
-                    function () {
-
-                        window.location.href =
-                            "index.html";
-
-                    },
-                    800
-                );
+            console.log(
+                "Login successful:",
+                result.user.email
+            );
 
 
-            }
+            message.style.color =
+                "#16a34a";
 
-            catch (error) {
-
-                console.error(
-                    "Login Error:",
-                    error
-                );
+            message.textContent =
+                "✅ Login सफल हुआ!";
 
 
-                message.style.color =
-                    "#dc2626";
+            setTimeout(
+                function () {
+
+                    window.location.href =
+                        "index.html";
+
+                },
+                700
+            );
 
 
-                if (
-                    error.code ===
-                    "auth/invalid-credential"
-                ) {
+        }
 
-                    message.innerText =
+        catch (error) {
+
+            console.error(
+                "Firebase Login Error:",
+                error
+            );
+
+
+            message.style.color =
+                "#dc2626";
+
+
+            switch (error.code) {
+
+                case "auth/invalid-credential":
+
+                    message.textContent =
                         "❌ Email या Password गलत है।";
 
-                }
+                    break;
 
-                else if (
-                    error.code ===
-                    "auth/user-not-found"
-                ) {
 
-                    message.innerText =
-                        "❌ इस Email से कोई account नहीं मिला।";
+                case "auth/user-not-found":
 
-                }
+                    message.textContent =
+                        "❌ यह Email Firebase में नहीं मिला।";
 
-                else if (
-                    error.code ===
-                    "auth/wrong-password"
-                ) {
+                    break;
 
-                    message.innerText =
+
+                case "auth/wrong-password":
+
+                    message.textContent =
                         "❌ Password गलत है।";
 
-                }
+                    break;
 
-                else if (
-                    error.code ===
-                    "auth/invalid-email"
-                ) {
 
-                    message.innerText =
+                case "auth/invalid-email":
+
+                    message.textContent =
                         "❌ Email सही नहीं है।";
 
-                }
+                    break;
 
-                else {
 
-                    message.innerText =
+                case "auth/too-many-requests":
+
+                    message.textContent =
+                        "❌ बहुत बार कोशिश हुई है। कुछ समय बाद दोबारा कोशिश करें।";
+
+                    break;
+
+
+                default:
+
+                    message.textContent =
                         "❌ Login नहीं हो पाया। कृपया दोबारा कोशिश करें।";
 
-                }
-
-            }
-
-            finally {
-
-                loginBtn.disabled = false;
-
-                loginBtn.innerText =
-                    "🔐 Login";
-
             }
 
         }
-    );
 
 
-    /* Forgot Password */
+        finally {
 
-    forgotPassword.addEventListener(
-        "click",
-        async function () {
+            loginBtn.disabled = false;
 
-            const email =
-                emailInput.value.trim();
+            loginBtn.textContent =
+                "🔐 Login";
 
+        }
 
-            if (!email) {
-
-                message.style.color =
-                    "#dc2626";
-
-                message.innerText =
-                    "❌ पहले अपना Email डालें।";
-
-                emailInput.focus();
-
-                return;
-            }
+    }
+);
 
 
-            try {
 
-                await sendPasswordResetEmail(
-                    auth,
-                    email
-                );
+/* FORGOT PASSWORD */
 
+forgotPassword.addEventListener(
+    "click",
+    async function () {
 
-                message.style.color =
-                    "#16a34a";
-
-                message.innerText =
-                    "✅ Password reset link आपके Email पर भेज दिया गया है।";
-
-            }
-
-            catch (error) {
-
-                console.error(
-                    "Reset Password Error:",
-                    error
-                );
+        const userEmail =
+            email.value.trim();
 
 
-                message.style.color =
-                    "#dc2626";
+        if (!userEmail) {
+
+            message.style.color =
+                "#dc2626";
+
+            message.textContent =
+                "❌ पहले Email डालें।";
+
+            email.focus();
+
+            return;
+        }
 
 
-                if (
-                    error.code ===
-                    "auth/user-not-found"
-                ) {
+        try {
 
-                    message.innerText =
-                        "❌ इस Email से account नहीं मिला।";
+            await sendPasswordResetEmail(
+                auth,
+                userEmail
+            );
 
-                }
 
-                else if (
-                    error.code ===
-                    "auth/invalid-email"
-                ) {
+            message.style.color =
+                "#16a34a";
 
-                    message.innerText =
+            message.textContent =
+                "✅ Password reset link आपके Email पर भेज दिया गया है।";
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Password Reset Error:",
+                error
+            );
+
+
+            message.style.color =
+                "#dc2626";
+
+
+            switch (error.code) {
+
+                case "auth/user-not-found":
+
+                    message.textContent =
+                        "❌ इस Email से कोई account नहीं मिला।";
+
+                    break;
+
+
+                case "auth/invalid-email":
+
+                    message.textContent =
                         "❌ Email सही नहीं है।";
 
-                }
+                    break;
 
-                else {
 
-                    message.innerText =
+                default:
+
+                    message.textContent =
                         "❌ Password reset नहीं हो पाया।";
-
-                }
 
             }
 
         }
-    );
+
+    }
+);
 
 </script>
 
+
 </body>
+
 </html>
