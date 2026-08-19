@@ -9,6 +9,7 @@ import {
     sendPasswordResetEmail,
     signOut,
     onAuthStateChanged
+    sendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 
 
