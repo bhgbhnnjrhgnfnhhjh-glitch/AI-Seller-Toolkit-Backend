@@ -1,9 +1,11 @@
 // ==========================================================
 // AI SELLER TOOLKIT
-// COMPLETE PRODUCT LISTING GENERATOR
-// Category-Aware + Strict Factual AI
+// COMPLETE LISTING GENERATOR
+// Standalone JavaScript
+// Category-Aware + Strict Factual
 // ==========================================================
 
+"use strict";
 
 // ==========================================================
 // CATEGORY RULES
@@ -11,1266 +13,1320 @@
 
 const categoryRules = {
 
-    "Fashion & Clothing": `
-Focus on clothing information such as:
-product type, fabric/material, target audience, gender,
-color, size, fit, pattern, sleeve type, neck type,
-closure, wash care and other clothing specifications.
+    "Fashion & Clothing": {
+        focus: "fabric, color, pattern, fit, occasion, comfort",
+        fields: ["Brand", "Fabric", "Color", "Size", "Pattern", "Occasion"]
+    },
 
-IMPORTANT:
-Use these only when the user provides them.
-Never invent size, fit, fabric properties, pattern or wash care.
-`,
+    "Electronics": {
+        focus: "product type, model, connectivity, compatibility, power",
+        fields: ["Brand", "Model", "Color", "Connectivity", "Compatibility"]
+    },
 
-    "Beauty & Cosmetics": `
-Focus on beauty/cosmetic information such as:
-product type, ingredients, quantity, skin type, hair type,
-shade, fragrance, usage information and packaging information.
+    "Beauty & Personal Care": {
+        focus: "product type, quantity, skin/hair use, ingredients if provided",
+        fields: ["Brand", "Quantity", "Variant", "Ingredients", "Suitable For"]
+    },
 
-IMPORTANT:
-Use ingredients, skin claims, hair claims, benefits,
-dermatological claims or safety claims ONLY when provided.
-Never invent health or cosmetic benefits.
-`,
+    "Home & Kitchen": {
+        focus: "material, size, capacity, use, design",
+        fields: ["Brand", "Material", "Color", "Size", "Capacity"]
+    },
 
-    "Electronics": `
-Focus on electronics information such as:
-product type, model, brand, color, material,
-connectivity, compatibility, power, battery,
-capacity, ports, display, operating system and other specifications.
+    "Jewellery & Accessories": {
+        focus: "material, design, color, style, occasion",
+        fields: ["Brand", "Material", "Color", "Design", "Occasion"]
+    },
 
-IMPORTANT:
-Use technical specifications ONLY when provided.
-Never invent model numbers, compatibility, battery capacity,
-power, warranty or performance.
-`,
+    "Footwear": {
+        focus: "type, material, color, size, sole, occasion",
+        fields: ["Brand", "Material", "Color", "Size", "Sole"]
+    },
 
-    "Home & Kitchen": `
-Focus on information such as:
-product type, material, color, capacity, dimensions,
-quantity, usage, design, included items and specifications.
+    "Grocery": {
+        focus: "product type, quantity, variant, ingredients, packaging",
+        fields: ["Brand", "Quantity", "Variant", "Ingredients", "Pack Type"]
+    },
 
-IMPORTANT:
-Use capacity, dimensions, quantity and included items
-ONLY when provided.
-Never invent measurements or capacity.
-`,
+    "Toys & Baby Products": {
+        focus: "age group, material, design, usage, safety information if provided",
+        fields: ["Brand", "Material", "Age Group", "Color", "Size"]
+    },
 
-    "Shoes & Footwear": `
-Focus on information such as:
-shoe type, material, target audience, gender, color,
-size, sole, closure, pattern and other footwear information.
+    "Sports & Fitness": {
+        focus: "product type, material, size, usage, fitness activity",
+        fields: ["Brand", "Material", "Size", "Color", "Sport/Activity"]
+    },
 
-IMPORTANT:
-Never invent shoe size, sole material, fit or comfort claims.
-Use them only when provided.
-`,
+    "Books & Stationery": {
+        focus: "title, author, language, format, pages, usage",
+        fields: ["Author", "Language", "Format", "Pages", "Publisher"]
+    },
 
-    "Jewellery": `
-Focus on information such as:
-jewellery type, material, metal, stone, color,
-size, design, quantity and other provided details.
+    "Automotive": {
+        focus: "vehicle compatibility, material, model, size, usage",
+        fields: ["Brand", "Compatibility", "Material", "Model", "Color"]
+    },
 
-IMPORTANT:
-Never invent gold/silver purity, gemstone type,
-weight, certification or authenticity.
-`,
-
-    "Toys & Kids": `
-Focus on information such as:
-toy type, age range, material, color, dimensions,
-quantity, included items and other provided information.
-
-IMPORTANT:
-Never invent age suitability, safety certification,
-educational benefits or safety claims.
-`,
-
-    "Books & Stationery": `
-Focus on information such as:
-book/stationery type, title, author, publisher,
-language, pages, format, subject, quantity and material.
-
-IMPORTANT:
-Never invent author, publisher, page count or edition.
-`,
-
-    "Pet Products": `
-Focus on information such as:
-pet product type, animal type, material, size,
-color, quantity, usage and provided specifications.
-
-IMPORTANT:
-Never invent health benefits, medical claims,
-age suitability or safety claims.
-`,
-
-    "Sports & Fitness": `
-Focus on information such as:
-equipment type, sport, material, size, weight,
-dimensions, color, target user and included items.
-
-IMPORTANT:
-Never invent weight, dimensions, performance,
-fitness benefits or safety certifications.
-`,
-
-    "Automotive": `
-Focus on information such as:
-part/accessory type, vehicle compatibility,
-model, year, material, dimensions, color,
-quantity and other provided specifications.
-
-IMPORTANT:
-Never invent vehicle compatibility, model,
-part number or installation information.
-`,
-
-    "Garden & Outdoor": `
-Focus on information such as:
-product type, material, dimensions, quantity,
-color, usage and other provided specifications.
-
-IMPORTANT:
-Never invent durability, weather resistance,
-capacity or performance claims.
-`,
-
-    "Food & Grocery": `
-Focus on information such as:
-food/product type, ingredients, quantity,
-flavor, variant, packaging, dietary information
-and other provided information.
-
-IMPORTANT:
-Never invent ingredients, nutrition facts,
-health claims, expiry dates or certifications.
-`,
-
-    "Gifts & Handmade": `
-Focus on information such as:
-product type, material, color, design,
-occasion, quantity, personalization and other
-provided information.
-
-IMPORTANT:
-Never invent handmade status, personalization,
-material or occasion suitability unless provided.
-`,
-
-    "Other": `
-Use only the product information provided by the user.
-Do not assume specifications based on the product name.
-`
+    "Other": {
+        focus: "product type, material, size, color, usage",
+        fields: ["Brand", "Material", "Color", "Size", "Usage"]
+    }
 };
 
 
 // ==========================================================
-// GET CATEGORY RULE
+// SAFE VALUE FUNCTION
 // ==========================================================
 
-function getCategoryRule(category) {
+function cleanValue(value) {
 
-    return categoryRules[category] ||
-        categoryRules["Other"];
+    if (value === null || value === undefined) {
+        return "";
+    }
 
+    return String(value).trim();
 }
 
 
 // ==========================================================
-// GENERATE LISTING
+// GET ELEMENT
 // ==========================================================
 
-async function generateListing() {
+function getElement(...ids) {
 
-    const product =
-        document.getElementById("product").value.trim();
+    for (const id of ids) {
 
-    const brand =
-        document.getElementById("brand").value.trim();
+        const element = document.getElementById(id);
 
-    const category =
-        document.getElementById("category").value.trim();
+        if (element) {
+            return element;
+        }
+    }
 
-    const material =
-        document.getElementById("material").value.trim();
-
-    const audience =
-        document.getElementById("audience").value.trim();
-
-    const color =
-        document.getElementById("color").value.trim();
-
-    const features =
-        document.getElementById("features").value.trim();
-
-    const marketplace =
-        document.getElementById("marketplace").value.trim();
-
-    const result =
-        document.getElementById("result");
-
-    const status =
-        document.getElementById("status");
-
-    const button =
-        document.getElementById("generateBtn");
+    return null;
+}
 
 
-    // ======================================================
-    // VALIDATION
-    // ======================================================
+// ==========================================================
+// GET INPUT VALUE
+// ==========================================================
 
-    if (!product) {
+function getValue(...ids) {
 
-        status.style.color = "#dc2626";
+    const element = getElement(...ids);
 
-        status.innerText =
-            "❌ कृपया Product Name डालें।";
+    if (!element) {
+        return "";
+    }
 
-        document.getElementById("product").focus();
+    return cleanValue(element.value);
+}
 
-        return;
+
+// ==========================================================
+// CATEGORY
+// ==========================================================
+
+function getCategory() {
+
+    return (
+        getValue(
+            "category",
+            "productCategory",
+            "listingCategory"
+        ) || "Other"
+    );
+}
+
+
+// ==========================================================
+// PRODUCT DATA
+// ==========================================================
+
+function collectProductData() {
+
+    return {
+
+        category: getCategory(),
+
+        name: getValue(
+            "productName",
+            "product-name",
+            "name"
+        ),
+
+        brand: getValue(
+            "brand",
+            "productBrand"
+        ),
+
+        price: getValue(
+            "price",
+            "productPrice"
+        ),
+
+        color: getValue(
+            "color",
+            "productColor"
+        ),
+
+        material: getValue(
+            "material",
+            "productMaterial"
+        ),
+
+        size: getValue(
+            "size",
+            "productSize"
+        ),
+
+        quantity: getValue(
+            "quantity",
+            "productQuantity"
+        ),
+
+        model: getValue(
+            "model",
+            "productModel"
+        ),
+
+        fabric: getValue(
+            "fabric",
+            "productFabric"
+        ),
+
+        pattern: getValue(
+            "pattern",
+            "productPattern"
+        ),
+
+        occasion: getValue(
+            "occasion",
+            "productOccasion"
+        ),
+
+        features: getValue(
+            "features",
+            "productFeatures",
+            "keyFeatures"
+        ),
+
+        description: getValue(
+            "description",
+            "productDescription"
+        ),
+
+        keywords: getValue(
+            "keywords",
+            "seoKeywords"
+        )
+    };
+}
+
+
+// ==========================================================
+// CHECK PRODUCT NAME
+// ==========================================================
+
+function validateProductData(data) {
+
+    if (!data.name) {
+
+        showMessage(
+            "कृपया Product Name भरें।",
+            "error"
+        );
+
+        return false;
+    }
+
+    return true;
+}
+
+
+// ==========================================================
+// TITLE GENERATOR
+// ==========================================================
+
+function generateTitle(data) {
+
+    const parts = [];
+
+    if (data.brand) {
+        parts.push(data.brand);
+    }
+
+    parts.push(data.name);
+
+    if (data.material) {
+        parts.push(data.material);
+    }
+
+    if (data.color) {
+        parts.push(data.color);
+    }
+
+    if (data.pattern) {
+        parts.push(data.pattern);
+    }
+
+    if (data.size) {
+        parts.push(data.size);
+    }
+
+    let title = parts
+        .filter(Boolean)
+        .join(" ");
+
+    title = title
+        .replace(/\s+/g, " ")
+        .trim();
+
+    // Marketplace friendly length
+    if (title.length > 150) {
+
+        title = title.substring(0, 147).trim() + "...";
+    }
+
+    return title;
+}
+
+
+// ==========================================================
+// DESCRIPTION GENERATOR
+// ==========================================================
+
+function generateDescription(data) {
+
+    const sentences = [];
+
+    sentences.push(
+        `${data.name} ${data.category.toLowerCase()} category का product है।`
+    );
+
+    if (data.brand) {
+
+        sentences.push(
+            `Brand: ${data.brand}.`
+        );
+    }
+
+    if (data.color) {
+
+        sentences.push(
+            `Color: ${data.color}.`
+        );
+    }
+
+    if (data.material) {
+
+        sentences.push(
+            `Material: ${data.material}.`
+        );
+    }
+
+    if (data.fabric) {
+
+        sentences.push(
+            `Fabric: ${data.fabric}.`
+        );
+    }
+
+    if (data.size) {
+
+        sentences.push(
+            `Size: ${data.size}.`
+        );
+    }
+
+    if (data.quantity) {
+
+        sentences.push(
+            `Quantity: ${data.quantity}.`
+        );
+    }
+
+    if (data.model) {
+
+        sentences.push(
+            `Model: ${data.model}.`
+        );
+    }
+
+    if (data.occasion) {
+
+        sentences.push(
+            `Occasion/Use: ${data.occasion}.`
+        );
+    }
+
+    if (data.description) {
+
+        sentences.push(
+            data.description
+        );
+    }
+
+    return sentences.join(" ");
+}
+
+
+// ==========================================================
+// HIGHLIGHTS
+// ==========================================================
+
+function generateHighlights(data) {
+
+    const highlights = [];
+
+    if (data.name) {
+
+        highlights.push(
+            `Product: ${data.name}`
+        );
+    }
+
+    if (data.brand) {
+
+        highlights.push(
+            `Brand: ${data.brand}`
+        );
+    }
+
+    if (data.material) {
+
+        highlights.push(
+            `Material: ${data.material}`
+        );
+    }
+
+    if (data.fabric) {
+
+        highlights.push(
+            `Fabric: ${data.fabric}`
+        );
+    }
+
+    if (data.color) {
+
+        highlights.push(
+            `Color: ${data.color}`
+        );
+    }
+
+    if (data.size) {
+
+        highlights.push(
+            `Size: ${data.size}`
+        );
+    }
+
+    if (data.quantity) {
+
+        highlights.push(
+            `Quantity: ${data.quantity}`
+        );
+    }
+
+    if (data.model) {
+
+        highlights.push(
+            `Model: ${data.model}`
+        );
+    }
+
+    if (data.occasion) {
+
+        highlights.push(
+            `Occasion/Use: ${data.occasion}`
+        );
+    }
+
+    // Add user-provided features only
+    if (data.features) {
+
+        const featureList = data.features
+            .split(/[,\n]+/)
+            .map(item => item.trim())
+            .filter(Boolean);
+
+        featureList.forEach(feature => {
+
+            highlights.push(feature);
+        });
+    }
+
+    return [...new Set(highlights)];
+}
+
+
+// ==========================================================
+// SEO KEYWORDS
+// ==========================================================
+
+function generateKeywords(data) {
+
+    const keywords = [];
+
+    const values = [
+
+        data.name,
+        data.brand,
+        data.category,
+        data.color,
+        data.material,
+        data.fabric,
+        data.pattern,
+        data.size,
+        data.model,
+        data.occasion
+    ];
+
+    values.forEach(value => {
+
+        if (!value) {
+            return;
+        }
+
+        keywords.push(value);
+    });
+
+
+    // User supplied keywords
+    if (data.keywords) {
+
+        data.keywords
+            .split(/[,\n]+/)
+            .map(item => item.trim())
+            .filter(Boolean)
+            .forEach(keyword => {
+
+                keywords.push(keyword);
+            });
     }
 
 
-    if (!category) {
+    // Remove duplicate keywords
+    return [...new Set(
+        keywords.map(keyword =>
+            keyword.toLowerCase()
+        )
+    )];
+}
 
-        status.style.color = "#dc2626";
 
-        status.innerText =
-            "❌ कृपया Product Category चुनें।";
+// ==========================================================
+// TAG GENERATOR
+// ==========================================================
 
-        document.getElementById("category").focus();
+function generateTags(data) {
 
-        return;
+    const tags = [];
+
+    if (data.category) {
+        tags.push(data.category);
+    }
+
+    if (data.name) {
+        tags.push(data.name);
+    }
+
+    if (data.color) {
+        tags.push(data.color);
+    }
+
+    if (data.material) {
+        tags.push(data.material);
+    }
+
+    if (data.fabric) {
+        tags.push(data.fabric);
+    }
+
+    if (data.pattern) {
+        tags.push(data.pattern);
+    }
+
+    if (data.occasion) {
+        tags.push(data.occasion);
+    }
+
+    return [...new Set(
+        tags.filter(Boolean)
+    )];
+}
+
+
+// ==========================================================
+// SPECIFICATIONS
+// ==========================================================
+
+function generateSpecifications(data) {
+
+    const specifications = {};
+
+    const addSpecification = (name, value) => {
+
+        if (value) {
+
+            specifications[name] = value;
+        }
+    };
+
+
+    addSpecification(
+        "Category",
+        data.category
+    );
+
+    addSpecification(
+        "Product Name",
+        data.name
+    );
+
+    addSpecification(
+        "Brand",
+        data.brand
+    );
+
+    addSpecification(
+        "Model",
+        data.model
+    );
+
+    addSpecification(
+        "Color",
+        data.color
+    );
+
+    addSpecification(
+        "Material",
+        data.material
+    );
+
+    addSpecification(
+        "Fabric",
+        data.fabric
+    );
+
+    addSpecification(
+        "Pattern",
+        data.pattern
+    );
+
+    addSpecification(
+        "Size",
+        data.size
+    );
+
+    addSpecification(
+        "Quantity",
+        data.quantity
+    );
+
+    addSpecification(
+        "Occasion / Use",
+        data.occasion
+    );
+
+    return specifications;
+}
+
+
+// ==========================================================
+// COMPLETE LISTING
+// ==========================================================
+
+function generateCompleteListing(data) {
+
+    return {
+
+        product: {
+            name: data.name,
+            category: data.category,
+            brand: data.brand,
+            price: data.price
+        },
+
+        title: generateTitle(data),
+
+        description: generateDescription(data),
+
+        highlights: generateHighlights(data),
+
+        seoKeywords: generateKeywords(data),
+
+        tags: generateTags(data),
+
+        specifications: generateSpecifications(data),
+
+        generatedAt: new Date().toISOString()
+    };
+}
+
+
+// ==========================================================
+// DISPLAY LISTING
+// ==========================================================
+
+function displayListing(listing) {
+
+    const titleElement = getElement(
+        "generatedTitle",
+        "titleOutput",
+        "resultTitle"
+    );
+
+    const descriptionElement = getElement(
+        "generatedDescription",
+        "descriptionOutput",
+        "resultDescription"
+    );
+
+    const highlightsElement = getElement(
+        "generatedHighlights",
+        "highlightsOutput",
+        "resultHighlights"
+    );
+
+    const keywordsElement = getElement(
+        "generatedKeywords",
+        "keywordsOutput",
+        "seoOutput",
+        "resultKeywords"
+    );
+
+    const tagsElement = getElement(
+        "generatedTags",
+        "tagsOutput",
+        "resultTags"
+    );
+
+    const specificationsElement = getElement(
+        "generatedSpecifications",
+        "specificationsOutput",
+        "resultSpecifications"
+    );
+
+
+    // TITLE
+    if (titleElement) {
+
+        titleElement.value !== undefined
+            ? titleElement.value = listing.title
+            : titleElement.textContent = listing.title;
     }
 
 
-    if (!marketplace) {
+    // DESCRIPTION
+    if (descriptionElement) {
 
-        status.style.color = "#dc2626";
-
-        status.innerText =
-            "❌ कृपया Marketplace चुनें।";
-
-        document.getElementById("marketplace").focus();
-
-        return;
+        descriptionElement.value !== undefined
+            ? descriptionElement.value = listing.description
+            : descriptionElement.textContent = listing.description;
     }
 
 
-    // ======================================================
-    // CATEGORY INSTRUCTIONS
-    // ======================================================
+    // HIGHLIGHTS
+    if (highlightsElement) {
 
-    const categoryInstruction =
-        getCategoryRule(category);
+        const text = listing.highlights
+            .map(item => `• ${item}`)
+            .join("\n");
 
+        highlightsElement.value !== undefined
+            ? highlightsElement.value = text
+            : highlightsElement.textContent = text;
+    }
 
-    // ======================================================
-    // LOADING
-    // ======================================================
 
-    button.disabled = true;
+    // KEYWORDS
+    if (keywordsElement) {
 
-    button.innerText =
-        "⏳ Generating Listing...";
+        const text = listing.seoKeywords
+            .join(", ");
 
-    status.style.color = "#2563eb";
+        keywordsElement.value !== undefined
+            ? keywordsElement.value = text
+            : keywordsElement.textContent = text;
+    }
 
-    status.innerText =
-        "⏳ Product category के अनुसार listing तैयार हो रही है...";
 
-    result.value =
-        "⏳ Please wait...";
+    // TAGS
+    if (tagsElement) {
 
+        const text = listing.tags
+            .join(", ");
 
-    // ======================================================
-    // AI PROMPT
-    // ======================================================
+        tagsElement.value !== undefined
+            ? tagsElement.value = text
+            : tagsElement.textContent = text;
+    }
 
-    const prompt = `
 
-You are a professional eCommerce product listing generator.
+    // SPECIFICATIONS
+    if (specificationsElement) {
 
-Your job is to create a factual product listing.
+        const text = Object.entries(
+            listing.specifications
+        )
+        .map(
+            ([key, value]) =>
+                `${key}: ${value}`
+        )
+        .join("\n");
 
-The listing must be useful for online sellers.
+        specificationsElement.value !== undefined
+            ? specificationsElement.value = text
+            : specificationsElement.textContent = text;
+    }
 
-==================================================
-PRODUCT INFORMATION
-==================================================
 
-Product Name:
-${product}
+    // Full result container
+    const resultContainer = getElement(
+        "listingResult",
+        "generatedResult",
+        "result"
+    );
 
-Brand:
-${brand || "Not provided"}
+    if (resultContainer) {
 
-Category:
-${category}
+        resultContainer.style.display = "block";
+    }
+}
 
-Material / Main Specification:
-${material || "Not provided"}
 
-Target Audience:
-${audience || "Not provided"}
+// ==========================================================
+// GENERATE BUTTON
+// ==========================================================
 
-Color:
-${color || "Not provided"}
-
-Product Features / Specifications:
-${features || "Not provided"}
-
-Target Marketplace:
-${marketplace}
-
-
-==================================================
-CATEGORY-SPECIFIC INSTRUCTIONS
-==================================================
-
-${categoryInstruction}
-
-
-==================================================
-MOST IMPORTANT FACTUAL RULE
-==================================================
-
-USE ONLY INFORMATION PROVIDED BY THE USER.
-
-Never guess.
-
-Never assume.
-
-Never complete missing specifications using common knowledge.
-
-The product name does NOT automatically provide specifications.
-
-For example:
-
-If product name is "Bluetooth Speaker",
-do NOT automatically assume:
-
-Bluetooth version
-battery capacity
-wattage
-USB port
-water resistance
-play time
-microphone
-range
-
-unless the user provided those details.
-
-
-==================================================
-DO NOT INVENT
-==================================================
-
-Never invent:
-
-- size
-- weight
-- dimensions
-- quantity
-- capacity
-- model number
-- SKU
-- part number
-- ingredients
-- certifications
-- warranty
-- return policy
-- price
-- discount
-- offers
-- delivery information
-- shipping information
-- manufacturer
-- country of origin
-- compatibility
-- battery capacity
-- power
-- performance
-- durability
-- comfort
-- quality
-- safety claims
-- health claims
-- customer reviews
-- ratings
-- awards
-- guarantees
-
-
-==================================================
-BRAND RULE
-==================================================
-
-Brand means ONLY the brand name.
-
-If Brand is:
-
-${brand || "Not provided"}
-
-Do NOT say:
-
-manufactured by
-made by
-created by
-produced by
-owned by
-
-unless the user explicitly provided that information.
-
-
-==================================================
-CATEGORY RULE
-==================================================
-
-Use the selected category exactly:
-
-${category}
-
-Do not change it.
-
-Do not combine it with the marketplace.
-
-Do not turn the marketplace into a category.
-
-Example:
-
-Category:
-Fashion & Clothing
-
-Marketplace:
-Amazon
-
-Correct:
-Category: Fashion & Clothing
-
-Incorrect:
-Amazon Fashion Category
-
-
-==================================================
-MARKETPLACE RULE
-==================================================
-
-The marketplace is ONLY the target platform.
-
-Marketplace:
-
-${marketplace}
-
-Do not treat it as:
-
-- brand
-- product feature
-- material
-- category
-- specification
-- manufacturer
-- product attribute
-
-Do not put the marketplace name inside:
-
-- product description
-- bullet points
-- features
-- keywords
-- hashtags
-- tags
-
-unless necessary to identify the target marketplace.
-
-The marketplace is NOT a product fact.
-
-
-==================================================
-PRODUCT NAME RULE
-==================================================
-
-Keep the product name accurate.
-
-Product Name:
-
-${product}
-
-Do not replace one product type with another.
-
-For example:
-
-"T-Shirt" must remain T-Shirt.
-
-Do not change it to Shirt.
-
-"Wireless Earbuds" must remain Wireless Earbuds.
-
-Do not change it to Headphones.
-
-
-==================================================
-MATERIAL RULE
-==================================================
-
-Material provided:
-
-${material || "Not provided"}
-
-Use only the provided material.
-
-Do not automatically add:
-
-soft
-comfortable
-durable
-lightweight
-breathable
-premium
-high quality
-
-unless explicitly provided.
-
-
-==================================================
-COLOR RULE
-==================================================
-
-Color provided:
-
-${color || "Not provided"}
-
-Use only the exact provided color.
-
-Do not invent shades.
-
-
-==================================================
-FEATURE RULE
-==================================================
-
-Features provided by user:
-
-${features || "Not provided"}
-
-Only these features can be used.
-
-If the user provides multiple features,
-you may organize them clearly.
-
-Do not create additional features.
-
-
-==================================================
-TARGET AUDIENCE RULE
-==================================================
-
-Target Audience:
-
-${audience || "Not provided"}
-
-Use only the provided audience.
-
-Do not create age, gender or demographic information
-unless provided.
-
-
-==================================================
-SEO RULES
-==================================================
-
-SEO must remain factual.
-
-Do not use unsupported promotional claims such as:
-
-Best
-Premium
-Amazing
-Luxury
-Superior
-High Quality
-Perfect
-Guaranteed
-No.1
-Top
-Exclusive
-Trending
-Viral
-Affordable
-Durable
-Comfortable
-
-unless the user explicitly provided the claim as factual
-product information.
-
-
-==================================================
-OUTPUT
-==================================================
-
-Generate exactly:
-
-3 SEO PRODUCT TITLES
-
-1 PRODUCT DESCRIPTION
-
-5 BULLET POINTS
-
-5 PRODUCT FEATURES
-
-10 SEO KEYWORDS
-
-5 HASHTAGS
-
-10 PRODUCT TAGS
-
-
-==================================================
-SEO PRODUCT TITLES
-==================================================
-
-Create 3 different titles.
-
-Titles may use only provided:
-
-Brand
-Product Name
-Category
-Material
-Target Audience
-Color
-Provided Features
-
-Do NOT add unsupported information.
-
-Do NOT add:
-
-price
-discount
-offer
-warranty
-manufacturer
-marketplace
-performance claims
-
-
-==================================================
-PRODUCT DESCRIPTION
-==================================================
-
-Write a clear factual description.
-
-Use only:
-
-Product Name
-Brand
-Category
-Material
-Target Audience
-Color
-Provided Features
-
-Do NOT mention the marketplace.
-
-Do not create benefits that were not provided.
-
-
-==================================================
-BULLET POINTS
-==================================================
-
-Create exactly 5 bullet points.
-
-Every bullet must contain factual information
-from the user input.
-
-If there are fewer than 5 facts,
-create useful combinations of existing facts.
-
-Never invent new facts.
-
-
-==================================================
-PRODUCT FEATURES
-==================================================
-
-Create exactly 5 features.
-
-Use only existing information.
-
-If fewer than 5 independent facts exist,
-combine existing facts without adding anything new.
-
-Never invent specifications.
-
-
-==================================================
-SEO KEYWORDS
-==================================================
-
-Create exactly 10 keywords.
-
-Keywords can combine:
-
-Brand
-Product Name
-Category
-Material
-Target Audience
-Color
-Provided Features
-
-Do not use unsupported claims.
-
-Do not use marketplace names as product facts.
-
-
-==================================================
-HASHTAGS
-==================================================
-
-Create exactly 5 hashtags.
-
-Use only information present in the product data.
-
-Do not use unsupported hashtags such as:
-
-#Best
-#Premium
-#Amazing
-#Trending
-#Viral
-#Deal
-#Offer
-
-
-==================================================
-PRODUCT TAGS
-==================================================
-
-Create exactly 10 tags.
-
-Use only provided information.
-
-Do not create unsupported specifications.
-
-Do not use marketplace names as product tags.
-
-
-==================================================
-FINAL FORMAT
-==================================================
-
-SEO PRODUCT TITLES:
-
-1.
-2.
-3.
-
-
-PRODUCT DESCRIPTION:
-
-
-
-
-BULLET POINTS:
-
-1.
-2.
-3.
-4.
-5.
-
-
-PRODUCT FEATURES:
-
-1.
-2.
-3.
-4.
-5.
-
-
-SEO KEYWORDS:
-
-1.
-2.
-3.
-4.
-5.
-6.
-7.
-8.
-9.
-10.
-
-
-HASHTAGS:
-
-1.
-2.
-3.
-4.
-5.
-
-
-PRODUCT TAGS:
-
-1.
-2.
-3.
-4.
-5.
-6.
-7.
-8.
-9.
-10.
-
-
-Return ONLY the final listing.
-
-Do not explain the rules.
-
-Do not mention this prompt.
-
-Do not mention AI.
-`;
-
-
-    // ======================================================
-    // API REQUEST
-    // ======================================================
+function generateListing() {
 
     try {
 
-        const response = await fetch(
-            "https://ai-seller-toolkit-backend-1.onrender.com/generate",
-            {
-                method: "POST",
+        const data = collectProductData();
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+        if (!validateProductData(data)) {
+            return;
+        }
 
-                body: JSON.stringify({
-                    prompt: prompt
-                })
-            }
+        const listing =
+            generateCompleteListing(data);
+
+        displayListing(listing);
+
+        // Save latest listing
+        localStorage.setItem(
+            "latestCompleteListing",
+            JSON.stringify(listing)
         );
 
-
-        // ==================================================
-        // READ RESPONSE SAFELY
-        // ==================================================
-
-        const rawText =
-            await response.text();
-
-        let data = {};
-
-        try {
-
-            data =
-                JSON.parse(rawText);
-
-        } catch (jsonError) {
-
-            throw new Error(
-                "Backend ने valid JSON response नहीं दिया।"
-            );
-
-        }
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                data.error ||
-                data.message ||
-                "Backend API Error"
-            );
-
-        }
-
-
-        // ==================================================
-        // GET AI RESPONSE
-        // ==================================================
-
-        let answer =
-            data.result ||
-            data.response ||
-            data.text ||
-            data.output ||
-            data.content ||
-            "";
-
-
-        answer =
-            String(answer).trim();
-
-
-        if (!answer) {
-
-            throw new Error(
-                "AI response नहीं मिला।"
-            );
-
-        }
-
-
-        // ==================================================
-        // REMOVE MARKDOWN CODE BLOCK
-        // ==================================================
-
-        answer =
-            answer.replace(
-                /^```(?:markdown|text|html)?\s*/i,
-                ""
-            );
-
-        answer =
-            answer.replace(
-                /\s*```$/i,
-                ""
-            );
-
-
-        // ==================================================
-        // REMOVE AI INTRODUCTION
-        // ==================================================
-
-        answer =
-            answer.replace(
-                /^(Here is|Sure|Certainly|Here’s)[\s\S]*?(?=SEO PRODUCT TITLES:)/i,
-                ""
-            );
-
-
-        // ==================================================
-        // REMOVE UNSUPPORTED BRAND CLAIMS
-        // ==================================================
-
-        const forbiddenPatterns = [
-
-            /manufactured by/gi,
-            /manufactured in/gi,
-            /made by/gi,
-            /created by/gi,
-            /produced by/gi,
-            /best quality/gi,
-            /premium quality/gi,
-            /high quality/gi,
-            /guaranteed/gi,
-            /number one/gi,
-            /no\.?\s*1/gi
-        ];
-
-
-        for (const pattern of forbiddenPatterns) {
-
-            answer =
-                answer.replace(
-                    pattern,
-                    ""
-                );
-
-        }
-
-
-        // ==================================================
-        // REMOVE MARKETPLACE FROM PRODUCT CONTENT
-        // ==================================================
-
-        const marketplaces = [
-            "Amazon",
-            "Flipkart",
-            "Meesho",
-            "Shopify",
-            "Etsy"
-        ];
-
-
-        const lines =
-            answer.split(/\r?\n/);
-
-
-        const cleanedLines =
-            lines.filter(line => {
-
-                const lower =
-                    line.toLowerCase();
-
-
-                // Do not remove marketplace from title
-                // if it accidentally appears as heading.
-                // Remove obvious marketplace-as-product claims.
-
-                for (const platform of marketplaces) {
-
-                    const platformLower =
-                        platform.toLowerCase();
-
-
-                    if (
-                        lower.includes(
-                            platformLower + " category"
-                        ) ||
-                        lower.includes(
-                            platformLower + " product"
-                        ) ||
-                        lower.includes(
-                            "made for " +
-                            platformLower
-                        )
-                    ) {
-
-                        return false;
-
-                    }
-
-                }
-
-                return true;
-
-            });
-
-
-        answer =
-            cleanedLines.join("\n");
-
-
-        // ==================================================
-        // CLEAN EXTRA BLANK LINES
-        // ==================================================
-
-        answer =
-            answer.replace(
-                /\n{3,}/g,
-                "\n\n"
-            );
-
-
-        answer =
-            answer.trim();
-
-
-        // ==================================================
-        // FINAL SAFETY CHECK
-        // ==================================================
-
-        const unsafePatterns = [
-
-            /manufactured by/i,
-            /manufactured in/i,
-            /made by/i,
-            /created by/i,
-            /produced by/i,
-            /best quality/i,
-            /premium quality/i,
-            /guaranteed/i
-        ];
-
-
-        const unsafeFound =
-            unsafePatterns.some(
-                pattern =>
-                    pattern.test(answer)
-            );
-
-
-        if (unsafeFound) {
-
-            throw new Error(
-                "Listing में unsupported information मिली। कृपया दोबारा Generate करें।"
-            );
-
-        }
-
-
-        // ==================================================
-        // SHOW RESULT
-        // ==================================================
-
-        result.value =
-            answer;
-
-
-        status.style.color =
-            "#16a34a";
-
-        status.innerText =
-            "✅ " +
-            category +
-            " category की listing तैयार हो गई।";
-
+        showMessage(
+            "✅ Complete product listing तैयार हो गई!",
+            "success"
+        );
 
     } catch (error) {
 
         console.error(
-            "Complete Listing Generator Error:",
+            "Listing Generator Error:",
             error
         );
 
-
-        result.value =
-            "❌ Product Listing generate नहीं हो सकी.\n\n" +
-            "Error: " +
-            error.message;
-
-
-        status.style.color =
-            "#dc2626";
-
-        status.innerText =
-            "❌ Listing generate नहीं हो सकी।";
-
-
-    } finally {
-
-        button.disabled = false;
-
-        button.innerText =
-            "🚀 Generate Complete Listing";
-
+        showMessage(
+            "❌ Listing generate नहीं हो सकी।",
+            "error"
+        );
     }
-
 }
 
 
 // ==========================================================
-// COPY LISTING
+// COPY TEXT
 // ==========================================================
 
-async function copyListing() {
-
-    const result =
-        document.getElementById("result");
-
-    const text =
-        result.value.trim();
-
+async function copyText(text) {
 
     if (!text) {
 
-        alert(
-            "पहले Complete Product Listing generate करें।"
+        showMessage(
+            "Copy करने के लिए कोई text नहीं है।",
+            "error"
         );
 
         return;
-
     }
-
 
     try {
 
-        await navigator.clipboard.writeText(
-            text
+        await navigator.clipboard.writeText(text);
+
+        showMessage(
+            "✅ Text copy हो गया!",
+            "success"
         );
-
-
-        alert(
-            "✅ Complete Product Listing copied!"
-        );
-
 
     } catch (error) {
 
-        result.focus();
+        // Fallback
+        const textarea =
+            document.createElement("textarea");
 
-        result.select();
+        textarea.value = text;
+
+        document.body.appendChild(
+            textarea
+        );
+
+        textarea.select();
 
         document.execCommand("copy");
 
+        textarea.remove();
 
-        alert(
-            "✅ Complete Product Listing copied!"
+        showMessage(
+            "✅ Text copy हो गया!",
+            "success"
         );
-
     }
-
 }
 
 
 // ==========================================================
-// CATEGORY CHANGE MESSAGE
+// COPY COMPLETE LISTING
+// ==========================================================
+
+function copyCompleteListing() {
+
+    const listing =
+        localStorage.getItem(
+            "latestCompleteListing"
+        );
+
+    if (!listing) {
+
+        showMessage(
+            "पहले listing generate करें।",
+            "error"
+        );
+
+        return;
+    }
+
+    const data =
+        JSON.parse(listing);
+
+    let text = "";
+
+    text += "PRODUCT TITLE\n";
+    text += "====================\n";
+    text += data.title + "\n\n";
+
+    text += "DESCRIPTION\n";
+    text += "====================\n";
+    text += data.description + "\n\n";
+
+    text += "HIGHLIGHTS\n";
+    text += "====================\n";
+
+    data.highlights.forEach(item => {
+
+        text += "• " + item + "\n";
+    });
+
+    text += "\nSEO KEYWORDS\n";
+    text += "====================\n";
+    text += data.seoKeywords.join(", ");
+
+    text += "\n\nTAGS\n";
+    text += "====================\n";
+    text += data.tags.join(", ");
+
+    text += "\n\nSPECIFICATIONS\n";
+    text += "====================\n";
+
+    Object.entries(
+        data.specifications
+    ).forEach(([key, value]) => {
+
+        text += `${key}: ${value}\n`;
+    });
+
+
+    copyText(text);
+}
+
+
+// ==========================================================
+// DOWNLOAD LISTING
+// ==========================================================
+
+function downloadListing() {
+
+    const stored =
+        localStorage.getItem(
+            "latestCompleteListing"
+        );
+
+    if (!stored) {
+
+        showMessage(
+            "पहले listing generate करें।",
+            "error"
+        );
+
+        return;
+    }
+
+    const data =
+        JSON.parse(stored);
+
+    let text = "";
+
+    text += "AI SELLER TOOLKIT\n";
+    text += "COMPLETE PRODUCT LISTING\n";
+    text += "==============================\n\n";
+
+    text += "PRODUCT TITLE\n";
+    text += data.title + "\n\n";
+
+    text += "DESCRIPTION\n";
+    text += data.description + "\n\n";
+
+    text += "HIGHLIGHTS\n";
+
+    data.highlights.forEach(item => {
+
+        text += "• " + item + "\n";
+    });
+
+    text += "\nSEO KEYWORDS\n";
+    text += data.seoKeywords.join(", ");
+
+    text += "\n\nTAGS\n";
+    text += data.tags.join(", ");
+
+    text += "\n\nSPECIFICATIONS\n";
+
+    Object.entries(
+        data.specifications
+    ).forEach(([key, value]) => {
+
+        text += `${key}: ${value}\n`;
+    });
+
+
+    const blob =
+        new Blob(
+            [text],
+            {
+                type: "text/plain;charset=utf-8"
+            }
+        );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const link =
+        document.createElement("a");
+
+    link.href = url;
+
+    link.download =
+        "complete-product-listing.txt";
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+
+    URL.revokeObjectURL(url);
+
+    showMessage(
+        "✅ Listing download हो गई!",
+        "success"
+    );
+}
+
+
+// ==========================================================
+// CLEAR FORM
+// ==========================================================
+
+function clearListingForm() {
+
+    const inputs =
+        document.querySelectorAll(
+            "input, textarea, select"
+        );
+
+    inputs.forEach(input => {
+
+        input.value = "";
+    });
+
+
+    const result =
+        getElement(
+            "listingResult",
+            "generatedResult",
+            "result"
+        );
+
+    if (result) {
+
+        result.style.display = "none";
+    }
+
+
+    localStorage.removeItem(
+        "latestCompleteListing"
+    );
+
+
+    showMessage(
+        "🧹 Form साफ हो गया।",
+        "success"
+    );
+}
+
+
+// ==========================================================
+// MESSAGE SYSTEM
+// ==========================================================
+
+function showMessage(
+    message,
+    type = "success"
+) {
+
+    let box =
+        document.getElementById(
+            "listingMessage"
+        );
+
+
+    if (!box) {
+
+        box =
+            document.createElement("div");
+
+        box.id =
+            "listingMessage";
+
+        box.style.position =
+            "fixed";
+
+        box.style.top =
+            "20px";
+
+        box.style.right =
+            "20px";
+
+        box.style.zIndex =
+            "99999";
+
+        box.style.padding =
+            "12px 18px";
+
+        box.style.borderRadius =
+            "8px";
+
+        box.style.fontSize =
+            "15px";
+
+        box.style.fontWeight =
+            "600";
+
+        box.style.maxWidth =
+            "320px";
+
+        box.style.boxShadow =
+            "0 4px 15px rgba(0,0,0,0.15)";
+
+        document.body.appendChild(box);
+    }
+
+
+    box.textContent =
+        message;
+
+
+    if (type === "error") {
+
+        box.style.background =
+            "#ffe5e5";
+
+        box.style.color =
+            "#b00020";
+
+    } else {
+
+        box.style.background =
+            "#e5ffe9";
+
+        box.style.color =
+            "#087a20";
+    }
+
+
+    clearTimeout(
+        window.listingMessageTimer
+    );
+
+
+    window.listingMessageTimer =
+        setTimeout(() => {
+
+            box.remove();
+
+        }, 3000);
+}
+
+
+// ==========================================================
+// AUTO CONNECT GENERATE BUTTON
+// ==========================================================
+
+function setupGeneratorButton() {
+
+    const button =
+        getElement(
+            "generateListingBtn",
+            "generateButton",
+            "generateBtn",
+            "generate-listing"
+        );
+
+
+    if (button) {
+
+        button.addEventListener(
+            "click",
+            generateListing
+        );
+    }
+}
+
+
+// ==========================================================
+// AUTO CONNECT COPY BUTTON
+// ==========================================================
+
+function setupCopyButton() {
+
+    const button =
+        getElement(
+            "copyListingBtn",
+            "copyCompleteListing",
+            "copyBtn"
+        );
+
+
+    if (button) {
+
+        button.addEventListener(
+            "click",
+            copyCompleteListing
+        );
+    }
+}
+
+
+// ==========================================================
+// AUTO CONNECT DOWNLOAD BUTTON
+// ==========================================================
+
+function setupDownloadButton() {
+
+    const button =
+        getElement(
+            "downloadListingBtn",
+            "downloadBtn"
+        );
+
+
+    if (button) {
+
+        button.addEventListener(
+            "click",
+            downloadListing
+        );
+    }
+}
+
+
+// ==========================================================
+// AUTO CONNECT CLEAR BUTTON
+// ==========================================================
+
+function setupClearButton() {
+
+    const button =
+        getElement(
+            "clearListingBtn",
+            "clearBtn"
+        );
+
+
+    if (button) {
+
+        button.addEventListener(
+            "click",
+            clearListingForm
+        );
+    }
+}
+
+
+// ==========================================================
+// PAGE LOAD
 // ==========================================================
 
 document.addEventListener(
     "DOMContentLoaded",
-    function () {
+    () => {
 
-        const categorySelect =
-            document.getElementById("category");
+        setupGeneratorButton();
 
-        const categoryHelp =
-            document.getElementById("categoryHelp");
+        setupCopyButton();
 
-        const categoryBadge =
-            document.getElementById("categoryBadge");
+        setupDownloadButton();
 
+        setupClearButton();
 
-        if (!categorySelect) {
-            return;
-        }
-
-
-        categorySelect.addEventListener(
-            "change",
-            function () {
-
-                const category =
-                    this.value.trim();
-
-
-                if (!category) {
-
-                    if (categoryBadge) {
-
-                        categoryBadge.style.display =
-                            "none";
-
-                    }
-
-                    if (categoryHelp) {
-
-                        categoryHelp.innerText =
-                            "Product की सही category चुनें।";
-
-                    }
-
-                    return;
-
-                }
-
-
-                if (categoryBadge) {
-
-                    categoryBadge.style.display =
-                        "inline-block";
-
-                    categoryBadge.innerText =
-                        "✅ Selected Category: " +
-                        category;
-
-                }
-
-
-                if (categoryHelp) {
-
-                    categoryHelp.innerText =
-                        "AI अब " +
-                        category +
-                        " के अनुसार listing तैयार करेगा।";
-
-                }
-
-            }
+        console.log(
+            "✅ Complete Listing Generator loaded successfully."
         );
-
     }
 );
+
+
+// ==========================================================
+// GLOBAL FUNCTIONS
+// ==========================================================
+
+window.generateListing =
+    generateListing;
+
+window.copyCompleteListing =
+    copyCompleteListing;
+
+window.downloadListing =
+    downloadListing;
+
+window.clearListingForm =
+    clearListingForm;
+
+window.generateCompleteListing =
+    generateCompleteListing;
+
+window.collectProductData =
+    collectProductData;
+
+
+// ==========================================================
+// END
+// ==========================================================
