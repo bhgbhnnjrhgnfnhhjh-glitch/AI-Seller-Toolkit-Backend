@@ -1,3 +1,186 @@
+// ==========================================================
+// AI SELLER TOOLKIT
+// COMPLETE PRODUCT LISTING GENERATOR
+// Category-Aware + Strict Factual AI
+// ==========================================================
+
+
+// ==========================================================
+// CATEGORY RULES
+// ==========================================================
+
+const categoryRules = {
+
+    "Fashion & Clothing": `
+Focus on clothing information such as:
+product type, fabric/material, target audience, gender,
+color, size, fit, pattern, sleeve type, neck type,
+closure, wash care and other clothing specifications.
+
+IMPORTANT:
+Use these only when the user provides them.
+Never invent size, fit, fabric properties, pattern or wash care.
+`,
+
+    "Beauty & Cosmetics": `
+Focus on beauty/cosmetic information such as:
+product type, ingredients, quantity, skin type, hair type,
+shade, fragrance, usage information and packaging information.
+
+IMPORTANT:
+Use ingredients, skin claims, hair claims, benefits,
+dermatological claims or safety claims ONLY when provided.
+Never invent health or cosmetic benefits.
+`,
+
+    "Electronics": `
+Focus on electronics information such as:
+product type, model, brand, color, material,
+connectivity, compatibility, power, battery,
+capacity, ports, display, operating system and other specifications.
+
+IMPORTANT:
+Use technical specifications ONLY when provided.
+Never invent model numbers, compatibility, battery capacity,
+power, warranty or performance.
+`,
+
+    "Home & Kitchen": `
+Focus on information such as:
+product type, material, color, capacity, dimensions,
+quantity, usage, design, included items and specifications.
+
+IMPORTANT:
+Use capacity, dimensions, quantity and included items
+ONLY when provided.
+Never invent measurements or capacity.
+`,
+
+    "Shoes & Footwear": `
+Focus on information such as:
+shoe type, material, target audience, gender, color,
+size, sole, closure, pattern and other footwear information.
+
+IMPORTANT:
+Never invent shoe size, sole material, fit or comfort claims.
+Use them only when provided.
+`,
+
+    "Jewellery": `
+Focus on information such as:
+jewellery type, material, metal, stone, color,
+size, design, quantity and other provided details.
+
+IMPORTANT:
+Never invent gold/silver purity, gemstone type,
+weight, certification or authenticity.
+`,
+
+    "Toys & Kids": `
+Focus on information such as:
+toy type, age range, material, color, dimensions,
+quantity, included items and other provided information.
+
+IMPORTANT:
+Never invent age suitability, safety certification,
+educational benefits or safety claims.
+`,
+
+    "Books & Stationery": `
+Focus on information such as:
+book/stationery type, title, author, publisher,
+language, pages, format, subject, quantity and material.
+
+IMPORTANT:
+Never invent author, publisher, page count or edition.
+`,
+
+    "Pet Products": `
+Focus on information such as:
+pet product type, animal type, material, size,
+color, quantity, usage and provided specifications.
+
+IMPORTANT:
+Never invent health benefits, medical claims,
+age suitability or safety claims.
+`,
+
+    "Sports & Fitness": `
+Focus on information such as:
+equipment type, sport, material, size, weight,
+dimensions, color, target user and included items.
+
+IMPORTANT:
+Never invent weight, dimensions, performance,
+fitness benefits or safety certifications.
+`,
+
+    "Automotive": `
+Focus on information such as:
+part/accessory type, vehicle compatibility,
+model, year, material, dimensions, color,
+quantity and other provided specifications.
+
+IMPORTANT:
+Never invent vehicle compatibility, model,
+part number or installation information.
+`,
+
+    "Garden & Outdoor": `
+Focus on information such as:
+product type, material, dimensions, quantity,
+color, usage and other provided specifications.
+
+IMPORTANT:
+Never invent durability, weather resistance,
+capacity or performance claims.
+`,
+
+    "Food & Grocery": `
+Focus on information such as:
+food/product type, ingredients, quantity,
+flavor, variant, packaging, dietary information
+and other provided information.
+
+IMPORTANT:
+Never invent ingredients, nutrition facts,
+health claims, expiry dates or certifications.
+`,
+
+    "Gifts & Handmade": `
+Focus on information such as:
+product type, material, color, design,
+occasion, quantity, personalization and other
+provided information.
+
+IMPORTANT:
+Never invent handmade status, personalization,
+material or occasion suitability unless provided.
+`,
+
+    "Other": `
+Use only the product information provided by the user.
+Do not assume specifications based on the product name.
+`
+};
+
+
+// ==========================================================
+// GET CATEGORY RULE
+// ==========================================================
+
+function getCategoryRule(category) {
+
+    return categoryRules[category] ||
+        categoryRules["Other"];
+
+}
+
+
+// ==========================================================
+// GENERATE LISTING
+// ==========================================================
+
 async function generateListing() {
 
     const product =
@@ -22,7 +205,7 @@ async function generateListing() {
         document.getElementById("features").value.trim();
 
     const marketplace =
-        document.getElementById("marketplace").value;
+        document.getElementById("marketplace").value.trim();
 
     const result =
         document.getElementById("result");
@@ -34,46 +217,90 @@ async function generateListing() {
         document.getElementById("generateBtn");
 
 
-    // =====================================
+    // ======================================================
     // VALIDATION
-    // =====================================
+    // ======================================================
 
-    if (product === "") {
+    if (!product) {
 
-        alert("Please enter Product Name.");
+        status.style.color = "#dc2626";
+
+        status.innerText =
+            "❌ कृपया Product Name डालें।";
+
+        document.getElementById("product").focus();
 
         return;
-
     }
 
 
-    // =====================================
+    if (!category) {
+
+        status.style.color = "#dc2626";
+
+        status.innerText =
+            "❌ कृपया Product Category चुनें।";
+
+        document.getElementById("category").focus();
+
+        return;
+    }
+
+
+    if (!marketplace) {
+
+        status.style.color = "#dc2626";
+
+        status.innerText =
+            "❌ कृपया Marketplace चुनें।";
+
+        document.getElementById("marketplace").focus();
+
+        return;
+    }
+
+
+    // ======================================================
+    // CATEGORY INSTRUCTIONS
+    // ======================================================
+
+    const categoryInstruction =
+        getCategoryRule(category);
+
+
+    // ======================================================
     // LOADING
-    // =====================================
+    // ======================================================
 
     button.disabled = true;
 
     button.innerText =
         "⏳ Generating Listing...";
 
+    status.style.color = "#2563eb";
+
     status.innerText =
-        "⏳ AI complete product listing बना रहा है...";
+        "⏳ Product category के अनुसार listing तैयार हो रही है...";
 
     result.value =
         "⏳ Please wait...";
 
 
-    // =====================================
-    // STRICT PROMPT
-    // =====================================
+    // ======================================================
+    // AI PROMPT
+    // ======================================================
 
     const prompt = `
 
 You are a professional eCommerce product listing generator.
 
-Create a factual product listing using ONLY the information provided.
+Your job is to create a factual product listing.
 
-PRODUCT INFORMATION:
+The listing must be useful for online sellers.
+
+==================================================
+PRODUCT INFORMATION
+==================================================
 
 Product Name:
 ${product}
@@ -82,9 +309,9 @@ Brand:
 ${brand || "Not provided"}
 
 Category:
-${category || "Not provided"}
+${category}
 
-Material:
+Material / Main Specification:
 ${material || "Not provided"}
 
 Target Audience:
@@ -93,209 +320,217 @@ ${audience || "Not provided"}
 Color:
 ${color || "Not provided"}
 
-Extra Features:
+Product Features / Specifications:
 ${features || "Not provided"}
 
-Marketplace:
+Target Marketplace:
 ${marketplace}
 
 
 ==================================================
-STRICT FACTUAL RULES
+CATEGORY-SPECIFIC INSTRUCTIONS
 ==================================================
 
-1. Use ONLY the information provided above.
+${categoryInstruction}
 
-2. Never invent information.
 
-3. Never guess missing information.
+==================================================
+MOST IMPORTANT FACTUAL RULE
+==================================================
 
-4. Never add specifications that were not provided.
+USE ONLY INFORMATION PROVIDED BY THE USER.
 
-5. Never invent size.
+Never guess.
 
-6. Never invent weight.
+Never assume.
 
-7. Never invent dimensions.
+Never complete missing specifications using common knowledge.
 
-8. Never invent price.
+The product name does NOT automatically provide specifications.
 
-9. Never invent discount.
+For example:
 
-10. Never invent offers.
+If product name is "Bluetooth Speaker",
+do NOT automatically assume:
 
-11. Never invent delivery information.
+Bluetooth version
+battery capacity
+wattage
+USB port
+water resistance
+play time
+microphone
+range
 
-12. Never invent shipping information.
+unless the user provided those details.
 
-13. Never invent warranty information.
 
-14. Never invent return information.
+==================================================
+DO NOT INVENT
+==================================================
 
-15. Never invent payment information.
+Never invent:
 
-16. Never invent manufacturer information.
-
-17. Never invent country of origin.
-
-18. Never invent product quality.
-
-19. Never invent durability.
-
-20. Never invent comfort.
-
-21. Never invent performance.
-
-22. Never invent customer experience.
-
-23. Never invent reviews.
-
-24. Never invent certifications.
-
-25. Never invent safety claims.
-
-26. Never invent health claims.
-
-27. Never invent sustainability claims.
-
-28. Never invent fabric properties beyond the provided material.
-
-29. Never invent product features.
-
-30. Never add a feature simply because it is common for this product type.
+- size
+- weight
+- dimensions
+- quantity
+- capacity
+- model number
+- SKU
+- part number
+- ingredients
+- certifications
+- warranty
+- return policy
+- price
+- discount
+- offers
+- delivery information
+- shipping information
+- manufacturer
+- country of origin
+- compatibility
+- battery capacity
+- power
+- performance
+- durability
+- comfort
+- quality
+- safety claims
+- health claims
+- customer reviews
+- ratings
+- awards
+- guarantees
 
 
 ==================================================
 BRAND RULE
 ==================================================
 
-The Brand field means ONLY the brand name.
+Brand means ONLY the brand name.
 
-Never describe the brand as:
+If Brand is:
 
-- manufacturer
-- maker
-- creator
-- producer
-- seller
-- owner
+${brand || "Not provided"}
 
-unless that exact information was explicitly provided.
+Do NOT say:
 
-For example:
+manufactured by
+made by
+created by
+produced by
+owned by
 
-Brand: Fashion Hud
-
-Correct:
-"Brand: Fashion Hud"
-
-Incorrect:
-"Made by Fashion Hud"
-
-Incorrect:
-"Manufactured by Fashion Hud"
-
-Incorrect:
-"Created by Fashion Hud"
-
-
-==================================================
-MARKETPLACE RULE
-==================================================
-
-The Marketplace field is ONLY the target marketplace.
-
-Marketplace:
-${marketplace}
-
-Do NOT treat the marketplace as:
-
-- product category
-- product feature
-- brand
-- manufacturer
-- seller
-- product specification
-- department
-- product attribute
-
-For example:
-
-Marketplace: Amazon
-
-Correct:
-The listing is prepared for Amazon.
-
-Incorrect:
-"Amazon Men's Category"
-
-Incorrect:
-"Listed under Amazon Men's Category"
-
-Incorrect:
-"Amazon Men's Clothing"
-
-Do NOT put the marketplace name inside
-the product description, bullet points,
-features, keywords, hashtags or product tags
-unless it is absolutely necessary to identify
-the target marketplace.
-
-The marketplace must NOT become a product fact.
+unless the user explicitly provided that information.
 
 
 ==================================================
 CATEGORY RULE
 ==================================================
 
-Use the Category field exactly as provided.
+Use the selected category exactly:
+
+${category}
+
+Do not change it.
+
+Do not combine it with the marketplace.
+
+Do not turn the marketplace into a category.
+
+Example:
 
 Category:
-${category || "Not provided"}
+Fashion & Clothing
 
-Do not change:
+Marketplace:
+Amazon
 
-"Men's Clothing"
+Correct:
+Category: Fashion & Clothing
 
-into:
+Incorrect:
+Amazon Fashion Category
 
-"Men's Category"
 
-Do not invent a different category.
+==================================================
+MARKETPLACE RULE
+==================================================
 
-Do not combine Category with Marketplace.
+The marketplace is ONLY the target platform.
+
+Marketplace:
+
+${marketplace}
+
+Do not treat it as:
+
+- brand
+- product feature
+- material
+- category
+- specification
+- manufacturer
+- product attribute
+
+Do not put the marketplace name inside:
+
+- product description
+- bullet points
+- features
+- keywords
+- hashtags
+- tags
+
+unless necessary to identify the target marketplace.
+
+The marketplace is NOT a product fact.
 
 
 ==================================================
 PRODUCT NAME RULE
 ==================================================
 
-Keep the exact Product Name:
+Keep the product name accurate.
+
+Product Name:
 
 ${product}
 
-Do not change the product type.
+Do not replace one product type with another.
 
-Do not replace "T-Shirt" with "Shirt".
+For example:
 
-Do not invent additional product types.
+"T-Shirt" must remain T-Shirt.
+
+Do not change it to Shirt.
+
+"Wireless Earbuds" must remain Wireless Earbuds.
+
+Do not change it to Headphones.
 
 
 ==================================================
 MATERIAL RULE
 ==================================================
 
-Use the exact material provided:
+Material provided:
 
 ${material || "Not provided"}
 
-Do not add properties such as:
+Use only the provided material.
 
-- soft
-- breathable
-- lightweight
-- durable
-- comfortable
+Do not automatically add:
+
+soft
+comfortable
+durable
+lightweight
+breathable
+premium
+high quality
 
 unless explicitly provided.
 
@@ -304,33 +539,52 @@ unless explicitly provided.
 COLOR RULE
 ==================================================
 
-Use only the provided color:
+Color provided:
 
 ${color || "Not provided"}
 
-Do not invent shades or color descriptions.
+Use only the exact provided color.
+
+Do not invent shades.
 
 
 ==================================================
 FEATURE RULE
 ==================================================
 
-Extra Features provided by the user:
+Features provided by user:
 
 ${features || "Not provided"}
 
-Only these features may be used.
+Only these features can be used.
 
-Do not add any other features.
+If the user provides multiple features,
+you may organize them clearly.
+
+Do not create additional features.
+
+
+==================================================
+TARGET AUDIENCE RULE
+==================================================
+
+Target Audience:
+
+${audience || "Not provided"}
+
+Use only the provided audience.
+
+Do not create age, gender or demographic information
+unless provided.
 
 
 ==================================================
 SEO RULES
 ==================================================
 
-SEO content must remain factual.
+SEO must remain factual.
 
-Do not use unsupported promotional words such as:
+Do not use unsupported promotional claims such as:
 
 Best
 Premium
@@ -343,13 +597,21 @@ Guaranteed
 No.1
 Top
 Exclusive
+Trending
+Viral
+Affordable
+Durable
+Comfortable
+
+unless the user explicitly provided the claim as factual
+product information.
 
 
 ==================================================
-OUTPUT REQUIREMENTS
+OUTPUT
 ==================================================
 
-Create exactly:
+Generate exactly:
 
 3 SEO PRODUCT TITLES
 
@@ -370,32 +632,36 @@ Create exactly:
 SEO PRODUCT TITLES
 ==================================================
 
-Create 3 titles.
+Create 3 different titles.
 
-Titles may combine:
+Titles may use only provided:
 
 Brand
 Product Name
+Category
 Material
-Color
 Target Audience
+Color
+Provided Features
 
-ONLY if those values were provided.
+Do NOT add unsupported information.
 
-Do not add:
+Do NOT add:
 
-Marketplace
-Manufacturer
-Price
-Offer
-Quality claim
+price
+discount
+offer
+warranty
+manufacturer
+marketplace
+performance claims
 
 
 ==================================================
 PRODUCT DESCRIPTION
 ==================================================
 
-Write a short factual description.
+Write a clear factual description.
 
 Use only:
 
@@ -405,77 +671,76 @@ Category
 Material
 Target Audience
 Color
-Extra Features
+Provided Features
 
-Do NOT mention the Marketplace.
+Do NOT mention the marketplace.
 
-Do NOT say:
-
-"manufactured by"
-"created by"
-"made by"
-
-unless explicitly provided.
+Do not create benefits that were not provided.
 
 
 ==================================================
 BULLET POINTS
 ==================================================
 
-Create 5 factual bullet points.
+Create exactly 5 bullet points.
 
-Use only provided information.
+Every bullet must contain factual information
+from the user input.
 
-Do not create new specifications.
+If there are fewer than 5 facts,
+create useful combinations of existing facts.
+
+Never invent new facts.
 
 
 ==================================================
 PRODUCT FEATURES
 ==================================================
 
-Create 5 factual features.
+Create exactly 5 features.
 
-If fewer than 5 unique facts are available,
-repeat-free factual combinations are allowed.
+Use only existing information.
 
-Do not invent facts.
+If fewer than 5 independent facts exist,
+combine existing facts without adding anything new.
 
-Do not mention the Marketplace.
+Never invent specifications.
 
 
 ==================================================
 SEO KEYWORDS
 ==================================================
 
-Create 10 relevant keywords.
+Create exactly 10 keywords.
 
-Keywords may combine provided:
+Keywords can combine:
 
 Brand
 Product Name
 Category
 Material
-Color
 Target Audience
+Color
+Provided Features
 
-Do not use Marketplace as a product keyword.
+Do not use unsupported claims.
 
-Do not invent words that create new product claims.
+Do not use marketplace names as product facts.
 
 
 ==================================================
 HASHTAGS
 ==================================================
 
-Create 5 relevant hashtags.
+Create exactly 5 hashtags.
 
-Use only provided product information.
+Use only information present in the product data.
 
-Do not use:
+Do not use unsupported hashtags such as:
 
 #Best
-#Amazing
 #Premium
+#Amazing
 #Trending
 #Viral
 #Deal
@@ -486,24 +751,24 @@ Do not use:
 PRODUCT TAGS
 ==================================================
 
-Create 10 relevant product tags.
+Create exactly 10 tags.
 
 Use only provided information.
 
-Do not add marketplace-based tags.
+Do not create unsupported specifications.
 
-Do not add unsupported specifications.
+Do not use marketplace names as product tags.
 
 
 ==================================================
-FINAL OUTPUT FORMAT
+FINAL FORMAT
 ==================================================
 
 SEO PRODUCT TITLES:
 
-1. 
-2. 
-3. 
+1.
+2.
+3.
 
 
 PRODUCT DESCRIPTION:
@@ -566,20 +831,19 @@ PRODUCT TAGS:
 10.
 
 
-Return ONLY the product listing.
+Return ONLY the final listing.
 
-Do not explain anything.
+Do not explain the rules.
 
-Do not mention these instructions.
+Do not mention this prompt.
 
 Do not mention AI.
-
 `;
 
 
-    // =====================================
+    // ======================================================
     // API REQUEST
-    // =====================================
+    // ======================================================
 
     try {
 
@@ -599,25 +863,50 @@ Do not mention AI.
         );
 
 
-        const data =
-            await response.json();
+        // ==================================================
+        // READ RESPONSE SAFELY
+        // ==================================================
+
+        const rawText =
+            await response.text();
+
+        let data = {};
+
+        try {
+
+            data =
+                JSON.parse(rawText);
+
+        } catch (jsonError) {
+
+            throw new Error(
+                "Backend ने valid JSON response नहीं दिया।"
+            );
+
+        }
 
 
         if (!response.ok) {
 
             throw new Error(
                 data.error ||
+                data.message ||
                 "Backend API Error"
             );
 
         }
 
 
+        // ==================================================
+        // GET AI RESPONSE
+        // ==================================================
+
         let answer =
             data.result ||
             data.response ||
             data.text ||
             data.output ||
+            data.content ||
             "";
 
 
@@ -634,13 +923,13 @@ Do not mention AI.
         }
 
 
-        // =====================================
-        // REMOVE CODE BLOCK
-        // =====================================
+        // ==================================================
+        // REMOVE MARKDOWN CODE BLOCK
+        // ==================================================
 
         answer =
             answer.replace(
-                /^```(?:markdown|text)?\s*/i,
+                /^```(?:markdown|text|html)?\s*/i,
                 ""
             );
 
@@ -651,24 +940,58 @@ Do not mention AI.
             );
 
 
-        // =====================================
-        // REMOVE OBVIOUS UNSUPPORTED PHRASES
-        // =====================================
+        // ==================================================
+        // REMOVE AI INTRODUCTION
+        // ==================================================
 
-        const forbiddenLines = [
+        answer =
+            answer.replace(
+                /^(Here is|Sure|Certainly|Here’s)[\s\S]*?(?=SEO PRODUCT TITLES:)/i,
+                ""
+            );
 
-            /manufactured by/i,
-            /manufactured in/i,
-            /created by/i,
-            /made by/i,
-            /produced by/i,
-            /amazon men's category/i,
-            /amazon category/i,
-            /flipkart category/i,
-            /meesho category/i,
-            /shopify category/i,
-            /etsy category/i
 
+        // ==================================================
+        // REMOVE UNSUPPORTED BRAND CLAIMS
+        // ==================================================
+
+        const forbiddenPatterns = [
+
+            /manufactured by/gi,
+            /manufactured in/gi,
+            /made by/gi,
+            /created by/gi,
+            /produced by/gi,
+            /best quality/gi,
+            /premium quality/gi,
+            /high quality/gi,
+            /guaranteed/gi,
+            /number one/gi,
+            /no\.?\s*1/gi
+        ];
+
+
+        for (const pattern of forbiddenPatterns) {
+
+            answer =
+                answer.replace(
+                    pattern,
+                    ""
+                );
+
+        }
+
+
+        // ==================================================
+        // REMOVE MARKETPLACE FROM PRODUCT CONTENT
+        // ==================================================
+
+        const marketplaces = [
+            "Amazon",
+            "Flipkart",
+            "Meesho",
+            "Shopify",
+            "Etsy"
         ];
 
 
@@ -679,10 +1002,40 @@ Do not mention AI.
         const cleanedLines =
             lines.filter(line => {
 
-                return !forbiddenLines.some(
-                    pattern =>
-                        pattern.test(line)
-                );
+                const lower =
+                    line.toLowerCase();
+
+
+                // Do not remove marketplace from title
+                // if it accidentally appears as heading.
+                // Remove obvious marketplace-as-product claims.
+
+                for (const platform of marketplaces) {
+
+                    const platformLower =
+                        platform.toLowerCase();
+
+
+                    if (
+                        lower.includes(
+                            platformLower + " category"
+                        ) ||
+                        lower.includes(
+                            platformLower + " product"
+                        ) ||
+                        lower.includes(
+                            "made for " +
+                            platformLower
+                        )
+                    ) {
+
+                        return false;
+
+                    }
+
+                }
+
+                return true;
 
             });
 
@@ -691,9 +1044,9 @@ Do not mention AI.
             cleanedLines.join("\n");
 
 
-        // =====================================
-        // REMOVE EXTRA BLANK LINES
-        // =====================================
+        // ==================================================
+        // CLEAN EXTRA BLANK LINES
+        // ==================================================
 
         answer =
             answer.replace(
@@ -706,22 +1059,20 @@ Do not mention AI.
             answer.trim();
 
 
-        // =====================================
-        // FINAL CHECK
-        // =====================================
+        // ==================================================
+        // FINAL SAFETY CHECK
+        // ==================================================
 
         const unsafePatterns = [
 
             /manufactured by/i,
+            /manufactured in/i,
+            /made by/i,
             /created by/i,
-            /made by fashion hud/i,
-            /amazon men's category/i,
-            /amazon category/i,
-            /flipkart category/i,
-            /meesho category/i,
-            /shopify category/i,
-            /etsy category/i
-
+            /produced by/i,
+            /best quality/i,
+            /premium quality/i,
+            /guaranteed/i
         ];
 
 
@@ -735,22 +1086,27 @@ Do not mention AI.
         if (unsafeFound) {
 
             throw new Error(
-                "AI ने unsupported information बनाई है। कृपया फिर से Generate करें।"
+                "Listing में unsupported information मिली। कृपया दोबारा Generate करें।"
             );
 
         }
 
 
-        // =====================================
+        // ==================================================
         // SHOW RESULT
-        // =====================================
+        // ==================================================
 
         result.value =
             answer;
 
 
+        status.style.color =
+            "#16a34a";
+
         status.innerText =
-            "✅ Complete Product Listing successfully generated.";
+            "✅ " +
+            category +
+            " category की listing तैयार हो गई।";
 
 
     } catch (error) {
@@ -767,8 +1123,11 @@ Do not mention AI.
             error.message;
 
 
+        status.style.color =
+            "#dc2626";
+
         status.innerText =
-            "❌ Backend API Error";
+            "❌ Listing generate नहीं हो सकी।";
 
 
     } finally {
@@ -783,9 +1142,9 @@ Do not mention AI.
 }
 
 
-// ==========================================
+// ==========================================================
 // COPY LISTING
-// ==========================================
+// ==========================================================
 
 async function copyListing() {
 
@@ -813,15 +1172,20 @@ async function copyListing() {
             text
         );
 
+
         alert(
             "✅ Complete Product Listing copied!"
         );
 
+
     } catch (error) {
+
+        result.focus();
 
         result.select();
 
         document.execCommand("copy");
+
 
         alert(
             "✅ Complete Product Listing copied!"
@@ -830,3 +1194,83 @@ async function copyListing() {
     }
 
 }
+
+
+// ==========================================================
+// CATEGORY CHANGE MESSAGE
+// ==========================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        const categorySelect =
+            document.getElementById("category");
+
+        const categoryHelp =
+            document.getElementById("categoryHelp");
+
+        const categoryBadge =
+            document.getElementById("categoryBadge");
+
+
+        if (!categorySelect) {
+            return;
+        }
+
+
+        categorySelect.addEventListener(
+            "change",
+            function () {
+
+                const category =
+                    this.value.trim();
+
+
+                if (!category) {
+
+                    if (categoryBadge) {
+
+                        categoryBadge.style.display =
+                            "none";
+
+                    }
+
+                    if (categoryHelp) {
+
+                        categoryHelp.innerText =
+                            "Product की सही category चुनें।";
+
+                    }
+
+                    return;
+
+                }
+
+
+                if (categoryBadge) {
+
+                    categoryBadge.style.display =
+                        "inline-block";
+
+                    categoryBadge.innerText =
+                        "✅ Selected Category: " +
+                        category;
+
+                }
+
+
+                if (categoryHelp) {
+
+                    categoryHelp.innerText =
+                        "AI अब " +
+                        category +
+                        " के अनुसार listing तैयार करेगा।";
+
+                }
+
+            }
+        );
+
+    }
+);
