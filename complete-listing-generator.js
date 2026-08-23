@@ -1,240 +1,238 @@
+"use strict";
+
 // ==========================================================
 // AI SELLER TOOLKIT
 // COMPLETE LISTING GENERATOR
-// Standalone JavaScript
-// Category-Aware + Strict Factual
+// BACKEND API VERSION
 // ==========================================================
 
-"use strict";
+
+// ==========================================================
+// BACKEND URL
+// ==========================================================
+//
+// IMPORTANT:
+// अगर आपका backend Render पर है,
+// तो नीचे अपना Render backend URL डालें.
+//
+// Example:
+// https://your-backend.onrender.com
+//
+// Local testing:
+// http://localhost:5000
+// ==========================================================
+
+const BACKEND_URL =
+    "https://YOUR-BACKEND-URL.onrender.com";
+
+
+// ==========================================================
+// API ENDPOINT
+// ==========================================================
+
+const API_ENDPOINT =
+    `${BACKEND_URL}/api/generate-listing`;
+
 
 // ==========================================================
 // CATEGORY RULES
 // ==========================================================
 
-const categoryRules = {
+const CATEGORY_RULES = {
 
-    "Fashion & Clothing": {
-        focus: "fabric, color, pattern, fit, occasion, comfort",
-        fields: ["Brand", "Fabric", "Color", "Size", "Pattern", "Occasion"]
-    },
+    "Fashion": `
+Focus on clothing type, fabric, color, pattern,
+size, fit, occasion and care information only
+when provided by the seller.
+`,
 
-    "Electronics": {
-        focus: "product type, model, connectivity, compatibility, power",
-        fields: ["Brand", "Model", "Color", "Connectivity", "Compatibility"]
-    },
+    "Beauty": `
+Focus on product type, variant, quantity,
+skin/hair usage, ingredients and benefits only
+when provided by the seller.
+Do not invent medical claims.
+`,
 
-    "Beauty & Personal Care": {
-        focus: "product type, quantity, skin/hair use, ingredients if provided",
-        fields: ["Brand", "Quantity", "Variant", "Ingredients", "Suitable For"]
-    },
+    "Electronics": `
+Focus on device type, brand, model,
+compatibility, connectivity, power,
+capacity and included items only when provided.
+`,
 
-    "Home & Kitchen": {
-        focus: "material, size, capacity, use, design",
-        fields: ["Brand", "Material", "Color", "Size", "Capacity"]
-    },
+    "Home & Kitchen": `
+Focus on product type, material, dimensions,
+capacity, color, usage and design.
+`,
 
-    "Jewellery & Accessories": {
-        focus: "material, design, color, style, occasion",
-        fields: ["Brand", "Material", "Color", "Design", "Occasion"]
-    },
+    "Shoes": `
+Focus on footwear type, material,
+size, color, sole, closure and occasion
+only when provided.
+`,
 
-    "Footwear": {
-        focus: "type, material, color, size, sole, occasion",
-        fields: ["Brand", "Material", "Color", "Size", "Sole"]
-    },
+    "Jewellery": `
+Focus on jewellery type, material,
+design, color, size and occasion.
+Do not claim precious metal purity unless provided.
+`,
 
-    "Grocery": {
-        focus: "product type, quantity, variant, ingredients, packaging",
-        fields: ["Brand", "Quantity", "Variant", "Ingredients", "Pack Type"]
-    },
+    "Toys": `
+Focus on toy type, recommended age,
+material, dimensions, color and usage.
+Do not invent safety certifications.
+`,
 
-    "Toys & Baby Products": {
-        focus: "age group, material, design, usage, safety information if provided",
-        fields: ["Brand", "Material", "Age Group", "Color", "Size"]
-    },
+    "Books": `
+Focus on title, author, language,
+format, pages, publisher, edition
+and subject when provided.
+`,
 
-    "Sports & Fitness": {
-        focus: "product type, material, size, usage, fitness activity",
-        fields: ["Brand", "Material", "Size", "Color", "Sport/Activity"]
-    },
+    "Pet": `
+Focus on pet product type, animal type,
+size, material, quantity, usage and ingredients
+when provided.
+Do not invent veterinary or medical claims.
+`,
 
-    "Books & Stationery": {
-        focus: "title, author, language, format, pages, usage",
-        fields: ["Author", "Language", "Format", "Pages", "Publisher"]
-    },
+    "Sports": `
+Focus on sports equipment type,
+material, size, activity, usage,
+weight and included items when provided.
+`,
 
-    "Automotive": {
-        focus: "vehicle compatibility, material, model, size, usage",
-        fields: ["Brand", "Compatibility", "Material", "Model", "Color"]
-    },
+    "Automotive": `
+Focus on vehicle compatibility,
+part/accessory type, material,
+model, dimensions and usage.
+Do not claim compatibility unless provided.
+`,
 
-    "Other": {
-        focus: "product type, material, size, color, usage",
-        fields: ["Brand", "Material", "Color", "Size", "Usage"]
-    }
+    "Garden": `
+Focus on plant/garden product type,
+material, size, quantity, usage,
+plant compatibility and growing information
+only when provided.
+`,
+
+    "Food": `
+Focus on food type, flavour,
+quantity, ingredients, packaging,
+dietary information and shelf-life
+only when provided.
+Do not invent nutritional or health claims.
+`,
+
+    "Gifts": `
+Focus on gift type, recipient,
+occasion, material, design,
+color, quantity and packaging
+only when provided.
+`
+
 };
 
 
 // ==========================================================
-// SAFE VALUE FUNCTION
+// ELEMENT HELPER
 // ==========================================================
 
-function cleanValue(value) {
+function $(id) {
 
-    if (value === null || value === undefined) {
-        return "";
-    }
-
-    return String(value).trim();
+    return document.getElementById(id);
 }
 
 
 // ==========================================================
-// GET ELEMENT
+// SHOW MESSAGE
 // ==========================================================
 
-function getElement(...ids) {
+function showMessage(message, type = "success") {
 
-    for (const id of ids) {
+    const box = $("message");
 
-        const element = document.getElementById(id);
+    if (!box) return;
 
-        if (element) {
-            return element;
-        }
-    }
+    box.textContent = message;
 
-    return null;
+    box.className = type;
+
+    box.style.display = "block";
+
+    setTimeout(() => {
+
+        box.style.display = "none";
+
+    }, 5000);
 }
 
 
 // ==========================================================
-// GET INPUT VALUE
-// ==========================================================
-
-function getValue(...ids) {
-
-    const element = getElement(...ids);
-
-    if (!element) {
-        return "";
-    }
-
-    return cleanValue(element.value);
-}
-
-
-// ==========================================================
-// CATEGORY
-// ==========================================================
-
-function getCategory() {
-
-    return (
-        getValue(
-            "category",
-            "productCategory",
-            "listingCategory"
-        ) || "Other"
-    );
-}
-
-
-// ==========================================================
-// PRODUCT DATA
+// COLLECT PRODUCT DATA
 // ==========================================================
 
 function collectProductData() {
 
     return {
 
-        category: getCategory(),
+        category: $("category").value.trim(),
 
-        name: getValue(
-            "productName",
-            "product-name",
-            "name"
-        ),
+        productName:
+            $("productName").value.trim(),
 
-        brand: getValue(
-            "brand",
-            "productBrand"
-        ),
+        brand:
+            $("brand").value.trim(),
 
-        price: getValue(
-            "price",
-            "productPrice"
-        ),
+        price:
+            $("price").value.trim(),
 
-        color: getValue(
-            "color",
-            "productColor"
-        ),
+        color:
+            $("color").value.trim(),
 
-        material: getValue(
-            "material",
-            "productMaterial"
-        ),
+        material:
+            $("material").value.trim(),
 
-        size: getValue(
-            "size",
-            "productSize"
-        ),
+        size:
+            $("size").value.trim(),
 
-        quantity: getValue(
-            "quantity",
-            "productQuantity"
-        ),
+        model:
+            $("model").value.trim(),
 
-        model: getValue(
-            "model",
-            "productModel"
-        ),
+        quantity:
+            $("quantity").value.trim(),
 
-        fabric: getValue(
-            "fabric",
-            "productFabric"
-        ),
+        features:
+            $("features").value.trim(),
 
-        pattern: getValue(
-            "pattern",
-            "productPattern"
-        ),
+        description:
+            $("description").value.trim()
 
-        occasion: getValue(
-            "occasion",
-            "productOccasion"
-        ),
-
-        features: getValue(
-            "features",
-            "productFeatures",
-            "keyFeatures"
-        ),
-
-        description: getValue(
-            "description",
-            "productDescription"
-        ),
-
-        keywords: getValue(
-            "keywords",
-            "seoKeywords"
-        )
     };
 }
 
 
 // ==========================================================
-// CHECK PRODUCT NAME
+// VALIDATE
 // ==========================================================
 
-function validateProductData(data) {
+function validateProduct(data) {
 
-    if (!data.name) {
+    if (!data.productName) {
 
         showMessage(
-            "कृपया Product Name भरें।",
+            "❌ कृपया Product Name भरें।",
+            "error"
+        );
+
+        $("productName").focus();
+
+        return false;
+    }
+
+    if (!data.category) {
+
+        showMessage(
+            "❌ कृपया Category चुनें।",
             "error"
         );
 
@@ -246,423 +244,132 @@ function validateProductData(data) {
 
 
 // ==========================================================
-// TITLE GENERATOR
+// GENERATE LISTING
 // ==========================================================
 
-function generateTitle(data) {
+async function generateListing() {
 
-    const parts = [];
+    const button =
+        $("generateListingBtn");
 
-    if (data.brand) {
-        parts.push(data.brand);
+    const loading =
+        $("loading");
+
+
+    const product =
+        collectProductData();
+
+
+    if (!validateProduct(product)) {
+
+        return;
     }
 
-    parts.push(data.name);
 
-    if (data.material) {
-        parts.push(data.material);
-    }
+    button.disabled = true;
 
-    if (data.color) {
-        parts.push(data.color);
-    }
-
-    if (data.pattern) {
-        parts.push(data.pattern);
-    }
-
-    if (data.size) {
-        parts.push(data.size);
-    }
-
-    let title = parts
-        .filter(Boolean)
-        .join(" ");
-
-    title = title
-        .replace(/\s+/g, " ")
-        .trim();
-
-    // Marketplace friendly length
-    if (title.length > 150) {
-
-        title = title.substring(0, 147).trim() + "...";
-    }
-
-    return title;
-}
+    loading.style.display = "block";
 
 
-// ==========================================================
-// DESCRIPTION GENERATOR
-// ==========================================================
+    try {
 
-function generateDescription(data) {
-
-    const sentences = [];
-
-    sentences.push(
-        `${data.name} ${data.category.toLowerCase()} category का product है।`
-    );
-
-    if (data.brand) {
-
-        sentences.push(
-            `Brand: ${data.brand}.`
+        showMessage(
+            "🤖 AI से listing तैयार हो रही है...",
+            "success"
         );
-    }
-
-    if (data.color) {
-
-        sentences.push(
-            `Color: ${data.color}.`
-        );
-    }
-
-    if (data.material) {
-
-        sentences.push(
-            `Material: ${data.material}.`
-        );
-    }
-
-    if (data.fabric) {
-
-        sentences.push(
-            `Fabric: ${data.fabric}.`
-        );
-    }
-
-    if (data.size) {
-
-        sentences.push(
-            `Size: ${data.size}.`
-        );
-    }
-
-    if (data.quantity) {
-
-        sentences.push(
-            `Quantity: ${data.quantity}.`
-        );
-    }
-
-    if (data.model) {
-
-        sentences.push(
-            `Model: ${data.model}.`
-        );
-    }
-
-    if (data.occasion) {
-
-        sentences.push(
-            `Occasion/Use: ${data.occasion}.`
-        );
-    }
-
-    if (data.description) {
-
-        sentences.push(
-            data.description
-        );
-    }
-
-    return sentences.join(" ");
-}
 
 
-// ==========================================================
-// HIGHLIGHTS
-// ==========================================================
+        const response =
+            await fetch(API_ENDPOINT, {
 
-function generateHighlights(data) {
+                method: "POST",
 
-    const highlights = [];
+                headers: {
 
-    if (data.name) {
+                    "Content-Type":
+                        "application/json"
 
-        highlights.push(
-            `Product: ${data.name}`
-        );
-    }
+                },
 
-    if (data.brand) {
+                body: JSON.stringify({
 
-        highlights.push(
-            `Brand: ${data.brand}`
-        );
-    }
+                    product,
 
-    if (data.material) {
+                    categoryRules:
+                        CATEGORY_RULES[
+                            product.category
+                        ]
 
-        highlights.push(
-            `Material: ${data.material}`
-        );
-    }
+                })
 
-    if (data.fabric) {
-
-        highlights.push(
-            `Fabric: ${data.fabric}`
-        );
-    }
-
-    if (data.color) {
-
-        highlights.push(
-            `Color: ${data.color}`
-        );
-    }
-
-    if (data.size) {
-
-        highlights.push(
-            `Size: ${data.size}`
-        );
-    }
-
-    if (data.quantity) {
-
-        highlights.push(
-            `Quantity: ${data.quantity}`
-        );
-    }
-
-    if (data.model) {
-
-        highlights.push(
-            `Model: ${data.model}`
-        );
-    }
-
-    if (data.occasion) {
-
-        highlights.push(
-            `Occasion/Use: ${data.occasion}`
-        );
-    }
-
-    // Add user-provided features only
-    if (data.features) {
-
-        const featureList = data.features
-            .split(/[,\n]+/)
-            .map(item => item.trim())
-            .filter(Boolean);
-
-        featureList.forEach(feature => {
-
-            highlights.push(feature);
-        });
-    }
-
-    return [...new Set(highlights)];
-}
-
-
-// ==========================================================
-// SEO KEYWORDS
-// ==========================================================
-
-function generateKeywords(data) {
-
-    const keywords = [];
-
-    const values = [
-
-        data.name,
-        data.brand,
-        data.category,
-        data.color,
-        data.material,
-        data.fabric,
-        data.pattern,
-        data.size,
-        data.model,
-        data.occasion
-    ];
-
-    values.forEach(value => {
-
-        if (!value) {
-            return;
-        }
-
-        keywords.push(value);
-    });
-
-
-    // User supplied keywords
-    if (data.keywords) {
-
-        data.keywords
-            .split(/[,\n]+/)
-            .map(item => item.trim())
-            .filter(Boolean)
-            .forEach(keyword => {
-
-                keywords.push(keyword);
             });
-    }
 
 
-    // Remove duplicate keywords
-    return [...new Set(
-        keywords.map(keyword =>
-            keyword.toLowerCase()
-        )
-    )];
-}
+        if (!response.ok) {
 
+            const errorText =
+                await response.text();
 
-// ==========================================================
-// TAG GENERATOR
-// ==========================================================
-
-function generateTags(data) {
-
-    const tags = [];
-
-    if (data.category) {
-        tags.push(data.category);
-    }
-
-    if (data.name) {
-        tags.push(data.name);
-    }
-
-    if (data.color) {
-        tags.push(data.color);
-    }
-
-    if (data.material) {
-        tags.push(data.material);
-    }
-
-    if (data.fabric) {
-        tags.push(data.fabric);
-    }
-
-    if (data.pattern) {
-        tags.push(data.pattern);
-    }
-
-    if (data.occasion) {
-        tags.push(data.occasion);
-    }
-
-    return [...new Set(
-        tags.filter(Boolean)
-    )];
-}
-
-
-// ==========================================================
-// SPECIFICATIONS
-// ==========================================================
-
-function generateSpecifications(data) {
-
-    const specifications = {};
-
-    const addSpecification = (name, value) => {
-
-        if (value) {
-
-            specifications[name] = value;
+            throw new Error(
+                errorText ||
+                `HTTP Error ${response.status}`
+            );
         }
-    };
 
 
-    addSpecification(
-        "Category",
-        data.category
-    );
-
-    addSpecification(
-        "Product Name",
-        data.name
-    );
-
-    addSpecification(
-        "Brand",
-        data.brand
-    );
-
-    addSpecification(
-        "Model",
-        data.model
-    );
-
-    addSpecification(
-        "Color",
-        data.color
-    );
-
-    addSpecification(
-        "Material",
-        data.material
-    );
-
-    addSpecification(
-        "Fabric",
-        data.fabric
-    );
-
-    addSpecification(
-        "Pattern",
-        data.pattern
-    );
-
-    addSpecification(
-        "Size",
-        data.size
-    );
-
-    addSpecification(
-        "Quantity",
-        data.quantity
-    );
-
-    addSpecification(
-        "Occasion / Use",
-        data.occasion
-    );
-
-    return specifications;
-}
+        const result =
+            await response.json();
 
 
-// ==========================================================
-// COMPLETE LISTING
-// ==========================================================
+        if (!result.success) {
 
-function generateCompleteListing(data) {
+            throw new Error(
+                result.message ||
+                "Backend listing generation failed."
+            );
+        }
 
-    return {
 
-        product: {
-            name: data.name,
-            category: data.category,
-            brand: data.brand,
-            price: data.price
-        },
+        displayListing(
+            result.listing
+        );
 
-        title: generateTitle(data),
 
-        description: generateDescription(data),
+        localStorage.setItem(
+            "latestCompleteListing",
+            JSON.stringify(
+                result.listing
+            )
+        );
 
-        highlights: generateHighlights(data),
 
-        seoKeywords: generateKeywords(data),
+        showMessage(
+            "✅ Complete Listing तैयार हो गई!",
+            "success"
+        );
 
-        tags: generateTags(data),
 
-        specifications: generateSpecifications(data),
+    } catch (error) {
 
-        generatedAt: new Date().toISOString()
-    };
+        console.error(
+            "Complete Listing Error:",
+            error
+        );
+
+
+        showMessage(
+            "❌ Backend/API से listing नहीं बन पाई: " +
+            error.message,
+            "error"
+        );
+
+
+    } finally {
+
+        button.disabled = false;
+
+        loading.style.display = "none";
+    }
 }
 
 
@@ -672,224 +379,90 @@ function generateCompleteListing(data) {
 
 function displayListing(listing) {
 
-    const titleElement = getElement(
-        "generatedTitle",
-        "titleOutput",
-        "resultTitle"
-    );
-
-    const descriptionElement = getElement(
-        "generatedDescription",
-        "descriptionOutput",
-        "resultDescription"
-    );
-
-    const highlightsElement = getElement(
-        "generatedHighlights",
-        "highlightsOutput",
-        "resultHighlights"
-    );
-
-    const keywordsElement = getElement(
-        "generatedKeywords",
-        "keywordsOutput",
-        "seoOutput",
-        "resultKeywords"
-    );
-
-    const tagsElement = getElement(
-        "generatedTags",
-        "tagsOutput",
-        "resultTags"
-    );
-
-    const specificationsElement = getElement(
-        "generatedSpecifications",
-        "specificationsOutput",
-        "resultSpecifications"
-    );
+    $("listingResult").style.display =
+        "block";
 
 
-    // TITLE
-    if (titleElement) {
-
-        titleElement.value !== undefined
-            ? titleElement.value = listing.title
-            : titleElement.textContent = listing.title;
-    }
+    $("generatedTitle").value =
+        listing.title || "";
 
 
-    // DESCRIPTION
-    if (descriptionElement) {
-
-        descriptionElement.value !== undefined
-            ? descriptionElement.value = listing.description
-            : descriptionElement.textContent = listing.description;
-    }
+    $("generatedDescription").value =
+        listing.description || "";
 
 
-    // HIGHLIGHTS
-    if (highlightsElement) {
-
-        const text = listing.highlights
-            .map(item => `• ${item}`)
-            .join("\n");
-
-        highlightsElement.value !== undefined
-            ? highlightsElement.value = text
-            : highlightsElement.textContent = text;
-    }
+    $("generatedHighlights").value =
+        formatArray(
+            listing.highlights
+        );
 
 
-    // KEYWORDS
-    if (keywordsElement) {
-
-        const text = listing.seoKeywords
-            .join(", ");
-
-        keywordsElement.value !== undefined
-            ? keywordsElement.value = text
-            : keywordsElement.textContent = text;
-    }
+    $("generatedKeywords").value =
+        formatArray(
+            listing.seoKeywords
+        );
 
 
-    // TAGS
-    if (tagsElement) {
-
-        const text = listing.tags
-            .join(", ");
-
-        tagsElement.value !== undefined
-            ? tagsElement.value = text
-            : tagsElement.textContent = text;
-    }
+    $("generatedTags").value =
+        formatArray(
+            listing.tags
+        );
 
 
-    // SPECIFICATIONS
-    if (specificationsElement) {
-
-        const text = Object.entries(
+    $("generatedSpecifications").value =
+        formatSpecifications(
             listing.specifications
-        )
+        );
+
+
+    $("listingResult")
+        .scrollIntoView({
+            behavior: "smooth"
+        });
+}
+
+
+// ==========================================================
+// ARRAY FORMAT
+// ==========================================================
+
+function formatArray(value) {
+
+    if (!Array.isArray(value)) {
+
+        return value || "";
+    }
+
+    return value
+        .map(item => `• ${item}`)
+        .join("\n");
+}
+
+
+// ==========================================================
+// SPECIFICATIONS FORMAT
+// ==========================================================
+
+function formatSpecifications(value) {
+
+    if (!value) {
+
+        return "";
+    }
+
+
+    if (typeof value === "string") {
+
+        return value;
+    }
+
+
+    return Object.entries(value)
         .map(
-            ([key, value]) =>
-                `${key}: ${value}`
+            ([key, val]) =>
+                `${key}: ${val}`
         )
         .join("\n");
-
-        specificationsElement.value !== undefined
-            ? specificationsElement.value = text
-            : specificationsElement.textContent = text;
-    }
-
-
-    // Full result container
-    const resultContainer = getElement(
-        "listingResult",
-        "generatedResult",
-        "result"
-    );
-
-    if (resultContainer) {
-
-        resultContainer.style.display = "block";
-    }
-}
-
-
-// ==========================================================
-// GENERATE BUTTON
-// ==========================================================
-
-function generateListing() {
-
-    try {
-
-        const data = collectProductData();
-
-        if (!validateProductData(data)) {
-            return;
-        }
-
-        const listing =
-            generateCompleteListing(data);
-
-        displayListing(listing);
-
-        // Save latest listing
-        localStorage.setItem(
-            "latestCompleteListing",
-            JSON.stringify(listing)
-        );
-
-        showMessage(
-            "✅ Complete product listing तैयार हो गई!",
-            "success"
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Listing Generator Error:",
-            error
-        );
-
-        showMessage(
-            "❌ Listing generate नहीं हो सकी।",
-            "error"
-        );
-    }
-}
-
-
-// ==========================================================
-// COPY TEXT
-// ==========================================================
-
-async function copyText(text) {
-
-    if (!text) {
-
-        showMessage(
-            "Copy करने के लिए कोई text नहीं है।",
-            "error"
-        );
-
-        return;
-    }
-
-    try {
-
-        await navigator.clipboard.writeText(text);
-
-        showMessage(
-            "✅ Text copy हो गया!",
-            "success"
-        );
-
-    } catch (error) {
-
-        // Fallback
-        const textarea =
-            document.createElement("textarea");
-
-        textarea.value = text;
-
-        document.body.appendChild(
-            textarea
-        );
-
-        textarea.select();
-
-        document.execCommand("copy");
-
-        textarea.remove();
-
-        showMessage(
-            "✅ Text copy हो गया!",
-            "success"
-        );
-    }
 }
 
 
@@ -897,144 +470,127 @@ async function copyText(text) {
 // COPY COMPLETE LISTING
 // ==========================================================
 
-function copyCompleteListing() {
+async function copyCompleteListing() {
 
-    const listing =
-        localStorage.getItem(
-            "latestCompleteListing"
+    const title =
+        $("generatedTitle").value;
+
+    const description =
+        $("generatedDescription").value;
+
+    const highlights =
+        $("generatedHighlights").value;
+
+    const keywords =
+        $("generatedKeywords").value;
+
+    const tags =
+        $("generatedTags").value;
+
+    const specifications =
+        $("generatedSpecifications").value;
+
+
+    const text =
+
+`AI SELLER TOOLKIT
+COMPLETE PRODUCT LISTING
+
+PRODUCT TITLE
+${title}
+
+DESCRIPTION
+${description}
+
+KEY HIGHLIGHTS
+${highlights}
+
+SEO KEYWORDS
+${keywords}
+
+SEARCH TAGS
+${tags}
+
+SPECIFICATIONS
+${specifications}
+`;
+
+
+    try {
+
+        await navigator.clipboard.writeText(
+            text
         );
-
-    if (!listing) {
 
         showMessage(
-            "पहले listing generate करें।",
-            "error"
+            "✅ Complete Listing copy हो गई!",
+            "success"
         );
 
-        return;
+    } catch (error) {
+
+        showMessage(
+            "❌ Copy नहीं हो सकी।",
+            "error"
+        );
     }
-
-    const data =
-        JSON.parse(listing);
-
-    let text = "";
-
-    text += "PRODUCT TITLE\n";
-    text += "====================\n";
-    text += data.title + "\n\n";
-
-    text += "DESCRIPTION\n";
-    text += "====================\n";
-    text += data.description + "\n\n";
-
-    text += "HIGHLIGHTS\n";
-    text += "====================\n";
-
-    data.highlights.forEach(item => {
-
-        text += "• " + item + "\n";
-    });
-
-    text += "\nSEO KEYWORDS\n";
-    text += "====================\n";
-    text += data.seoKeywords.join(", ");
-
-    text += "\n\nTAGS\n";
-    text += "====================\n";
-    text += data.tags.join(", ");
-
-    text += "\n\nSPECIFICATIONS\n";
-    text += "====================\n";
-
-    Object.entries(
-        data.specifications
-    ).forEach(([key, value]) => {
-
-        text += `${key}: ${value}\n`;
-    });
-
-
-    copyText(text);
 }
 
 
 // ==========================================================
-// DOWNLOAD LISTING
+// DOWNLOAD
 // ==========================================================
 
 function downloadListing() {
 
-    const stored =
-        localStorage.getItem(
-            "latestCompleteListing"
-        );
+    const text =
 
-    if (!stored) {
+`AI SELLER TOOLKIT
+COMPLETE PRODUCT LISTING
 
-        showMessage(
-            "पहले listing generate करें।",
-            "error"
-        );
+PRODUCT TITLE
+${$("generatedTitle").value}
 
-        return;
-    }
+DESCRIPTION
+${$("generatedDescription").value}
 
-    const data =
-        JSON.parse(stored);
+KEY HIGHLIGHTS
+${$("generatedHighlights").value}
 
-    let text = "";
+SEO KEYWORDS
+${$("generatedKeywords").value}
 
-    text += "AI SELLER TOOLKIT\n";
-    text += "COMPLETE PRODUCT LISTING\n";
-    text += "==============================\n\n";
+SEARCH TAGS
+${$("generatedTags").value}
 
-    text += "PRODUCT TITLE\n";
-    text += data.title + "\n\n";
-
-    text += "DESCRIPTION\n";
-    text += data.description + "\n\n";
-
-    text += "HIGHLIGHTS\n";
-
-    data.highlights.forEach(item => {
-
-        text += "• " + item + "\n";
-    });
-
-    text += "\nSEO KEYWORDS\n";
-    text += data.seoKeywords.join(", ");
-
-    text += "\n\nTAGS\n";
-    text += data.tags.join(", ");
-
-    text += "\n\nSPECIFICATIONS\n";
-
-    Object.entries(
-        data.specifications
-    ).forEach(([key, value]) => {
-
-        text += `${key}: ${value}\n`;
-    });
+SPECIFICATIONS
+${$("generatedSpecifications").value}
+`;
 
 
     const blob =
         new Blob(
             [text],
             {
-                type: "text/plain;charset=utf-8"
+                type:
+                    "text/plain;charset=utf-8"
             }
         );
+
 
     const url =
         URL.createObjectURL(blob);
 
+
     const link =
         document.createElement("a");
+
 
     link.href = url;
 
     link.download =
         "complete-product-listing.txt";
+
 
     document.body.appendChild(link);
 
@@ -1042,7 +598,9 @@ function downloadListing() {
 
     link.remove();
 
+
     URL.revokeObjectURL(url);
+
 
     showMessage(
         "✅ Listing download हो गई!",
@@ -1052,33 +610,22 @@ function downloadListing() {
 
 
 // ==========================================================
-// CLEAR FORM
+// CLEAR
 // ==========================================================
 
-function clearListingForm() {
+function clearListing() {
 
-    const inputs =
-        document.querySelectorAll(
-            "input, textarea, select"
-        );
+    document.querySelectorAll(
+        "input, textarea"
+    ).forEach(element => {
 
-    inputs.forEach(input => {
+        element.value = "";
 
-        input.value = "";
     });
 
 
-    const result =
-        getElement(
-            "listingResult",
-            "generatedResult",
-            "result"
-        );
-
-    if (result) {
-
-        result.style.display = "none";
-    }
+    $("listingResult")
+        .style.display = "none";
 
 
     localStorage.removeItem(
@@ -1094,218 +641,51 @@ function clearListingForm() {
 
 
 // ==========================================================
-// MESSAGE SYSTEM
-// ==========================================================
-
-function showMessage(
-    message,
-    type = "success"
-) {
-
-    let box =
-        document.getElementById(
-            "listingMessage"
-        );
-
-
-    if (!box) {
-
-        box =
-            document.createElement("div");
-
-        box.id =
-            "listingMessage";
-
-        box.style.position =
-            "fixed";
-
-        box.style.top =
-            "20px";
-
-        box.style.right =
-            "20px";
-
-        box.style.zIndex =
-            "99999";
-
-        box.style.padding =
-            "12px 18px";
-
-        box.style.borderRadius =
-            "8px";
-
-        box.style.fontSize =
-            "15px";
-
-        box.style.fontWeight =
-            "600";
-
-        box.style.maxWidth =
-            "320px";
-
-        box.style.boxShadow =
-            "0 4px 15px rgba(0,0,0,0.15)";
-
-        document.body.appendChild(box);
-    }
-
-
-    box.textContent =
-        message;
-
-
-    if (type === "error") {
-
-        box.style.background =
-            "#ffe5e5";
-
-        box.style.color =
-            "#b00020";
-
-    } else {
-
-        box.style.background =
-            "#e5ffe9";
-
-        box.style.color =
-            "#087a20";
-    }
-
-
-    clearTimeout(
-        window.listingMessageTimer
-    );
-
-
-    window.listingMessageTimer =
-        setTimeout(() => {
-
-            box.remove();
-
-        }, 3000);
-}
-
-
-// ==========================================================
-// AUTO CONNECT GENERATE BUTTON
-// ==========================================================
-
-function setupGeneratorButton() {
-
-    const button =
-        getElement(
-            "generateListingBtn",
-            "generateButton",
-            "generateBtn",
-            "generate-listing"
-        );
-
-
-    if (button) {
-
-        button.addEventListener(
-            "click",
-            generateListing
-        );
-    }
-}
-
-
-// ==========================================================
-// AUTO CONNECT COPY BUTTON
-// ==========================================================
-
-function setupCopyButton() {
-
-    const button =
-        getElement(
-            "copyListingBtn",
-            "copyCompleteListing",
-            "copyBtn"
-        );
-
-
-    if (button) {
-
-        button.addEventListener(
-            "click",
-            copyCompleteListing
-        );
-    }
-}
-
-
-// ==========================================================
-// AUTO CONNECT DOWNLOAD BUTTON
-// ==========================================================
-
-function setupDownloadButton() {
-
-    const button =
-        getElement(
-            "downloadListingBtn",
-            "downloadBtn"
-        );
-
-
-    if (button) {
-
-        button.addEventListener(
-            "click",
-            downloadListing
-        );
-    }
-}
-
-
-// ==========================================================
-// AUTO CONNECT CLEAR BUTTON
-// ==========================================================
-
-function setupClearButton() {
-
-    const button =
-        getElement(
-            "clearListingBtn",
-            "clearBtn"
-        );
-
-
-    if (button) {
-
-        button.addEventListener(
-            "click",
-            clearListingForm
-        );
-    }
-}
-
-
-// ==========================================================
-// PAGE LOAD
+// BUTTON EVENTS
 // ==========================================================
 
 document.addEventListener(
     "DOMContentLoaded",
     () => {
 
-        setupGeneratorButton();
+        $("generateListingBtn")
+            .addEventListener(
+                "click",
+                generateListing
+            );
 
-        setupCopyButton();
 
-        setupDownloadButton();
+        $("copyListingBtn")
+            .addEventListener(
+                "click",
+                copyCompleteListing
+            );
 
-        setupClearButton();
+
+        $("downloadListingBtn")
+            .addEventListener(
+                "click",
+                downloadListing
+            );
+
+
+        $("clearListingBtn")
+            .addEventListener(
+                "click",
+                clearListing
+            );
+
 
         console.log(
-            "✅ Complete Listing Generator loaded successfully."
+            "✅ Complete Listing Generator loaded."
         );
+
     }
 );
 
 
 // ==========================================================
-// GLOBAL FUNCTIONS
+// GLOBAL
 // ==========================================================
 
 window.generateListing =
@@ -1317,16 +697,5 @@ window.copyCompleteListing =
 window.downloadListing =
     downloadListing;
 
-window.clearListingForm =
-    clearListingForm;
-
-window.generateCompleteListing =
-    generateCompleteListing;
-
-window.collectProductData =
-    collectProductData;
-
-
-// ==========================================================
-// END
-// ==========================================================
+window.clearListing =
+    clearListing;
