@@ -4,204 +4,658 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
 <title>AI Complete Product Listing Generator</title>
 
 <link rel="stylesheet" href="style.css">
 
+<style>
+
+.listing-container {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 15px;
+}
+
+.form-card,
+.result-card,
+.info-card {
+    background: #ffffff;
+    padding: 25px;
+    margin-bottom: 25px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+label {
+    display: block;
+    margin-bottom: 7px;
+    font-weight: bold;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #2563eb;
+}
+
+textarea {
+    resize: vertical;
+}
+
+.generate-btn,
+.copy-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 15px;
+}
+
+.generate-btn {
+    background: #2563eb;
+    color: white;
+}
+
+.generate-btn:hover {
+    background: #1d4ed8;
+}
+
+.generate-btn:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
+.copy-btn {
+    background: #16a34a;
+    color: white;
+}
+
+.copy-btn:hover {
+    background: #15803d;
+}
+
+#status {
+    text-align: center;
+    margin-top: 12px;
+    min-height: 22px;
+    font-weight: bold;
+}
+
+#result {
+    width: 100%;
+    min-height: 600px;
+    padding: 15px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    font-size: 15px;
+    line-height: 1.6;
+    resize: vertical;
+}
+
+.category-help {
+    margin-top: 7px;
+    color: #666;
+    font-size: 13px;
+}
+
+.category-badge {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 13px;
+}
+
+.info-card {
+    background: #f8fafc;
+}
+
+.info-card h3 {
+    margin-bottom: 12px;
+}
+
+.info-card p {
+    margin: 8px 0;
+}
+
+@media (max-width: 700px) {
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .full-width {
+        grid-column: auto;
+    }
+
+    .form-card,
+    .result-card,
+    .info-card {
+        padding: 18px;
+    }
+
+}
+
+</style>
+
 </head>
+
 
 <body>
 
+
 <header>
 
-<h1>🚀 AI Complete Product Listing Generator</h1>
+    <h1>🚀 AI Complete Product Listing Generator</h1>
 
-<a href="tools.html">⬅ Back to Tools</a>
+    <a href="tools.html">
+        ⬅ Back to Tools
+    </a>
 
 </header>
 
 
 <section class="hero">
 
-<h2>🚀 Complete Product Listing Generator</h2>
+    <h2>🚀 Complete Product Listing Generator</h2>
 
-<p>Create SEO Title, Description, Bullet Points, Features, Keywords, Hashtags and Tags</p>
+    <p>
+        Create SEO Title, Description, Bullet Points,
+        Features, Keywords, Hashtags and Product Tags
+        for different product categories.
+    </p>
 
 </section>
 
 
-<section class="tools">
+<main class="listing-container">
 
-<div class="card">
 
-<h2>📦 Product Information</h2>
+<!-- =========================================
+     PRODUCT INFORMATION
+========================================= -->
 
+<section class="form-card">
 
-<label>Product Name</label>
+    <h2>📦 Product Information</h2>
 
-<input
-type="text"
-id="product"
-placeholder="Example: Cotton T-Shirt"
->
+    <br>
 
 
-<label>Brand Name</label>
+    <div class="form-grid">
 
-<input
-type="text"
-id="brand"
-placeholder="Example: Fashion Hud"
->
 
+        <!-- PRODUCT NAME -->
 
-<label>Category</label>
+        <div>
 
-<input
-type="text"
-id="category"
-placeholder="Example: Men's Clothing"
->
+            <label for="product">
+                Product Name *
+            </label>
 
+            <input
+                type="text"
+                id="product"
+                placeholder="Example: Cotton T-Shirt"
+                autocomplete="off"
+            >
 
-<label>Material</label>
+        </div>
 
-<input
-type="text"
-id="material"
-placeholder="Example: 100% Cotton"
->
 
+        <!-- BRAND -->
 
-<label>Target Audience</label>
+        <div>
 
-<input
-type="text"
-id="audience"
-placeholder="Example: Men"
->
+            <label for="brand">
+                Brand Name
+            </label>
 
+            <input
+                type="text"
+                id="brand"
+                placeholder="Example: Fashion Hud"
+                autocomplete="off"
+            >
 
-<label>Color</label>
+        </div>
 
-<input
-type="text"
-id="color"
-placeholder="Example: Black"
->
 
+        <!-- CATEGORY -->
 
-<label>Extra Features</label>
+        <div>
 
-<textarea
-id="features"
-rows="4"
-placeholder="Example: Round neck, short sleeves">
-</textarea>
+            <label for="category">
+                Product Category *
+            </label>
 
+            <select id="category">
 
-<label>Marketplace</label>
+                <option value="">
+                    Select Product Category
+                </option>
 
-<select id="marketplace">
+                <option value="Fashion & Clothing">
+                    👗 Fashion & Clothing
+                </option>
 
-<option value="Amazon">Amazon</option>
+                <option value="Beauty & Cosmetics">
+                    💄 Beauty & Cosmetics
+                </option>
 
-<option value="Flipkart">Flipkart</option>
+                <option value="Electronics">
+                    📱 Electronics
+                </option>
 
-<option value="Meesho">Meesho</option>
+                <option value="Home & Kitchen">
+                    🏠 Home & Kitchen
+                </option>
 
-<option value="Shopify">Shopify</option>
+                <option value="Shoes & Footwear">
+                    👟 Shoes & Footwear
+                </option>
 
-<option value="Etsy">Etsy</option>
+                <option value="Jewellery">
+                    💍 Jewellery
+                </option>
 
-<option value="All Marketplaces">
-All Marketplaces
-</option>
+                <option value="Toys & Kids">
+                    🧸 Toys & Kids
+                </option>
 
-</select>
+                <option value="Books & Stationery">
+                    📚 Books & Stationery
+                </option>
 
+                <option value="Pet Products">
+                    🐶 Pet Products
+                </option>
 
-<button
-type="button"
-id="generateBtn"
-onclick="generateListing()"
->
+                <option value="Sports & Fitness">
+                    🏋️ Sports & Fitness
+                </option>
 
-🚀 Generate Complete Listing
+                <option value="Automotive">
+                    🚗 Automotive
+                </option>
 
-</button>
+                <option value="Garden & Outdoor">
+                    🌱 Garden & Outdoor
+                </option>
 
+                <option value="Food & Grocery">
+                    🍎 Food & Grocery
+                </option>
 
-<p
-id="status"
-style="text-align:center;margin-top:10px;"
->
-</p>
+                <option value="Gifts & Handmade">
+                    🎁 Gifts & Handmade
+                </option>
 
-</div>
+                <option value="Other">
+                    📦 Other
+                </option>
 
+            </select>
 
-<div class="card">
+            <div
+                id="categoryHelp"
+                class="category-help"
+            >
+                Product की सही category चुनें।
+            </div>
 
-<h2>📋 Complete Product Listing</h2>
+        </div>
 
 
-<textarea
-id="result"
-rows="35"
-style="width:100%;"
-readonly
-placeholder="Your complete product listing will appear here..."
-></textarea>
+        <!-- MARKETPLACE -->
 
+        <div>
 
-<button
-type="button"
-onclick="copyListing()"
->
+            <label for="marketplace">
+                Marketplace *
+            </label>
 
-📋 Copy Complete Listing
+            <select id="marketplace">
 
-</button>
+                <option value="Amazon">
+                    Amazon
+                </option>
 
+                <option value="Flipkart">
+                    Flipkart
+                </option>
 
-</div>
+                <option value="Meesho">
+                    Meesho
+                </option>
 
+                <option value="Shopify">
+                    Shopify
+                </option>
 
-<div class="card">
+                <option value="Etsy">
+                    Etsy
+                </option>
 
-<h3>🛡️ Strict AI Filtering</h3>
+                <option value="All Marketplaces">
+                    All Marketplaces
+                </option>
 
-<p>
-AI केवल आपके द्वारा दी गई Product Name, Brand, Category,
-Material, Audience, Color और Features की जानकारी का उपयोग करेगा।
-</p>
+            </select>
 
-<p>❌ Fake claims नहीं</p>
+        </div>
 
-<p>❌ दूसरा brand नहीं</p>
 
-<p>❌ Fake price नहीं</p>
+        <!-- MATERIAL -->
 
-<p>❌ Fake discount या offer नहीं</p>
+        <div>
 
-<p>❌ Manufacturer का दावा नहीं</p>
+            <label for="material">
+                Material / Main Specification
+            </label>
 
-<p>❌ Premium / Best / Amazing जैसे unsupported claims नहीं</p>
+            <input
+                type="text"
+                id="material"
+                placeholder="Example: 100% Cotton / ABS / Stainless Steel"
+            >
 
-<p>❌ Features या specifications invent नहीं होंगे</p>
+        </div>
 
-<p>✅ केवल दी गई जानकारी का उपयोग होगा</p>
 
-</div>
+        <!-- TARGET AUDIENCE -->
+
+        <div>
+
+            <label for="audience">
+                Target Audience
+            </label>
+
+            <input
+                type="text"
+                id="audience"
+                placeholder="Example: Men / Women / Kids"
+            >
+
+        </div>
+
+
+        <!-- COLOR -->
+
+        <div>
+
+            <label for="color">
+                Color
+            </label>
+
+            <input
+                type="text"
+                id="color"
+                placeholder="Example: Black"
+            >
+
+        </div>
+
+
+        <!-- EXTRA FEATURES -->
+
+        <div class="full-width">
+
+            <label for="features">
+                Product Features / Specifications
+            </label>
+
+            <textarea
+                id="features"
+                rows="5"
+                placeholder="Example:
+Round neck
+Short sleeves
+Machine washable
+Front pocket"
+            ></textarea>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- CATEGORY BADGE -->
+
+    <div
+        id="categoryBadge"
+        class="category-badge"
+        style="display:none;"
+    >
+        Category selected
+    </div>
+
+
+    <!-- GENERATE BUTTON -->
+
+    <button
+        type="button"
+        id="generateBtn"
+        class="generate-btn"
+        onclick="generateListing()"
+    >
+
+        🚀 Generate Complete Listing
+
+    </button>
+
+
+    <p id="status"></p>
+
 
 </section>
+
+
+
+<!-- =========================================
+     RESULT
+========================================= -->
+
+<section class="result-card">
+
+    <h2>📋 Complete Product Listing</h2>
+
+    <p style="margin:10px 0 15px;color:#666;">
+
+        AI आपके द्वारा दी गई product information
+        के आधार पर listing तैयार करेगा।
+
+    </p>
+
+
+    <textarea
+        id="result"
+        readonly
+        placeholder="Your complete product listing will appear here..."
+    ></textarea>
+
+
+    <button
+        type="button"
+        class="copy-btn"
+        onclick="copyListing()"
+    >
+
+        📋 Copy Complete Listing
+
+    </button>
+
+</section>
+
+
+
+<!-- =========================================
+     STRICT AI INFORMATION
+========================================= -->
+
+<section class="info-card">
+
+    <h3>🛡️ Strict AI Product Information Rules</h3>
+
+    <p>
+        ✅ AI केवल आपके द्वारा दी गई जानकारी का उपयोग करेगा।
+    </p>
+
+    <p>
+        ❌ Fake product claims नहीं बनाए जाएंगे।
+    </p>
+
+    <p>
+        ❌ Fake price या discount नहीं बनाया जाएगा।
+    </p>
+
+    <p>
+        ❌ Fake specifications नहीं बनाई जाएंगी।
+    </p>
+
+    <p>
+        ❌ Fake warranty या certification नहीं जोड़ी जाएगी।
+    </p>
+
+    <p>
+        ❌ Brand को manufacturer नहीं बताया जाएगा।
+    </p>
+
+    <p>
+        ❌ Marketplace को product feature नहीं बनाया जाएगा।
+    </p>
+
+    <p>
+        ✅ Selected category को listing तैयार करते समय ध्यान में रखा जाएगा।
+    </p>
+
+</section>
+
+
+
+<!-- =========================================
+     SUPPORTED CATEGORIES
+========================================= -->
+
+<section class="info-card">
+
+    <h3>🛍️ Supported Product Categories</h3>
+
+    <p>👗 Fashion & Clothing</p>
+    <p>💄 Beauty & Cosmetics</p>
+    <p>📱 Electronics</p>
+    <p>🏠 Home & Kitchen</p>
+    <p>👟 Shoes & Footwear</p>
+    <p>💍 Jewellery</p>
+    <p>🧸 Toys & Kids</p>
+    <p>📚 Books & Stationery</p>
+    <p>🐶 Pet Products</p>
+    <p>🏋️ Sports & Fitness</p>
+    <p>🚗 Automotive</p>
+    <p>🌱 Garden & Outdoor</p>
+    <p>🍎 Food & Grocery</p>
+    <p>🎁 Gifts & Handmade</p>
+    <p>📦 Other</p>
+
+</section>
+
+
+</main>
+
+
+<!-- =========================================
+     JAVASCRIPT
+========================================= -->
+
+<script>
+
+const categorySelect =
+    document.getElementById("category");
+
+const categoryBadge =
+    document.getElementById("categoryBadge");
+
+const categoryHelp =
+    document.getElementById("categoryHelp");
+
+
+categorySelect.addEventListener(
+    "change",
+    function () {
+
+        const category =
+            this.value.trim();
+
+
+        if (!category) {
+
+            categoryBadge.style.display =
+                "none";
+
+            categoryHelp.innerText =
+                "Product की सही category चुनें।";
+
+            return;
+
+        }
+
+
+        categoryBadge.style.display =
+            "inline-block";
+
+        categoryBadge.innerText =
+            "✅ Selected Category: " +
+            category;
+
+
+        categoryHelp.innerText =
+            "AI listing बनाते समय " +
+            category +
+            " category को ध्यान में रखेगा।";
+
+    }
+);
+
+</script>
 
 
 <script src="complete-listing-generator.js"></script>
+
 <script src="no-popup.js"></script>
+
 
 </body>
 
