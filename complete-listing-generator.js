@@ -1,780 +1,492 @@
-"use strict";
+// ==========================================================
+// AI SELLER TOOLKIT
+// COMPLETE LISTING GENERATOR
+// CATEGORY-AWARE VERSION 2
+// FRONTEND -> RENDER BACKEND -> GEMINI
+// ==========================================================
 
-/*
-==========================================================
- AI SELLER TOOLKIT
- COMPLETE LISTING GENERATOR
- VERSION 2
 
- Backend:
- https://ai-seller-toolkit-backend-1.onrender.com
+// ==========================================================
+// BACKEND URL
+// ==========================================================
 
- Features:
- - 14 Categories
- - Strict Factual Listing
- - Backend AI Generation
- - Category-specific fields
- - Title
- - Description
- - Highlights
- - SEO Keywords
- - Search Tags
- - Specifications
- - Copy
- - Download
- - LocalStorage
-==========================================================
-*/
+const API_URL =
+    "https://ai-seller-toolkit-backend-1.onrender.com/generate";
 
 
-/* =========================================================
-   1. BACKEND CONFIG
-========================================================= */
+// ==========================================================
+// DOM ELEMENTS
+// ==========================================================
 
-const BACKEND_URL =
-    "https://ai-seller-toolkit-backend-1.onrender.com";
+const generateButton =
+    document.getElementById("generateListingBtn");
 
-const API_ENDPOINT =
-    `${BACKEND_URL}/api/generate-listing`;
+const categorySelect =
+    document.getElementById("category");
 
+const resultCard =
+    document.getElementById("resultCard");
 
-/* =========================================================
-   2. CATEGORY CONFIGURATION
-========================================================= */
+const listingResult =
+    document.getElementById("listingResult");
 
-const CATEGORY_CONFIG = {
+const statusMessage =
+    document.getElementById("statusMessage");
 
-    "Fashion": {
 
-        emoji: "👗",
+// ==========================================================
+// CHECK HTML ELEMENTS
+// ==========================================================
 
-        fields: [
-            "Product Type",
-            "Fabric / Material",
-            "Color",
-            "Size",
-            "Pattern",
-            "Fit",
-            "Occasion"
-        ],
+if (!generateButton) {
 
-        rules: `
-Do not assume gender, age group, fit,
-fabric type, pattern or occasion unless
-the seller explicitly provides it.
-`
-    },
-
-
-    "Beauty": {
-
-        emoji: "💄",
-
-        fields: [
-            "Product Type",
-            "Brand",
-            "Variant",
-            "Quantity",
-            "Ingredients",
-            "Skin / Hair Type",
-            "Fragrance"
-        ],
-
-        rules: `
-Do not make medical, therapeutic,
-dermatological or guaranteed-result claims.
-Do not invent ingredients.
-`
-    },
-
-
-    "Electronics": {
-
-        emoji: "📱",
-
-        fields: [
-            "Product Type",
-            "Brand",
-            "Model",
-            "Color",
-            "Storage / Capacity",
-            "Connectivity",
-            "Compatibility",
-            "Power"
-        ],
-
-        rules: `
-Do not invent specifications,
-battery capacity, warranty,
-connectivity or compatibility.
-`
-    },
-
-
-    "Home & Kitchen": {
-
-        emoji: "🏠",
-
-        fields: [
-            "Product Type",
-            "Material",
-            "Color",
-            "Size / Dimensions",
-            "Capacity",
-            "Quantity",
-            "Usage"
-        ],
-
-        rules: `
-Do not invent dimensions, capacity,
-material or product usage.
-`
-    },
-
-
-    "Shoes": {
-
-        emoji: "👟",
-
-        fields: [
-            "Product Type",
-            "Brand",
-            "Material",
-            "Color",
-            "Size",
-            "Sole",
-            "Closure",
-            "Occasion"
-        ],
-
-        rules: `
-Do not assume men's, women's or kids'
-unless explicitly provided.
-Do not invent sole or material.
-`
-    },
-
-
-    "Jewellery": {
-
-        emoji: "💍",
-
-        fields: [
-            "Product Type",
-            "Material",
-            "Color",
-            "Design",
-            "Size",
-            "Occasion",
-            "Stone / Gem"
-        ],
-
-        rules: `
-Do not claim gold, silver,
-diamond, purity or precious-metal
-content unless explicitly provided.
-`
-    },
-
-
-    "Toys": {
-
-        emoji: "🧸",
-
-        fields: [
-            "Product Type",
-            "Brand",
-            "Material",
-            "Color",
-            "Size",
-            "Age Group",
-            "Quantity"
-        ],
-
-        rules: `
-Do not invent recommended age,
-safety certification or educational claims.
-`
-    },
-
-
-    "Books": {
-
-        emoji: "📚",
-
-        fields: [
-            "Title",
-            "Author",
-            "Language",
-            "Format",
-            "Pages",
-            "Publisher",
-            "Edition",
-            "ISBN"
-        ],
-
-        rules: `
-Do not invent author, publisher,
-ISBN, edition or page count.
-`
-    },
-
-
-    "Pet": {
-
-        emoji: "🐶",
-
-        fields: [
-            "Product Type",
-            "Pet Type",
-            "Brand",
-            "Material",
-            "Size",
-            "Quantity",
-            "Ingredients"
-        ],
-
-        rules: `
-Do not make veterinary,
-medical or health claims.
-Do not invent ingredients.
-`
-    },
-
-
-    "Sports": {
-
-        emoji: "🏋️",
-
-        fields: [
-            "Product Type",
-            "Brand",
-            "Material",
-            "Color",
-            "Size",
-            "Weight",
-            "Sport / Activity"
-        ],
-
-        rules: `
-Do not invent weight, dimensions,
-material or performance claims.
-`
-    },
-
-
-    "Automotive": {
-
-        emoji: "🚗",
-
-        fields: [
-            "Product Type",
-            "Brand",
-            "Model",
-            "Vehicle Compatibility",
-            "Material",
-            "Color",
-            "Size",
-            "Quantity"
-        ],
-
-        rules: `
-Do not claim vehicle compatibility
-unless explicitly provided.
-Do not invent OEM or certification claims.
-`
-    },
-
-
-    "Garden": {
-
-        emoji: "🌱",
-
-        fields: [
-            "Product Type",
-            "Brand",
-            "Material",
-            "Size",
-            "Quantity",
-            "Plant Compatibility",
-            "Usage"
-        ],
-
-        rules: `
-Do not invent plant compatibility,
-chemical composition or guaranteed
-growth claims.
-`
-    },
-
-
-    "Food": {
-
-        emoji: "🍎",
-
-        fields: [
-            "Product Type",
-            "Brand",
-            "Flavour",
-            "Quantity",
-            "Ingredients",
-            "Pack Type",
-            "Dietary Information",
-            "Expiry / Shelf Life"
-        ],
-
-        rules: `
-Do not invent ingredients,
-nutrition information, expiry,
-dietary claims or health benefits.
-`
-    },
-
-
-    "Gifts": {
-
-        emoji: "🎁",
-
-        fields: [
-            "Product Type",
-            "Material",
-            "Color",
-            "Design",
-            "Quantity",
-            "Occasion",
-            "Recipient",
-            "Packaging"
-        ],
-
-        rules: `
-Do not assume recipient, occasion,
-material or packaging unless provided.
-`
-    }
-
-};
-
-
-/* =========================================================
-   3. SAFE ELEMENT FUNCTION
-========================================================= */
-
-function getElement(id) {
-
-    return document.getElementById(id);
+    console.error(
+        "❌ Generate button not found: #generateListingBtn"
+    );
 
 }
 
 
-/* =========================================================
-   4. SAFE VALUE FUNCTION
-========================================================= */
+// ==========================================================
+// BASIC VALUE HELPER
+// ==========================================================
 
 function getValue(id) {
 
     const element =
-        getElement(id);
+        document.getElementById(id);
 
     if (!element) {
-
         return "";
-
     }
 
-    return String(
-        element.value || ""
-    ).trim();
+    return element.value.trim();
 
 }
 
 
-/* =========================================================
-   5. MESSAGE
-========================================================= */
+// ==========================================================
+// GET VISIBLE CATEGORY FIELDS
+// ==========================================================
 
-function showMessage(
-    message,
-    type = "success"
-) {
+function getCategoryData() {
 
-    let box =
-        getElement("message");
+    const data = {};
 
-
-    if (!box) {
-
-        box =
-            document.createElement("div");
-
-        box.id =
-            "message";
-
-        box.style.position =
-            "fixed";
-
-        box.style.top =
-            "20px";
-
-        box.style.right =
-            "20px";
-
-        box.style.zIndex =
-            "999999";
-
-        box.style.maxWidth =
-            "350px";
-
-        box.style.padding =
-            "14px 18px";
-
-        box.style.borderRadius =
-            "10px";
-
-        box.style.fontWeight =
-            "600";
-
-        box.style.boxShadow =
-            "0 5px 20px rgba(0,0,0,0.15)";
-
-        document.body.appendChild(
-            box
+    const visibleSections =
+        document.querySelectorAll(
+            ".dynamic-field:not(.hidden-field)"
         );
+
+
+    visibleSections.forEach(section => {
+
+        const fields =
+            section.querySelectorAll(
+                "input, textarea, select"
+            );
+
+
+        fields.forEach(field => {
+
+            const name =
+                field.getAttribute("name");
+
+            if (!name) {
+                return;
+            }
+
+
+            const value =
+                field.value.trim();
+
+
+            if (!value) {
+                return;
+            }
+
+
+            data[name] = value;
+
+        });
+
+    });
+
+
+    return data;
+
+}
+
+
+// ==========================================================
+// ESCAPE / CLEAN TEXT
+// ==========================================================
+
+function cleanText(value) {
+
+    if (!value) {
+        return "";
+    }
+
+    return String(value)
+        .replace(/\s+/g, " ")
+        .trim();
+
+}
+
+
+// ==========================================================
+// BUILD PRODUCT DATA
+// ==========================================================
+
+function collectProductData() {
+
+
+    const category =
+        cleanText(
+            getValue("category")
+        );
+
+
+    const productName =
+        cleanText(
+            getValue("productName")
+        );
+
+
+    const brand =
+        cleanText(
+            getValue("brand")
+        );
+
+
+    const price =
+        cleanText(
+            getValue("price")
+        );
+
+
+    const productFeatures =
+        cleanText(
+            getValue("productFeatures")
+        );
+
+
+    const extraInfo =
+        cleanText(
+            getValue("extraInfo")
+        );
+
+
+    const categoryData =
+        getCategoryData();
+
+
+    return {
+
+        category,
+
+        productName,
+
+        brand,
+
+        price,
+
+        categoryData,
+
+        productFeatures,
+
+        extraInfo
+
+    };
+
+}
+
+
+// ==========================================================
+// VALIDATE PRODUCT
+// ==========================================================
+
+function validateProduct(product) {
+
+
+    if (!product.category) {
+
+        return "Please select a product category.";
 
     }
 
 
-    box.textContent =
+    if (!product.productName) {
+
+        return "Please enter the Product Name.";
+
+    }
+
+
+    return null;
+
+}
+
+
+// ==========================================================
+// CREATE AI PROMPT
+// ==========================================================
+
+function createPrompt(product) {
+
+
+    const categoryDataText =
+        Object.entries(
+            product.categoryData
+        )
+        .map(
+            ([key, value]) =>
+                `${key}: ${value}`
+        )
+        .join("\n");
+
+
+    const prompt = `
+
+You are the AI Product Listing Generator
+for AI Seller Toolkit.
+
+Create a professional marketplace-ready
+product listing.
+
+IMPORTANT RULES:
+
+1. Use ONLY information supplied by the seller.
+2. DO NOT invent product specifications.
+3. DO NOT add unsupported features.
+4. DO NOT invent warranty.
+5. DO NOT invent battery capacity.
+6. DO NOT invent certifications.
+7. DO NOT invent ingredients.
+8. DO NOT invent dimensions.
+9. DO NOT invent material.
+10. DO NOT invent benefits.
+11. DO NOT invent compatibility.
+12. DO NOT invent delivery information.
+13. If a field is missing, simply do not include it.
+14. Do not write "unknown" unless necessary.
+15. Keep the listing factual.
+16. Category must affect the listing.
+17. Use the exact product information provided.
+
+CATEGORY:
+
+${product.category}
+
+
+PRODUCT NAME:
+
+${product.productName}
+
+
+BRAND:
+
+${product.brand || "Not provided"}
+
+
+PRICE:
+
+${product.price || "Not provided"}
+
+
+CATEGORY-SPECIFIC INFORMATION:
+
+${categoryDataText || "No additional category information provided."}
+
+
+PRODUCT FEATURES:
+
+${product.productFeatures || "No additional features provided."}
+
+
+EXTRA PRODUCT INFORMATION:
+
+${product.extraInfo || "None provided."}
+
+
+GENERATE THE LISTING IN THIS EXACT STRUCTURE:
+
+AI SELLER TOOLKIT
+COMPLETE PRODUCT LISTING
+==============================
+
+PRODUCT TITLE
+
+Create a clear marketplace-friendly title
+using only supplied information.
+
+
+DESCRIPTION
+
+Write a factual product description.
+
+
+KEY HIGHLIGHTS
+
+Use 4-7 bullet points based only on
+provided information.
+
+
+SEO KEYWORDS
+
+Provide 5-8 relevant search keywords.
+
+Do not add unsupported claims.
+
+
+SEARCH TAGS
+
+Provide 5-8 short relevant tags.
+
+
+SPECIFICATIONS
+
+Show only specifications that were
+actually provided by the seller.
+
+Do NOT create missing specifications.
+
+
+==============================
+
+Generated by AI Seller Toolkit
+
+`;
+
+
+    return prompt.trim();
+
+}
+
+
+// ==========================================================
+// SET STATUS
+// ==========================================================
+
+function setStatus(
+    message,
+    type = "normal"
+) {
+
+
+    if (!statusMessage) {
+        return;
+    }
+
+
+    statusMessage.textContent =
         message;
 
 
     if (type === "error") {
 
-        box.style.background =
-            "#fee2e2";
+        statusMessage.style.color =
+            "#dc2626";
 
-        box.style.color =
-            "#991b1b";
+    }
+    else if (type === "success") {
 
-    } else {
+        statusMessage.style.color =
+            "#15803d";
 
-        box.style.background =
-            "#dcfce7";
+    }
+    else {
 
-        box.style.color =
-            "#166534";
+        statusMessage.style.color =
+            "#374151";
 
     }
 
-
-    box.style.display =
-        "block";
-
-
-    clearTimeout(
-        window.listingMessageTimer
-    );
-
-
-    window.listingMessageTimer =
-        setTimeout(
-            () => {
-
-                box.style.display =
-                    "none";
-
-            },
-            5000
-        );
-
 }
 
 
-/* =========================================================
-   6. COLLECT COMMON PRODUCT DATA
-========================================================= */
-
-function collectProductData() {
-
-    return {
-
-        category:
-            getValue("category"),
-
-        productName:
-            getValue("productName"),
-
-        brand:
-            getValue("brand"),
-
-        price:
-            getValue("price"),
-
-        color:
-            getValue("color"),
-
-        material:
-            getValue("material"),
-
-        size:
-            getValue("size"),
-
-        model:
-            getValue("model"),
-
-        quantity:
-            getValue("quantity"),
-
-        features:
-            getValue("features"),
-
-        description:
-            getValue("description")
-
-    };
-
-}
-
-
-/* =========================================================
-   7. OPTIONAL CATEGORY-SPECIFIC FIELDS
-========================================================= */
-
-function collectExtraFields() {
-
-    const extra = {};
-
-
-    const possibleFields = [
-
-        "productType",
-        "fabric",
-        "pattern",
-        "fit",
-        "occasion",
-        "variant",
-        "ingredients",
-        "skinType",
-        "hairType",
-        "fragrance",
-        "storage",
-        "capacity",
-        "connectivity",
-        "compatibility",
-        "power",
-        "sole",
-        "closure",
-        "design",
-        "stone",
-        "ageGroup",
-        "author",
-        "language",
-        "format",
-        "pages",
-        "publisher",
-        "edition",
-        "isbn",
-        "petType",
-        "weight",
-        "activity",
-        "vehicleCompatibility",
-        "plantCompatibility",
-        "flavour",
-        "packType",
-        "dietaryInformation",
-        "expiry",
-        "recipient",
-        "packaging"
-
-    ];
-
-
-    possibleFields.forEach(
-        field => {
-
-            const value =
-                getValue(field);
-
-            if (value) {
-
-                extra[field] =
-                    value;
-
-            }
-
-        }
-    );
-
-
-    return extra;
-
-}
-
-
-/* =========================================================
-   8. COMPLETE PRODUCT DATA
-========================================================= */
-
-function collectCompleteProductData() {
-
-    return {
-
-        ...collectProductData(),
-
-        extra:
-            collectExtraFields()
-
-    };
-
-}
-
-
-/* =========================================================
-   9. VALIDATION
-========================================================= */
-
-function validateProduct(product) {
-
-    if (!product.productName) {
-
-        showMessage(
-            "❌ Product Name भरना जरूरी है।",
-            "error"
-        );
-
-        const input =
-            getElement("productName");
-
-        if (input) {
-
-            input.focus();
-
-        }
-
-        return false;
-
-    }
-
-
-    if (!product.category) {
-
-        showMessage(
-            "❌ Category चुनें।",
-            "error"
-        );
-
-        return false;
-
-    }
-
-
-    return true;
-
-}
-
-
-/* =========================================================
-   10. BUILD STRICT CATEGORY RULE
-========================================================= */
-
-function buildCategoryInstruction(
-    category
-) {
-
-    const config =
-        CATEGORY_CONFIG[category];
-
-
-    if (!config) {
-
-        return `
-Use only seller-provided information.
-Do not invent specifications.
-`;
-
-    }
-
-
-    return `
-
-CATEGORY:
-${config.emoji} ${category}
-
-CATEGORY FIELDS:
-${config.fields.join(", ")}
-
-CATEGORY SAFETY RULES:
-${config.rules}
-
-IMPORTANT:
-Category knowledge may help organize
-the listing, but it MUST NOT be used
-to invent missing product facts.
-
-`;
-
-}
-
-
-/* =========================================================
-   11. GENERATE LISTING
-========================================================= */
+// ==========================================================
+// GENERATE LISTING
+// ==========================================================
 
 async function generateListing() {
 
-    const button =
-        getElement(
-            "generateListingBtn"
-        );
 
-    const loading =
-        getElement("loading");
+    console.log(
+        "🚀 Generate Listing button clicked"
+    );
 
 
     const product =
-        collectCompleteProductData();
+        collectProductData();
 
 
-    if (
-        !validateProduct(
-            product
-        )
-    ) {
+    console.log(
+        "📦 Product data:",
+        product
+    );
+
+
+    const validationError =
+        validateProduct(product);
+
+
+    if (validationError) {
+
+        setStatus(
+            "❌ " + validationError,
+            "error"
+        );
 
         return;
 
     }
 
 
-    if (button) {
-
-        button.disabled =
-            true;
-
-        button.textContent =
-            "🤖 Generating...";
-
-    }
+    const prompt =
+        createPrompt(product);
 
 
-    if (loading) {
+    console.log(
+        "📤 Sending request to backend..."
+    );
 
-        loading.style.display =
-            "block";
+
+    // ======================================================
+    // BUTTON LOADING
+    // ======================================================
+
+    generateButton.disabled = true;
+
+    generateButton.textContent =
+        "⏳ Generating...";
+
+
+    setStatus(
+        "🤖 AI listing बना रहा है...",
+        "normal"
+    );
+
+
+    if (resultCard) {
+
+        resultCard.style.display =
+            "none";
 
     }
 
 
     try {
 
-        showMessage(
-            "🤖 AI listing तैयार कर रहा है...",
-            "success"
-        );
 
+        // ==================================================
+        // REQUEST
+        // ==================================================
 
         const response =
             await fetch(
-                API_ENDPOINT,
+                API_URL,
                 {
 
                     method: "POST",
@@ -786,886 +498,296 @@ async function generateListing() {
 
                     },
 
-                    body:
-                        JSON.stringify({
+                    body: JSON.stringify({
 
-                            product:
+                        prompt: prompt
 
-                                product,
-
-                            categoryRules:
-
-                                buildCategoryInstruction(
-                                    product.category
-                                )
-
-                        })
+                    })
 
                 }
             );
 
 
-        const rawText =
-            await response.text();
+        console.log(
+            "📥 Backend status:",
+            response.status
+        );
 
 
-        let result;
+        // ==================================================
+        // READ RESPONSE
+        // ==================================================
 
+        let data = {};
 
         try {
 
-            result =
-                JSON.parse(
-                    rawText
-                );
+            data =
+                await response.json();
 
-        } catch (error) {
+        }
+        catch (jsonError) {
 
             throw new Error(
-                `Backend ने valid JSON नहीं दिया. HTTP ${response.status}`
+                "Backend ने valid JSON response नहीं दिया।"
             );
 
         }
 
+
+        console.log(
+            "📦 Backend response:",
+            data
+        );
+
+
+        // ==================================================
+        // ERROR RESPONSE
+        // ==================================================
 
         if (!response.ok) {
 
+
+            const errorMessage =
+                data.error ||
+                data.details ||
+                "Backend request failed.";
+
+
             throw new Error(
-
-                result.message ||
-                result.error ||
-                result.details ||
-                `HTTP Error ${response.status}`
-
+                errorMessage
             );
 
         }
 
 
-        if (!result.success) {
+        // ==================================================
+        // RESULT
+        // ==================================================
+
+        const result =
+            data.result ||
+            data.response ||
+            data.text ||
+            data.output;
+
+
+        if (!result) {
 
             throw new Error(
-
-                result.message ||
-                result.error ||
-                "Listing generation failed."
-
+                "AI से listing response नहीं मिला।"
             );
 
         }
 
 
-        if (!result.listing) {
+        // ==================================================
+        // SHOW RESULT
+        // ==================================================
 
-            throw new Error(
-                "Backend response में listing नहीं मिली।"
-            );
+        if (listingResult) {
+
+            listingResult.textContent =
+                result;
 
         }
 
 
-        displayListing(
-            result.listing
-        );
+        if (resultCard) {
+
+            resultCard.style.display =
+                "block";
+
+            resultCard.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+        }
 
 
-        localStorage.setItem(
-
-            "latestCompleteListingV2",
-
-            JSON.stringify(
-                result.listing
-            )
-
-        );
-
-
-        showMessage(
+        setStatus(
             "✅ Complete Listing तैयार है!",
             "success"
         );
 
 
-    } catch (error) {
+        console.log(
+            "✅ Listing generated successfully"
+        );
+
+
+    }
+    catch (error) {
+
 
         console.error(
-            "Complete Listing V2 Error:",
+            "❌ Generate Listing Error:",
             error
         );
 
 
-        showMessage(
+        let message =
+            error.message ||
+            "कुछ गलत हो गया।";
 
-            "❌ Listing generate नहीं हुई: " +
-            error.message,
 
-            "error"
-
-        );
-
-
-    } finally {
-
-        if (button) {
-
-            button.disabled =
-                false;
-
-            button.textContent =
-                "✨ Generate Complete Listing";
-
-        }
-
-
-        if (loading) {
-
-            loading.style.display =
-                "none";
-
-        }
-
-    }
-
-}
-
-
-/* =========================================================
-   12. DISPLAY RESULT
-========================================================= */
-
-function displayListing(
-    listing
-) {
-
-    const resultBox =
-        getElement(
-            "listingResult"
-        );
-
-
-    if (resultBox) {
-
-        resultBox.style.display =
-            "block";
-
-    }
-
-
-    setOutput(
-        "generatedTitle",
-        listing.title
-    );
-
-
-    setOutput(
-        "generatedDescription",
-        listing.description
-    );
-
-
-    setOutput(
-        "generatedHighlights",
-        formatArray(
-            listing.highlights
-        )
-    );
-
-
-    setOutput(
-        "generatedKeywords",
-        formatArray(
-            listing.seoKeywords
-        )
-    );
-
-
-    setOutput(
-        "generatedTags",
-        formatArray(
-            listing.tags
-        )
-    );
-
-
-    setOutput(
-        "generatedSpecifications",
-        formatSpecifications(
-            listing.specifications
-        )
-    );
-
-
-    if (resultBox) {
-
-        setTimeout(
-            () => {
-
-                resultBox.scrollIntoView({
-                    behavior: "smooth",
-                    block: "start"
-                });
-
-            },
-            100
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   13. OUTPUT HELPER
-========================================================= */
-
-function setOutput(
-    id,
-    value
-) {
-
-    const element =
-        getElement(id);
-
-
-    if (!element) {
-
-        return;
-
-    }
-
-
-    element.value =
-        value || "";
-
-}
-
-
-/* =========================================================
-   14. FORMAT ARRAY
-========================================================= */
-
-function formatArray(
-    value
-) {
-
-    if (!Array.isArray(value)) {
-
-        return value || "";
-
-    }
-
-
-    return value
-
-        .filter(
-            item =>
-                item !== null &&
-                item !== undefined &&
-                String(item).trim()
-        )
-
-        .map(
-            item =>
-                `• ${item}`
-        )
-
-        .join("\n");
-
-}
-
-
-/* =========================================================
-   15. FORMAT SPECIFICATIONS
-========================================================= */
-
-function formatSpecifications(
-    specifications
-) {
-
-    if (!specifications) {
-
-        return "";
-
-    }
-
-
-    if (
-        typeof specifications ===
-        "string"
-    ) {
-
-        return specifications;
-
-    }
-
-
-    return Object.entries(
-        specifications
-    )
-
-    .filter(
-        ([key, value]) =>
-            key &&
-            value !== null &&
-            value !== undefined &&
-            String(value).trim()
-    )
-
-    .map(
-        ([key, value]) =>
-            `${key}: ${value}`
-    )
-
-    .join("\n");
-
-}
-
-
-/* =========================================================
-   16. COPY COMPLETE LISTING
-========================================================= */
-
-async function copyCompleteListing() {
-
-    const title =
-        getValue(
-            "generatedTitle"
-        );
-
-
-    const description =
-        getValue(
-            "generatedDescription"
-        );
-
-
-    const highlights =
-        getValue(
-            "generatedHighlights"
-        );
-
-
-    const keywords =
-        getValue(
-            "generatedKeywords"
-        );
-
-
-    const tags =
-        getValue(
-            "generatedTags"
-        );
-
-
-    const specifications =
-        getValue(
-            "generatedSpecifications"
-        );
-
-
-    const text = `
-
-AI SELLER TOOLKIT
-COMPLETE PRODUCT LISTING
-==============================
-
-PRODUCT TITLE
-${title}
-
-DESCRIPTION
-${description}
-
-KEY HIGHLIGHTS
-${highlights}
-
-SEO KEYWORDS
-${keywords}
-
-SEARCH TAGS
-${tags}
-
-SPECIFICATIONS
-${specifications}
-
-==============================
-Generated by AI Seller Toolkit
-`;
-
-
-    try {
-
-        await navigator.clipboard.writeText(
-            text.trim()
-        );
-
-
-        showMessage(
-            "✅ Complete Listing copy हो गई!",
-            "success"
-        );
-
-
-    } catch (error) {
-
-        fallbackCopy(
-            text.trim()
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   17. FALLBACK COPY
-========================================================= */
-
-function fallbackCopy(
-    text
-) {
-
-    const textarea =
-        document.createElement(
-            "textarea"
-        );
-
-
-    textarea.value =
-        text;
-
-
-    document.body.appendChild(
-        textarea
-    );
-
-
-    textarea.select();
-
-
-    try {
-
-        document.execCommand(
-            "copy"
-        );
-
-
-        showMessage(
-            "✅ Listing copy हो गई!",
-            "success"
-        );
-
-
-    } catch (error) {
-
-        showMessage(
-            "❌ Copy नहीं हो सकी।",
-            "error"
-        );
-
-    }
-
-
-    textarea.remove();
-
-}
-
-
-/* =========================================================
-   18. DOWNLOAD
-========================================================= */
-
-function downloadListing() {
-
-    const title =
-        getValue(
-            "generatedTitle"
-        );
-
-
-    if (!title) {
-
-        showMessage(
-            "❌ पहले listing generate करें।",
-            "error"
-        );
-
-        return;
-
-    }
-
-
-    const text = `
-
-AI SELLER TOOLKIT
-COMPLETE PRODUCT LISTING
-==============================
-
-PRODUCT TITLE
-${title}
-
-DESCRIPTION
-${getValue(
-    "generatedDescription"
-)}
-
-KEY HIGHLIGHTS
-${getValue(
-    "generatedHighlights"
-)}
-
-SEO KEYWORDS
-${getValue(
-    "generatedKeywords"
-)}
-
-SEARCH TAGS
-${getValue(
-    "generatedTags"
-)}
-
-SPECIFICATIONS
-${getValue(
-    "generatedSpecifications"
-)}
-
-==============================
-Generated by AI Seller Toolkit
-`;
-
-
-    const blob =
-        new Blob(
-            [text.trim()],
-            {
-                type:
-                    "text/plain;charset=utf-8"
-            }
-        );
-
-
-    const url =
-        URL.createObjectURL(
-            blob
-        );
-
-
-    const link =
-        document.createElement(
-            "a"
-        );
-
-
-    link.href =
-        url;
-
-
-    link.download =
-        "AI-Seller-Toolkit-Listing.txt";
-
-
-    document.body.appendChild(
-        link
-    );
-
-
-    link.click();
-
-
-    link.remove();
-
-
-    URL.revokeObjectURL(
-        url
-    );
-
-
-    showMessage(
-        "✅ Listing download हो गई!",
-        "success"
-    );
-
-}
-
-
-/* =========================================================
-   19. CLEAR FORM
-========================================================= */
-
-function clearListing() {
-
-    const fields =
-        document.querySelectorAll(
-            "input, textarea"
-        );
-
-
-    fields.forEach(
-        field => {
-
-            field.value =
-                "";
-
-        }
-    );
-
-
-    const resultBox =
-        getElement(
-            "listingResult"
-        );
-
-
-    if (resultBox) {
-
-        resultBox.style.display =
-            "none";
-
-    }
-
-
-    localStorage.removeItem(
-        "latestCompleteListingV2"
-    );
-
-
-    showMessage(
-        "🧹 Form साफ हो गया।",
-        "success"
-    );
-
-}
-
-
-/* =========================================================
-   20. CATEGORY CHANGE
-========================================================= */
-
-function handleCategoryChange() {
-
-    const category =
-        getValue(
-            "category"
-        );
-
-
-    const config =
-        CATEGORY_CONFIG[
-            category
-        ];
-
-
-    if (!config) {
-
-        return;
-
-    }
-
-
-    console.log(
-        `📂 Selected category: ${config.emoji} ${category}`
-    );
-
-
-    console.log(
-        "Category fields:",
-        config.fields
-    );
-
-}
-
-
-/* =========================================================
-   21. LOAD SAVED LISTING
-========================================================= */
-
-function loadSavedListing() {
-
-    const saved =
-        localStorage.getItem(
-            "latestCompleteListingV2"
-        );
-
-
-    if (!saved) {
-
-        return;
-
-    }
-
-
-    try {
-
-        const listing =
-            JSON.parse(
-                saved
-            );
-
+        // ==================================================
+        // RENDER FREE INSTANCE MESSAGE
+        // ==================================================
 
         if (
-            listing &&
-            listing.title
+            message.includes(
+                "Failed to fetch"
+            )
         ) {
 
-            displayListing(
-                listing
-            );
+            message =
+                "Backend से connection नहीं हो रहा। Render server को start होने में थोड़ा समय लग सकता है।";
 
         }
 
-    } catch (error) {
 
-        console.error(
-            "Saved listing error:",
-            error
+        setStatus(
+            "❌ " + message,
+            "error"
         );
+
+
+    }
+    finally {
+
+
+        // ==================================================
+        // RESTORE BUTTON
+        // ==================================================
+
+        generateButton.disabled =
+            false;
+
+
+        generateButton.textContent =
+            "✨ Generate Complete Listing";
+
 
     }
 
 }
 
 
-/* =========================================================
-   22. INITIALIZE
-========================================================= */
+// ==========================================================
+// BUTTON EVENT
+// ==========================================================
 
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
+if (generateButton) {
 
-        const generateButton =
-            getElement(
-                "generateListingBtn"
+
+    generateButton.addEventListener(
+        "click",
+        generateListing
+    );
+
+
+    console.log(
+        "✅ Generate button connected successfully"
+    );
+
+}
+
+
+// ==========================================================
+// CATEGORY CHANGE DEBUG
+// ==========================================================
+
+if (categorySelect) {
+
+    categorySelect.addEventListener(
+        "change",
+        () => {
+
+            console.log(
+                "📂 Category changed:",
+                categorySelect.value
+            );
+
+        }
+    );
+
+}
+
+
+// ==========================================================
+// BACKEND CONNECTION TEST
+// ==========================================================
+
+async function checkBackend() {
+
+
+    try {
+
+
+        console.log(
+            "🔍 Checking AI Seller Toolkit backend..."
+        );
+
+
+        const response =
+            await fetch(
+                "https://ai-seller-toolkit-backend-1.onrender.com/",
+                {
+                    method: "GET"
+                }
             );
 
 
-        if (generateButton) {
+        if (response.ok) {
 
-            generateButton.addEventListener(
-                "click",
-                generateListing
+            console.log(
+                "✅ Backend is online"
             );
 
-        } else {
+        }
+        else {
 
-            console.error(
-                "❌ Generate Listing button not found."
+            console.warn(
+                "⚠️ Backend returned status:",
+                response.status
             );
 
         }
 
-
-        const copyButton =
-            getElement(
-                "copyListingBtn"
-            );
-
-
-        if (copyButton) {
-
-            copyButton.addEventListener(
-                "click",
-                copyCompleteListing
-            );
-
-        }
-
-
-        const downloadButton =
-            getElement(
-                "downloadListingBtn"
-            );
-
-
-        if (downloadButton) {
-
-            downloadButton.addEventListener(
-                "click",
-                downloadListing
-            );
-
-        }
-
-
-        const clearButton =
-            getElement(
-                "clearListingBtn"
-            );
-
-
-        if (clearButton) {
-
-            clearButton.addEventListener(
-                "click",
-                clearListing
-            );
-
-        }
-
-
-        const category =
-            getElement(
-                "category"
-            );
-
-
-        if (category) {
-
-            category.addEventListener(
-                "change",
-                handleCategoryChange
-            );
-
-        }
-
-
-        loadSavedListing();
-
-
-        console.log(
-            "===================================="
-        );
-
-        console.log(
-            "✅ AI Seller Toolkit"
-        );
-
-        console.log(
-            "✅ Complete Listing Generator V2"
-        );
-
-        console.log(
-            "✅ Backend API connected"
-        );
-
-        console.log(
-            "===================================="
-
-        );
 
     }
+    catch (error) {
+
+
+        console.warn(
+            "⚠️ Backend check failed:",
+            error.message
+        );
+
+
+    }
+
+}
+
+
+// ==========================================================
+// START BACKEND CHECK
+// ==========================================================
+
+checkBackend();
+
+
+// ==========================================================
+// DEBUG MESSAGE
+// ==========================================================
+
+console.log(
+    "🤖 AI Seller Toolkit Complete Listing Generator V2 loaded"
 );
 
-
-/* =========================================================
-   23. GLOBAL FUNCTIONS
-========================================================= */
-
-window.generateListing =
-    generateListing;
-
-window.copyCompleteListing =
-    copyCompleteListing;
-
-window.downloadListing =
-    downloadListing;
-
-window.clearListing =
-    clearListing;
-
-window.collectCompleteProductData =
-    collectCompleteProductData;
-
-
-/* =========================================================
-   END OF VERSION 2
-========================================================= */
+console.log(
+    "🔗 Backend:",
+    API_URL
+);
