@@ -1,93 +1,53 @@
 // ==========================================================
 // AI SELLER TOOLKIT
-// GEMINI BACKEND
-// SERVER.JS VERSION 3
-// STRICT FACTUAL + CATEGORY-AWARE
+// SERVER.JS — FINAL VERSION 4
+// Gemini AI Backend
 // ==========================================================
 
 require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
+
 const { GoogleGenAI } = require("@google/genai");
 
 const app = express();
 
-
 // ==========================================================
-// MIDDLEWARE
-// ==========================================================
-
-app.use(cors());
-
-app.use(express.json({
-    limit: "1mb"
-}));
-
-
-// ==========================================================
-// CONFIG
+// BASIC CONFIG
 // ==========================================================
 
-const PORT =
-    process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 
-const API_KEY =
-    process.env.GEMINI_API_KEY;
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
-const MODEL =
-    process.env.GEMINI_MODEL ||
-    "gemini-2.5-flash";
-
-
-// ==========================================================
-// API KEY CHECK
-// ==========================================================
-
-if (!API_KEY) {
-
-    console.error(
-        "❌ GEMINI_API_KEY is missing!"
-    );
-
-}
-
+const MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 
 // ==========================================================
 // GEMINI CLIENT
 // ==========================================================
 
-const ai = new GoogleGenAI({
-    apiKey: API_KEY
-});
+let ai = null;
 
-
-// ==========================================================
-// HOME / HEALTH CHECK
-// ==========================================================
-
-app.get("/", (req, res) => {
-
-    res.json({
-
-        status: "success",
-
-        message:
-            "✅ AI Seller Toolkit Gemini Backend V3 is running!",
-
-        version:
-            "3.0",
-
-        mode:
-            "Strict Factual + Category-Aware",
-
-        model:
-            MODEL
-
+if (GEMINI_API_KEY) {
+    ai = new GoogleGenAI({
+        apiKey: GEMINI_API_KEY
     });
+}
 
-});
+// ==========================================================
+// MIDDLEWARE
+// ==========================================================
 
+app.use(
+    cors({
+        origin: "*",
+        methods: ["GET", "POST", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"]
+    })
+);
+
+app.use(express.json({ limit: "2mb" }));
 
 // ==========================================================
 // CATEGORY RULES
@@ -95,1382 +55,713 @@ app.get("/", (req, res) => {
 
 const categoryRules = {
 
-    "Fashion": [
-        "fabric",
-        "color",
-        "size",
-        "pattern",
-        "fit",
-        "occasion",
-        "quantity"
-    ],
+    "Fashion & Clothing": `
+Create product listings for clothing and fashion products.
 
-    "Beauty": [
-        "form",
-        "color",
-        "quantity",
-        "variant",
-        "ingredients",
-        "skinType",
-        "hairType",
-        "fragrance"
-    ],
+Focus on:
+- Product type
+- Fabric only if provided
+- Color only if provided
+- Size only if provided
+- Pattern/design only if provided
+- Fit/style only if provided
+- Gender/age only if provided
 
-    "Electronics": [
-        "model",
-        "color",
-        "storage",
-        "ram",
-        "battery",
-        "connectivity",
-        "compatibility",
-        "warranty",
-        "quantity"
-    ],
+Never invent fabric, size, color, brand, material,
+features, certifications or specifications.
+`,
 
-    "Home & Kitchen": [
-        "material",
-        "color",
-        "dimensions",
-        "capacity",
-        "quantity",
-        "usage"
-    ],
+    "Beauty": `
+Create product listings for beauty and personal-care products.
 
-    "Shoes": [
-        "material",
-        "color",
-        "size",
-        "sole",
-        "closure",
-        "occasion",
-        "quantity"
-    ],
+Focus on:
+- Product type
+- Quantity only if provided
+- Ingredients only if provided
+- Skin/hair type only if provided
+- Usage only when supported by product information
 
-    "Jewellery": [
-        "material",
-        "color",
-        "design",
-        "size",
-        "stone",
-        "occasion",
-        "quantity"
-    ],
+Never invent ingredients, medical claims,
+benefits, certifications or results.
+Do not make unsupported health or treatment claims.
+`,
 
-    "Toys": [
-        "material",
-        "color",
-        "size",
-        "ageGroup",
-        "battery",
-        "quantity"
-    ],
+    "Electronics": `
+Create product listings for electronic products.
 
-    "Books": [
-        "author",
-        "language",
-        "format",
-        "pages",
-        "publisher",
-        "edition",
-        "isbn"
-    ],
+Focus on:
+- Product type
+- Brand only if provided
+- Model only if provided
+- Storage only if provided
+- Battery only if provided
+- Connectivity only if provided
+- Compatibility only if provided
+- Technical specifications only if provided
 
-    "Pet": [
-        "petType",
-        "material",
-        "size",
-        "quantity",
-        "ingredients",
-        "flavour"
-    ],
+Never invent RAM, ROM, battery capacity,
+processor, camera, warranty, connectivity,
+model number or technical specifications.
+`,
 
-    "Sports": [
-        "material",
-        "color",
-        "size",
-        "weight",
-        "activity",
-        "quantity"
-    ],
+    "Home & Kitchen": `
+Create product listings for home and kitchen products.
 
-    "Automotive": [
-        "model",
-        "vehicleCompatibility",
-        "material",
-        "color",
-        "dimensions",
-        "quantity"
-    ],
+Focus on:
+- Product type
+- Material only if provided
+- Size/dimensions only if provided
+- Capacity only if provided
+- Color only if provided
+- Quantity only if provided
+- Usage only when supported
 
-    "Garden": [
-        "material",
-        "color",
-        "size",
-        "quantity",
-        "plantCompatibility",
-        "usage"
-    ],
+Never invent material, dimensions, capacity,
+quantity or special features.
+`,
 
-    "Food": [
-        "flavour",
-        "quantity",
-        "ingredients",
-        "packType",
-        "dietaryInformation",
-        "expiry",
-        "shelfLife"
-    ],
+    "Jewellery": `
+Create product listings for jewellery and accessories.
 
-    "Gifts": [
-        "material",
-        "color",
-        "design",
-        "quantity",
-        "occasion",
-        "recipient",
-        "packaging"
-    ]
+Focus on:
+- Product type
+- Material only if provided
+- Color only if provided
+- Design only if provided
+- Size only if provided
+- Stone/gemstone only if provided
 
+Never claim gold, silver, diamond,
+precious stones or purity unless explicitly provided.
+`,
+
+    "Footwear": `
+Create product listings for footwear.
+
+Focus on:
+- Product type
+- Size only if provided
+- Color only if provided
+- Material only if provided
+- Sole type only if provided
+- Style only if provided
+
+Never invent material, size, sole type,
+comfort claims or specifications.
+`,
+
+    "Bags & Accessories": `
+Create product listings for bags and fashion accessories.
+
+Focus on:
+- Product type
+- Material only if provided
+- Color only if provided
+- Size/capacity only if provided
+- Compartments only if provided
+- Closure only if provided
+
+Never invent capacity, compartments,
+material or features.
+`,
+
+    "Toys & Kids": `
+Create product listings for toys and children's products.
+
+Focus on:
+- Product type
+- Age range only if provided
+- Material only if provided
+- Quantity only if provided
+- Size only if provided
+- Features only if provided
+
+Never invent age suitability,
+safety certifications or educational claims.
+`,
+
+    "Sports & Fitness": `
+Create product listings for sports and fitness products.
+
+Focus on:
+- Product type
+- Material only if provided
+- Size only if provided
+- Weight only if provided
+- Usage only if supported
+- Included items only if provided
+
+Never invent performance claims,
+weight, specifications or included accessories.
+`,
+
+    "Grocery & Food": `
+Create product listings for grocery and food products.
+
+Focus on:
+- Product type
+- Quantity only if provided
+- Flavor only if provided
+- Ingredients only if provided
+- Packaging only if provided
+
+Never invent ingredients, nutritional values,
+health benefits, expiry dates or certifications.
+`,
+
+    "Automotive": `
+Create product listings for automotive products.
+
+Focus on:
+- Product type
+- Vehicle compatibility only if provided
+- Material only if provided
+- Size only if provided
+- Model/part number only if provided
+
+Never invent compatibility, specifications,
+part numbers or installation requirements.
+`,
+
+    "Books & Stationery": `
+Create product listings for books and stationery.
+
+Focus on:
+- Product type
+- Title only if provided
+- Author only if provided
+- Pages only if provided
+- Quantity only if provided
+- Format only if provided
+
+Never invent author, page count,
+edition or publication information.
+`,
+
+    "Other": `
+Create a general product listing.
+
+Use only the information supplied by the seller.
+Never invent product specifications,
+brand, material, size, color, warranty,
+certifications or features.
+`
 };
 
-
 // ==========================================================
-// DISPLAY FIELD NAMES
-// ==========================================================
-
-const fieldLabels = {
-
-    productName:
-        "Product Name",
-
-    brand:
-        "Brand",
-
-    price:
-        "Price",
-
-    fabric:
-        "Fabric / Material",
-
-    material:
-        "Material",
-
-    color:
-        "Color",
-
-    size:
-        "Size",
-
-    dimensions:
-        "Dimensions",
-
-    capacity:
-        "Capacity",
-
-    quantity:
-        "Quantity",
-
-    pattern:
-        "Pattern",
-
-    fit:
-        "Fit",
-
-    occasion:
-        "Occasion",
-
-    form:
-        "Form / Texture",
-
-    variant:
-        "Variant",
-
-    ingredients:
-        "Ingredients",
-
-    skinType:
-        "Skin Type",
-
-    hairType:
-        "Hair Type",
-
-    fragrance:
-        "Fragrance",
-
-    model:
-        "Model",
-
-    storage:
-        "Storage",
-
-    ram:
-        "RAM",
-
-    battery:
-        "Battery",
-
-    connectivity:
-        "Connectivity",
-
-    compatibility:
-        "Compatibility",
-
-    warranty:
-        "Warranty",
-
-    sole:
-        "Sole",
-
-    closure:
-        "Closure",
-
-    design:
-        "Design",
-
-    stone:
-        "Stone",
-
-    ageGroup:
-        "Age Group",
-
-    author:
-        "Author",
-
-    language:
-        "Language",
-
-    format:
-        "Format",
-
-    pages:
-        "Pages",
-
-    publisher:
-        "Publisher",
-
-    edition:
-        "Edition",
-
-    isbn:
-        "ISBN",
-
-    petType:
-        "Pet Type",
-
-    flavour:
-        "Flavour",
-
-    weight:
-        "Weight",
-
-    activity:
-        "Activity / Sport",
-
-    vehicleCompatibility:
-        "Vehicle Compatibility",
-
-    usage:
-        "Usage",
-
-    plantCompatibility:
-        "Plant Compatibility",
-
-    packType:
-        "Pack Type",
-
-    dietaryInformation:
-        "Dietary Information",
-
-    expiry:
-        "Expiry",
-
-    shelfLife:
-        "Shelf Life",
-
-    recipient:
-        "Recipient",
-
-    packaging:
-        "Packaging"
-
-};
-
-
-// ==========================================================
-// CLEAN VALUE
+// HELPERS
 // ==========================================================
 
-function cleanValue(value) {
-
-    if (
-        value === null ||
-        value === undefined
-    ) {
-
+function cleanText(value) {
+    if (value === undefined || value === null) {
         return "";
-
     }
 
-    return String(value)
-        .replace(/\s+/g, " ")
-        .trim();
-
+    return String(value).trim();
 }
 
+function getCategoryRule(category) {
 
-// ==========================================================
-// CLEAN PRODUCT DATA
-// ==========================================================
+    const normalized = cleanText(category);
 
-function cleanProductData(product) {
-
-    if (
-        !product ||
-        typeof product !== "object"
-    ) {
-
+    if (!normalized) {
         return null;
-
     }
 
-
-    const cleaned = {
-
-        category:
-            cleanValue(product.category),
-
-        productName:
-            cleanValue(product.productName),
-
-        brand:
-            cleanValue(product.brand),
-
-        price:
-            cleanValue(product.price),
-
-        productFeatures:
-            cleanValue(product.productFeatures),
-
-        extraInfo:
-            cleanValue(product.extraInfo),
-
-        categoryData: {}
-
-    };
-
-
-    if (
-        product.categoryData &&
-        typeof product.categoryData === "object"
-    ) {
-
-
-        Object.entries(
-            product.categoryData
-        ).forEach(
-            ([key, value]) => {
-
-                const cleanedValue =
-                    cleanValue(value);
-
-                if (cleanedValue) {
-
-                    cleaned.categoryData[key] =
-                        cleanedValue;
-
-                }
-
-            }
-        );
-
-    }
-
-
-    return cleaned;
-
-}
-
-
-// ==========================================================
-// VALIDATE CATEGORY
-// ==========================================================
-
-function validateCategory(category) {
-
-    return Object.prototype.hasOwnProperty.call(
-        categoryRules,
-        category
+    return (
+        categoryRules[normalized] ||
+        categoryRules["Other"]
     );
-
 }
 
-
 // ==========================================================
-// BUILD VERIFIED SPECIFICATIONS
-// IMPORTANT:
-// AI DOES NOT GENERATE THESE.
-// SERVER CREATES THEM FROM USER INPUT.
+// SYSTEM PROMPT
 // ==========================================================
 
-function buildSpecifications(product) {
+function createSystemPrompt(category) {
 
-    const specifications = [];
-
-    const category =
-        product.category;
-
-
-    // ------------------------------------------------------
-    // BASIC INFORMATION
-    // ------------------------------------------------------
-
-    if (product.productName) {
-
-        specifications.push({
-
-            label:
-                "Product Name",
-
-            value:
-                product.productName
-
-        });
-
-    }
-
-
-    if (product.brand) {
-
-        specifications.push({
-
-            label:
-                "Brand",
-
-            value:
-                product.brand
-
-        });
-
-    }
-
-
-    // ------------------------------------------------------
-    // CATEGORY FIELDS
-    // ------------------------------------------------------
-
-    const allowedFields =
-        categoryRules[category] || [];
-
-
-    allowedFields.forEach(
-        field => {
-
-            const value =
-                product.categoryData[field];
-
-            if (!value) {
-                return;
-            }
-
-
-            specifications.push({
-
-                label:
-                    fieldLabels[field] ||
-                    field,
-
-                value:
-                    value
-
-            });
-
-        }
-    );
-
-
-    // ------------------------------------------------------
-    // PRICE
-    // ------------------------------------------------------
-
-    if (product.price) {
-
-        specifications.push({
-
-            label:
-                "Price",
-
-            value:
-                product.price
-
-        });
-
-    }
-
-
-    return specifications;
-
-}
-
-
-// ==========================================================
-// SPECIFICATIONS TEXT FOR AI
-// ==========================================================
-
-function specificationsForAI(
-    specifications
-) {
-
-    if (!specifications.length) {
-
-        return "No specifications provided.";
-
-    }
-
-
-    return specifications
-        .map(
-            item =>
-                `${item.label}: ${item.value}`
-        )
-        .join("\n");
-
-}
-
-
-// ==========================================================
-// CREATE STRICT AI PROMPT
-// ==========================================================
-
-function createPrompt(
-    product,
-    specifications
-) {
-
-
-    const category =
-        product.category;
-
-
-    const specificationText =
-        specificationsForAI(
-            specifications
-        );
-
+    const rule = getCategoryRule(category);
 
     return `
+You are the official AI Product Listing Assistant
+for AI Seller Toolkit.
 
-You are the professional product listing AI
-for "AI Seller Toolkit".
+Your job is to create accurate marketplace product listings.
 
-Your task is to create a marketplace-ready
-product listing.
+IMPORTANT RULES:
+
+1. NEVER invent product information.
+
+2. Use ONLY information provided by the seller.
+
+3. If a specification is missing, do NOT guess it.
+
+4. Do NOT create fake:
+- Brand
+- Model number
+- Material
+- Fabric
+- Color
+- Size
+- Weight
+- Dimensions
+- Battery
+- Storage
+- RAM
+- Processor
+- Warranty
+- Certification
+- Ingredients
+- Quantity
+- Compatibility
+- Features
+
+5. Do not convert assumptions into facts.
+
+6. Avoid unsupported superlatives such as:
+- Best
+- No.1
+- Premium
+- Guaranteed
+- 100% original
+- Top quality
+
+unless the seller explicitly provides such information
+and it is appropriate.
+
+7. Do not make medical or guaranteed-result claims.
+
+8. Keep the listing suitable for online marketplaces.
+
+9. Use clear and simple language.
+
+10. If information is missing, simply leave that information
+out of the generated listing.
+
+CATEGORY:
+
+${category}
+
+CATEGORY-SPECIFIC RULES:
+
+${rule}
+
+RETURN ONLY VALID JSON.
+
+Required JSON structure:
+
+{
+  "title": "",
+  "description": "",
+  "highlights": [],
+  "keywords": [],
+  "hashtags": [],
+  "seoTitle": "",
+  "seoDescription": ""
+}
+
+The JSON must be valid.
+Do not add Markdown.
+Do not add explanations outside the JSON.
+`;
+}
+
+// ==========================================================
+// HEALTH CHECK
+// ==========================================================
+
+app.get("/", (req, res) => {
+
+    res.json({
+        success: true,
+        message: "AI Seller Toolkit Backend is running",
+        version: "4.0",
+        model: MODEL,
+        geminiConfigured: !!GEMINI_API_KEY
+    });
+});
+
+// ==========================================================
+// API STATUS
+// ==========================================================
+
+app.get("/api/status", (req, res) => {
+
+    res.json({
+        success: true,
+        server: "online",
+        version: "4.0",
+        geminiConfigured: !!GEMINI_API_KEY,
+        model: MODEL
+    });
+});
+
+// ==========================================================
+// CATEGORY API
+// ==========================================================
+
+app.get("/api/categories", (req, res) => {
+
+    res.json({
+        success: true,
+        categories: Object.keys(categoryRules)
+    });
+});
+
+// ==========================================================
+// PRODUCT LISTING API
+// ==========================================================
+
+app.post("/api/generate-listing", async (req, res) => {
+
+    try {
+
+        // --------------------------------------------------
+        // CHECK API KEY
+        // --------------------------------------------------
+
+        if (!ai) {
+
+            return res.status(500).json({
+                success: false,
+                error: "Gemini API key is not configured on the server."
+            });
+        }
+
+        // --------------------------------------------------
+        // GET INPUT
+        // --------------------------------------------------
+
+        const {
+            category,
+            productName,
+            productDetails,
+            brand,
+            price,
+            color,
+            size,
+            material,
+            imageDescription
+        } = req.body;
+
+        // --------------------------------------------------
+        // CATEGORY VALIDATION
+        // --------------------------------------------------
+
+        if (!category || !cleanText(category)) {
+
+            return res.status(400).json({
+                success: false,
+                error: "Product category is required"
+            });
+        }
+
+        // --------------------------------------------------
+        // PRODUCT NAME VALIDATION
+        // --------------------------------------------------
+
+        if (!productName || !cleanText(productName)) {
+
+            return res.status(400).json({
+                success: false,
+                error: "Product name is required"
+            });
+        }
+
+        // --------------------------------------------------
+        // PRODUCT DATA
+        // --------------------------------------------------
+
+        const productData = {
+
+            productName: cleanText(productName),
+
+            productDetails: cleanText(productDetails),
+
+            brand: cleanText(brand),
+
+            price: cleanText(price),
+
+            color: cleanText(color),
+
+            size: cleanText(size),
+
+            material: cleanText(material),
+
+            imageDescription: cleanText(imageDescription)
+        };
+
+        // --------------------------------------------------
+        // USER PROMPT
+        // --------------------------------------------------
+
+        const userPrompt = `
+Create a product listing using the following seller-provided
+information.
+
+IMPORTANT:
+Only use information that is actually present below.
+Do not guess missing information.
 
 CATEGORY:
 ${category}
 
+PRODUCT NAME:
+${productData.productName}
 
-PRODUCT INFORMATION PROVIDED BY SELLER:
+PRODUCT DETAILS:
+${productData.productDetails || "Not provided"}
 
-Product Name:
-${product.productName || "Not provided"}
+BRAND:
+${productData.brand || "Not provided"}
 
-Brand:
-${product.brand || "Not provided"}
+PRICE:
+${productData.price || "Not provided"}
 
-Price:
-${product.price || "Not provided"}
+COLOR:
+${productData.color || "Not provided"}
 
+SIZE:
+${productData.size || "Not provided"}
 
-VERIFIED CATEGORY SPECIFICATIONS:
+MATERIAL:
+${productData.material || "Not provided"}
 
-${specificationText}
+IMAGE DESCRIPTION:
+${productData.imageDescription || "Not provided"}
 
-
-SELLER PROVIDED PRODUCT FEATURES:
-
-${product.productFeatures || "None provided."}
-
-
-SELLER PROVIDED EXTRA INFORMATION:
-
-${product.extraInfo || "None provided."}
-
-
-==================================================
-STRICT FACTUAL RULES
-==================================================
-
-RULE 1:
-Use ONLY information supplied above.
-
-RULE 2:
-Never invent a specification.
-
-RULE 3:
-Never assume a product feature.
-
-RULE 4:
-Never create benefits that the seller did not provide.
-
-RULE 5:
-Never claim "premium".
-
-RULE 6:
-Never claim "best".
-
-RULE 7:
-Never claim "high quality".
-
-RULE 8:
-Never claim "durable".
-
-RULE 9:
-Never claim "leak proof".
-
-RULE 10:
-Never claim "waterproof".
-
-RULE 11:
-Never claim "BPA free".
-
-RULE 12:
-Never claim "food grade".
-
-RULE 13:
-Never claim "authentic".
-
-RULE 14:
-Never claim "original".
-
-RULE 15:
-Never claim "certified".
-
-RULE 16:
-Never create warranty information.
-
-RULE 17:
-Never create compatibility information.
-
-RULE 18:
-Never create battery information.
-
-RULE 19:
-Never create dimensions.
-
-RULE 20:
-Never create ingredients.
-
-RULE 21:
-Never create health or beauty benefits.
-
-RULE 22:
-Never create delivery promises.
-
-RULE 23:
-Never create discounts.
-
-RULE 24:
-Never create ratings or reviews.
-
-RULE 25:
-Never add information just because it is
-common for this category.
-
-RULE 26:
-If information is missing, leave it out.
-
-RULE 27:
-Do not use words such as:
-"premium",
-"best",
-"perfect",
-"excellent",
-"durable",
-"authentic",
-"original",
-"sleek",
-"generous",
-"advanced",
-unless the seller explicitly provided them.
-
-RULE 28:
-Do not add "designed for your Home & Kitchen needs"
-or similar generic claims.
-
-RULE 29:
-SEO keywords must be based ONLY on
-the actual supplied product information.
-
-RULE 30:
-Search tags must be based ONLY on
-the actual supplied product information.
-
-RULE 31:
-The product title must contain ONLY
-real supplied information.
-
-RULE 32:
-Do not put a specification in the title
-unless that specification was provided.
-
-RULE 33:
-Do not mention "Model" unless a model
-was provided.
-
-RULE 34:
-Do not mention "Capacity" unless capacity
-was provided.
-
-RULE 35:
-Do not mention "Material" unless material
-was provided.
-
-RULE 36:
-Do not mention "Color" unless color
-was provided.
-
-RULE 37:
-Do not mention "Quantity" unless quantity
-was provided.
-
-
-==================================================
-DESCRIPTION RULE
-==================================================
-
-Write a short factual description.
-
-Use simple marketplace language.
-
-Do not use marketing claims.
-
-Do not exaggerate.
-
-Do not add information.
-
-
-==================================================
-OUTPUT FORMAT
-==================================================
-
-Return ONLY the following sections:
-
-PRODUCT TITLE
-
-[title]
-
-
-DESCRIPTION
-
-[description]
-
-
-KEY HIGHLIGHTS
-
-• [fact]
-• [fact]
-• [fact]
-• [fact]
-
-
-SEO KEYWORDS
-
-• [keyword]
-• [keyword]
-• [keyword]
-• [keyword]
-• [keyword]
-
-
-SEARCH TAGS
-
-• [tag]
-• [tag]
-• [tag]
-• [tag]
-• [tag]
-
-
-IMPORTANT:
-
-Do NOT generate the SPECIFICATIONS section.
-
-The backend will add verified specifications
-automatically.
-
-Do not add any text before PRODUCT TITLE.
-
-Do not add any text after SEARCH TAGS.
-
+Generate the required JSON listing.
 `;
 
-}
+        // --------------------------------------------------
+        // GEMINI REQUEST
+        // --------------------------------------------------
 
+        const response = await ai.models.generateContent({
 
-// ==========================================================
-// GEMINI GENERATION
-// ==========================================================
+            model: MODEL,
 
-async function generateWithRetry(
-    prompt
-) {
+            config: {
+                systemInstruction: createSystemPrompt(category),
 
+                temperature: 0.2,
 
-    let lastError = null;
+                responseMimeType: "application/json"
+            },
 
+            contents: userPrompt
+        });
 
-    const models = [
+        // --------------------------------------------------
+        // GET AI TEXT
+        // --------------------------------------------------
 
-        MODEL,
+        let resultText = "";
 
-        "gemini-2.5-flash"
-
-    ];
-
-
-    const uniqueModels =
-        [...new Set(models)];
-
-
-    for (
-        const model of uniqueModels
-    ) {
-
-
-        for (
-            let attempt = 1;
-            attempt <= 3;
-            attempt++
+        if (response && response.text) {
+            resultText = response.text;
+        } else if (
+            response &&
+            typeof response.text === "function"
         ) {
-
-
-            try {
-
-
-                console.log(
-                    `🤖 Trying ${model} - Attempt ${attempt}`
-                );
-
-
-                const response =
-                    await ai.models.generateContent({
-
-                        model:
-                            model,
-
-                        contents:
-                            prompt
-
-                    });
-
-
-                const text =
-                    response.text;
-
-
-                if (
-                    !text ||
-                    !text.trim()
-                ) {
-
-                    throw new Error(
-                        "Gemini returned an empty response"
-                    );
-
-                }
-
-
-                console.log(
-                    `✅ Gemini response received from ${model}`
-                );
-
-
-                return text.trim();
-
-            }
-            catch (error) {
-
-
-                lastError =
-                    error;
-
-
-                console.error(
-
-                    `❌ ${model} attempt ${attempt} failed:`,
-
-                    error.message ||
-                    error
-
-                );
-
-
-                const status =
-                    error?.status ||
-                    error?.code ||
-                    error?.error?.code;
-
-
-                const message =
-                    error?.message ||
-                    error?.error?.message ||
-                    "";
-
-
-                const temporaryError =
-
-                    status === 429 ||
-
-                    status === 500 ||
-
-                    status === 502 ||
-
-                    status === 503 ||
-
-                    message
-                        .toLowerCase()
-                        .includes(
-                            "high demand"
-                        ) ||
-
-                    message
-                        .toLowerCase()
-                        .includes(
-                            "temporarily"
-                        );
-
-
-                if (
-                    !temporaryError
-                ) {
-
-                    break;
-
-                }
-
-
-                if (
-                    attempt < 3
-                ) {
-
-
-                    const delay =
-                        Math.pow(
-                            2,
-                            attempt
-                        ) * 1000;
-
-
-                    console.log(
-
-                        `⏳ Retrying after ${delay}ms...`
-
-                    );
-
-
-                    await new Promise(
-                        resolve =>
-                            setTimeout(
-                                resolve,
-                                delay
-                            )
-                    );
-
-                }
-
-            }
-
+            resultText = response.text();
         }
 
+        // --------------------------------------------------
+        // CHECK EMPTY RESPONSE
+        // --------------------------------------------------
 
-        console.log(
-            `⚠️ Switching model after failures: ${model}`
-        );
+        if (!resultText) {
 
-    }
+            return res.status(500).json({
+                success: false,
+                error: "AI returned an empty response."
+            });
+        }
 
+        // --------------------------------------------------
+        // PARSE JSON
+        // --------------------------------------------------
 
-    throw (
-        lastError ||
-        new Error(
-            "Gemini API request failed"
-        )
-    );
-
-}
-
-
-// ==========================================================
-// GENERATE ENDPOINT
-// ==========================================================
-
-app.post(
-    "/generate",
-    async (req, res) => {
-
+        let listing;
 
         try {
 
+            listing = JSON.parse(resultText);
 
-            // ------------------------------------------------
-            // API KEY CHECK
-            // ------------------------------------------------
+        } catch (parseError) {
 
-            if (!API_KEY) {
+            // Try to remove accidental Markdown fences
+            const cleaned = resultText
+                .replace(/```json/gi, "")
+                .replace(/```/g, "")
+                .trim();
+
+            try {
+
+                listing = JSON.parse(cleaned);
+
+            } catch (secondError) {
 
                 return res.status(500).json({
-
-                    error:
-                        "GEMINI_API_KEY is not configured on Render"
-
+                    success: false,
+                    error: "AI returned invalid JSON.",
+                    raw: resultText
                 });
-
             }
-
-
-            // ------------------------------------------------
-            // GET REQUEST DATA
-            // ------------------------------------------------
-
-            const product =
-                cleanProductData(
-                    req.body
-                );
-
-
-            if (!product) {
-
-                return res.status(400).json({
-
-                    error:
-                        "Product data is required."
-
-                });
-
-            }
-
-
-            // ------------------------------------------------
-            // VALIDATE
-            // ------------------------------------------------
-
-            if (
-                !product.category
-            ) {
-
-                return res.status(400).json({
-
-                    error:
-                        "Product category is required."
-
-                });
-
-            }
-
-
-            if (
-                !validateCategory(
-                    product.category
-                )
-            ) {
-
-                return res.status(400).json({
-
-                    error:
-                        "Unsupported product category."
-
-                });
-
-            }
-
-
-            if (
-                !product.productName
-            ) {
-
-                return res.status(400).json({
-
-                    error:
-                        "Product name is required."
-
-                });
-
-            }
-
-
-            console.log(
-                "📥 Product request received"
-            );
-
-
-            console.log(
-                "📂 Category:",
-                product.category
-            );
-
-
-            console.log(
-                "🛍️ Product:",
-                product.productName
-            );
-
-
-            // ------------------------------------------------
-            // BUILD VERIFIED SPECS
-            // ------------------------------------------------
-
-            const specifications =
-                buildSpecifications(
-                    product
-                );
-
-
-            console.log(
-                "🔐 Verified specifications:",
-                specifications
-            );
-
-
-            // ------------------------------------------------
-            // CREATE PROMPT
-            // ------------------------------------------------
-
-            const prompt =
-                createPrompt(
-                    product,
-                    specifications
-                );
-
-
-            // ------------------------------------------------
-            // GEMINI
-            // ------------------------------------------------
-
-            const aiResult =
-                await generateWithRetry(
-                    prompt
-                );
-
-
-            // ------------------------------------------------
-            // ADD SERVER-VERIFIED SPECS
-            // ------------------------------------------------
-
-            let finalResult =
-                aiResult;
-
-
-            finalResult +=
-                "\n\nSPECIFICATIONS\n\n";
-
-
-            specifications.forEach(
-                item => {
-
-                    finalResult +=
-                        `• ${item.label}: ${item.value}\n`;
-
-                }
-            );
-
-
-            finalResult +=
-                "\n==============================\n";
-
-            finalResult +=
-                "Generated by AI Seller Toolkit";
-
-
-            // ------------------------------------------------
-            // RESPONSE
-            // ------------------------------------------------
-
-            console.log(
-                "✅ Listing generated successfully"
-            );
-
-
-            return res.json({
-
-                success:
-                    true,
-
-                version:
-                    "3.0",
-
-                category:
-                    product.category,
-
-                result:
-                    finalResult
-
-            });
-
-        }
-        catch (error) {
-
-
-            console.error(
-                "❌ Final Gemini Error:",
-                error
-            );
-
-
-            const status =
-                error?.status ||
-                error?.code ||
-                error?.error?.code ||
-                500;
-
-
-            const details =
-                error?.message ||
-                error?.error?.message ||
-                "Unknown Gemini API error";
-
-
-            // ------------------------------------------------
-            // RATE LIMIT
-            // ------------------------------------------------
-
-            if (
-                status === 429
-            ) {
-
-                return res.status(503).json({
-
-                    error:
-                        "Gemini API limit reached. Please try again later."
-
-                });
-
-            }
-
-
-            // ------------------------------------------------
-            // TEMPORARY SERVER ERROR
-            // ------------------------------------------------
-
-            if (
-                status === 500 ||
-                status === 502 ||
-                status === 503
-            ) {
-
-                return res.status(503).json({
-
-                    error:
-                        "Gemini service is temporarily unavailable. Please try again."
-
-                });
-
-            }
-
-
-            // ------------------------------------------------
-            // GENERAL ERROR
-            // ------------------------------------------------
-
-            return res.status(500).json({
-
-                error:
-                    "Gemini API request failed",
-
-                details:
-                    details
-
-            });
-
         }
 
+        // --------------------------------------------------
+        // NORMALIZE RESULT
+        // --------------------------------------------------
+
+        listing.title = cleanText(listing.title);
+
+        listing.description = cleanText(
+            listing.description
+        );
+
+        listing.seoTitle = cleanText(
+            listing.seoTitle
+        );
+
+        listing.seoDescription = cleanText(
+            listing.seoDescription
+        );
+
+        listing.highlights = Array.isArray(
+            listing.highlights
+        )
+            ? listing.highlights
+            : [];
+
+        listing.keywords = Array.isArray(
+            listing.keywords
+        )
+            ? listing.keywords
+            : [];
+
+        listing.hashtags = Array.isArray(
+            listing.hashtags
+        )
+            ? listing.hashtags
+            : [];
+
+        // --------------------------------------------------
+        // FINAL RESPONSE
+        // --------------------------------------------------
+
+        return res.json({
+
+            success: true,
+
+            category: category,
+
+            productName: productData.productName,
+
+            listing: listing,
+
+            version: "4.0"
+        });
+
+    } catch (error) {
+
+        console.error(
+            "Generate Listing Error:",
+            error
+        );
+
+        // --------------------------------------------------
+        // FRIENDLY ERROR
+        // --------------------------------------------------
+
+        let message =
+            "Unable to generate product listing.";
+
+        if (
+            error &&
+            error.message
+        ) {
+            message = error.message;
+        }
+
+        return res.status(500).json({
+
+            success: false,
+
+            error: message,
+
+            version: "4.0"
+        });
     }
-);
-
+});
 
 // ==========================================================
 // 404 HANDLER
 // ==========================================================
 
-app.use(
-    (req, res) => {
+app.use((req, res) => {
 
-        res.status(404).json({
+    res.status(404).json({
 
-            error:
-                "Endpoint not found."
+        success: false,
 
-        });
+        error: "API endpoint not found",
 
-    }
-);
-
+        path: req.originalUrl
+    });
+});
 
 // ==========================================================
 // GLOBAL ERROR HANDLER
 // ==========================================================
 
-app.use(
-    (error, req, res, next) => {
+app.use((err, req, res, next) => {
 
-        console.error(
-            "❌ Server error:",
-            error
-        );
+    console.error(
+        "Server Error:",
+        err
+    );
 
+    res.status(500).json({
 
-        res.status(500).json({
+        success: false,
 
-            error:
-                "Internal server error."
-
-        });
-
-    }
-);
-
+        error: "Internal server error"
+    });
+});
 
 // ==========================================================
 // START SERVER
 // ==========================================================
 
-app.listen(
-    PORT,
-    () => {
+app.listen(PORT, "0.0.0.0", () => {
 
-        console.log(
-            "=========================================="
-        );
+    console.log(
+        "=============================================="
+    );
 
-        console.log(
-            "🤖 AI SELLER TOOLKIT BACKEND"
-        );
+    console.log(
+        "AI SELLER TOOLKIT BACKEND"
+    );
 
-        console.log(
-            "🚀 Server running on port:",
-            PORT
-        );
+    console.log(
+        "Version: 4.0"
+    );
 
-        console.log(
-            "📦 Version: 3.0"
-        );
+    console.log(
+        `Server running on port ${PORT}`
+    );
 
-        console.log(
-            "🔐 Mode: Strict Factual"
-        );
+    console.log(
+        `Gemini Model: ${MODEL}`
+    );
 
-        console.log(
-            "📂 Mode: Category-Aware"
-        );
+    console.log(
+        `Gemini API: ${GEMINI_API_KEY ? "CONFIGURED" : "NOT CONFIGURED"}`
+    );
 
-        console.log(
-            "🤖 Model:",
-            MODEL
-        );
-
-        console.log(
-            "=========================================="
-        );
-
-    }
-);
+    console.log(
+        "=============================================="
+    );
+});
