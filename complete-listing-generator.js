@@ -23,8 +23,7 @@
 // ==========================================================
 
 const BACKEND_URL =
-    "https://YOUR-BACKEND-URL.onrender.com";
-
+    "https://ai-seller-toolkit-backend-1.onrender.com";
 
 // ==========================================================
 // API ENDPOINT
