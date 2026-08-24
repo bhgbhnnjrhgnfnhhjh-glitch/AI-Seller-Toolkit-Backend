@@ -2,14 +2,18 @@
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <title>Complete Listing Generator - AI Seller Toolkit</title>
+    <title>AI Seller Toolkit - Complete Product Listing</title>
 
     <style>
+
         * {
             box-sizing: border-box;
         }
@@ -17,378 +21,2619 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: #f5f7fb;
-            color: #222;
+            background: #f4f7fb;
+            color: #172033;
         }
+
+        /* =========================
+           HEADER
+        ========================= */
 
         header {
             background: #111827;
             color: white;
-            padding: 20px;
             text-align: center;
+            padding: 22px 15px;
         }
 
         header h1 {
-            margin: 0 0 8px;
+            margin: 0;
+            font-size: 23px;
         }
 
-        .container {
-            max-width: 900px;
-            margin: 25px auto;
-            padding: 15px;
+        header p {
+            margin: 7px 0 0;
+            color: #d1d5db;
+            font-size: 14px;
         }
+
+        /* =========================
+           MAIN CONTAINER
+        ========================= */
+
+        .container {
+            width: min(900px, 94%);
+            margin: 25px auto 50px;
+        }
+
+        /* =========================
+           CARD
+        ========================= */
 
         .card {
             background: white;
-            padding: 20px;
             border-radius: 14px;
-            margin-bottom: 20px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            padding: 22px;
+            margin-bottom: 18px;
+
+            box-shadow:
+                0 5px 22px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h2 {
+            margin: 0 0 18px;
+            font-size: 19px;
+        }
+
+        /* =========================
+           CATEGORY NOTE
+        ========================= */
+
+        .category-note {
+            background: #eef5ff;
+
+            border-left:
+                4px solid #2563eb;
+
+            padding: 12px;
+
+            border-radius: 7px;
+
+            margin-bottom: 18px;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+        }
+
+        /* =========================
+           FIELDS
+        ========================= */
+
+        .field {
+            margin-bottom: 15px;
         }
 
         label {
             display: block;
-            font-weight: bold;
-            margin-top: 14px;
-            margin-bottom: 6px;
+
+            font-weight: 600;
+
+            font-size: 14px;
+
+            margin-bottom: 7px;
+        }
+
+        .required {
+            color: #dc2626;
+        }
+
+        .optional {
+            color: #6b7280;
+
+            font-weight: normal;
+
+            font-size: 12px;
         }
 
         input,
-        textarea,
-        select {
+        select,
+        textarea {
+
             width: 100%;
+
             padding: 12px;
-            border: 1px solid #d1d5db;
+
+            border:
+                1px solid #d1d5db;
+
             border-radius: 8px;
-            font-size: 15px;
+
+            font-size: 14px;
+
+            outline: none;
+
+            background: white;
+
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+
+            border-color: #2563eb;
+
         }
 
         textarea {
-            min-height: 100px;
+
+            min-height: 105px;
+
             resize: vertical;
+
         }
 
-        button {
-            border: none;
-            border-radius: 8px;
-            padding: 12px 18px;
-            margin-top: 15px;
-            cursor: pointer;
-            font-size: 15px;
-            font-weight: bold;
+        /* =========================
+           TWO COLUMN GRID
+        ========================= */
+
+        .field-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 15px;
+
         }
 
-        #generateListingBtn {
+        /* =========================
+           DYNAMIC CATEGORY
+        ========================= */
+
+        .dynamic-field {
+
+            display: block;
+
+        }
+
+        .hidden-field {
+
+            display: none !important;
+
+        }
+
+        /* =========================
+           BUTTON
+        ========================= */
+
+        .button {
+
             width: 100%;
+
+            border: 0;
+
+            border-radius: 8px;
+
+            padding: 14px;
+
             background: #2563eb;
+
             color: white;
-            font-size: 17px;
+
+            font-size: 16px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
         }
 
-        #generateListingBtn:disabled {
-            opacity: 0.6;
+        .button:hover {
+
+            background: #1d4ed8;
+
+        }
+
+        .button:disabled {
+
+            opacity: 0.65;
+
             cursor: not-allowed;
+
         }
 
-        .secondary {
-            background: #111827;
-            color: white;
-            margin-right: 8px;
+        /* =========================
+           STATUS
+        ========================= */
+
+        .status {
+
+            margin-top: 12px;
+
+            text-align: center;
+
+            font-size: 14px;
+
+            min-height: 20px;
+
         }
 
-        .danger {
-            background: #dc2626;
-            color: white;
+        /* =========================
+           RESULT
+        ========================= */
+
+        .result-card {
+
+            display: none;
+
         }
 
         .result-box {
-            margin-top: 15px;
+
+            background: #f8fafc;
+
+            border:
+                1px solid #e5e7eb;
+
+            border-radius: 10px;
+
+            padding: 16px;
+
+            white-space: pre-wrap;
+
+            line-height: 1.6;
+
+            overflow-wrap: anywhere;
+
         }
 
-        .result-box h3 {
-            margin-bottom: 8px;
+        .small {
+
+            font-size: 12px;
+
+            color: #6b7280;
+
+            margin-top: 6px;
+
         }
 
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 15px;
-            font-weight: bold;
+        /* =========================
+           MOBILE
+        ========================= */
+
+        @media (max-width: 650px) {
+
+            .field-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+            .card {
+
+                padding: 17px;
+
+            }
+
+            header h1 {
+
+                font-size: 20px;
+
+            }
+
         }
 
-        #message {
-            display: none;
-            padding: 12px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            font-weight: bold;
-        }
-
-        .success {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .error {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .category-note {
-            margin-top: 8px;
-            color: #666;
-            font-size: 13px;
-        }
     </style>
+
 </head>
+
 
 <body>
 
+
+<!-- =====================================================
+     HEADER
+===================================================== -->
+
 <header>
-    <h1>🤖 AI Seller Toolkit</h1>
-    <p>Complete AI Product Listing Generator</p>
+
+    <h1>
+        🤖 AI Seller Toolkit
+    </h1>
+
+    <p>
+        Complete AI Product Listing Generator
+    </p>
+
 </header>
 
-<div class="container">
 
-    <div id="message"></div>
+<!-- =====================================================
+     MAIN
+===================================================== -->
 
-    <!-- ================= INPUT ================= -->
+<main class="container">
 
-    <div class="card">
 
-        <h2>🛍️ Product Information</h2>
+    <!-- =================================================
+         PRODUCT INFORMATION
+    ================================================== -->
 
-        <label>Product Category</label>
+    <section class="card">
 
-        <select id="category">
+        <h2>
+            🛍️ Product Information
+        </h2>
 
-            <option value="Fashion">👗 Fashion</option>
-            <option value="Beauty">💄 Beauty</option>
-            <option value="Electronics">📱 Electronics</option>
-            <option value="Home & Kitchen">🏠 Home & Kitchen</option>
-            <option value="Shoes">👟 Shoes</option>
-            <option value="Jewellery">💍 Jewellery</option>
-            <option value="Toys">🧸 Toys</option>
-            <option value="Books">📚 Books</option>
-            <option value="Pet">🐶 Pet</option>
-            <option value="Sports">🏋️ Sports</option>
-            <option value="Automotive">🚗 Automotive</option>
-            <option value="Garden">🌱 Garden</option>
-            <option value="Food">🍎 Food</option>
-            <option value="Gifts">🎁 Gifts</option>
-
-        </select>
 
         <div class="category-note">
-            AI आपके चुने हुए category के अनुसार listing बनाएगा।
+
+            Category चुनने पर उसी category के
+            जरूरी product fields दिखाई देंगे।
+
+            <br>
+
+            AI केवल आपके द्वारा दी गई जानकारी
+            का उपयोग करेगा।
+
         </div>
 
 
-        <label>Product Name *</label>
+        <!-- =================================================
+             CATEGORY
+        ================================================== -->
 
-        <input
-            type="text"
-            id="productName"
-            placeholder="Example: Cotton Kurti"
-        >
+        <div class="field">
 
+            <label for="category">
 
-        <label>Brand</label>
+                Product Category
 
-        <input
-            type="text"
-            id="brand"
-            placeholder="Example: XYZ"
-        >
+                <span class="required">
+                    *
+                </span>
 
-
-        <label>Price</label>
-
-        <input
-            type="text"
-            id="price"
-            placeholder="Example: ₹599"
-        >
+            </label>
 
 
-        <label>Color</label>
+            <select
+                id="category"
+                name="category"
+            >
 
-        <input
-            type="text"
-            id="color"
-            placeholder="Example: Blue"
-        >
+                <option value="Fashion">
+                    👗 Fashion
+                </option>
+
+                <option value="Beauty">
+                    💄 Beauty
+                </option>
+
+                <option value="Electronics">
+                    📱 Electronics
+                </option>
+
+                <option value="Home & Kitchen">
+                    🏠 Home & Kitchen
+                </option>
+
+                <option value="Shoes">
+                    👟 Shoes
+                </option>
+
+                <option value="Jewellery">
+                    💍 Jewellery
+                </option>
+
+                <option value="Toys">
+                    🧸 Toys
+                </option>
+
+                <option value="Books">
+                    📚 Books
+                </option>
+
+                <option value="Pet">
+                    🐶 Pet
+                </option>
+
+                <option value="Sports">
+                    🏋️ Sports
+                </option>
+
+                <option value="Automotive">
+                    🚗 Automotive
+                </option>
+
+                <option value="Garden">
+                    🌱 Garden
+                </option>
+
+                <option value="Food">
+                    🍎 Food
+                </option>
+
+                <option value="Gifts">
+                    🎁 Gifts
+                </option>
+
+            </select>
+
+        </div>
 
 
-        <label>Material / Fabric</label>
+        <!-- =================================================
+             PRODUCT NAME
+        ================================================== -->
 
-        <input
-            type="text"
-            id="material"
-            placeholder="Example: Cotton"
-        >
+        <div class="field">
 
+            <label for="productName">
 
-        <label>Size / Dimensions</label>
+                Product Name
 
-        <input
-            type="text"
-            id="size"
-            placeholder="Example: M / 40 x 30 cm"
-        >
+                <span class="required">
+                    *
+                </span>
 
+            </label>
 
-        <label>Model / SKU</label>
+            <input
+                type="text"
+                id="productName"
+                name="productName"
+                placeholder="Example: Stainless Steel Water Bottle"
+            >
 
-        <input
-            type="text"
-            id="model"
-            placeholder="Optional"
-        >
-
-
-        <label>Quantity</label>
-
-        <input
-            type="text"
-            id="quantity"
-            placeholder="Example: 1 Piece"
-        >
+        </div>
 
 
-        <label>Product Features</label>
+        <!-- =================================================
+             BRAND + PRICE
+        ================================================== -->
 
-        <textarea
-            id="features"
-            placeholder="अपनी product की असली features लिखें..."
-        ></textarea>
-
-
-        <label>Extra Product Information</label>
-
-        <textarea
-            id="description"
-            placeholder="Product के बारे में अतिरिक्त जानकारी..."
-        ></textarea>
+        <div class="field-grid">
 
 
-        <button
-            id="generateListingBtn">
-            ✨ Generate Complete Listing
-        </button>
+            <div class="field">
+
+                <label for="brand">
+
+                    Brand
+
+                    <span class="optional">
+                        (Optional)
+                    </span>
+
+                </label>
+
+                <input
+                    type="text"
+                    id="brand"
+                    name="brand"
+                    placeholder="Example: Test Brand"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="price">
+
+                    Price
+
+                    <span class="optional">
+                        (Optional)
+                    </span>
+
+                </label>
+
+                <input
+                    type="text"
+                    id="price"
+                    name="price"
+                    placeholder="Example: ₹499"
+                >
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             CATEGORY DETAILS
+        ================================================== -->
+
+        <h2 style="margin-top:24px;">
+
+            📋 Category Details
+
+        </h2>
+
+
+        <div id="categoryFields">
+
+
+            <!-- =================================================
+                 FASHION
+            ================================================== -->
+
+            <div
+                class="dynamic-field"
+                data-categories="Fashion"
+            >
+
+                <div class="field-grid">
+
+
+                    <div class="field">
+
+                        <label for="fabric">
+
+                            Fabric / Material
+
+                        </label>
+
+                        <input
+                            id="fabric"
+                            name="fabric"
+                            placeholder="Example: Cotton"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="fashionColor">
+
+                            Color
+
+                        </label>
+
+                        <input
+                            id="fashionColor"
+                            name="color"
+                            placeholder="Example: Blue"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="fashionSize">
+
+                            Size
+
+                        </label>
+
+                        <input
+                            id="fashionSize"
+                            name="size"
+                            placeholder="Example: M"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="pattern">
+
+                            Pattern
+
+                        </label>
+
+                        <input
+                            id="pattern"
+                            name="pattern"
+                            placeholder="Example: Floral"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="fit">
+
+                            Fit
+
+                        </label>
+
+                        <input
+                            id="fit"
+                            name="fit"
+                            placeholder="Example: Regular"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="fashionOccasion">
+
+                            Occasion
+
+                        </label>
+
+                        <input
+                            id="fashionOccasion"
+                            name="occasion"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="fashionQuantity">
+
+                            Quantity
+
+                        </label>
+
+                        <input
+                            id="fashionQuantity"
+                            name="quantity"
+                            placeholder="Example: 1 Piece"
+                        >
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 BEAUTY
+            ================================================== -->
+
+            <div
+                class="dynamic-field hidden-field"
+                data-categories="Beauty"
+            >
+
+                <div class="field-grid">
+
+
+                    <div class="field">
+
+                        <label for="form">
+
+                            Form / Texture
+
+                        </label>
+
+                        <input
+                            id="form"
+                            name="form"
+                            placeholder="Example: Gel"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="beautyColor">
+
+                            Color
+
+                        </label>
+
+                        <input
+                            id="beautyColor"
+                            name="color"
+                            placeholder="Example: Green"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="beautyQuantity">
+
+                            Quantity
+
+                        </label>
+
+                        <input
+                            id="beautyQuantity"
+                            name="quantity"
+                            placeholder="Example: 100g"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="variant">
+
+                            Variant
+
+                        </label>
+
+                        <input
+                            id="variant"
+                            name="variant"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="ingredients">
+
+                            Ingredients
+
+                        </label>
+
+                        <input
+                            id="ingredients"
+                            name="ingredients"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="skinType">
+
+                            Skin Type
+
+                        </label>
+
+                        <input
+                            id="skinType"
+                            name="skinType"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="hairType">
+
+                            Hair Type
+
+                        </label>
+
+                        <input
+                            id="hairType"
+                            name="hairType"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="fragrance">
+
+                            Fragrance
+
+                        </label>
+
+                        <input
+                            id="fragrance"
+                            name="fragrance"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 ELECTRONICS
+            ================================================== -->
+
+            <div
+                class="dynamic-field hidden-field"
+                data-categories="Electronics"
+            >
+
+                <div class="field-grid">
+
+
+                    <div class="field">
+
+                        <label for="electronicsModel">
+
+                            Model
+
+                        </label>
+
+                        <input
+                            id="electronicsModel"
+                            name="model"
+                            placeholder="Example: TWS-100"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="electronicsColor">
+
+                            Color
+
+                        </label>
+
+                        <input
+                            id="electronicsColor"
+                            name="color"
+                            placeholder="Example: Black"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="storage">
+
+                            Storage
+
+                        </label>
+
+                        <input
+                            id="storage"
+                            name="storage"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="ram">
+
+                            RAM
+
+                        </label>
+
+                        <input
+                            id="ram"
+                            name="ram"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="battery">
+
+                            Battery
+
+                        </label>
+
+                        <input
+                            id="battery"
+                            name="battery"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="connectivity">
+
+                            Connectivity
+
+                        </label>
+
+                        <input
+                            id="connectivity"
+                            name="connectivity"
+                            placeholder="Example: Bluetooth"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="compatibility">
+
+                            Compatibility
+
+                        </label>
+
+                        <input
+                            id="compatibility"
+                            name="compatibility"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="warranty">
+
+                            Warranty
+
+                        </label>
+
+                        <input
+                            id="warranty"
+                            name="warranty"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="electronicsQuantity">
+
+                            Quantity
+
+                        </label>
+
+                        <input
+                            id="electronicsQuantity"
+                            name="quantity"
+                            placeholder="Example: 1 Piece"
+                        >
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 HOME & KITCHEN
+            ================================================== -->
+
+            <div
+                class="dynamic-field hidden-field"
+                data-categories="Home & Kitchen"
+            >
+
+                <div class="field-grid">
+
+
+                    <div class="field">
+
+                        <label for="material">
+
+                            Material
+
+                        </label>
+
+                        <input
+                            id="material"
+                            name="material"
+                            placeholder="Example: Stainless Steel"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="homeColor">
+
+                            Color
+
+                        </label>
+
+                        <input
+                            id="homeColor"
+                            name="color"
+                            placeholder="Example: Silver"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="dimensions">
+
+                            Size / Dimensions
+
+                        </label>
+
+                        <input
+                            id="dimensions"
+                            name="dimensions"
+                            placeholder="Example: 30 x 10 cm"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="capacity">
+
+                            Capacity
+
+                        </label>
+
+                        <input
+                            id="capacity"
+                            name="capacity"
+                            placeholder="Example: 1 Litre"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="homeQuantity">
+
+                            Quantity
+
+                        </label>
+
+                        <input
+                            id="homeQuantity"
+                            name="quantity"
+                            placeholder="Example: 1 Piece"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="usage">
+
+                            Usage
+
+                        </label>
+
+                        <input
+                            id="usage"
+                            name="usage"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 SHOES
+            ================================================== -->
+
+            <div
+                class="dynamic-field hidden-field"
+                data-categories="Shoes"
+            >
+
+                <div class="field-grid">
+
+
+                    <div class="field">
+
+                        <label for="shoesMaterial">
+
+                            Material
+
+                        </label>
+
+                        <input
+                            id="shoesMaterial"
+                            name="material"
+                            placeholder="Example: Synthetic"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="shoesColor">
+
+                            Color
+
+                        </label>
+
+                        <input
+                            id="shoesColor"
+                            name="color"
+                            placeholder="Example: Black"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="shoesSize">
+
+                            Size
+
+                        </label>
+
+                        <input
+                            id="shoesSize"
+                            name="size"
+                            placeholder="Example: 8"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="sole">
+
+                            Sole
+
+                        </label>
+
+                        <input
+                            id="sole"
+                            name="sole"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="closure">
+
+                            Closure
+
+                        </label>
+
+                        <input
+                            id="closure"
+                            name="closure"
+                            placeholder="Example: Lace-up"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="shoesOccasion">
+
+                            Occasion
+
+                        </label>
+
+                        <input
+                            id="shoesOccasion"
+                            name="occasion"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="shoesQuantity">
+
+                            Quantity
+
+                        </label>
+
+                        <input
+                            id="shoesQuantity"
+                            name="quantity"
+                            placeholder="Example: 1 Pair"
+                        >
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 JEWELLERY
+            ================================================== -->
+
+            <div
+                class="dynamic-field hidden-field"
+                data-categories="Jewellery"
+            >
+
+                <div class="field-grid">
+
+
+                    <div class="field">
+
+                        <label for="jewelleryMaterial">
+
+                            Material
+
+                        </label>
+
+                        <input
+                            id="jewelleryMaterial"
+                            name="material"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="jewelleryColor">
+
+                            Color
+
+                        </label>
+
+                        <input
+                            id="jewelleryColor"
+                            name="color"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="design">
+
+                            Design
+
+                        </label>
+
+                        <input
+                            id="design"
+                            name="design"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="jewellerySize">
+
+                            Size
+
+                        </label>
+
+                        <input
+                            id="jewellerySize"
+                            name="size"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="stone">
+
+                            Stone
+
+                        </label>
+
+                        <input
+                            id="stone"
+                            name="stone"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="jewelleryOccasion">
+
+                            Occasion
+
+                        </label>
+
+                        <input
+                            id="jewelleryOccasion"
+                            name="occasion"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="jewelleryQuantity">
+
+                            Quantity
+
+                        </label>
+
+                        <input
+                            id="jewelleryQuantity"
+                            name="quantity"
+                            placeholder="Example: 1 Piece"
+                        >
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 TOYS
+            ================================================== -->
+
+            <div
+                class="dynamic-field hidden-field"
+                data-categories="Toys"
+            >
+
+                <div class="field-grid">
+
+
+                    <div class="field">
+
+                        <label for="toysMaterial">
+
+                            Material
+
+                        </label>
+
+                        <input
+                            id="toysMaterial"
+                            name="material"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="toysColor">
+
+                            Color
+
+                        </label>
+
+                        <input
+                            id="toysColor"
+                            name="color"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="toysSize">
+
+                            Size
+
+                        </label>
+
+                        <input
+                            id="toysSize"
+                            name="size"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="ageGroup">
+
+                            Age Group
+
+                        </label>
+
+                        <input
+                            id="ageGroup"
+                            name="ageGroup"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="toysBattery">
+
+                            Battery
+
+                        </label>
+
+                        <input
+                            id="toysBattery"
+                            name="battery"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="toysQuantity">
+
+                            Quantity
+
+                        </label>
+
+                        <input
+                            id="toysQuantity"
+                            name="quantity"
+                            placeholder="Example: 1 Piece"
+                        >
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 BOOKS
+            ================================================== -->
+
+            <div
+                class="dynamic-field hidden-field"
+                data-categories="Books"
+            >
+
+                <div class="field-grid">
+
+
+                    <div class="field">
+
+                        <label for="author">
+
+                            Author
+
+                        </label>
+
+                        <input
+                            id="author"
+                            name="author"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="language">
+
+                            Language
+
+                        </label>
+
+                        <input
+                            id="language"
+                            name="language"
+                            placeholder="Example: English"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="bookFormat">
+
+                            Format
+
+                        </label>
+
+                        <input
+                            id="bookFormat"
+                            name="format"
+                            placeholder="Example: Paperback"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="pages">
+
+                            Pages
+
+                        </label>
+
+                        <input
+                            id="pages"
+                            name="pages"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="publisher">
+
+                            Publisher
+
+                        </label>
+
+                        <input
+                            id="publisher"
+                            name="publisher"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="edition">
+
+                            Edition
+
+                        </label>
+
+                        <input
+                            id="edition"
+                            name="edition"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="isbn">
+
+                            ISBN
+
+                        </label>
+
+                        <input
+                            id="isbn"
+                            name="isbn"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 PET
+            ================================================== -->
+
+            <div
+                class="dynamic-field hidden-field"
+                data-categories="Pet"
+            >
+
+                <div class="field-grid">
+
+
+                    <div class="field">
+
+                        <label for="petType">
+
+                            Pet Type
+
+                        </label>
+
+                        <input
+                            id="petType"
+                            name="petType"
+                            placeholder="Example: Dog"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="petMaterial">
+
+                            Material
+
+                        </label>
+
+                        <input
+                            id="petMaterial"
+                            name="material"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="petSize">
+
+                            Size
+
+                        </label>
+
+                        <input
+                            id="petSize"
+                            name="size"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="petQuantity">
+
+                            Quantity
+
+                        </label>
+
+                        <input
+                            id="petQuantity"
+                            name="quantity"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="petIngredients">
+
+                            Ingredients
+
+                        </label>
+
+                        <input
+                            id="petIngredients"
+                            name="ingredients"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="petFlavour">
+
+                            Flavour
+
+                        </label>
+
+                        <input
+                            id="petFlavour"
+                            name="flavour"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 SPORTS
+            ================================================== -->
+
+            <div
+                class="dynamic-field hidden-field"
+                data-categories="Sports"
+            >
+
+                <div class="field-grid">
+
+
+                    <div class="field">
+
+                        <label for="sportsMaterial">
+
+                            Material
+
+                        </label>
+
+                        <input
+                            id="sportsMaterial"
+                            name="material"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="sportsColor">
+
+                            Color
+
+                        </label>
+
+                        <input
+                            id="sportsColor"
+                            name="color"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="sportsSize">
+
+                            Size
+
+                        </label>
+
+                        <input
+                            id="sportsSize"
+                            name="size"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="weight">
+
+                            Weight
+
+                        </label>
+
+                        <input
+                            id="weight"
+                            name="weight"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="activity">
+
+                            Activity / Sport
+
+                        </label>
+
+                        <input
+                            id="activity"
+                            name="activity"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="sportsQuantity">
+
+                            Quantity
+
+                        </label>
+
+                        <input
+                            id="sportsQuantity"
+                            name="quantity"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 AUTOMOTIVE
+            ================================================== -->
+
+            <div
+                class="dynamic-field hidden-field"
+                data-categories="Automotive"
+            >
+
+                <div class="field-grid">
+
+
+                    <div class="field">
+
+                        <label for="autoModel">
+
+                            Model
+
+                        </label>
+
+                        <input
+                            id="autoModel"
+                            name="model"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="vehicleCompatibility">
+
+                            Vehicle Compatibility
+
+                        </label>
+
+                        <input
+                            id="vehicleCompatibility"
+                            name="vehicleCompatibility"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="autoMaterial">
+
+                            Material
+
+                        </label>
+
+                        <input
+                            id="autoMaterial"
+                            name="material"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="autoColor">
+
+                            Color
+
+                        </label>
+
+                        <input
+                            id="autoColor"
+                            name="color"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="autoDimensions">
+
+                            Dimensions
+
+                        </label>
+
+                        <input
+                            id="autoDimensions"
+                            name="dimensions"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="autoQuantity">
+
+                            Quantity
+
+                        </label>
+
+                        <input
+                            id="autoQuantity"
+                            name="quantity"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 GARDEN
+            ================================================== -->
+
+            <div
+                class="dynamic-field hidden-field"
+                data-categories="Garden"
+            >
+
+                <div class="field-grid">
+
+
+                    <div class="field">
+
+                        <label for="gardenMaterial">
+
+                            Material
+
+                        </label>
+
+                        <input
+                            id="gardenMaterial"
+                            name="material"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="gardenColor">
+
+                            Color
+
+                        </label>
+
+                        <input
+                            id="gardenColor"
+                            name="color"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="gardenSize">
+
+                            Size
+
+                        </label>
+
+                        <input
+                            id="gardenSize"
+                            name="size"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="gardenQuantity">
+
+                            Quantity
+
+                        </label>
+
+                        <input
+                            id="gardenQuantity"
+                            name="quantity"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="plantCompatibility">
+
+                            Plant Compatibility
+
+                        </label>
+
+                        <input
+                            id="plantCompatibility"
+                            name="plantCompatibility"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="gardenUsage">
+
+                            Usage
+
+                        </label>
+
+                        <input
+                            id="gardenUsage"
+                            name="usage"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 FOOD
+            ================================================== -->
+
+            <div
+                class="dynamic-field hidden-field"
+                data-categories="Food"
+            >
+
+                <div class="field-grid">
+
+
+                    <div class="field">
+
+                        <label for="flavour">
+
+                            Flavour
+
+                        </label>
+
+                        <input
+                            id="flavour"
+                            name="flavour"
+                            placeholder="Example: Mango"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="foodQuantity">
+
+                            Quantity
+
+                        </label>
+
+                        <input
+                            id="foodQuantity"
+                            name="quantity"
+                            placeholder="Example: 500g"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="foodIngredients">
+
+                            Ingredients
+
+                        </label>
+
+                        <input
+                            id="foodIngredients"
+                            name="ingredients"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="packType">
+
+                            Pack Type
+
+                        </label>
+
+                        <input
+                            id="packType"
+                            name="packType"
+                            placeholder="Example: Pouch"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="dietaryInformation">
+
+                            Dietary Information
+
+                        </label>
+
+                        <input
+                            id="dietaryInformation"
+                            name="dietaryInformation"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="expiry">
+
+                            Expiry
+
+                        </label>
+
+                        <input
+                            id="expiry"
+                            name="expiry"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="shelfLife">
+
+                            Shelf Life
+
+                        </label>
+
+                        <input
+                            id="shelfLife"
+                            name="shelfLife"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 GIFTS
+            ================================================== -->
+
+            <div
+                class="dynamic-field hidden-field"
+                data-categories="Gifts"
+            >
+
+                <div class="field-grid">
+
+
+                    <div class="field">
+
+                        <label for="giftMaterial">
+
+                            Material
+
+                        </label>
+
+                        <input
+                            id="giftMaterial"
+                            name="material"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="giftColor">
+
+                            Color
+
+                        </label>
+
+                        <input
+                            id="giftColor"
+                            name="color"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="giftDesign">
+
+                            Design
+
+                        </label>
+
+                        <input
+                            id="giftDesign"
+                            name="design"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="giftQuantity">
+
+                            Quantity
+
+                        </label>
+
+                        <input
+                            id="giftQuantity"
+                            name="quantity"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="giftOccasion">
+
+                            Occasion
+
+                        </label>
+
+                        <input
+                            id="giftOccasion"
+                            name="occasion"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="recipient">
+
+                            Recipient
+
+                        </label>
+
+                        <input
+                            id="recipient"
+                            name="recipient"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                    <div class="field">
+
+                        <label for="packaging">
+
+                            Packaging
+
+                        </label>
+
+                        <input
+                            id="packaging"
+                            name="packaging"
+                            placeholder="Only if known"
+                        >
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- =================================================
+             PRODUCT FEATURES
+        ================================================== -->
 
         <div
-            id="loading"
-            class="loading">
-            🤖 AI listing बना रहा है...
-        </div>
+            class="field"
+            style="margin-top:18px;"
+        >
 
-    </div>
+            <label for="productFeatures">
 
+                Product Features
 
-    <!-- ================= RESULT ================= -->
+                <span class="optional">
+                    (Optional)
+                </span>
 
-    <div
-        id="listingResult"
-        class="card"
-        style="display:none;">
+            </label>
 
-        <h2>📋 Generated Listing</h2>
-
-
-        <div class="result-box">
-
-            <h3>🏷️ Product Title</h3>
 
             <textarea
-                id="generatedTitle"
-                readonly></textarea>
+                id="productFeatures"
+                name="productFeatures"
+                placeholder="सिर्फ वही features लिखें जो product में वास्तव में मौजूद हैं..."
+            ></textarea>
+
+
+            <div class="small">
+
+                उदाहरण:
+                Seller ने बताया हो तभी
+                "Leak Proof", "Bluetooth 5.3"
+                आदि लिखें।
+
+            </div>
 
         </div>
 
 
-        <div class="result-box">
+        <!-- =================================================
+             EXTRA INFORMATION
+        ================================================== -->
 
-            <h3>📝 Description</h3>
+        <div class="field">
+
+            <label for="extraInfo">
+
+                Extra Product Information
+
+                <span class="optional">
+                    (Optional)
+                </span>
+
+            </label>
+
 
             <textarea
-                id="generatedDescription"
-                readonly></textarea>
+                id="extraInfo"
+                name="extraInfo"
+                placeholder="Product के बारे में अतिरिक्त जानकारी..."
+            ></textarea>
 
         </div>
 
 
-        <div class="result-box">
-
-            <h3>⭐ Key Highlights</h3>
-
-            <textarea
-                id="generatedHighlights"
-                readonly></textarea>
-
-        </div>
-
-
-        <div class="result-box">
-
-            <h3>🔎 SEO Keywords</h3>
-
-            <textarea
-                id="generatedKeywords"
-                readonly></textarea>
-
-        </div>
-
-
-        <div class="result-box">
-
-            <h3>🏷️ Search Tags</h3>
-
-            <textarea
-                id="generatedTags"
-                readonly></textarea>
-
-        </div>
-
-
-        <div class="result-box">
-
-            <h3>📊 Specifications</h3>
-
-            <textarea
-                id="generatedSpecifications"
-                readonly></textarea>
-
-        </div>
-
+        <!-- =================================================
+             GENERATE BUTTON
+        ================================================== -->
 
         <button
-            class="secondary"
-            id="copyListingBtn">
-            📋 Copy Complete Listing
+            type="button"
+            id="generateListingBtn"
+            class="button"
+        >
+
+            ✨ Generate Complete Listing
+
         </button>
 
 
-        <button
-            class="secondary"
-            id="downloadListingBtn">
-            ⬇️ Download
-        </button>
+        <!-- =================================================
+             STATUS
+        ================================================== -->
+
+        <div
+            id="statusMessage"
+            class="status"
+            aria-live="polite"
+        ></div>
 
 
-        <button
-            class="danger"
-            id="clearListingBtn">
-            🗑️ Clear
-        </button>
+    </section>
 
-    </div>
 
-</div>
+    <!-- =====================================================
+         RESULT CARD
+    ===================================================== -->
 
+    <section
+        id="resultCard"
+        class="card result-card"
+    >
+
+        <h2>
+            📦 Generated Listing
+        </h2>
+
+
+        <div
+            id="listingResult"
+            class="result-box"
+        ></div>
+
+
+    </section>
+
+
+</main>
+
+
+<!-- =====================================================
+     CATEGORY-AWARE CONTROLLER
+====================================================== -->
+
+<script>
+
+(function () {
+
+
+    const categorySelect =
+        document.getElementById(
+            "category"
+        );
+
+
+    const dynamicFields =
+        document.querySelectorAll(
+            ".dynamic-field"
+        );
+
+
+    function updateCategoryFields() {
+
+
+        const selectedCategory =
+            categorySelect.value;
+
+
+        dynamicFields.forEach(
+            function (field) {
+
+
+                const categories =
+                    field.dataset.categories
+                        .split(",")
+                        .map(
+                            function (item) {
+
+                                return item.trim();
+
+                            }
+                        );
+
+
+                if (
+                    categories.includes(
+                        selectedCategory
+                    )
+                ) {
+
+
+                    field.classList.remove(
+                        "hidden-field"
+                    );
+
+
+                } else {
+
+
+                    field.classList.add(
+                        "hidden-field"
+                    );
+
+
+                    /*
+                    पुराने category के
+                    fields साफ करें।
+                    */
+
+                    field
+                        .querySelectorAll(
+                            "input, textarea, select"
+                        )
+                        .forEach(
+                            function (input) {
+
+                                input.value = "";
+
+                            }
+                        );
+
+                }
+
+            }
+        );
+
+    }
+
+
+    categorySelect.addEventListener(
+        "change",
+        updateCategoryFields
+    );
+
+
+    updateCategoryFields();
+
+
+})();
+
+</script>
+
+
+<!-- =====================================================
+     MAIN API JAVASCRIPT
+====================================================== -->
 
 <script src="complete-listing-generator.js"></script>
 
+
 </body>
+
 </html>
