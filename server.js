@@ -541,12 +541,10 @@ Generate the required JSON listing.
             model: MODEL,
 
             config: {
-                systemInstruction: createSystemPrompt(category),
+    systemInstruction: createSystemPrompt(category),
 
-                temperature: 0.2,
-
-                responseMimeType: "application/json"
-            },
+    responseMimeType: "application/json"
+},
 
             contents: userPrompt
         });
