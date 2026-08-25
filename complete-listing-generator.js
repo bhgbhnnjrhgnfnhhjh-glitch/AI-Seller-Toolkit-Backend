@@ -1,9 +1,9 @@
 // ==========================================================
 // AI SELLER TOOLKIT
 // COMPLETE LISTING GENERATOR
-// FINAL VERSION 6
-// Category-Aware + Strict Data Collection
-// Backend Version 4 Compatible
+// FINAL VERSION 7
+// Category-Aware + Strict Factual AI
+// Backend Version 7 Compatible
 // ==========================================================
 
 
@@ -15,22 +15,21 @@ const API_BASE_URL =
     "https://ai-seller-toolkit-backend-1.onrender.com";
 
 const API_URL =
-    API_BASE_URL + "/api/generate-listing";
+    API_BASE_URL +
+    "/api/generate-listing";
 
 
 // ==========================================================
 // SUPPORTED CATEGORIES
-// IMPORTANT:
-// UI category और backend category SAME रखी गई है
 // ==========================================================
 
 const CATEGORY_MAP = {
 
     "Fashion":
-        "Fashion & Clothing",
+        "Fashion",
 
     "Fashion & Clothing":
-        "Fashion & Clothing",
+        "Fashion",
 
     "Beauty":
         "Beauty",
@@ -68,6 +67,9 @@ const CATEGORY_MAP = {
     "Pet":
         "Pet",
 
+    "Pets":
+        "Pet",
+
     "Sports":
         "Sports",
 
@@ -100,23 +102,47 @@ const CATEGORY_MAP = {
 
 const CATEGORY_ICONS = {
 
-    "👗": "Fashion",
-    "💄": "Beauty",
-    "📱": "Electronics",
-    "🏠": "Home & Kitchen",
-    "👟": "Shoes",
-    "💍": "Jewellery",
-    "🧸": "Toys",
-    "📚": "Books",
-    "🐶": "Pet",
-    "🐾": "Pet",
-    "🏋️": "Sports",
-    "⚽": "Sports",
-    "🚗": "Automotive",
-    "🌱": "Garden",
-    "🍎": "Food",
-    "🍔": "Food",
-    "🎁": "Gifts"
+    "👗":
+        "Fashion",
+
+    "💄":
+        "Beauty",
+
+    "📱":
+        "Electronics",
+
+    "🏠":
+        "Home & Kitchen",
+
+    "👟":
+        "Shoes",
+
+    "💍":
+        "Jewellery",
+
+    "🧸":
+        "Toys",
+
+    "📚":
+        "Books",
+
+    "🐶":
+        "Pet",
+
+    "🏋️":
+        "Sports",
+
+    "🚗":
+        "Automotive",
+
+    "🌱":
+        "Garden",
+
+    "🍎":
+        "Food",
+
+    "🎁":
+        "Gifts"
 };
 
 
@@ -127,14 +153,17 @@ const CATEGORY_ICONS = {
 function removeCategoryIcon(value) {
 
     if (!value) {
+
         return "";
     }
 
     let text =
-        String(value).trim();
+        String(value)
+            .trim();
 
     for (
-        const icon of Object.keys(CATEGORY_ICONS)
+        const icon of
+        Object.keys(CATEGORY_ICONS)
     ) {
 
         if (
@@ -143,7 +172,9 @@ function removeCategoryIcon(value) {
 
             text =
                 text
-                    .substring(icon.length)
+                    .substring(
+                        icon.length
+                    )
                     .trim();
 
             break;
@@ -161,22 +192,27 @@ function removeCategoryIcon(value) {
 function normalizeCategory(value) {
 
     if (!value) {
+
         return "";
     }
 
     let category =
-        removeCategoryIcon(value);
+        removeCategoryIcon(
+            value
+        );
 
     category =
         category
-            .replace(/\s+/g, " ")
+            .replace(
+                /\s+/g,
+                " "
+            )
             .trim();
 
-
-    // Direct match
-
     if (
-        CATEGORY_MAP[category]
+        CATEGORY_MAP[
+            category
+        ]
     ) {
 
         return CATEGORY_MAP[
@@ -184,17 +220,15 @@ function normalizeCategory(value) {
         ];
     }
 
-
-    // Case-insensitive match
-
     const found =
-        Object.keys(CATEGORY_MAP)
+        Object.keys(
+            CATEGORY_MAP
+        )
             .find(
                 key =>
                     key.toLowerCase() ===
                     category.toLowerCase()
             );
-
 
     if (found) {
 
@@ -203,13 +237,12 @@ function normalizeCategory(value) {
         ];
     }
 
-
     return "";
 }
 
 
 // ==========================================================
-// FIND CATEGORY SELECT
+// FIND CATEGORY ELEMENT
 // ==========================================================
 
 function findCategoryElement() {
@@ -217,67 +250,81 @@ function findCategoryElement() {
     const possibleIds = [
 
         "category",
-        "productCategory",
-        "product-category",
-        "productCategorySelect",
-        "product_category",
-        "categorySelect"
 
+        "productCategory",
+
+        "product-category",
+
+        "productCategorySelect",
+
+        "product_category",
+
+        "categorySelect"
     ];
 
-
     for (
-        const id of possibleIds
+        const id of
+        possibleIds
     ) {
 
         const element =
-            document.getElementById(id);
-
+            document.getElementById(
+                id
+            );
 
         if (element) {
+
             return element;
         }
-
     }
 
-
-    // Fallback
-
     const selects =
-        document.querySelectorAll("select");
-
+        document.querySelectorAll(
+            "select"
+        );
 
     for (
-        const select of selects
+        const select of
+        selects
     ) {
 
         const text =
-            select.innerText || "";
+            (
+                select.innerText ||
+                ""
+            ).toLowerCase();
 
+        if (
 
-        const hasCategory =
-            text.includes("Fashion") ||
-            text.includes("Beauty") ||
-            text.includes("Electronics") ||
-            text.includes("Home & Kitchen") ||
-            text.includes("Shoes") ||
-            text.includes("Jewellery") ||
-            text.includes("Toys") ||
-            text.includes("Books") ||
-            text.includes("Pet") ||
-            text.includes("Sports") ||
-            text.includes("Automotive") ||
-            text.includes("Garden") ||
-            text.includes("Food") ||
-            text.includes("Gifts");
+            text.includes(
+                "fashion"
+            ) ||
 
+            text.includes(
+                "beauty"
+            ) ||
 
-        if (hasCategory) {
+            text.includes(
+                "electronics"
+            ) ||
+
+            text.includes(
+                "pet"
+            ) ||
+
+            text.includes(
+                "garden"
+            ) ||
+
+            text.includes(
+                "gifts"
+            )
+
+        ) {
+
             return select;
         }
-
     }
-
 
     return null;
 }
@@ -290,119 +337,34 @@ function findCategoryElement() {
 function getValue(...ids) {
 
     for (
-        const id of ids
+        const id of
+        ids
     ) {
 
         const element =
-            document.getElementById(id);
+            document.getElementById(
+                id
+            );
 
+        if (element) {
 
-        if (!element) {
-            continue;
-        }
-
-
-        const value =
-            String(
+            return String(
                 element.value || ""
             ).trim();
-
-
-        if (value) {
-            return value;
         }
-
     }
-
 
     return "";
 }
 
 
 // ==========================================================
-// GET FIELD LABEL
-// ==========================================================
-
-function getFieldLabel(element) {
-
-    if (!element) {
-        return "";
-    }
-
-
-    // Explicit label
-
-    if (
-        element.labels &&
-        element.labels.length
-    ) {
-
-        const label =
-            element.labels[0].innerText || "";
-
-        if (label.trim()) {
-            return label.trim();
-        }
-
-    }
-
-
-    // aria-label
-
-    const aria =
-        element.getAttribute("aria-label");
-
-    if (aria) {
-        return aria.trim();
-    }
-
-
-    // placeholder
-
-    const placeholder =
-        element.getAttribute("placeholder");
-
-    if (
-        placeholder &&
-        !placeholder.includes("Only if known")
-    ) {
-
-        return placeholder.trim();
-    }
-
-
-    // name
-
-    const name =
-        element.getAttribute("name");
-
-    if (name) {
-        return name.trim();
-    }
-
-
-    // id
-
-    const id =
-        element.getAttribute("id");
-
-    if (id) {
-        return id.trim();
-    }
-
-
-    return "";
-}
-
-
-// ==========================================================
-// GET ALL CATEGORY FIELDS
+// COLLECT CATEGORY FIELDS
 // ==========================================================
 
 function collectCategoryFields() {
 
     const data = {};
-
 
     const containers = [
 
@@ -429,12 +391,10 @@ function collectCategoryFields() {
         document.querySelector(
             ".category-fields"
         )
-
-    ].filter(Boolean);
-
+    ]
+        .filter(Boolean);
 
     let elements = [];
-
 
     containers.forEach(
         container => {
@@ -444,14 +404,12 @@ function collectCategoryFields() {
                     "input, textarea, select"
                 )
             );
-
         }
     );
 
-
-    // Fallback
-
-    if (!elements.length) {
+    if (
+        !elements.length
+    ) {
 
         elements =
             Array.from(
@@ -459,57 +417,42 @@ function collectCategoryFields() {
                     "input[name], textarea[name], select[name]"
                 )
             );
-
     }
-
 
     elements.forEach(
         element => {
 
             const name =
-                element.getAttribute("name");
+                element.getAttribute(
+                    "name"
+                );
 
-            const id =
-                element.getAttribute("id");
+            if (!name) {
 
+                return;
+            }
 
             const value =
                 String(
                     element.value || ""
                 ).trim();
 
-
             if (!value) {
+
                 return;
             }
 
-
-            // Prefer name, then id, then label
-
-            const key =
-                name ||
-                id ||
-                getFieldLabel(element);
-
-
-            if (!key) {
-                return;
-            }
-
-
-            data[key] =
+            data[name] =
                 value;
-
         }
     );
-
 
     return data;
 }
 
 
 // ==========================================================
-// GET ALL PRODUCT DATA
+// COLLECT PRODUCT DATA
 // ==========================================================
 
 function collectProductData() {
@@ -517,29 +460,24 @@ function collectProductData() {
     const categoryElement =
         findCategoryElement();
 
-
     const rawCategory =
         categoryElement
             ? categoryElement.value
             : "";
-
 
     const category =
         normalizeCategory(
             rawCategory
         );
 
-
-    const categoryData =
-        collectCategoryFields();
-
-
     const product = {
 
         category:
+
             category,
 
         productName:
+
             getValue(
                 "productName",
                 "product-name",
@@ -548,18 +486,21 @@ function collectProductData() {
             ),
 
         brand:
+
             getValue(
                 "brand",
                 "productBrand"
             ),
 
         price:
+
             getValue(
                 "price",
                 "productPrice"
             ),
 
         productDetails:
+
             getValue(
                 "productDetails",
                 "product-details",
@@ -568,6 +509,7 @@ function collectProductData() {
             ),
 
         productFeatures:
+
             getValue(
                 "productFeatures",
                 "features",
@@ -575,6 +517,7 @@ function collectProductData() {
             ),
 
         extraInfo:
+
             getValue(
                 "extraInfo",
                 "extraProductInfo",
@@ -582,40 +525,42 @@ function collectProductData() {
             ),
 
         color:
+
             getValue(
                 "color",
                 "productColor"
             ),
 
         size:
+
             getValue(
                 "size",
                 "productSize"
             ),
 
         material:
+
             getValue(
                 "material",
                 "productMaterial"
             ),
 
         imageDescription:
+
             getValue(
                 "imageDescription",
                 "image-description"
             ),
 
         categoryData:
-            categoryData
 
+            collectCategoryFields()
     };
-
 
     console.log(
         "📦 FINAL PRODUCT DATA:",
         product
     );
-
 
     return product;
 }
@@ -625,26 +570,28 @@ function collectProductData() {
 // VALIDATE PRODUCT
 // ==========================================================
 
-function validateProduct(product) {
+function validateProduct(
+    product
+) {
 
-    if (!product.category) {
+    if (
+        !product.category
+    ) {
 
         return (
             "Product category is required. " +
             "Please select a valid category."
         );
-
     }
 
-
-    if (!product.productName) {
+    if (
+        !product.productName
+    ) {
 
         return (
             "Product Name is required."
         );
-
     }
-
 
     return "";
 }
@@ -664,15 +611,15 @@ function showStatus(
             "statusMessage"
         );
 
+    if (
+        !statusMessage
+    ) {
 
-    if (!statusMessage) {
         return;
     }
 
-
     statusMessage.textContent =
         message;
-
 
     if (
         type === "error"
@@ -682,7 +629,6 @@ function showStatus(
             "#dc2626";
 
     }
-
     else if (
         type === "success"
     ) {
@@ -691,14 +637,11 @@ function showStatus(
             "#15803d";
 
     }
-
     else {
 
         statusMessage.style.color =
             "#374151";
-
     }
-
 }
 
 
@@ -706,21 +649,23 @@ function showStatus(
 // DISPLAY LISTING
 // ==========================================================
 
-function displayListing(listing) {
+function displayListing(
+    listing
+) {
 
     const resultCard =
         document.getElementById(
             "resultCard"
         );
 
-
     const listingResult =
         document.getElementById(
             "listingResult"
         );
 
-
-    if (!listingResult) {
+    if (
+        !listingResult
+    ) {
 
         console.error(
             "❌ listingResult element not found"
@@ -729,29 +674,39 @@ function displayListing(listing) {
         return;
     }
 
-
     let output = "";
 
+    // ======================================================
+    // TITLE
+    // ======================================================
 
-    if (listing.title) {
+    if (
+        listing.title
+    ) {
 
         output +=
             "TITLE\n\n" +
             listing.title +
             "\n\n";
-
     }
 
+    // ======================================================
+    // DESCRIPTION
+    // ======================================================
 
-    if (listing.description) {
+    if (
+        listing.description
+    ) {
 
         output +=
             "DESCRIPTION\n\n" +
             listing.description +
             "\n\n";
-
     }
 
+    // ======================================================
+    // HIGHLIGHTS
+    // ======================================================
 
     if (
         Array.isArray(
@@ -763,7 +718,6 @@ function displayListing(listing) {
         output +=
             "HIGHLIGHTS\n\n";
 
-
         listing.highlights.forEach(
             item => {
 
@@ -771,15 +725,15 @@ function displayListing(listing) {
                     "• " +
                     item +
                     "\n";
-
             }
         );
 
-
         output += "\n";
-
     }
 
+    // ======================================================
+    // KEYWORDS
+    // ======================================================
 
     if (
         Array.isArray(
@@ -790,11 +744,17 @@ function displayListing(listing) {
 
         output +=
             "KEYWORDS\n\n" +
-            listing.keywords.join(", ") +
-            "\n\n";
 
+            listing.keywords.join(
+                ", "
+            ) +
+
+            "\n\n";
     }
 
+    // ======================================================
+    // HASHTAGS
+    // ======================================================
 
     if (
         Array.isArray(
@@ -805,57 +765,70 @@ function displayListing(listing) {
 
         output +=
             "HASHTAGS\n\n" +
-            listing.hashtags.join(" ") +
-            "\n\n";
 
+            listing.hashtags.join(
+                " "
+            ) +
+
+            "\n\n";
     }
 
+    // ======================================================
+    // SEO TITLE
+    // ======================================================
 
-    if (listing.seoTitle) {
+    if (
+        listing.seoTitle
+    ) {
 
         output +=
             "SEO TITLE\n\n" +
-            listing.seoTitle +
-            "\n\n";
 
+            listing.seoTitle +
+
+            "\n\n";
     }
 
+    // ======================================================
+    // SEO DESCRIPTION
+    // ======================================================
 
-    if (listing.seoDescription) {
+    if (
+        listing.seoDescription
+    ) {
 
         output +=
             "SEO DESCRIPTION\n\n" +
+
             listing.seoDescription +
+
             "\n\n";
-
     }
-
 
     if (!output) {
 
         output =
             "Listing generated successfully.";
-
     }
-
 
     listingResult.textContent =
         output;
 
-
-    if (resultCard) {
+    if (
+        resultCard
+    ) {
 
         resultCard.style.display =
             "block";
 
-
         resultCard.scrollIntoView({
-            behavior: "smooth",
-            block: "start"
+            behavior:
+                "smooth",
+
+            block:
+                "start"
         });
-
     }
-
 }
 
 
@@ -869,28 +842,27 @@ async function generateListing() {
         "🚀 Generate Listing clicked"
     );
 
-
     const generateButton =
         document.getElementById(
             "generateListingBtn"
         );
 
-
     const product =
         collectProductData();
 
-
     console.log(
-        "📂 Normalized Category:",
+        "📂 Raw/Normalized Category:",
         product.category
     );
 
-
-    // Validation
+    // ======================================================
+    // VALIDATE
+    // ======================================================
 
     const error =
-        validateProduct(product);
-
+        validateProduct(
+            product
+        );
 
     if (error) {
 
@@ -902,214 +874,30 @@ async function generateListing() {
         return;
     }
 
+    // ======================================================
+    // BUTTON
+    // ======================================================
 
-    if (generateButton) {
+    if (
+        generateButton
+    ) {
 
         generateButton.disabled =
             true;
 
         generateButton.textContent =
             "⏳ Generating...";
-
     }
-
 
     showStatus(
         "🤖 AI listing बना रहा है..."
     );
 
-
     try {
 
-        // --------------------------------------------------
-        // BUILD COMPLETE PRODUCT INFORMATION
-        // --------------------------------------------------
-
-        const completeProductDetails = {
-
-            basicInformation: {
-
-                productName:
-                    product.productName,
-
-                brand:
-                    product.brand,
-
-                price:
-                    product.price
-
-            },
-
-            generalInformation: {
-
-                color:
-                    product.color,
-
-                size:
-                    product.size,
-
-                material:
-                    product.material
-
-            },
-
-            categorySpecificInformation:
-                product.categoryData,
-
-            productDescription:
-                product.productDetails,
-
-            productFeatures:
-                product.productFeatures,
-
-            extraInformation:
-                product.extraInfo,
-
-            imageDescription:
-                product.imageDescription
-
-        };
-
-
-        // --------------------------------------------------
-        // REMOVE EMPTY VALUES
-        // --------------------------------------------------
-
-        function removeEmptyValues(obj) {
-
-            if (
-                obj === null ||
-                obj === undefined
-            ) {
-
-                return null;
-
-            }
-
-
-            if (
-                typeof obj !== "object"
-            ) {
-
-                return obj;
-
-            }
-
-
-            if (Array.isArray(obj)) {
-
-                return obj
-                    .map(removeEmptyValues)
-                    .filter(
-                        item =>
-                            item !== null &&
-                            item !== ""
-                    );
-
-            }
-
-
-            const cleaned = {};
-
-
-            Object.entries(obj)
-                .forEach(
-                    ([key, value]) => {
-
-                        const cleanedValue =
-                            removeEmptyValues(value);
-
-
-                        if (
-                            cleanedValue === null ||
-                            cleanedValue === "" ||
-                            (
-                                typeof cleanedValue === "object" &&
-                                !Array.isArray(cleanedValue) &&
-                                Object.keys(cleanedValue).length === 0
-                            )
-                        ) {
-
-                            return;
-
-                        }
-
-
-                        if (
-                            Array.isArray(cleanedValue) &&
-                            cleanedValue.length === 0
-                        ) {
-
-                            return;
-
-                        }
-
-
-                        cleaned[key] =
-                            cleanedValue;
-
-                    }
-                );
-
-
-            return cleaned;
-
-        }
-
-
-        const cleanedProductDetails =
-            removeEmptyValues(
-                completeProductDetails
-            );
-
-
-        // --------------------------------------------------
-        // FINAL REQUEST
-        // --------------------------------------------------
-
-        const requestBody = {
-
-            category:
-                product.category,
-
-            productName:
-                product.productName,
-
-            productDetails:
-                JSON.stringify(
-                    cleanedProductDetails
-                ),
-
-            brand:
-                product.brand,
-
-            price:
-                product.price,
-
-            color:
-                product.color,
-
-            size:
-                product.size,
-
-            material:
-                product.material,
-
-            imageDescription:
-                product.imageDescription
-
-        };
-
-
-        console.log(
-            "📤 FINAL REQUEST TO BACKEND:",
-            requestBody
-        );
-
-
-        // --------------------------------------------------
-        // API REQUEST
-        // --------------------------------------------------
+        // ==================================================
+        // REQUEST
+        // ==================================================
 
         const response =
             await fetch(
@@ -1123,30 +911,60 @@ async function generateListing() {
 
                         "Content-Type":
                             "application/json"
-
                     },
 
                     body:
-                        JSON.stringify(
-                            requestBody
-                        )
+                        JSON.stringify({
 
+                            category:
+                                product.category,
+
+                            productName:
+                                product.productName,
+
+                            productDetails:
+                                product.productDetails,
+
+                            productFeatures:
+                                product.productFeatures,
+
+                            extraInfo:
+                                product.extraInfo,
+
+                            brand:
+                                product.brand,
+
+                            price:
+                                product.price,
+
+                            color:
+                                product.color,
+
+                            size:
+                                product.size,
+
+                            material:
+                                product.material,
+
+                            imageDescription:
+                                product.imageDescription,
+
+                            categoryData:
+                                product.categoryData
+                        })
                 }
             );
-
 
         console.log(
             "📡 Backend Status:",
             response.status
         );
 
-
-        // --------------------------------------------------
-        // READ RESPONSE
-        // --------------------------------------------------
+        // ==================================================
+        // JSON
+        // ==================================================
 
         let data;
-
 
         try {
 
@@ -1154,40 +972,35 @@ async function generateListing() {
                 await response.json();
 
         }
-
         catch {
 
             throw new Error(
                 "Backend ने valid JSON response नहीं दिया।"
             );
-
         }
-
 
         console.log(
             "📥 Backend Response:",
             data
         );
 
+        // ==================================================
+        // ERROR
+        // ==================================================
 
-        // --------------------------------------------------
-        // API ERROR
-        // --------------------------------------------------
-
-        if (!response.ok) {
+        if (
+            !response.ok
+        ) {
 
             throw new Error(
                 data.error ||
-                data.message ||
                 "Backend request failed."
             );
-
         }
 
-
-        // --------------------------------------------------
+        // ==================================================
         // LISTING CHECK
-        // --------------------------------------------------
+        // ==================================================
 
         if (
             !data.listing
@@ -1196,18 +1009,19 @@ async function generateListing() {
             throw new Error(
                 "Backend से listing result नहीं मिला।"
             );
-
         }
 
-
-        // --------------------------------------------------
+        // ==================================================
         // DISPLAY
-        // --------------------------------------------------
+        // ==================================================
 
         displayListing(
             data.listing
         );
 
+        // ==================================================
+        // SUCCESS
+        // ==================================================
 
         showStatus(
             "✅ Complete Listing तैयार है!",
@@ -1215,7 +1029,6 @@ async function generateListing() {
         );
 
     }
-
     catch (error) {
 
         console.error(
@@ -1223,11 +1036,9 @@ async function generateListing() {
             error
         );
 
-
         let message =
             error.message ||
             "कुछ गलत हो गया।";
-
 
         if (
             message.includes(
@@ -1237,123 +1048,31 @@ async function generateListing() {
 
             message =
                 "Backend से connection नहीं हो रहा। कुछ सेकंड बाद फिर कोशिश करें।";
-
         }
-
 
         showStatus(
             "❌ " + message,
             "error"
         );
-
     }
-
     finally {
 
-        if (generateButton) {
+        if (
+            generateButton
+        ) {
 
             generateButton.disabled =
                 false;
 
             generateButton.textContent =
                 "✨ Generate Complete Listing";
-
         }
-
     }
-
 }
 
 
 // ==========================================================
-// CONNECT GENERATE BUTTON
-// ==========================================================
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-        const generateButton =
-            document.getElementById(
-                "generateListingBtn"
-            );
-
-
-        if (generateButton) {
-
-            generateButton.addEventListener(
-                "click",
-                generateListing
-            );
-
-
-            console.log(
-                "✅ Generate Listing button connected"
-            );
-
-        }
-
-        else {
-
-            console.error(
-                "❌ Generate Listing button not found"
-            );
-
-        }
-
-    }
-);
-
-
-// ==========================================================
-// CATEGORY DEBUG
-// ==========================================================
-
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-        const categoryElement =
-            findCategoryElement();
-
-
-        if (!categoryElement) {
-
-            console.warn(
-                "⚠️ Category select not found"
-            );
-
-            return;
-
-        }
-
-
-        categoryElement.addEventListener(
-            "change",
-            function () {
-
-                console.log(
-                    "📂 Selected Category:",
-                    this.value
-                );
-
-
-                console.log(
-                    "📂 Backend Category:",
-                    normalizeCategory(
-                        this.value
-                    )
-                );
-
-            }
-        );
-
-    }
-);
-
-
-// ==========================================================
-// BACKEND TEST
+// BACKEND STATUS CHECK
 // ==========================================================
 
 async function checkBackend() {
@@ -1365,85 +1084,125 @@ async function checkBackend() {
                 API_BASE_URL + "/"
             );
 
-
-        if (!response.ok) {
-
-            throw new Error(
-                "Backend status: " +
-                response.status
-            );
-
-        }
-
-
         const data =
             await response.json();
 
-
         console.log(
-            "✅ Backend Online:",
+            "🟢 Backend Status:",
             data
         );
-
 
         return data;
 
     }
-
     catch (error) {
 
         console.error(
-            "❌ Backend Check Failed:",
+            "🔴 Backend Check Failed:",
             error
         );
 
-
         return null;
-
     }
-
 }
 
 
 // ==========================================================
-// AUTO BACKEND CHECK
+// BUTTON CONNECTION
 // ==========================================================
 
 document.addEventListener(
     "DOMContentLoaded",
     function () {
 
+        const generateButton =
+            document.getElementById(
+                "generateListingBtn"
+            );
+
+        if (
+            generateButton
+        ) {
+
+            generateButton.addEventListener(
+                "click",
+                generateListing
+            );
+
+            console.log(
+                "✅ Generate Listing button connected"
+            );
+
+        }
+        else {
+
+            console.error(
+                "❌ Generate Listing button not found"
+            );
+        }
+
+        // ==================================================
+        // BACKEND TEST
+        // ==================================================
+
         checkBackend();
 
+        // ==================================================
+        // CATEGORY DEBUG
+        // ==================================================
+
+        const categoryElement =
+            findCategoryElement();
+
+        if (
+            categoryElement
+        ) {
+
+            categoryElement.addEventListener(
+                "change",
+                function () {
+
+                    const normalized =
+                        normalizeCategory(
+                            this.value
+                        );
+
+                    console.log(
+                        "📂 Selected Category:",
+                        this.value
+                    );
+
+                    console.log(
+                        "📂 Backend Category:",
+                        normalized
+                    );
+                }
+            );
+
+            console.log(
+                "✅ Category selector connected"
+            );
+
+        }
+        else {
+
+            console.warn(
+                "⚠️ Category select not found"
+            );
+        }
     }
 );
 
 
 // ==========================================================
 // GLOBAL ACCESS
-// Useful for testing from browser console
 // ==========================================================
 
-window.AISellerToolkit = {
+window.generateListing =
+    generateListing;
 
-    generateListing:
-        generateListing,
+window.checkBackend =
+    checkBackend;
 
-    checkBackend:
-        checkBackend,
-
-    collectProductData:
-        collectProductData,
-
-    normalizeCategory:
-        normalizeCategory,
-
-    collectCategoryFields:
-        collectCategoryFields
-
-};
-
-
-console.log(
-    "🤖 AI Seller Toolkit — Complete Listing Generator Version 6 Loaded"
-);
+window.normalizeCategory =
+    normalizeCategory;
