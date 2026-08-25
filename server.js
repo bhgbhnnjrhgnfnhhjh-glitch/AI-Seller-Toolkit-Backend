@@ -1,7 +1,8 @@
 // ==========================================================
 // AI SELLER TOOLKIT
-// SERVER.JS — FINAL VERSION 5
-// Category-Aware + Strict Factual AI + Auto Retry
+// SERVER.JS — FINAL VERSION 6
+// Category-Aware + Strict Factual AI
+// Smart Retry + Fallback Model
 // ==========================================================
 
 require("dotenv").config();
@@ -18,13 +19,18 @@ const app = express();
 
 const PORT = process.env.PORT || 3000;
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_API_KEY =
+    process.env.GEMINI_API_KEY;
 
 const MODEL =
-    process.env.GEMINI_MODEL || "gemini-3.6-flash";
+    process.env.GEMINI_MODEL ||
+    "gemini-3.6-flash";
 
-const VERSION = "5.0";
+const FALLBACK_MODEL =
+    process.env.GEMINI_FALLBACK_MODEL ||
+    "gemini-3.5-flash-lite";
 
+const VERSION = "6.0";
 
 // ==========================================================
 // GEMINI CLIENT
@@ -40,7 +46,6 @@ if (GEMINI_API_KEY) {
 
 }
 
-
 // ==========================================================
 // MIDDLEWARE
 // ==========================================================
@@ -48,7 +53,11 @@ if (GEMINI_API_KEY) {
 app.use(
     cors({
         origin: "*",
-        methods: ["GET", "POST", "OPTIONS"],
+        methods: [
+            "GET",
+            "POST",
+            "OPTIONS"
+        ],
         allowedHeaders: [
             "Content-Type",
             "Authorization"
@@ -61,7 +70,6 @@ app.use(
         limit: "2mb"
     })
 );
-
 
 // ==========================================================
 // CATEGORY RULES
@@ -339,12 +347,14 @@ occasion, personalization or features.
 
     "Other": `
 Use only seller-provided information.
-Never invent specifications,
+
+Never invent:
 brand, material, size, color,
-warranty, certification or features.
+weight, dimensions, warranty,
+certification, compatibility,
+quantity or features.
 `
 };
-
 
 // ==========================================================
 // CATEGORY NORMALIZER
@@ -359,51 +369,87 @@ function normalizeCategory(value) {
 
     const map = {
 
-        "fashion": "Fashion",
-        "fashion & clothing": "Fashion",
-        "clothing": "Fashion",
+        "fashion":
+            "Fashion",
 
-        "beauty": "Beauty",
+        "fashion & clothing":
+            "Fashion",
 
-        "electronics": "Electronics",
+        "clothing":
+            "Fashion",
 
-        "home & kitchen": "Home & Kitchen",
-        "home and kitchen": "Home & Kitchen",
+        "beauty":
+            "Beauty",
 
-        "shoes": "Shoes",
-        "footwear": "Shoes",
+        "electronics":
+            "Electronics",
 
-        "jewellery": "Jewellery",
-        "jewelry": "Jewellery",
+        "home & kitchen":
+            "Home & Kitchen",
 
-        "toys": "Toys",
-        "toys & kids": "Toys",
+        "home and kitchen":
+            "Home & Kitchen",
 
-        "books": "Books",
-        "books & stationery": "Books",
+        "shoes":
+            "Shoes",
 
-        "pet": "Pet",
-        "pets": "Pet",
+        "footwear":
+            "Shoes",
 
-        "sports": "Sports",
-        "sports & fitness": "Sports",
+        "jewellery":
+            "Jewellery",
 
-        "automotive": "Automotive",
+        "jewelry":
+            "Jewellery",
 
-        "garden": "Garden",
-        "gardening": "Garden",
+        "toys":
+            "Toys",
 
-        "food": "Food",
-        "grocery & food": "Food",
+        "toys & kids":
+            "Toys",
 
-        "gifts": "Gifts",
+        "books":
+            "Books",
 
-        "other": "Other"
+        "books & stationery":
+            "Books",
+
+        "pet":
+            "Pet",
+
+        "pets":
+            "Pet",
+
+        "sports":
+            "Sports",
+
+        "sports & fitness":
+            "Sports",
+
+        "automotive":
+            "Automotive",
+
+        "garden":
+            "Garden",
+
+        "gardening":
+            "Garden",
+
+        "food":
+            "Food",
+
+        "grocery & food":
+            "Food",
+
+        "gifts":
+            "Gifts",
+
+        "other":
+            "Other"
     };
 
     return map[text] || "";
 }
-
 
 // ==========================================================
 // HELPERS
@@ -421,7 +467,6 @@ function cleanText(value) {
     return String(value).trim();
 }
 
-
 function getCategoryRule(category) {
 
     return (
@@ -429,7 +474,6 @@ function getCategoryRule(category) {
         categoryRules["Other"]
     );
 }
-
 
 // ==========================================================
 // SYSTEM PROMPT
@@ -453,13 +497,13 @@ STRICT RULES:
 2. NEVER invent missing information.
 
 3. Every useful seller-provided specification
-should be preserved in the listing.
+must be preserved in the listing.
 
 4. Do NOT silently remove seller-provided
 category details.
 
 5. If a field is empty or not provided,
-leave it out.
+do not create a value for it.
 
 6. NEVER create fake:
 - Brand
@@ -497,17 +541,29 @@ leave it out.
 
 unless explicitly provided by seller.
 
-11. Do not use information from general knowledge
+11. Do not use general knowledge
 to fill missing product specifications.
 
 12. Price may be used only if seller provided it.
 
 13. Quantity must be used exactly as provided.
 
-14. If seller provides category details such as:
-Fabric, Color, Size, Pattern, Form, Quantity,
-Connectivity, Battery, Material, etc.,
-use those details in the listing.
+14. Preserve seller-provided category details.
+
+15. Do not change seller-provided values.
+
+16. Do not invent a brand when brand is missing.
+
+17. Do not invent material when material is missing.
+
+18. Do not invent color when color is missing.
+
+19. Do not invent size, capacity, weight,
+dimensions or technical specifications.
+
+20. Product name itself may contain factual
+information supplied by the seller.
+Preserve those facts.
 
 CATEGORY:
 
@@ -517,7 +573,9 @@ CATEGORY-SPECIFIC RULES:
 
 ${rule}
 
-RETURN ONLY VALID JSON.
+OUTPUT REQUIREMENTS:
+
+Return ONLY valid JSON.
 
 Required structure:
 
@@ -531,15 +589,15 @@ Required structure:
   "seoDescription": ""
 }
 
-Return valid JSON only.
 No Markdown.
-No explanation outside JSON.
+No explanation.
+No code block.
+JSON only.
 `;
 }
 
-
 // ==========================================================
-// RETRY HELPER
+// RETRY ERROR CHECK
 // ==========================================================
 
 function isRetryableError(error) {
@@ -551,23 +609,41 @@ function isRetryableError(error) {
 
     const message =
         String(
-            error?.message || ""
+            error?.message ||
+            ""
         ).toLowerCase();
 
     return (
+
         Number(status) === 429 ||
+
         Number(status) === 500 ||
+
         Number(status) === 502 ||
+
         Number(status) === 503 ||
+
         Number(status) === 504 ||
+
         message.includes("503") ||
+
+        message.includes("429") ||
+
         message.includes("unavailable") ||
+
         message.includes("high demand") ||
+
         message.includes("temporarily") ||
-        message.includes("rate limit")
+
+        message.includes("rate limit") ||
+
+        message.includes("overloaded")
     );
 }
 
+// ==========================================================
+// SLEEP
+// ==========================================================
 
 function sleep(ms) {
 
@@ -576,9 +652,45 @@ function sleep(ms) {
     );
 }
 
+// ==========================================================
+// GEMINI REQUEST
+// ==========================================================
+
+async function callGemini(
+    model,
+    userPrompt,
+    systemPrompt
+) {
+
+    console.log(
+        `🧠 Gemini model: ${model}`
+    );
+
+    const response =
+        await ai.models.generateContent({
+
+            model: model,
+
+            config: {
+
+                systemInstruction:
+                    systemPrompt,
+
+                responseMimeType:
+                    "application/json",
+
+                maxOutputTokens:
+                    2000
+            },
+
+            contents: userPrompt
+        });
+
+    return response;
+}
 
 // ==========================================================
-// GEMINI GENERATION WITH AUTOMATIC RETRY
+// SMART GEMINI RETRY + FALLBACK
 // ==========================================================
 
 async function generateWithRetry(
@@ -586,46 +698,41 @@ async function generateWithRetry(
     systemPrompt
 ) {
 
-    const MAX_ATTEMPTS = 4;
+    let lastError = null;
+
+    const MAX_PRIMARY_ATTEMPTS = 3;
 
     const delays = [
-        4000,
-        8000,
-        16000
+        3000,
+        7000
     ];
 
-    let lastError = null;
+    // ======================================================
+    // PRIMARY MODEL
+    // ======================================================
 
     for (
         let attempt = 1;
-        attempt <= MAX_ATTEMPTS;
+        attempt <= MAX_PRIMARY_ATTEMPTS;
         attempt++
     ) {
 
         try {
 
             console.log(
-                `🤖 Gemini attempt ${attempt}/${MAX_ATTEMPTS}`
+                `🤖 Primary Gemini attempt ${attempt}/${MAX_PRIMARY_ATTEMPTS}`
             );
 
             const response =
-                await ai.models.generateContent({
+                await callGemini(
+                    MODEL,
+                    userPrompt,
+                    systemPrompt
+                );
 
-                    model: MODEL,
-
-                    config: {
-                        systemInstruction:
-                            systemPrompt,
-
-                        responseMimeType:
-                            "application/json",
-
-                        maxOutputTokens:
-                            2000
-                    },
-
-                    contents: userPrompt
-                });
+            console.log(
+                "✅ Primary Gemini model succeeded"
+            );
 
             return response;
 
@@ -635,33 +742,257 @@ async function generateWithRetry(
             lastError = error;
 
             console.error(
-                `❌ Gemini attempt ${attempt} failed:`,
+                `❌ Primary attempt ${attempt} failed:`,
                 error?.message || error
             );
 
+            // Permanent error
             if (
-                !isRetryableError(error) ||
-                attempt === MAX_ATTEMPTS
+                !isRetryableError(error)
             ) {
+
                 throw error;
             }
 
+            // Last attempt
+            if (
+                attempt ===
+                MAX_PRIMARY_ATTEMPTS
+            ) {
+
+                console.log(
+                    "⚠️ Primary model unavailable."
+                );
+
+                console.log(
+                    "🔄 Switching to fallback model..."
+                );
+
+                break;
+            }
+
+            const baseDelay =
+                delays[attempt - 1] ||
+                7000;
+
+            const jitter =
+                Math.floor(
+                    Math.random() * 1500
+                );
+
+            const waitTime =
+                baseDelay + jitter;
+
             console.log(
-                `⏳ Retrying in ${delays[attempt - 1] / 1000} seconds...`
+                `⏳ Waiting ${Math.ceil(
+                    waitTime / 1000
+                )} seconds before retry...`
             );
 
             await sleep(
-                delays[attempt - 1]
+                waitTime
             );
         }
     }
 
-    throw lastError;
+    // ======================================================
+    // FALLBACK MODEL
+    // ======================================================
+
+    try {
+
+        console.log(
+            "🔄 Fallback Gemini model starting..."
+        );
+
+        console.log(
+            `🧠 Fallback model: ${FALLBACK_MODEL}`
+        );
+
+        const response =
+            await callGemini(
+                FALLBACK_MODEL,
+                userPrompt,
+                systemPrompt
+            );
+
+        console.log(
+            "✅ Fallback Gemini model succeeded"
+        );
+
+        return response;
+
+    }
+    catch (fallbackError) {
+
+        console.error(
+            "❌ Fallback model failed:",
+            fallbackError?.message ||
+            fallbackError
+        );
+
+        throw (
+            fallbackError ||
+            lastError
+        );
+    }
 }
 
+// ==========================================================
+// GET RESPONSE TEXT
+// ==========================================================
+
+function getResponseText(response) {
+
+    let text = "";
+
+    if (
+        response &&
+        typeof response.text === "string"
+    ) {
+
+        text =
+            response.text;
+
+    }
+    else if (
+        response &&
+        typeof response.text === "function"
+    ) {
+
+        text =
+            response.text();
+    }
+
+    return cleanText(text);
+}
 
 // ==========================================================
-// FORMAT LISTING FOR OLD FRONTEND
+// PARSE JSON SAFELY
+// ==========================================================
+
+function parseListingJSON(text) {
+
+    if (!text) {
+
+        throw new Error(
+            "AI returned an empty response."
+        );
+    }
+
+    // First attempt
+    try {
+
+        return JSON.parse(text);
+
+    }
+    catch (error) {
+
+        // Continue below
+    }
+
+    // Remove Markdown code fences
+    const cleaned =
+        text
+            .replace(
+                /```json/gi,
+                ""
+            )
+            .replace(
+                /```/g,
+                ""
+            )
+            .trim();
+
+    try {
+
+        return JSON.parse(cleaned);
+
+    }
+    catch (error) {
+
+        throw new Error(
+            "AI returned invalid JSON."
+        );
+    }
+}
+
+// ==========================================================
+// NORMALIZE LISTING
+// ==========================================================
+
+function normalizeListing(listing) {
+
+    if (
+        !listing ||
+        typeof listing !== "object"
+    ) {
+
+        listing = {};
+    }
+
+    return {
+
+        title:
+            cleanText(
+                listing.title
+            ),
+
+        description:
+            cleanText(
+                listing.description
+            ),
+
+        highlights:
+            Array.isArray(
+                listing.highlights
+            )
+                ? listing.highlights
+                    .map(
+                        item =>
+                            cleanText(item)
+                    )
+                    .filter(Boolean)
+                : [],
+
+        keywords:
+            Array.isArray(
+                listing.keywords
+            )
+                ? listing.keywords
+                    .map(
+                        item =>
+                            cleanText(item)
+                    )
+                    .filter(Boolean)
+                : [],
+
+        hashtags:
+            Array.isArray(
+                listing.hashtags
+            )
+                ? listing.hashtags
+                    .map(
+                        item =>
+                            cleanText(item)
+                    )
+                    .filter(Boolean)
+                : [],
+
+        seoTitle:
+            cleanText(
+                listing.seoTitle
+            ),
+
+        seoDescription:
+            cleanText(
+                listing.seoDescription
+            )
+    };
+}
+
+// ==========================================================
+// FORMAT LISTING
 // ==========================================================
 
 function formatListing(listing) {
@@ -680,7 +1011,10 @@ ${listing.description}
 HIGHLIGHTS
 
 ${listing.highlights
-    .map(item => `• ${item}`)
+    .map(
+        item =>
+            `• ${item}`
+    )
     .join("\n")}
 
 
@@ -705,76 +1039,100 @@ ${listing.seoDescription}
 `.trim();
 }
 
-
 // ==========================================================
 // HEALTH CHECK
 // ==========================================================
 
-app.get("/", (req, res) => {
+app.get(
+    "/",
+    (req, res) => {
 
-    res.json({
+        res.json({
 
-        success: true,
+            success: true,
 
-        message:
-            "AI Seller Toolkit Backend is running",
+            message:
+                "AI Seller Toolkit Backend is running",
 
-        version: VERSION,
+            version:
+                VERSION,
 
-        model: MODEL,
+            model:
+                MODEL,
 
-        geminiConfigured:
-            !!GEMINI_API_KEY
-    });
-});
+            fallbackModel:
+                FALLBACK_MODEL,
 
+            geminiConfigured:
+                !!GEMINI_API_KEY
+        });
+    }
+);
 
 // ==========================================================
 // API STATUS
 // ==========================================================
 
-app.get("/api/status", (req, res) => {
+app.get(
+    "/api/status",
+    (req, res) => {
 
-    res.json({
+        res.json({
 
-        success: true,
+            success: true,
 
-        server: "online",
+            server:
+                "online",
 
-        version: VERSION,
+            version:
+                VERSION,
 
-        geminiConfigured:
-            !!GEMINI_API_KEY,
+            model:
+                MODEL,
 
-        model: MODEL
-    });
-});
+            fallbackModel:
+                FALLBACK_MODEL,
 
+            geminiConfigured:
+                !!GEMINI_API_KEY
+        });
+    }
+);
 
 // ==========================================================
 // CATEGORY API
 // ==========================================================
 
-app.get("/api/categories", (req, res) => {
+app.get(
+    "/api/categories",
+    (req, res) => {
 
-    res.json({
+        res.json({
 
-        success: true,
+            success: true,
 
-        categories: Object.keys(
-            categoryRules
-        )
-    });
-});
-
+            categories:
+                Object.keys(
+                    categoryRules
+                )
+        });
+    }
+);
 
 // ==========================================================
 // GENERATE LISTING
 // ==========================================================
 
-async function handleGenerateListing(req, res) {
+async function handleGenerateListing(
+    req,
+    res
+) {
 
     try {
+
+        // ==================================================
+        // API KEY CHECK
+        // ==================================================
 
         if (!ai) {
 
@@ -783,26 +1141,37 @@ async function handleGenerateListing(req, res) {
                 success: false,
 
                 error:
-                    "Gemini API key is not configured."
+                    "Gemini API key is not configured.",
+
+                version:
+                    VERSION
             });
         }
 
+        // ==================================================
+        // REQUEST BODY
+        // ==================================================
 
         const body =
             req.body || {};
 
+        // ==================================================
+        // CATEGORY
+        // ==================================================
 
         const category =
             normalizeCategory(
                 body.category
             );
 
+        // ==================================================
+        // PRODUCT NAME
+        // ==================================================
 
         const productName =
             cleanText(
                 body.productName
             );
-
 
         if (!category) {
 
@@ -811,10 +1180,12 @@ async function handleGenerateListing(req, res) {
                 success: false,
 
                 error:
-                    "Product category is required."
+                    "Product category is required.",
+
+                version:
+                    VERSION
             });
         }
-
 
         if (!productName) {
 
@@ -823,13 +1194,15 @@ async function handleGenerateListing(req, res) {
                 success: false,
 
                 error:
-                    "Product name is required."
+                    "Product name is required.",
+
+                version:
+                    VERSION
             });
         }
 
-
         // ==================================================
-        // COLLECT ALL SELLER INFORMATION
+        // CATEGORY DATA
         // ==================================================
 
         const categoryData =
@@ -838,67 +1211,63 @@ async function handleGenerateListing(req, res) {
                 ? body.categoryData
                 : {};
 
-
-        const productFeatures =
-            cleanText(
-                body.productFeatures
-            );
-
-
-        const extraInfo =
-            cleanText(
-                body.extraInfo
-            );
-
+        // ==================================================
+        // COMMON SELLER FIELDS
+        // ==================================================
 
         const brand =
             cleanText(
                 body.brand
             );
 
-
         const price =
             cleanText(
                 body.price
             );
-
 
         const productDetails =
             cleanText(
                 body.productDetails
             );
 
+        const productFeatures =
+            cleanText(
+                body.productFeatures
+            );
+
+        const extraInfo =
+            cleanText(
+                body.extraInfo
+            );
 
         const color =
             cleanText(
                 body.color
             );
 
-
         const size =
             cleanText(
                 body.size
             );
-
 
         const material =
             cleanText(
                 body.material
             );
 
-
         const imageDescription =
             cleanText(
                 body.imageDescription
             );
 
-
         // ==================================================
-        // CATEGORY DATA TEXT
+        // CATEGORY FIELDS
         // ==================================================
 
         const categoryFieldsText =
-            Object.entries(categoryData)
+            Object.entries(
+                categoryData
+            )
                 .filter(
                     ([key, value]) =>
                         cleanText(value)
@@ -908,7 +1277,6 @@ async function handleGenerateListing(req, res) {
                         `${key}: ${cleanText(value)}`
                 )
                 .join("\n");
-
 
         // ==================================================
         // USER PROMPT
@@ -921,6 +1289,7 @@ IMPORTANT:
 Use ONLY the seller information below.
 
 Do not guess.
+Do not invent.
 Do not add missing specifications.
 Do not add unsupported claims.
 
@@ -960,174 +1329,77 @@ ${material || "Not provided"}
 IMAGE DESCRIPTION:
 ${imageDescription || "Not provided"}
 
-IMPORTANT OUTPUT RULE:
+IMPORTANT:
 
-Every factual specification that the seller actually
-provided should be considered for inclusion.
+Every factual specification actually provided
+by the seller should be preserved.
 
-Do NOT invent anything that the seller did not provide.
+If a specification is not provided,
+DO NOT invent it.
 
-Generate the required JSON.
+Do not use general product knowledge
+to fill missing information.
+
+Do not create a fake brand.
+
+Do not create a fake material.
+
+Do not create a fake color.
+
+Do not create a fake size.
+
+Do not create a fake quantity.
+
+Do not create fake technical specifications.
+
+Generate the required JSON only.
 `;
 
+        // ==================================================
+        // SYSTEM PROMPT
+        // ==================================================
+
+        const systemPrompt =
+            createSystemPrompt(
+                category
+            );
 
         // ==================================================
-        // CALL GEMINI WITH RETRY
+        // GEMINI
         // ==================================================
 
         const response =
             await generateWithRetry(
-
                 userPrompt,
-
-                createSystemPrompt(
-                    category
-                )
+                systemPrompt
             );
 
-
         // ==================================================
-        // GET RESPONSE TEXT
-        // ==================================================
-
-        let resultText = "";
-
-
-        if (
-            response &&
-            typeof response.text === "string"
-        ) {
-
-            resultText =
-                response.text;
-
-        }
-        else if (
-            response &&
-            typeof response.text === "function"
-        ) {
-
-            resultText =
-                response.text();
-        }
-
-
-        resultText =
-            cleanText(resultText);
-
-
-        if (!resultText) {
-
-            return res.status(500).json({
-
-                success: false,
-
-                error:
-                    "AI returned an empty response."
-            });
-        }
-
-
-        // ==================================================
-        // PARSE JSON
+        // RESPONSE TEXT
         // ==================================================
 
-        let listing;
+        const resultText =
+            getResponseText(
+                response
+            );
 
+        // ==================================================
+        // PARSE
+        // ==================================================
 
-        try {
-
-            listing =
-                JSON.parse(resultText);
-
-        }
-        catch {
-
-            const cleaned =
+        const rawListing =
+            parseListingJSON(
                 resultText
-                    .replace(
-                        /```json/gi,
-                        ""
-                    )
-                    .replace(
-                        /```/g,
-                        ""
-                    )
-                    .trim();
-
-
-            try {
-
-                listing =
-                    JSON.parse(
-                        cleaned
-                    );
-
-            }
-            catch {
-
-                return res.status(500).json({
-
-                    success: false,
-
-                    error:
-                        "AI returned invalid JSON."
-                });
-            }
-        }
-
+            );
 
         // ==================================================
         // NORMALIZE
         // ==================================================
 
-        listing.title =
-            cleanText(
-                listing.title
+        const listing =
+            normalizeListing(
+                rawListing
             );
-
-
-        listing.description =
-            cleanText(
-                listing.description
-            );
-
-
-        listing.seoTitle =
-            cleanText(
-                listing.seoTitle
-            );
-
-
-        listing.seoDescription =
-            cleanText(
-                listing.seoDescription
-            );
-
-
-        listing.highlights =
-            Array.isArray(
-                listing.highlights
-            )
-                ? listing.highlights
-                : [];
-
-
-        listing.keywords =
-            Array.isArray(
-                listing.keywords
-            )
-                ? listing.keywords
-                : [];
-
-
-        listing.hashtags =
-            Array.isArray(
-                listing.hashtags
-            )
-                ? listing.hashtags
-                : [];
-
 
         // ==================================================
         // FINAL RESPONSE
@@ -1135,20 +1407,25 @@ Generate the required JSON.
 
         return res.json({
 
-            success: true,
+            success:
+                true,
 
-            category: category,
+            category:
+                category,
 
             productName:
                 productName,
 
-            listing: listing,
+            listing:
+                listing,
 
-            // Compatibility with frontend
             result:
-                formatListing(listing),
+                formatListing(
+                    listing
+                ),
 
-            version: VERSION
+            version:
+                VERSION
         });
 
     }
@@ -1156,16 +1433,16 @@ Generate the required JSON.
 
         console.error(
             "❌ Generate Listing Error:",
+            error?.message ||
             error
         );
-
 
         const status =
             Number(
                 error?.status ||
-                error?.code
+                error?.code ||
+                error?.response?.status
             );
-
 
         const message =
             String(
@@ -1173,103 +1450,146 @@ Generate the required JSON.
                 ""
             );
 
+        const lowerMessage =
+            message.toLowerCase();
 
         // ==================================================
-        // FRIENDLY 503 ERROR
+        // 503
         // ==================================================
 
         if (
             status === 503 ||
-            message.includes("503") ||
-            message
-                .toLowerCase()
-                .includes("high demand")
+            lowerMessage.includes("503") ||
+            lowerMessage.includes("high demand") ||
+            lowerMessage.includes("unavailable")
         ) {
 
             return res.status(503).json({
 
-                success: false,
+                success:
+                    false,
 
                 error:
-                    "Gemini is temporarily busy. The server already retried automatically. Please try again after a short while.",
+                    "Gemini is temporarily busy. Please try again after a short while.",
 
-                retryable: true,
+                retryable:
+                    true,
 
-                version: VERSION
+                version:
+                    VERSION
             });
         }
 
-
         // ==================================================
-        // FRIENDLY 429 ERROR
+        // 429
         // ==================================================
 
-        if (status === 429) {
+        if (
+            status === 429 ||
+            lowerMessage.includes("rate limit") ||
+            lowerMessage.includes("quota")
+        ) {
 
             return res.status(429).json({
 
-                success: false,
+                success:
+                    false,
 
                 error:
                     "Gemini request limit was reached. Please try again shortly.",
 
-                retryable: true,
+                retryable:
+                    true,
 
-                version: VERSION
+                version:
+                    VERSION
             });
         }
 
+        // ==================================================
+        // 404 MODEL
+        // ==================================================
+
+        if (
+            status === 404 ||
+            lowerMessage.includes("not found") ||
+            lowerMessage.includes("not available")
+        ) {
+
+            return res.status(503).json({
+
+                success:
+                    false,
+
+                error:
+                    "The configured Gemini model is not available. Please check GEMINI_MODEL and GEMINI_FALLBACK_MODEL in Render Environment.",
+
+                retryable:
+                    false,
+
+                version:
+                    VERSION
+            });
+        }
+
+        // ==================================================
+        // GENERAL ERROR
+        // ==================================================
 
         return res.status(500).json({
 
-            success: false,
+            success:
+                false,
 
             error:
                 message ||
                 "Unable to generate product listing.",
 
-            version: VERSION
+            version:
+                VERSION
         });
     }
 }
 
-
 // ==========================================================
-// BOTH ENDPOINTS
+// API ENDPOINTS
 // ==========================================================
 
-// New endpoint
+// New frontend endpoint
 app.post(
     "/api/generate-listing",
     handleGenerateListing
 );
 
-
-// Frontend compatibility endpoint
+// Old frontend compatibility
 app.post(
     "/generate",
     handleGenerateListing
 );
 
-
 // ==========================================================
 // 404 HANDLER
 // ==========================================================
 
-app.use((req, res) => {
+app.use(
+    (req, res) => {
 
-    res.status(404).json({
+        res.status(404).json({
 
-        success: false,
+            success:
+                false,
 
-        error:
-            "API endpoint not found",
+            error:
+                "API endpoint not found",
 
-        path:
-            req.originalUrl
-    });
-});
+            path:
+                req.originalUrl,
 
+            version:
+                VERSION
+        });
+    }
+);
 
 // ==========================================================
 // GLOBAL ERROR HANDLER
@@ -1284,20 +1604,30 @@ app.use(
     ) => {
 
         console.error(
-            "Server Error:",
+            "❌ Server Error:",
             err
         );
 
+        if (
+            res.headersSent
+        ) {
+
+            return next(err);
+        }
+
         res.status(500).json({
 
-            success: false,
+            success:
+                false,
 
             error:
-                "Internal server error"
+                "Internal server error",
+
+            version:
+                VERSION
         });
     }
 );
-
 
 // ==========================================================
 // START SERVER
@@ -1326,6 +1656,10 @@ app.listen(
 
         console.log(
             `Gemini Model: ${MODEL}`
+        );
+
+        console.log(
+            `Gemini Fallback Model: ${FALLBACK_MODEL}`
         );
 
         console.log(
