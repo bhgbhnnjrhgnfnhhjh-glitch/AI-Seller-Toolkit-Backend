@@ -1,17 +1,20 @@
 // ==========================================================
 // AI SELLER TOOLKIT
-// SERVER.JS — FINAL VERSION 6.2
-// Category-Aware + Strict Factual AI
-// Smart Retry + Fallback Model
-// 503 High-Demand Protection
-// No Invented Facts
+// SERVER.JS — FINAL VERSION 7.0
+// ==========================================================
+// Category-Aware
+// Strict Factual AI
+// NO INVENTED FACTS
+// Smart Retry
+// Gemini Fallback
+// Deterministic Fact-Only Fallback
+// Render Ready
 // ==========================================================
 
 require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
-
 const { GoogleGenAI } = require("@google/genai");
 
 // ==========================================================
@@ -21,21 +24,29 @@ const { GoogleGenAI } = require("@google/genai");
 const app = express();
 
 app.use(cors());
-app.use(express.json({ limit: "1mb" }));
+
+app.use(
+    express.json({
+        limit: "1mb"
+    })
+);
 
 // ==========================================================
 // ENVIRONMENT
 // ==========================================================
 
-const PORT = process.env.PORT || 10000;
+const PORT = Number(process.env.PORT) || 10000;
 
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_API_KEY =
+    process.env.GEMINI_API_KEY || "";
 
 const PRIMARY_MODEL =
-    process.env.GEMINI_PRIMARY_MODEL || "gemini-3.6-flash";
+    process.env.GEMINI_PRIMARY_MODEL ||
+    "gemini-3.6-flash";
 
 const FALLBACK_MODEL =
-    process.env.GEMINI_FALLBACK_MODEL || "gemini-3.5-flash-lite";
+    process.env.GEMINI_FALLBACK_MODEL ||
+    "gemini-3.5-flash-lite";
 
 // ==========================================================
 // GEMINI CLIENT
@@ -44,9 +55,11 @@ const FALLBACK_MODEL =
 let ai = null;
 
 if (GEMINI_API_KEY) {
+
     ai = new GoogleGenAI({
         apiKey: GEMINI_API_KEY
     });
+
 }
 
 // ==========================================================
@@ -54,6 +67,7 @@ if (GEMINI_API_KEY) {
 // ==========================================================
 
 const categories = [
+
     "Fashion",
     "Beauty",
     "Electronics",
@@ -68,400 +82,456 @@ const categories = [
     "Garden",
     "Food",
     "Gifts"
+
 ];
 
 // ==========================================================
-// CATEGORY RULES
+// COMMON FIELDS
+// ==========================================================
+
+const commonFields = [
+
+    "productName",
+    "brand",
+    "price",
+    "productFeatures",
+    "extraProductInformation"
+
+];
+
+// ==========================================================
+// CATEGORY-SPECIFIC FIELDS
+// ==========================================================
+
+const categoryFields = {
+
+    "Fashion": [
+
+        "material",
+        "color",
+        "size",
+        "pattern",
+        "fit",
+        "occasion",
+        "quantity"
+
+    ],
+
+    "Beauty": [
+
+        "formTexture",
+        "color",
+        "quantity",
+        "variant",
+        "ingredients",
+        "skinType",
+        "hairType",
+        "fragrance"
+
+    ],
+
+    "Electronics": [
+
+        "material",
+        "color",
+        "model",
+        "connectivity",
+        "compatibility",
+        "battery",
+        "power",
+        "capacity",
+        "dimensions",
+        "quantity"
+
+    ],
+
+    "Home & Kitchen": [
+
+        "material",
+        "color",
+        "size",
+        "dimensions",
+        "capacity",
+        "quantity",
+        "usage"
+
+    ],
+
+    "Shoes": [
+
+        "material",
+        "color",
+        "size",
+        "sole",
+        "closure",
+        "occasion",
+        "quantity"
+
+    ],
+
+    "Jewellery": [
+
+        "material",
+        "color",
+        "design",
+        "size",
+        "occasion",
+        "quantity"
+
+    ],
+
+    "Toys": [
+
+        "material",
+        "color",
+        "size",
+        "pattern",
+        "fit",
+        "occasion",
+        "quantity"
+
+    ],
+
+    "Books": [
+
+        "author",
+        "language",
+        "format",
+        "pages",
+        "publisher",
+        "edition",
+        "isbn"
+
+    ],
+
+    "Pet": [
+
+        "petType",
+        "material",
+        "size",
+        "quantity",
+        "ingredients",
+        "flavour"
+
+    ],
+
+    "Sports": [
+
+        "material",
+        "color",
+        "size",
+        "weight",
+        "activitySport",
+        "quantity"
+
+    ],
+
+    "Automotive": [
+
+        "material",
+        "color",
+        "size",
+        "pattern",
+        "fit",
+        "occasion",
+        "quantity"
+
+    ],
+
+    "Garden": [
+
+        "material",
+        "color",
+        "size",
+        "capacity",
+        "quantity",
+        "usage"
+
+    ],
+
+    "Food": [
+
+        "ingredients",
+        "flavour",
+        "quantity",
+        "form",
+        "variant"
+
+    ],
+
+    "Gifts": [
+
+        "material",
+        "color",
+        "design",
+        "quantity",
+        "occasion",
+        "recipient",
+        "packaging"
+
+    ]
+
+};
+
+// ==========================================================
+// STRICT CATEGORY RULES
 // ==========================================================
 
 const categoryRules = {
 
     "Fashion": `
-Use only user-provided fashion information.
-
-Possible information:
-Fabric / Material
-Color
-Size
-Pattern
-Fit
-Occasion
-Quantity
-Brand
-Price
-Product Features
-Extra Product Information
+Use only seller-provided information.
 
 Never invent:
-fabric composition
-fit
-occasion
-washing instructions
-design details
-quality claims
-comfort claims
-size availability
-warranty
-country of origin
-care instructions
-`;
+fabric composition,
+fit,
+occasion,
+washing instructions,
+design details,
+quality claims,
+comfort claims,
+size availability,
+warranty,
+country of origin,
+care instructions.
+`,
 
     "Beauty": `
-Use only user-provided beauty information.
-
-Possible information:
-Form / Texture
-Color
-Quantity
-Variant
-Ingredients
-Skin Type
-Hair Type
-Fragrance
-Brand
-Price
-Product Features
-Extra Product Information
+Use only seller-provided information.
 
 Never invent:
-ingredients
-benefits
-skin benefits
-hair benefits
-dermatologist claims
-safety claims
-expiry
-shelf life
-fragrance
-skin type
-hair type
-certification
-medical claims
-`;
+ingredients,
+benefits,
+skin benefits,
+hair benefits,
+dermatologist claims,
+safety claims,
+expiry,
+shelf life,
+fragrance,
+skin type,
+hair type,
+certification,
+medical claims.
+`,
 
     "Electronics": `
-Use only user-provided electronics information.
-
-Possible information:
-Material
-Color
-Model
-Connectivity
-Compatibility
-Battery
-Power
-Capacity
-Dimensions
-Quantity
-Brand
-Price
-Product Features
-Extra Product Information
+Use only seller-provided information.
 
 Never invent:
-battery capacity
-charging time
-playback time
-warranty
-compatibility
-processor
-RAM
-storage
-water resistance
-certification
-performance
-technical specifications
-`;
+battery capacity,
+charging time,
+playback time,
+warranty,
+compatibility,
+processor,
+RAM,
+storage,
+water resistance,
+certification,
+performance,
+technical specifications.
+`,
 
     "Home & Kitchen": `
-Use only user-provided home and kitchen information.
-
-Possible information:
-Material
-Color
-Size / Dimensions
-Capacity
-Quantity
-Usage
-Brand
-Price
-Product Features
-Extra Product Information
+Use only seller-provided information.
 
 Never invent:
-capacity
-dimensions
-food safety
-dishwasher safety
-microwave safety
-durability
-heat resistance
-waterproofing
-certification
-`;
+capacity,
+dimensions,
+food safety,
+dishwasher safety,
+microwave safety,
+durability,
+heat resistance,
+waterproofing,
+certification.
+`,
 
     "Shoes": `
-Use only user-provided shoe/product information.
-
-Possible information:
-Material
-Color
-Size
-Sole
-Closure
-Occasion
-Quantity
-Brand
-Price
-Product Features
-Extra Product Information
+Use only seller-provided information.
 
 Never invent:
-shoe size availability
-fit
-comfort
-sole material
-waterproofing
-durability
-occasion
-sports suitability
-`;
+shoe size availability,
+fit,
+comfort,
+sole material,
+waterproofing,
+durability,
+occasion,
+sports suitability.
+`,
 
     "Jewellery": `
-Use only user-provided jewellery information.
-
-Possible information:
-Material
-Color
-Design
-Size
-Occasion
-Quantity
-Brand
-Price
-Product Features
-Extra Product Information
+Use only seller-provided information.
 
 Never invent:
-gold purity
-silver purity
-stone type
-gemstone authenticity
-plating type
-hallmark
-weight
-precious metal content
-`;
+gold purity,
+silver purity,
+stone type,
+gemstone authenticity,
+plating type,
+hallmark,
+weight,
+precious metal content.
+`,
 
     "Toys": `
-Use only user-provided toy information.
-
-Possible information:
-Material
-Color
-Size
-Pattern
-Fit
-Occasion
-Quantity
-Brand
-Price
-Product Features
-Extra Product Information
+Use only seller-provided information.
 
 Never invent:
-recommended age
-safety certification
-educational benefits
-battery information
-number of pieces
-material composition
-safety claims
-`;
+recommended age,
+safety certification,
+educational benefits,
+battery information,
+number of pieces,
+material composition,
+safety claims.
+`,
 
     "Books": `
-Use only user-provided book information.
-
-Possible information:
-Author
-Language
-Format
-Pages
-Publisher
-Edition
-ISBN
-Brand
-Price
-Product Features
-Extra Product Information
+Use only seller-provided information.
 
 Never invent:
-publication date
-ISBN
-author
-publisher
-page count
-edition
-plot
-reviews
-awards
-`;
+publication date,
+ISBN,
+author,
+publisher,
+page count,
+edition,
+plot,
+reviews,
+awards.
+`,
 
     "Pet": `
-Use only user-provided pet product information.
-
-Possible information:
-Pet Type
-Material
-Size
-Quantity
-Ingredients
-Flavour
-Brand
-Price
-Product Features
-Extra Product Information
+Use only seller-provided information.
 
 Never invent:
-ingredients
-flavour
-nutrition
-age suitability
-medical benefits
-safety claims
-pet breed compatibility
-`;
+ingredients,
+flavour,
+nutrition,
+age suitability,
+medical benefits,
+safety claims,
+pet breed compatibility.
+`,
 
     "Sports": `
-Use only user-provided sports information.
-
-Possible information:
-Material
-Color
-Size
-Weight
-Activity / Sport
-Quantity
-Brand
-Price
-Product Features
-Extra Product Information
+Use only seller-provided information.
 
 Never invent:
-weight
-dimensions
-sport suitability
-performance
-durability
-professional certification
-safety claims
-`;
+weight,
+dimensions,
+sport suitability,
+performance,
+durability,
+professional certification,
+safety claims.
+`,
 
     "Automotive": `
-Use only user-provided automotive information.
-
-Possible information:
-Material
-Color
-Size
-Pattern
-Fit
-Occasion
-Quantity
-Brand
-Price
-Product Features
-Extra Product Information
+Use only seller-provided information.
 
 Never invent:
-vehicle compatibility
-car model compatibility
-waterproofing
-durability
-heavy-duty claims
-exact dimensions
-installation method
-vehicle model
-year compatibility
-warranty
-`;
+vehicle compatibility,
+car model compatibility,
+waterproofing,
+durability,
+heavy-duty claims,
+exact dimensions,
+installation method,
+vehicle model,
+year compatibility,
+warranty.
+`,
 
     "Garden": `
-Use only user-provided garden information.
-
-Possible information:
-Material
-Color
-Size
-Capacity
-Quantity
-Usage
-Brand
-Price
-Product Features
-Extra Product Information
+Use only seller-provided information.
 
 Never invent:
-plant suitability
-weather resistance
-chemical composition
-durability
-waterproofing
-capacity
-fertilizer properties
-`;
+plant suitability,
+weather resistance,
+chemical composition,
+durability,
+waterproofing,
+capacity,
+fertilizer properties.
+`,
 
     "Food": `
-Use only user-provided food information.
-
-Possible information:
-Ingredients
-Flavour
-Quantity
-Form
-Variant
-Brand
-Price
-Product Features
-Extra Product Information
+Use only seller-provided information.
 
 Never invent:
-ingredients
-nutrition
-health benefits
-expiry
-shelf life
-certification
-dietary claims
-allergen information
-`;
+ingredients,
+nutrition,
+health benefits,
+expiry,
+shelf life,
+certification,
+dietary claims,
+allergen information.
+`,
 
     "Gifts": `
-Use only user-provided gift information.
-
-Possible information:
-Material
-Color
-Design
-Quantity
-Occasion
-Recipient
-Packaging
-Brand
-Price
-Product Features
-Extra Product Information
+Use only seller-provided information.
 
 Never invent:
-recipient suitability
-occasion
-packaging details
-contents
-number of items
-material
-quality claims
+recipient suitability,
+occasion,
+packaging details,
+contents,
+number of items,
+material,
+quality claims.
 `
+
 };
+
+// ==========================================================
+// FORBIDDEN MARKETING / UNSUPPORTED CLAIMS
+// ==========================================================
+
+const forbiddenClaims = [
+
+    "waterproof",
+    "durable",
+    "premium",
+    "heavy duty",
+    "heavy-duty",
+    "lightweight",
+    "comfortable",
+    "easy to use",
+    "long lasting",
+    "long-lasting",
+    "perfect fit",
+    "safe",
+    "certified",
+    "warranty",
+    "guarantee",
+    "compatible",
+    "fast charging",
+    "battery backup",
+    "health benefit",
+    "health benefits",
+    "skin benefit",
+    "skin benefits",
+    "medical benefit",
+    "medical benefits",
+    "educational benefit",
+    "educational benefits",
+    "dermatologist",
+    "clinically proven",
+    "100%",
+    "best",
+    "top quality",
+    "chemical free",
+    "organic",
+    "natural",
+    "eco-friendly",
+    "eco friendly"
+
+];
 
 // ==========================================================
 // NORMALIZE CATEGORY
@@ -469,50 +539,77 @@ quality claims
 
 function normalizeCategory(value) {
 
-    if (!value) return "";
+    if (!value) {
+        return "";
+    }
 
-    let category = String(value)
+    const raw = String(value)
         .trim()
-        .replace(/^[^\w]+/u, "")
+        .replace(/^[^\p{L}\p{N}]+/u, "")
         .trim();
 
-    const lower = category.toLowerCase();
+    const lower = raw.toLowerCase();
 
     const map = {
-        "fashion & clothing": "Fashion",
-        "fashion": "Fashion",
 
-        "beauty": "Beauty",
+        "fashion & clothing":
+            "Fashion",
 
-        "electronics": "Electronics",
+        "fashion":
+            "Fashion",
 
-        "home & kitchen": "Home & Kitchen",
-        "home and kitchen": "Home & Kitchen",
+        "beauty":
+            "Beauty",
 
-        "shoes": "Shoes",
+        "electronics":
+            "Electronics",
 
-        "jewellery": "Jewellery",
-        "jewelry": "Jewellery",
+        "home & kitchen":
+            "Home & Kitchen",
 
-        "toys": "Toys",
+        "home and kitchen":
+            "Home & Kitchen",
 
-        "books": "Books",
+        "shoes":
+            "Shoes",
 
-        "pet": "Pet",
-        "pets": "Pet",
+        "jewellery":
+            "Jewellery",
 
-        "sports": "Sports",
+        "jewelry":
+            "Jewellery",
 
-        "automotive": "Automotive",
+        "toys":
+            "Toys",
 
-        "garden": "Garden",
+        "books":
+            "Books",
 
-        "food": "Food",
+        "pet":
+            "Pet",
 
-        "gifts": "Gifts"
+        "pets":
+            "Pet",
+
+        "sports":
+            "Sports",
+
+        "automotive":
+            "Automotive",
+
+        "garden":
+            "Garden",
+
+        "food":
+            "Food",
+
+        "gifts":
+            "Gifts"
+
     };
 
-    return map[lower] || category;
+    return map[lower] || raw;
+
 }
 
 // ==========================================================
@@ -521,136 +618,322 @@ function normalizeCategory(value) {
 
 function cleanText(value) {
 
-    if (value === undefined || value === null) {
+    if (
+        value === undefined ||
+        value === null
+    ) {
+
         return "";
+
     }
 
     return String(value)
         .replace(/^[\s:：\-–—]+/, "")
         .trim();
+
 }
 
 // ==========================================================
-// CLEAN INPUT OBJECT
+// CLEAN INPUT
 // ==========================================================
 
 function cleanInput(body) {
 
-    const cleaned = {};
+    const input = {};
 
-    Object.keys(body || {}).forEach((key) => {
+    Object.entries(body || {}).forEach(
+        ([key, value]) => {
 
-        let value = body[key];
+            if (typeof value === "string") {
 
-        if (typeof value === "string") {
-            value = cleanText(value);
+                input[key] =
+                    cleanText(value);
+
+            } else if (
+                value !== undefined &&
+                value !== null
+            ) {
+
+                input[key] = value;
+
+            }
+
         }
+    );
 
-        cleaned[key] = value;
-    });
+    if (input.category) {
 
-    if (cleaned.category) {
-        cleaned.category = normalizeCategory(cleaned.category);
+        input.category =
+            normalizeCategory(
+                input.category
+            );
+
     }
 
-    if (cleaned.productName) {
-        cleaned.productName = cleanText(cleaned.productName);
+    if (input.productName) {
+
+        input.productName =
+            cleanText(
+                input.productName
+            );
+
     }
 
-    return cleaned;
+    return input;
+
 }
 
 // ==========================================================
-// REMOVE EMPTY VALUES
+// ALLOWED FIELDS
 // ==========================================================
 
-function removeEmptyValues(obj) {
+function getAllowedFields(category) {
 
-    const result = {};
+    return new Set([
 
-    Object.entries(obj || {}).forEach(([key, value]) => {
+        "category",
 
-        if (
-            value !== undefined &&
-            value !== null &&
-            String(value).trim() !== ""
-        ) {
-            result[key] = String(value).trim();
-        }
+        ...commonFields,
 
-    });
+        ...(categoryFields[category] || [])
 
-    return result;
+    ]);
+
 }
 
 // ==========================================================
-// BUILD USER FACTS
+// BUILD FACTS
 // ==========================================================
 
 function buildFacts(input) {
 
-    const ignoredKeys = new Set([
-        "category"
-    ]);
+    const category =
+        normalizeCategory(
+            input.category
+        );
+
+    const allowed =
+        getAllowedFields(category);
 
     const facts = {};
 
-    Object.entries(input).forEach(([key, value]) => {
+    allowed.forEach(
+        (key) => {
 
-        if (ignoredKeys.has(key)) return;
+            if (key === "category") {
+                return;
+            }
 
-        if (
-            value !== undefined &&
-            value !== null &&
-            String(value).trim() !== ""
-        ) {
-            facts[key] = String(value).trim();
+            const value =
+                input[key];
+
+            if (
+                value !== undefined &&
+                value !== null &&
+                String(value).trim() !== ""
+            ) {
+
+                facts[key] =
+                    String(value).trim();
+
+            }
+
         }
-
-    });
+    );
 
     return facts;
+
 }
 
 // ==========================================================
-// BUILD PROMPT
+// DISPLAY LABEL
+// ==========================================================
+
+function displayLabel(key) {
+
+    const labels = {
+
+        productName:
+            "Product",
+
+        brand:
+            "Brand",
+
+        price:
+            "Price",
+
+        material:
+            "Material",
+
+        color:
+            "Color",
+
+        size:
+            "Size",
+
+        pattern:
+            "Pattern",
+
+        fit:
+            "Fit",
+
+        occasion:
+            "Occasion",
+
+        quantity:
+            "Quantity",
+
+        formTexture:
+            "Form / Texture",
+
+        variant:
+            "Variant",
+
+        ingredients:
+            "Ingredients",
+
+        skinType:
+            "Skin Type",
+
+        hairType:
+            "Hair Type",
+
+        fragrance:
+            "Fragrance",
+
+        model:
+            "Model",
+
+        connectivity:
+            "Connectivity",
+
+        compatibility:
+            "Compatibility",
+
+        battery:
+            "Battery",
+
+        power:
+            "Power",
+
+        capacity:
+            "Capacity",
+
+        dimensions:
+            "Dimensions",
+
+        usage:
+            "Usage",
+
+        sole:
+            "Sole",
+
+        closure:
+            "Closure",
+
+        design:
+            "Design",
+
+        author:
+            "Author",
+
+        language:
+            "Language",
+
+        format:
+            "Format",
+
+        pages:
+            "Pages",
+
+        publisher:
+            "Publisher",
+
+        edition:
+            "Edition",
+
+        isbn:
+            "ISBN",
+
+        petType:
+            "Pet Type",
+
+        flavour:
+            "Flavour",
+
+        weight:
+            "Weight",
+
+        activitySport:
+            "Activity / Sport",
+
+        recipient:
+            "Recipient",
+
+        packaging:
+            "Packaging",
+
+        productFeatures:
+            "Features",
+
+        extraProductInformation:
+            "Extra Information"
+
+    };
+
+    return labels[key] || key;
+
+}
+
+// ==========================================================
+// BUILD AI PROMPT
 // ==========================================================
 
 function buildPrompt(input) {
 
-    const category = normalizeCategory(input.category);
+    const category =
+        normalizeCategory(
+            input.category
+        );
 
-    const facts = buildFacts(input);
+    const facts =
+        buildFacts(input);
 
     const categoryRule =
         categoryRules[category] ||
         `
-Use only user-provided information.
+Use only seller-provided information.
 Never invent specifications or claims.
 `;
 
     return `
-You are the STRICT FACTUAL LISTING GENERATOR for AI Seller Toolkit.
+
+You are the STRICT FACTUAL PRODUCT LISTING GENERATOR
+for AI Seller Toolkit.
 
 ==================================================
-ABSOLUTE RULE — NO INVENTED FACTS
+ABSOLUTE RULE
 ==================================================
 
-You MUST NOT create, assume, guess, infer, or add
-any product information that the seller did not provide.
+The SELLER DATA below is the ONLY source of product facts.
 
-Only use facts explicitly present in SELLER DATA.
+You MUST NOT:
+
+- invent
+- guess
+- assume
+- infer
+- complete missing information
+- add marketing claims
+- add specifications
+- add benefits
+- add compatibility claims
+- add quality claims
+- add safety claims
 
 If information is missing:
-- DO NOT guess it.
-- DO NOT add it.
-- DO NOT create a specification.
-- DO NOT create a benefit.
-- DO NOT create a compatibility claim.
-- DO NOT create a quality claim.
 
-You may write natural sentences using supplied facts,
-but you may NOT introduce new factual claims.
+DO NOT ADD IT.
 
 ==================================================
 CATEGORY
@@ -659,7 +942,7 @@ CATEGORY
 ${category}
 
 ==================================================
-CATEGORY RULES
+CATEGORY SAFETY RULES
 ==================================================
 
 ${categoryRule}
@@ -668,40 +951,41 @@ ${categoryRule}
 SELLER DATA
 ==================================================
 
-${JSON.stringify(facts, null, 2)}
+${JSON.stringify(
+    facts,
+    null,
+    2
+)}
 
 ==================================================
-IMPORTANT
+STRICT EXAMPLES
 ==================================================
 
-The following are examples of information that MUST NOT
-be invented unless supplied by the seller:
+Do NOT add:
 
-- Waterproof
-- Durable
-- Premium
-- Heavy Duty
-- Lightweight
-- Comfortable
-- Easy to use
-- Long lasting
-- Perfect fit
-- Safe
-- Certified
-- Warranty
-- Guarantee
-- Compatible
-- Fast charging
-- Battery backup
-- Health benefits
-- Skin benefits
-- Medical benefits
-- Educational benefits
-- Age recommendation
-- Country of origin
-- Any exact specification not supplied
-
-Do not use generic marketing claims as facts.
+Waterproof
+Durable
+Premium
+Heavy Duty
+Lightweight
+Comfortable
+Easy to use
+Long lasting
+Perfect fit
+Safe
+Certified
+Warranty
+Guarantee
+Compatible
+Fast charging
+Battery backup
+Health benefits
+Skin benefits
+Medical benefits
+Educational benefits
+Age recommendation
+Country of origin
+Any specification not supplied
 
 ==================================================
 OUTPUT
@@ -709,20 +993,22 @@ OUTPUT
 
 Return ONLY valid JSON.
 
-Do not use markdown.
-Do not use code fences.
-Do not add explanations.
+No markdown.
 
-Required JSON structure:
+No code fences.
+
+No explanation.
+
+Use exactly:
 
 {
-  "title": "",
-  "description": "",
-  "highlights": [],
-  "keywords": [],
-  "hashtags": [],
-  "seoTitle": "",
-  "seoDescription": ""
+    "title": "",
+    "description": "",
+    "highlights": [],
+    "keywords": [],
+    "hashtags": [],
+    "seoTitle": "",
+    "seoDescription": ""
 }
 
 ==================================================
@@ -730,41 +1016,48 @@ FIELD RULES
 ==================================================
 
 TITLE:
-Use only supplied facts.
+
+Use only seller facts.
 
 DESCRIPTION:
-Write a clear description using only supplied facts.
+
+Use only seller facts.
 
 HIGHLIGHTS:
-Every bullet must be directly supported by seller data.
+
+Every item must be directly supported by seller data.
 
 KEYWORDS:
-Use product/category keywords based only on supplied information.
-Do not create unsupported specifications.
+
+Use only product/category information actually supplied.
 
 HASHTAGS:
+
 Create hashtags only from supplied product/category information.
 
 SEO TITLE:
+
 Use only supplied facts.
 
 SEO DESCRIPTION:
+
 Use only supplied facts.
 
-If a fact is not supplied, simply leave it out.
-
 ==================================================
-FINAL SAFETY CHECK
+FINAL CHECK
 ==================================================
 
-Before returning JSON, verify every factual statement
-against SELLER DATA.
+Before returning JSON:
 
-If a statement cannot be supported directly by SELLER DATA,
-remove it.
+Check every factual statement against SELLER DATA.
+
+If a statement cannot be directly supported,
+REMOVE IT.
 
 Return JSON only.
+
 `;
+
 }
 
 // ==========================================================
@@ -774,46 +1067,80 @@ Return JSON only.
 function parseGeminiJSON(text) {
 
     if (!text) {
-        throw new Error("Empty Gemini response");
+
+        throw new Error(
+            "Empty Gemini response"
+        );
+
     }
 
-    let cleaned = String(text).trim();
+    let cleaned =
+        String(text).trim();
 
-    // Remove markdown code fences if model accidentally returns them
-    cleaned = cleaned
-        .replace(/^```json\s*/i, "")
-        .replace(/^```\s*/i, "")
-        .replace(/\s*```$/i, "")
-        .trim();
+    cleaned =
+        cleaned
+            .replace(
+                /^```json\s*/i,
+                ""
+            )
+            .replace(
+                /^```\s*/i,
+                ""
+            )
+            .replace(
+                /\s*```$/i,
+                ""
+            )
+            .trim();
 
-    // Try direct parse
     try {
-        return JSON.parse(cleaned);
-    } catch (error) {
-        // Continue below
+
+        return JSON.parse(
+            cleaned
+        );
+
+    } catch (_) {
+
+        // Continue
+
     }
 
-    // Try extracting first JSON object
-    const firstBrace = cleaned.indexOf("{");
-    const lastBrace = cleaned.lastIndexOf("}");
+    const firstBrace =
+        cleaned.indexOf("{");
 
-    if (firstBrace !== -1 && lastBrace !== -1) {
+    const lastBrace =
+        cleaned.lastIndexOf("}");
+
+    if (
+        firstBrace !== -1 &&
+        lastBrace !== -1 &&
+        lastBrace > firstBrace
+    ) {
 
         const jsonPart =
-            cleaned.substring(firstBrace, lastBrace + 1);
+            cleaned.substring(
+                firstBrace,
+                lastBrace + 1
+            );
 
         try {
-            return JSON.parse(jsonPart);
-        } catch (error) {
-            throw new Error(
-                "Gemini returned invalid JSON"
+
+            return JSON.parse(
+                jsonPart
             );
+
+        } catch (_) {
+
+            // Continue
+
         }
+
     }
 
     throw new Error(
         "Gemini returned invalid JSON"
     );
+
 }
 
 // ==========================================================
@@ -822,11 +1149,19 @@ function parseGeminiJSON(text) {
 
 function normalizeListing(data) {
 
-    if (!data || typeof data !== "object") {
-        throw new Error("Invalid listing response");
+    if (
+        !data ||
+        typeof data !== "object"
+    ) {
+
+        throw new Error(
+            "Invalid listing response"
+        );
+
     }
 
     return {
+
         title:
             typeof data.title === "string"
                 ? data.title.trim()
@@ -838,23 +1173,38 @@ function normalizeListing(data) {
                 : "",
 
         highlights:
-            Array.isArray(data.highlights)
+            Array.isArray(
+                data.highlights
+            )
                 ? data.highlights
-                    .map(item => String(item).trim())
+                    .map(
+                        item =>
+                            String(item).trim()
+                    )
                     .filter(Boolean)
                 : [],
 
         keywords:
-            Array.isArray(data.keywords)
+            Array.isArray(
+                data.keywords
+            )
                 ? data.keywords
-                    .map(item => String(item).trim())
+                    .map(
+                        item =>
+                            String(item).trim()
+                    )
                     .filter(Boolean)
                 : [],
 
         hashtags:
-            Array.isArray(data.hashtags)
+            Array.isArray(
+                data.hashtags
+            )
                 ? data.hashtags
-                    .map(item => String(item).trim())
+                    .map(
+                        item =>
+                            String(item).trim()
+                    )
                     .filter(Boolean)
                 : [],
 
@@ -867,161 +1217,1088 @@ function normalizeListing(data) {
             typeof data.seoDescription === "string"
                 ? data.seoDescription.trim()
                 : ""
+
     };
+
+}
+
+// ==========================================================
+// NORMALIZE FOR COMPARISON
+// ==========================================================
+
+function normalizeForCompare(value) {
+
+    return String(value || "")
+        .toLowerCase()
+        .replace(
+            /[^\p{L}\p{N}₹%.]+/gu,
+            " "
+        )
+        .replace(
+            /\s+/g,
+            " "
+        )
+        .trim();
+
+}
+
+// ==========================================================
+// FORBIDDEN CLAIM CHECK
+// ==========================================================
+
+function containsForbiddenClaim(text) {
+
+    const normalized =
+        String(text || "")
+            .toLowerCase();
+
+    return (
+        forbiddenClaims.find(
+            claim =>
+                normalized.includes(
+                    claim
+                )
+        ) || ""
+    );
+
+}
+
+// ==========================================================
+// NUMBER CHECK
+// ==========================================================
+
+function hasUnsupportedNumbers(
+    text,
+    facts
+) {
+
+    const source =
+        Object.values(facts)
+            .join(" ");
+
+    const numbers =
+        String(text || "")
+            .match(
+                /\d+(?:\.\d+)?/g
+            ) || [];
+
+    return (
+        numbers.find(
+            number =>
+                !source.includes(
+                    number
+                )
+        ) || ""
+    );
+
+}
+
+// ==========================================================
+// AI OUTPUT FACT CHECK
+// ==========================================================
+
+function outputUsesUnsupportedFacts(
+    listing,
+    facts,
+    category
+) {
+
+    const combined = [
+
+        listing.title,
+
+        listing.description,
+
+        ...listing.highlights,
+
+        ...listing.keywords,
+
+        listing.seoTitle,
+
+        listing.seoDescription
+
+    ].join(" ");
+
+    // ------------------------------------------
+    // Forbidden claims
+    // ------------------------------------------
+
+    const forbidden =
+        containsForbiddenClaim(
+            combined
+        );
+
+    if (forbidden) {
+
+        return (
+            "Unsupported marketing claim: " +
+            forbidden
+        );
+
+    }
+
+    // ------------------------------------------
+    // Unsupported numbers
+    // ------------------------------------------
+
+    const unsupportedNumber =
+        hasUnsupportedNumbers(
+            combined,
+            facts
+        );
+
+    if (unsupportedNumber) {
+
+        return (
+            "Unsupported number: " +
+            unsupportedNumber
+        );
+
+    }
+
+    // ------------------------------------------
+    // Product name must remain
+    // ------------------------------------------
+
+    const productName =
+        normalizeForCompare(
+            facts.productName
+        );
+
+    if (
+        productName &&
+        !normalizeForCompare(
+            listing.title
+        ).includes(
+            productName
+        )
+    ) {
+
+        return (
+            "Title does not contain " +
+            "the supplied product name"
+        );
+
+    }
+
+    // ------------------------------------------
+    // Category must be present in keywords
+    // ------------------------------------------
+
+    const categoryText =
+        normalizeForCompare(
+            category
+        );
+
+    const keywordsText =
+        normalizeForCompare(
+            listing.keywords.join(" ")
+        );
+
+    if (
+        categoryText &&
+        !keywordsText.includes(
+            categoryText
+        )
+    ) {
+
+        return (
+            "Keywords do not contain " +
+            "the supplied category"
+        );
+
+    }
+
+    // ------------------------------------------
+    // Basic unsupported wording protection
+    // ------------------------------------------
+
+    const normalizedFacts =
+        Object.values(facts)
+            .map(
+                normalizeForCompare
+            )
+            .filter(Boolean);
+
+    const factualTokens =
+        new Set(
+            normalizedFacts
+                .flatMap(
+                    value =>
+                        value
+                            .split(" ")
+                            .filter(
+                                token =>
+                                    token.length >= 4
+                            )
+                )
+        );
+
+    const allowedWords = new Set([
+
+        "product",
+        "price",
+        "available",
+        "includes",
+        "contains",
+        "made",
+        "from",
+        "with",
+        "for",
+        "the",
+        "and",
+        "in",
+        "of",
+        "this",
+        "is",
+        "are",
+        "set",
+        "piece",
+        "pieces",
+        "buy",
+        "shop",
+        "brand",
+        "features",
+        "quantity",
+        "color",
+        "size",
+        "material",
+        "language",
+        "format",
+        "pages",
+        "edition",
+        "author",
+        "publisher",
+        "model",
+        "design",
+        "occasion",
+        "pet",
+        "type",
+        "activity",
+        "sport",
+        "weight",
+        "capacity",
+        "dimensions",
+        "form",
+        "texture",
+        "variant",
+        "ingredients",
+        "flavour",
+        "fragrance",
+        "pattern",
+        "fit",
+        "sole",
+        "closure",
+        "connectivity",
+        "battery",
+        "power",
+        "compatibility",
+        "usage",
+        "recipient",
+        "packaging",
+        "information",
+        "english",
+        "one",
+        "only"
+
+    ]);
+
+    const textTokens =
+        normalizeForCompare(
+            combined
+        )
+            .split(" ")
+            .filter(
+                token =>
+                    token.length >= 4
+            );
+
+    const unsupportedWords =
+        textTokens.filter(
+            token =>
+                !factualTokens.has(
+                    token
+                ) &&
+                !allowedWords.has(
+                    token
+                )
+        );
+
+    if (
+        unsupportedWords.length > 8
+    ) {
+
+        return (
+            "Possible unsupported wording: " +
+            unsupportedWords
+                .slice(0, 5)
+                .join(", ")
+        );
+
+    }
+
+    return "";
+
 }
 
 // ==========================================================
 // VALIDATE LISTING
 // ==========================================================
 
-function validateListing(listing) {
+function validateListing(
+    listing,
+    facts,
+    category
+) {
 
     if (!listing.title) {
-        throw new Error("AI did not return a title");
+
+        throw new Error(
+            "AI did not return a title"
+        );
+
     }
 
     if (!listing.description) {
-        throw new Error("AI did not return a description");
+
+        throw new Error(
+            "AI did not return a description"
+        );
+
     }
 
-    if (!Array.isArray(listing.highlights)) {
-        throw new Error("Invalid highlights");
+    if (
+        !Array.isArray(
+            listing.highlights
+        )
+    ) {
+
+        throw new Error(
+            "Invalid highlights"
+        );
+
     }
 
-    if (!Array.isArray(listing.keywords)) {
-        throw new Error("Invalid keywords");
+    if (
+        !Array.isArray(
+            listing.keywords
+        )
+    ) {
+
+        throw new Error(
+            "Invalid keywords"
+        );
+
     }
 
-    if (!Array.isArray(listing.hashtags)) {
-        throw new Error("Invalid hashtags");
+    if (
+        !Array.isArray(
+            listing.hashtags
+        )
+    ) {
+
+        throw new Error(
+            "Invalid hashtags"
+        );
+
+    }
+
+    const issue =
+        outputUsesUnsupportedFacts(
+            listing,
+            facts,
+            category
+        );
+
+    if (issue) {
+
+        throw new Error(
+            "Strict Fact Guard rejected AI output: " +
+            issue
+        );
+
     }
 
     return true;
+
 }
 
 // ==========================================================
 // GEMINI REQUEST
 // ==========================================================
 
-async function generateWithModel(model, prompt) {
+async function generateWithModel(
+    model,
+    prompt
+) {
 
     if (!ai) {
-        throw new Error("Gemini API key is not configured");
+
+        throw new Error(
+            "Gemini API key is not configured"
+        );
+
     }
 
-    console.log(`🤖 Gemini model: ${model}`);
+    console.log(
+        `🤖 Gemini model: ${model}`
+    );
 
-    const response = await ai.models.generateContent({
-        model: model,
-        contents: prompt
-    });
+    const response =
+        await ai.models.generateContent({
+
+            model: model,
+
+            contents: prompt
+
+        });
 
     if (!response) {
-        throw new Error("No response from Gemini");
+
+        throw new Error(
+            "No response from Gemini"
+        );
+
     }
 
     let text = "";
 
-    if (typeof response.text === "string") {
-        text = response.text;
-    } else if (response.text) {
-        text = String(response.text);
+    if (
+        typeof response.text === "string"
+    ) {
+
+        text =
+            response.text;
+
+    } else if (
+        response.text
+    ) {
+
+        text =
+            String(
+                response.text
+            );
+
     }
 
     if (!text) {
-        throw new Error("Gemini returned empty response");
+
+        throw new Error(
+            "Gemini returned empty response"
+        );
+
     }
 
-    return parseGeminiJSON(text);
+    return parseGeminiJSON(
+        text
+    );
+
 }
 
 // ==========================================================
-// RETRY HELPER
+// SLEEP
 // ==========================================================
 
 function sleep(ms) {
 
-    return new Promise(resolve => {
-        setTimeout(resolve, ms);
-    });
+    return new Promise(
+        resolve =>
+            setTimeout(
+                resolve,
+                ms
+            )
+    );
 
 }
 
 // ==========================================================
-// SMART MODEL CALL
+// TEMPORARY ERROR CHECK
 // ==========================================================
 
-async function generateListing(prompt) {
+function isTemporaryError(
+    error
+) {
 
-    // ======================================================
-    // PRIMARY MODEL — ATTEMPT 1
-    // ======================================================
+    const message =
+        String(
+            error?.message ||
+            error
+        ).toLowerCase();
 
-    try {
+    return (
 
-        console.log(
-            `🚀 Primary attempt 1/2: ${PRIMARY_MODEL}`
+        message.includes("503") ||
+
+        message.includes(
+            "unavailable"
+        ) ||
+
+        message.includes(
+            "high demand"
+        ) ||
+
+        message.includes(
+            "temporarily"
+        ) ||
+
+        message.includes("429") ||
+
+        message.includes(
+            "rate limit"
+        )
+
+    );
+
+}
+
+// ==========================================================
+// VALUE HELPER
+// ==========================================================
+
+function value(
+    facts,
+    key
+) {
+
+    return facts[key]
+        ? String(
+            facts[key]
+        ).trim()
+        : "";
+
+}
+
+// ==========================================================
+// JOIN PARTS
+// ==========================================================
+
+function joinParts(parts) {
+
+    return parts
+        .filter(Boolean)
+        .join(" ");
+
+}
+
+// ==========================================================
+// DETERMINISTIC FACT-ONLY LISTING
+// ==========================================================
+
+function buildDeterministicListing(
+    input
+) {
+
+    const category =
+        normalizeCategory(
+            input.category
         );
 
-        const result =
-            await generateWithModel(
-                PRIMARY_MODEL,
-                prompt
-            );
+    const facts =
+        buildFacts(input);
 
-        return {
-            listing: result,
-            model: PRIMARY_MODEL
-        };
-
-    } catch (error) {
-
-        console.error(
-            `❌ Primary attempt 1 failed:`,
-            error.message
+    const name =
+        value(
+            facts,
+            "productName"
         );
 
-        // Retry only for temporary availability problems
-        if (
-            String(error.message).includes("503") ||
-            String(error.message).includes("UNAVAILABLE") ||
-            String(error.message).toLowerCase().includes("high demand") ||
-            String(error.message).toLowerCase().includes("temporarily")
+    const brand =
+        value(
+            facts,
+            "brand"
+        );
+
+    const price =
+        value(
+            facts,
+            "price"
+        );
+
+    // ------------------------------------------
+    // TITLE
+    // ------------------------------------------
+
+    const titleParts = [
+
+        brand,
+        name
+
+    ];
+
+    const fields =
+        categoryFields[category] ||
+        [];
+
+    fields.forEach(
+        key => {
+
+            if (
+                titleParts
+                    .join(" ")
+                    .length >= 70
+            ) {
+
+                return;
+
+            }
+
+            if (
+
+                [
+                    "quantity",
+                    "color",
+                    "material",
+                    "size",
+                    "model",
+                    "design",
+                    "variant",
+                    "format",
+                    "edition"
+
+                ].includes(key) &&
+
+                value(
+                    facts,
+                    key
+                )
+
+            ) {
+
+                titleParts.push(
+                    value(
+                        facts,
+                        key
+                    )
+                );
+
+            }
+
+        }
+    );
+
+    const title =
+        titleParts
+            .filter(Boolean)
+            .join(" - ");
+
+    // ------------------------------------------
+    // DESCRIPTION
+    // ------------------------------------------
+
+    const sentences = [];
+
+    const intro =
+        joinParts([
+
+            brand,
+            name
+
+        ]);
+
+    if (intro) {
+
+        sentences.push(
+            `${intro}.`
+        );
+
+    }
+
+    fields.forEach(
+        key => {
+
+            const fieldValue =
+                value(
+                    facts,
+                    key
+                );
+
+            if (fieldValue) {
+
+                sentences.push(
+
+                    `${displayLabel(
+                        key
+                    )}: ${fieldValue}.`
+
+                );
+
+            }
+
+        }
+    );
+
+    if (price) {
+
+        sentences.push(
+            `Price: ${price}.`
+        );
+
+    }
+
+    if (
+        facts.productFeatures
+    ) {
+
+        sentences.push(
+
+            `Features: ${
+                facts.productFeatures
+            }.`
+
+        );
+
+    }
+
+    if (
+        facts.extraProductInformation
+    ) {
+
+        sentences.push(
+
+            `Additional information: ${
+                facts.extraProductInformation
+            }.`
+
+        );
+
+    }
+
+    const description =
+        sentences.join(" ");
+
+    // ------------------------------------------
+    // HIGHLIGHTS
+    // ------------------------------------------
+
+    const highlights = [];
+
+    if (brand) {
+
+        highlights.push(
+            `Brand: ${brand}`
+        );
+
+    }
+
+    fields.forEach(
+        key => {
+
+            const fieldValue =
+                value(
+                    facts,
+                    key
+                );
+
+            if (fieldValue) {
+
+                highlights.push(
+
+                    `${displayLabel(
+                        key
+                    )}: ${fieldValue}`
+
+                );
+
+            }
+
+        }
+    );
+
+    if (
+        facts.productFeatures
+    ) {
+
+        highlights.push(
+
+            `Features: ${
+                facts.productFeatures
+            }`
+
+        );
+
+    }
+
+    if (price) {
+
+        highlights.push(
+            `Price: ${price}`
+        );
+
+    }
+
+    // ------------------------------------------
+    // KEYWORDS
+    // ------------------------------------------
+
+    const keywordValues = [
+
+        name,
+        brand,
+        category
+
+    ];
+
+    fields.forEach(
+        key => {
+
+            const fieldValue =
+                value(
+                    facts,
+                    key
+                );
+
+            if (fieldValue) {
+
+                keywordValues.push(
+                    fieldValue
+                );
+
+            }
+
+        }
+    );
+
+    const keywords = [
+
+        ...new Set(
+            keywordValues
+                .filter(Boolean)
+        )
+
+    ];
+
+    // ------------------------------------------
+    // HASHTAGS
+    // ------------------------------------------
+
+    const hashtags = [
+
+        ...new Set(
+
+            keywords
+
+                .map(
+                    item =>
+                        String(item)
+                            .replace(
+                                /[^\p{L}\p{N}]+/gu,
+                                ""
+                            )
+                            .trim()
+                )
+
+                .filter(
+                    item =>
+                        item.length >= 2
+                )
+
+                .slice(0, 8)
+
+                .map(
+                    item =>
+                        `#${item}`
+                )
+
+        )
+
+    ];
+
+    // ------------------------------------------
+    // SEO
+    // ------------------------------------------
+
+    const seoTitle =
+        title;
+
+    const seoDescription =
+        description;
+
+    return {
+
+        title:
+            title ||
+            category,
+
+        description,
+
+        highlights,
+
+        keywords,
+
+        hashtags,
+
+        seoTitle,
+
+        seoDescription
+
+    };
+
+}
+
+// ==========================================================
+// SMART AI GENERATION
+// ==========================================================
+
+async function generateListing(
+    prompt,
+    input
+) {
+
+    const category =
+        normalizeCategory(
+            input.category
+        );
+
+    const facts =
+        buildFacts(input);
+
+    const models = [
+
+        PRIMARY_MODEL,
+
+        FALLBACK_MODEL
+
+    ].filter(
+
+        (
+            model,
+            index,
+            array
+        ) =>
+
+            model &&
+            array.indexOf(
+                model
+            ) === index
+
+    );
+
+    let lastError =
+        null;
+
+    // ======================================================
+    // TRY GEMINI MODELS
+    // ======================================================
+
+    for (
+        const model of models
+    ) {
+
+        for (
+            let attempt = 1;
+            attempt <= 2;
+            attempt++
         ) {
-
-            console.log(
-                "⏳ Temporary Gemini availability issue."
-            );
-
-            await sleep(2500);
-
-            // ==================================================
-            // PRIMARY MODEL — ATTEMPT 2
-            // ==================================================
 
             try {
 
                 console.log(
-                    `🔁 Primary attempt 2/2: ${PRIMARY_MODEL}`
+                    `🚀 ${model} attempt ${attempt}/2`
                 );
 
-                const result =
+                const raw =
                     await generateWithModel(
-                        PRIMARY_MODEL,
+                        model,
                         prompt
                     );
 
+                const listing =
+                    normalizeListing(
+                        raw
+                    );
+
+                validateListing(
+                    listing,
+                    facts,
+                    category
+                );
+
+                console.log(
+                    `✅ ${model} returned a fact-checked listing`
+                );
+
                 return {
-                    listing: result,
-                    model: PRIMARY_MODEL
+
+                    listing,
+
+                    model
+
                 };
 
-            } catch (secondError) {
+            } catch (error) {
+
+                lastError =
+                    error;
 
                 console.error(
-                    `❌ Primary attempt 2 failed:`,
-                    secondError.message
+
+                    `❌ ${model} attempt ${attempt} failed:`,
+
+                    error.message
+
                 );
+
+                // ------------------------------------------
+                // Retry temporary Gemini problems
+                // ------------------------------------------
+
+                if (
+                    attempt === 1 &&
+                    isTemporaryError(
+                        error
+                    )
+                ) {
+
+                    console.log(
+                        "⏳ Temporary Gemini issue. Retrying..."
+                    );
+
+                    await sleep(
+                        2500
+                    );
+
+                }
+
+                // ------------------------------------------
+                // Do not retry rejected factual output
+                // ------------------------------------------
+
+                else if (
+
+                    attempt === 1 &&
+
+                    String(
+                        error.message
+                    )
+                        .toLowerCase()
+                        .includes(
+                            "strict fact guard"
+                        )
+
+                ) {
+
+                    console.log(
+                        "🛑 AI output rejected by Strict Fact Guard."
+                    );
+
+                    break;
+
+                }
+
+                // ------------------------------------------
+                // Other errors
+                // ------------------------------------------
+
+                else if (
+                    attempt === 1 &&
+                    !isTemporaryError(
+                        error
+                    )
+                ) {
+
+                    break;
+
+                }
 
             }
 
@@ -1030,400 +2307,450 @@ async function generateListing(prompt) {
     }
 
     // ======================================================
-    // FALLBACK MODEL — ATTEMPT 1
+    // DETERMINISTIC FALLBACK
     // ======================================================
 
-    try {
+    console.warn(
+        "⚠️ Gemini unavailable or rejected."
+    );
 
-        console.log(
-            `🔄 Fallback attempt 1/2: ${FALLBACK_MODEL}`
-        );
+    console.warn(
+        "🛡️ Using deterministic fact-only generator."
+    );
 
-        const result =
-            await generateWithModel(
-                FALLBACK_MODEL,
-                prompt
-            );
+    return {
 
-        return {
-            listing: result,
-            model: FALLBACK_MODEL
-        };
+        listing:
+            buildDeterministicListing(
+                input
+            ),
 
-    } catch (error) {
+        model:
+            "fact-only-generator",
 
-        console.error(
-            `❌ Fallback attempt 1 failed:`,
-            error.message
-        );
+        fallbackReason:
+            lastError?.message ||
+            "Gemini unavailable"
 
-        // ==================================================
-        // FALLBACK MODEL — ATTEMPT 2
-        // ==================================================
+    };
 
-        try {
-
-            console.log(
-                `🔁 Fallback attempt 2/2: ${FALLBACK_MODEL}`
-            );
-
-            await sleep(1500);
-
-            const result =
-                await generateWithModel(
-                    FALLBACK_MODEL,
-                    prompt
-                );
-
-            return {
-                listing: result,
-                model: FALLBACK_MODEL
-            };
-
-        } catch (secondError) {
-
-            console.error(
-                `❌ Fallback attempt 2 failed:`,
-                secondError.message
-            );
-
-            throw new Error(
-                "Both Gemini models are currently unavailable. Please try again in a few seconds."
-            );
-        }
-    }
 }
 
 // ==========================================================
-// HEALTH CHECK
+// ROOT
 // ==========================================================
 
-app.get("/", (req, res) => {
+app.get(
+    "/",
+    (req, res) => {
 
-    res.json({
-        success: true,
-        server: "online",
-        name: "AI Seller Toolkit Backend",
-        version: "6.2",
-        port: PORT,
-        geminiConfigured: Boolean(GEMINI_API_KEY),
-        primaryModel: PRIMARY_MODEL,
-        fallbackModel: FALLBACK_MODEL,
-        strictFactGuard: true,
-        noInventedFacts: true
-    });
-
-});
-
-// ==========================================================
-// STATUS
-// ==========================================================
-
-app.get("/api/status", (req, res) => {
-
-    res.json({
-        success: true,
-        server: "online",
-        version: "6.2",
-        geminiConfigured: Boolean(GEMINI_API_KEY),
-        primaryModel: PRIMARY_MODEL,
-        fallbackModel: FALLBACK_MODEL,
-        strictFactGuard: true,
-        noInventedFacts: true
-    });
-
-});
-
-// ==========================================================
-// CATEGORIES
-// ==========================================================
-
-app.get("/api/categories", (req, res) => {
-
-    res.json({
-        success: true,
-        categories
-    });
-
-});
-
-// ==========================================================
-// GENERATE LISTING
-// ==========================================================
-
-app.post("/api/generate-listing", async (req, res) => {
-
-    console.log(
-        "=================================================="
-    );
-
-    console.log(
-        "📦 Generate Listing Request"
-    );
-
-    try {
-
-        if (!GEMINI_API_KEY) {
-
-            return res.status(500).json({
-                success: false,
-                error: "Gemini API key is not configured."
-            });
-
-        }
-
-        // ==================================================
-        // CLEAN INPUT
-        // ==================================================
-
-        const input = cleanInput(req.body);
-
-        // ==================================================
-        // CATEGORY
-        // ==================================================
-
-        const category =
-            normalizeCategory(input.category);
-
-        if (!category) {
-
-            return res.status(400).json({
-                success: false,
-                error: "Product category is required."
-            });
-
-        }
-
-        if (!categories.includes(category)) {
-
-            return res.status(400).json({
-                success: false,
-                error:
-                    `Unsupported product category: ${category}`
-            });
-
-        }
-
-        // ==================================================
-        // PRODUCT NAME
-        // ==================================================
-
-        const productName =
-            cleanText(
-                input.productName ||
-                input.product ||
-                ""
-            );
-
-        if (!productName) {
-
-            return res.status(400).json({
-                success: false,
-                error: "Product name is required."
-            });
-
-        }
-
-        // Normalize productName in input
-        input.category = category;
-        input.productName = productName;
-
-        // ==================================================
-        // LOG
-        // ==================================================
-
-        console.log(
-            "Generating listing:",
-            {
-                category: category,
-                product: productName
-            }
-        );
-
-        // ==================================================
-        // BUILD PROMPT
-        // ==================================================
-
-        const prompt =
-            buildPrompt(input);
-
-        // ==================================================
-        // GENERATE
-        // ==================================================
-
-        const generated =
-            await generateListing(prompt);
-
-        // ==================================================
-        // NORMALIZE
-        // ==================================================
-
-        const listing =
-            normalizeListing(
-                generated.listing
-            );
-
-        // ==================================================
-        // VALIDATE
-        // ==================================================
-
-        validateListing(listing);
-
-        // ==================================================
-        // SUCCESS
-        // ==================================================
-
-        console.log(
-            `✅ Listing generated successfully using ${generated.model}`
-        );
-
-        return res.status(200).json({
+        res.json({
 
             success: true,
 
-            message: "Listing generated successfully.",
+            server:
+                "AI SELLER TOOLKIT BACKEND",
 
-            version: "6.2",
+            version:
+                "7.0",
 
-            model: generated.model,
+            strictFactGuard:
+                true,
 
-            category: category,
+            noInventedFacts:
+                true,
 
-            productName: productName,
+            deterministicFallback:
+                true,
 
-            strictFactGuard: true,
+            geminiConfigured:
+                Boolean(
+                    GEMINI_API_KEY
+                ),
 
-            noInventedFacts: true,
+            primaryModel:
+                PRIMARY_MODEL,
 
-            listing: listing
-
-        });
-
-    } catch (error) {
-
-        console.error(
-            "❌ Listing generation failed:",
-            error.message
-        );
-
-        // ==================================================
-        // IMPORTANT:
-        // NEVER RETURN FAKE SUCCESS
-        // ==================================================
-
-        return res.status(503).json({
-
-            success: false,
-
-            message:
-                "Listing could not be generated right now.",
-
-            error:
-                error.message ||
-                "Gemini service temporarily unavailable.",
-
-            version: "6.2",
-
-            retryable: true
+            fallbackModel:
+                FALLBACK_MODEL
 
         });
 
     }
-
-});
-
-// ==========================================================
-// 404
-// ==========================================================
-
-app.use((req, res) => {
-
-    res.status(404).json({
-
-        success: false,
-
-        error: "API endpoint not found.",
-
-        path: req.originalUrl
-
-    });
-
-});
+);
 
 // ==========================================================
-// GLOBAL ERROR HANDLER
+// STATUS API
 // ==========================================================
 
-app.use((error, req, res, next) => {
+app.get(
+    "/api/status",
+    (req, res) => {
 
-    console.error(
-        "❌ Server error:",
-        error
-    );
+        res.json({
 
-    res.status(500).json({
+            success: true,
 
-        success: false,
+            online:
+                true,
 
-        error:
-            "Internal server error."
+            version:
+                "7.0",
 
-    });
+            geminiConfigured:
+                Boolean(
+                    GEMINI_API_KEY
+                ),
 
-});
+            primaryModel:
+                PRIMARY_MODEL,
+
+            fallbackModel:
+                FALLBACK_MODEL,
+
+            strictFactGuard:
+                true,
+
+            noInventedFacts:
+                true,
+
+            deterministicFallback:
+                true
+
+        });
+
+    }
+);
+
+// ==========================================================
+// CATEGORIES API
+// ==========================================================
+
+app.get(
+    "/api/categories",
+    (req, res) => {
+
+        res.json({
+
+            success:
+                true,
+
+            categories
+
+        });
+
+    }
+);
+
+// ==========================================================
+// GENERATE LISTING API
+// ==========================================================
+
+app.post(
+    "/api/generate-listing",
+    async (req, res) => {
+
+        try {
+
+            // ------------------------------------------
+            // CLEAN INPUT
+            // ------------------------------------------
+
+            const input =
+                cleanInput(
+                    req.body || {}
+                );
+
+            // ------------------------------------------
+            // CATEGORY
+            // ------------------------------------------
+
+            const category =
+                normalizeCategory(
+                    input.category
+                );
+
+            if (!category) {
+
+                return res
+                    .status(400)
+                    .json({
+
+                        success:
+                            false,
+
+                        error:
+                            "Product category is required"
+
+                    });
+
+            }
+
+            // ------------------------------------------
+            // VALID CATEGORY
+            // ------------------------------------------
+
+            if (
+                !categories.includes(
+                    category
+                )
+            ) {
+
+                return res
+                    .status(400)
+                    .json({
+
+                        success:
+                            false,
+
+                        error:
+                            `Unsupported product category: ${category}`
+
+                    });
+
+            }
+
+            // ------------------------------------------
+            // PRODUCT NAME
+            // ------------------------------------------
+
+            const productName =
+                cleanText(
+                    input.productName
+                );
+
+            if (!productName) {
+
+                return res
+                    .status(400)
+                    .json({
+
+                        success:
+                            false,
+
+                        error:
+                            "Product name is required"
+
+                    });
+
+            }
+
+            input.category =
+                category;
+
+            input.productName =
+                productName;
+
+            // ------------------------------------------
+            // SELLER FACTS
+            // ------------------------------------------
+
+            const facts =
+                buildFacts(
+                    input
+                );
+
+            // ------------------------------------------
+            // PROMPT
+            // ------------------------------------------
+
+            const prompt =
+                buildPrompt(
+                    input
+                );
+
+            console.log(
+                "============================================"
+            );
+
+            console.log(
+                "🧾 GENERATING LISTING"
+            );
+
+            console.log(
+                "Category:",
+                category
+            );
+
+            console.log(
+                "Product:",
+                productName
+            );
+
+            console.log(
+                "Seller Facts:",
+                facts
+            );
+
+            console.log(
+                "============================================"
+            );
+
+            // ------------------------------------------
+            // GENERATE
+            // ------------------------------------------
+
+            const result =
+                await generateListing(
+                    prompt,
+                    input
+                );
+
+            const finalListing =
+                normalizeListing(
+                    result.listing
+                );
+
+            // ------------------------------------------
+            // FINAL VALIDATION
+            // ------------------------------------------
+
+            validateListing(
+                finalListing,
+                facts,
+                category
+            );
+
+            // ------------------------------------------
+            // RESPONSE
+            // ------------------------------------------
+
+            return res.json({
+
+                success:
+                    true,
+
+                category:
+
+                    category,
+
+                model:
+
+                    result.model,
+
+                strictFactGuard:
+
+                    true,
+
+                noInventedFacts:
+
+                    true,
+
+                fallbackUsed:
+
+                    result.model ===
+                    "fact-only-generator",
+
+                listing:
+
+                    finalListing
+
+            });
+
+        } catch (error) {
+
+            console.error(
+                "❌ /api/generate-listing error:",
+                error
+            );
+
+            return res
+                .status(500)
+                .json({
+
+                    success:
+                        false,
+
+                    error:
+                        error.message ||
+                        "Unable to generate listing"
+
+                });
+
+        }
+
+    }
+);
+
+// ==========================================================
+// 404 HANDLER
+// ==========================================================
+
+app.use(
+    (req, res) => {
+
+        res
+            .status(404)
+            .json({
+
+                success:
+                    false,
+
+                error:
+                    "API endpoint not found"
+
+            });
+
+    }
+);
 
 // ==========================================================
 // START SERVER
 // ==========================================================
 
-app.listen(PORT, () => {
+app.listen(
+    PORT,
+    () => {
 
-    console.log(
-        "=================================================="
-    );
+        console.log(
+            "============================================"
+        );
 
-    console.log(
-        "🤖 AI SELLER TOOLKIT BACKEND"
-    );
+        console.log(
+            "🤖 AI SELLER TOOLKIT BACKEND"
+        );
 
-    console.log(
-        "🔐 Version: 6.2"
-    );
+        console.log(
+            "📌 Version: 7.0"
+        );
 
-    console.log(
-        `🚀 Server running on port ${PORT}`
-    );
+        console.log(
+            `🚀 Server running on port ${PORT}`
+        );
 
-    console.log(
-        `🤖 Gemini Primary Model: ${PRIMARY_MODEL}`
-    );
+        console.log(
+            `🤖 Gemini Primary Model: ${PRIMARY_MODEL}`
+        );
 
-    console.log(
-        `🔄 Gemini Fallback Model: ${FALLBACK_MODEL}`
-    );
+        console.log(
+            `🔄 Gemini Fallback Model: ${FALLBACK_MODEL}`
+        );
 
-    console.log(
-        `🔑 Gemini API: ${
-            GEMINI_API_KEY
-                ? "CONFIGURED"
-                : "NOT CONFIGURED"
-        }`
-    );
+        console.log(
 
-    console.log(
-        "🛡️ Strict Fact Guard: ENABLED"
-    );
+            `🔑 Gemini API: ${
+                GEMINI_API_KEY
+                    ? "CONFIGURED"
+                    : "NOT CONFIGURED"
+            }`
 
-    console.log(
-        "🚫 No Invented Facts: ENABLED"
-    );
+        );
 
-    console.log(
-        "🔁 Smart Retry + Fallback: ENABLED"
-    );
+        console.log(
+            "🛡️ Strict Fact Guard: ENABLED"
+        );
 
-    console.log(
-        "=================================================="
-    );
+        console.log(
+            "🚫 No Invented Facts: ENABLED"
+        );
 
-});
+        console.log(
+            "🧩 Deterministic Fact-Only Fallback: ENABLED"
+        );
+
+        console.log(
+            "============================================"
+        );
+
+    }
+);
