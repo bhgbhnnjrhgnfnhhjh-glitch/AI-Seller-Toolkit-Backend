@@ -1,14 +1,16 @@
 // ==========================================================
 // AI SELLER TOOLKIT
-// COMPLETE-LISTING-GENERATOR.JS — FINAL VERSION 7.1
+// COMPLETE-LISTING-GENERATOR.JS — FINAL VERSION 7.2
 // ==========================================================
 // Category-Aware
-// Server 7.1 Compatible
+// Backend 7.1 Compatible
 // Strict Fact Guard Compatible
+// Response-Safe
+// Multiple Response Format Support
 // Dynamic Category Fields
 // No Invented Facts
-// API Error Handling
-// Frontend Response Compatibility
+// Duplicate Event Protection
+// LocalStorage Support
 // ==========================================================
 
 
@@ -48,6 +50,8 @@ function getElement(...ids) {
 
     for (const id of ids) {
 
+        if (!id) continue;
+
         const element =
             document.getElementById(id);
 
@@ -73,6 +77,7 @@ function getValue(...ids) {
     return String(
         element.value || ""
     ).trim();
+
 }
 
 
@@ -85,18 +90,35 @@ function setValue(value, ...ids) {
         return;
     }
 
-    element.value =
-        value || "";
+    if ("value" in element) {
+
+        element.value =
+            value || "";
+
+    } else {
+
+        element.textContent =
+            value || "";
+
+    }
+
 }
 
 
 function showElement(...ids) {
 
-    const element =
-        getElement(...ids);
+    for (const id of ids) {
 
-    if (element) {
-        element.style.display = "";
+        const element =
+            document.getElementById(id);
+
+        if (element) {
+
+            element.style.display =
+                "";
+
+        }
+
     }
 
 }
@@ -104,11 +126,18 @@ function showElement(...ids) {
 
 function hideElement(...ids) {
 
-    const element =
-        getElement(...ids);
+    for (const id of ids) {
 
-    if (element) {
-        element.style.display = "none";
+        const element =
+            document.getElementById(id);
+
+        if (element) {
+
+            element.style.display =
+                "none";
+
+        }
+
     }
 
 }
@@ -120,14 +149,18 @@ function hideElement(...ids) {
 
 function getMessageElement() {
 
-    return (
-        getElement(
-            "message",
-            "errorMessage",
-            "successMessage",
-            "statusMessage",
-            "formMessage"
-        )
+    return getElement(
+
+        "message",
+
+        "errorMessage",
+
+        "successMessage",
+
+        "statusMessage",
+
+        "formMessage"
+
     );
 
 }
@@ -144,17 +177,28 @@ function showMessage(
     if (!element) {
 
         if (type === "error") {
-            console.error(message);
+
+            console.error(
+                "[AI SELLER TOOLKIT]",
+                message
+            );
+
         } else {
-            console.log(message);
+
+            console.log(
+                "[AI SELLER TOOLKIT]",
+                message
+            );
+
         }
 
         return;
+
     }
 
 
     element.textContent =
-        message;
+        String(message || "");
 
 
     element.style.display =
@@ -167,19 +211,25 @@ function showMessage(
 
     if (type === "success") {
 
-        setTimeout(() => {
+        clearTimeout(
+            element._successTimer
+        );
 
-            if (
-                element.textContent ===
-                message
-            ) {
 
-                element.style.display =
-                    "none";
+        element._successTimer =
+            setTimeout(() => {
 
-            }
+                if (
+                    element.textContent ===
+                    String(message || "")
+                ) {
 
-        }, 5000);
+                    element.style.display =
+                        "none";
+
+                }
+
+            }, 5000);
 
     }
 
@@ -194,6 +244,12 @@ function clearMessage() {
     if (!element) {
         return;
     }
+
+
+    clearTimeout(
+        element._successTimer
+    );
+
 
     element.textContent =
         "";
@@ -248,6 +304,7 @@ function normalizeCategory(
         "apparel":
             "Fashion",
 
+
         "beauty":
             "Beauty",
 
@@ -257,11 +314,13 @@ function normalizeCategory(
         "personal-care":
             "Beauty",
 
+
         "electronics":
             "Electronics",
 
         "electronic":
             "Electronics",
+
 
         "home & kitchen":
             "Home & Kitchen",
@@ -278,6 +337,7 @@ function normalizeCategory(
         "kitchen":
             "Home & Kitchen",
 
+
         "shoes":
             "Shoes",
 
@@ -287,11 +347,13 @@ function normalizeCategory(
         "footwear":
             "Shoes",
 
+
         "jewellery":
             "Jewellery",
 
         "jewelry":
             "Jewellery",
+
 
         "toys":
             "Toys",
@@ -299,17 +361,20 @@ function normalizeCategory(
         "toy":
             "Toys",
 
+
         "books":
             "Books",
 
         "book":
             "Books",
 
+
         "pet":
             "Pet",
 
         "pets":
             "Pet",
+
 
         "sports":
             "Sports",
@@ -319,6 +384,7 @@ function normalizeCategory(
 
         "fitness":
             "Sports",
+
 
         "automotive":
             "Automotive",
@@ -332,11 +398,13 @@ function normalizeCategory(
         "vehicle accessories":
             "Automotive",
 
+
         "garden":
             "Garden",
 
         "gardening":
             "Garden",
+
 
         "food":
             "Food",
@@ -346,6 +414,7 @@ function normalizeCategory(
 
         "grocery":
             "Food",
+
 
         "gifts":
             "Gifts",
@@ -382,6 +451,7 @@ const LOCAL_CATEGORY_FIELDS = {
 
     ],
 
+
     "Beauty": [
 
         ["formTexture", "Form / Texture"],
@@ -394,6 +464,7 @@ const LOCAL_CATEGORY_FIELDS = {
         ["fragrance", "Fragrance"]
 
     ],
+
 
     "Electronics": [
 
@@ -409,6 +480,7 @@ const LOCAL_CATEGORY_FIELDS = {
 
     ],
 
+
     "Home & Kitchen": [
 
         ["material", "Material"],
@@ -419,6 +491,7 @@ const LOCAL_CATEGORY_FIELDS = {
         ["usage", "Usage"]
 
     ],
+
 
     "Shoes": [
 
@@ -432,6 +505,7 @@ const LOCAL_CATEGORY_FIELDS = {
 
     ],
 
+
     "Jewellery": [
 
         ["material", "Material"],
@@ -444,6 +518,7 @@ const LOCAL_CATEGORY_FIELDS = {
 
     ],
 
+
     "Toys": [
 
         ["material", "Material"],
@@ -454,6 +529,7 @@ const LOCAL_CATEGORY_FIELDS = {
         ["productType", "Product Type"]
 
     ],
+
 
     "Books": [
 
@@ -467,6 +543,7 @@ const LOCAL_CATEGORY_FIELDS = {
 
     ],
 
+
     "Pet": [
 
         ["petType", "Pet Type"],
@@ -477,6 +554,7 @@ const LOCAL_CATEGORY_FIELDS = {
         ["flavour", "Flavour"]
 
     ],
+
 
     "Sports": [
 
@@ -489,6 +567,7 @@ const LOCAL_CATEGORY_FIELDS = {
 
     ],
 
+
     "Automotive": [
 
         ["model", "Model"],
@@ -499,6 +578,7 @@ const LOCAL_CATEGORY_FIELDS = {
         ["quantity", "Quantity"]
 
     ],
+
 
     "Garden": [
 
@@ -511,6 +591,7 @@ const LOCAL_CATEGORY_FIELDS = {
 
     ],
 
+
     "Food": [
 
         ["ingredients", "Ingredients"],
@@ -521,6 +602,7 @@ const LOCAL_CATEGORY_FIELDS = {
         ["dietaryInformation", "Dietary Information"]
 
     ],
+
 
     "Gifts": [
 
@@ -543,18 +625,24 @@ const LOCAL_CATEGORY_FIELDS = {
 function getCategoryElement() {
 
     return getElement(
+
         "category",
+
         "productCategory",
+
         "categorySelect",
+
         "product-category",
+
         "productCategorySelect"
+
     );
 
 }
 
 
 // ==========================================================
-// GET CATEGORY
+// GET SELECTED CATEGORY
 // ==========================================================
 
 function getSelectedCategory() {
@@ -575,7 +663,7 @@ function getSelectedCategory() {
 
 
 // ==========================================================
-// CREATE CATEGORY FIELD CONTAINER
+// FIND DYNAMIC FIELD CONTAINER
 // ==========================================================
 
 function findDynamicFieldContainer() {
@@ -600,7 +688,7 @@ function findDynamicFieldContainer() {
 
 
 // ==========================================================
-// DYNAMIC FIELD GENERATOR
+// RENDER CATEGORY FIELDS
 // ==========================================================
 
 function renderCategoryFields(
@@ -757,7 +845,7 @@ function handleCategoryChange() {
 
 
 // ==========================================================
-// LOAD CATEGORIES FROM SERVER
+// LOAD CATEGORIES
 // ==========================================================
 
 async function loadCategories() {
@@ -787,9 +875,11 @@ async function loadCategories() {
 
 
         if (!response.ok) {
+
             throw new Error(
                 `Category API error: ${response.status}`
             );
+
         }
 
 
@@ -828,9 +918,8 @@ async function loadCategories() {
             error
         );
 
-        // Local categories remain available.
-        populateCategorySelect(
-            categoryElement,
+
+        const localCategories =
             Object.keys(
                 LOCAL_CATEGORY_FIELDS
             )
@@ -839,12 +928,16 @@ async function loadCategories() {
                 fields:
                     LOCAL_CATEGORY_FIELDS[
                         name
-                    ]
-                    .map(
+                    ].map(
                         ([, label]) =>
                             label
                     )
-            }))
+            }));
+
+
+        populateCategorySelect(
+            categoryElement,
+            localCategories
         );
 
     }
@@ -872,7 +965,6 @@ function populateCategorySelect(
         );
 
 
-    // Keep first placeholder
     const placeholder =
         select.querySelector(
             "option[value='']"
@@ -885,13 +977,10 @@ function populateCategorySelect(
 
     if (placeholder) {
 
-        const newPlaceholder =
+        select.appendChild(
             placeholder.cloneNode(
                 true
-            );
-
-        select.appendChild(
-            newPlaceholder
+            )
         );
 
     } else {
@@ -901,11 +990,14 @@ function populateCategorySelect(
                 "option"
             );
 
+
         option.value =
             "";
 
+
         option.textContent =
             "Select Product Category";
+
 
         select.appendChild(
             option
@@ -919,7 +1011,10 @@ function populateCategorySelect(
         of categories
     ) {
 
-        if (!item || !item.name) {
+        if (
+            !item ||
+            !item.name
+        ) {
             continue;
         }
 
@@ -998,8 +1093,11 @@ function collectCategoryFields(
 
         const input =
             getElement(
+
                 `field-${name}`,
+
                 name
+
             );
 
 
@@ -1030,7 +1128,7 @@ function collectCategoryFields(
 
 
 // ==========================================================
-// COLLECT ALL POSSIBLE EXISTING FORM FIELDS
+// COLLECT ALL KNOWN FIELDS
 // ==========================================================
 
 function collectKnownFields(
@@ -1160,45 +1258,69 @@ function collectProductData() {
 
     const productName =
         getValue(
+
             "productName",
+
             "product_name",
+
             "name"
+
         );
 
 
     const brand =
         getValue(
+
             "brand",
+
             "brandName",
+
             "productBrand"
+
         );
 
 
     const price =
         getValue(
+
             "price",
+
             "productPrice",
+
             "product_price"
+
         );
 
 
     const productFeatures =
         getValue(
+
             "productFeatures",
+
             "features",
+
             "product_features",
+
             "featuresText"
+
         );
 
 
     const extraProductInformation =
         getValue(
+
             "extraProductInformation",
+
             "extraInfo",
+
             "productDetails",
+
             "productDetailsExtra",
+
             "additionalInformation",
+
             "additionalInfo"
+
         );
 
 
@@ -1230,7 +1352,7 @@ function collectProductData() {
 
 
 // ==========================================================
-// VALIDATE FRONTEND INPUT
+// VALIDATE PRODUCT DATA
 // ==========================================================
 
 function validateProductData(
@@ -1240,22 +1362,30 @@ function validateProductData(
     if (!product.category) {
 
         return {
+
             valid: false,
+
             message:
                 "Please select a product category."
+
         };
 
     }
 
 
-    if (!LOCAL_CATEGORY_FIELDS[
-        product.category
-    ]) {
+    if (
+        !LOCAL_CATEGORY_FIELDS[
+            product.category
+        ]
+    ) {
 
         return {
+
             valid: false,
+
             message:
                 "Please select a valid product category."
+
         };
 
     }
@@ -1264,9 +1394,12 @@ function validateProductData(
     if (!product.productName) {
 
         return {
+
             valid: false,
+
             message:
                 "Please enter the product name."
+
         };
 
     }
@@ -1379,8 +1512,10 @@ function buildPayload(
     ) {
 
         if (
-            product[field] !== undefined &&
-            product[field] !== null &&
+            product[field] !==
+                undefined &&
+            product[field] !==
+                null &&
             String(
                 product[field]
             ).trim()
@@ -1402,7 +1537,7 @@ function buildPayload(
 
 
 // ==========================================================
-// SET GENERATE BUTTON STATE
+// BUTTON STATE
 // ==========================================================
 
 function setGeneratingState(
@@ -1413,31 +1548,34 @@ function setGeneratingState(
         generating;
 
 
-    const buttons = [
+    const buttonIds = [
 
-        getElement(
-            "generateListingBtn"
-        ),
+        "generateListingBtn",
 
-        getElement(
-            "generateCompleteListing"
-        ),
+        "generateCompleteListing",
 
-        getElement(
-            "generateBtn"
-        ),
+        "generateBtn",
 
-        getElement(
-            "generateButton"
-        )
+        "generateButton"
 
-    ].filter(Boolean);
+    ];
 
 
     for (
-        const button
-        of buttons
+        const id
+        of buttonIds
     ) {
+
+        const button =
+            document.getElementById(
+                id
+            );
+
+
+        if (!button) {
+            continue;
+        }
+
 
         button.disabled =
             generating;
@@ -1472,6 +1610,67 @@ function setGeneratingState(
 
 
 // ==========================================================
+// SAFE JSON PARSER
+// ==========================================================
+
+function tryParseJSON(
+    value
+) {
+
+    if (
+        typeof value !==
+        "string"
+    ) {
+
+        return value;
+
+    }
+
+
+    let text =
+        value.trim();
+
+
+    if (!text) {
+        return null;
+    }
+
+
+    // Remove markdown code fences
+    text =
+        text.replace(
+            /^```(?:json)?/i,
+            ""
+        );
+
+
+    text =
+        text.replace(
+            /```$/i,
+            ""
+        );
+
+
+    text =
+        text.trim();
+
+
+    try {
+
+        return JSON.parse(
+            text
+        );
+
+    } catch (error) {
+
+        return null;
+
+    }
+
+}
+
+
+// ==========================================================
 // API REQUEST
 // ==========================================================
 
@@ -1484,7 +1683,8 @@ async function generateListingFromServer(
             GENERATE_ENDPOINT,
             {
 
-                method: "POST",
+                method:
+                    "POST",
 
                 headers: {
 
@@ -1505,52 +1705,76 @@ async function generateListingFromServer(
         );
 
 
-    let data = null;
+    const rawText =
+        await response.text();
 
 
-    try {
-
-        data =
-            await response.json();
-
-    } catch (error) {
-
-        throw new Error(
-            `Server returned invalid response (${response.status})`
+    let data =
+        tryParseJSON(
+            rawText
         );
+
+
+    if (
+        data === null &&
+        rawText.trim()
+    ) {
+
+        data = {
+            success:
+                response.ok,
+
+            raw:
+                rawText
+
+        };
 
     }
 
 
+    console.log(
+        "[GENERATE API RESPONSE]",
+        data
+    );
+
+
     if (!response.ok) {
 
-        throw new Error(
+        let errorMessage =
+            "Unable to generate listing.";
 
+
+        if (
             data &&
-            data.error
+            typeof data ===
+                "object"
+        ) {
 
-                ? data.error
+            errorMessage =
+                data.error ||
+                data.message ||
+                errorMessage;
 
-                : `Server error: ${response.status}`
+        }
 
+
+        throw new Error(
+            errorMessage
         );
 
     }
 
 
     if (
-        !data ||
-        data.success !== true
+        data &&
+        data.success === false
     ) {
 
         throw new Error(
 
-            data &&
-            data.error
-
-                ? data.error
-
-                : "Listing generation failed."
+            data.error ||
+            data.message ||
+            "Listing generation failed."
 
         );
 
@@ -1563,6 +1787,341 @@ async function generateListingFromServer(
 
 
 // ==========================================================
+// FIND LISTING OBJECT
+// ==========================================================
+
+function findListingObject(
+    data
+) {
+
+    if (!data) {
+        return {};
+    }
+
+
+    // Direct listing
+    if (
+        data.listing &&
+        typeof data.listing ===
+            "object"
+    ) {
+
+        return data.listing;
+
+    }
+
+
+    // result.listing
+    if (
+        data.result &&
+        typeof data.result ===
+            "object"
+    ) {
+
+        if (
+            data.result.listing &&
+            typeof data.result.listing ===
+                "object"
+        ) {
+
+            return data.result.listing;
+
+        }
+
+
+        return data.result;
+
+    }
+
+
+    // output.listing
+    if (
+        data.output &&
+        typeof data.output ===
+            "object"
+    ) {
+
+        if (
+            data.output.listing &&
+            typeof data.output.listing ===
+                "object"
+        ) {
+
+            return data.output.listing;
+
+        }
+
+
+        return data.output;
+
+    }
+
+
+    // response.listing
+    if (
+        data.response &&
+        typeof data.response ===
+            "object"
+    ) {
+
+        if (
+            data.response.listing &&
+            typeof data.response.listing ===
+                "object"
+        ) {
+
+            return data.response.listing;
+
+        }
+
+
+        return data.response;
+
+    }
+
+
+    // Direct response
+    if (
+        typeof data ===
+            "object"
+    ) {
+
+        return data;
+
+    }
+
+
+    return {};
+
+}
+
+
+// ==========================================================
+// EXTRACT TEXT FROM POSSIBLE GEMINI RESPONSE
+// ==========================================================
+
+function extractPossibleText(
+    data
+) {
+
+    if (!data) {
+        return "";
+    }
+
+
+    const candidates = [
+
+        data.text,
+
+        data.outputText,
+
+        data.generatedText,
+
+        data.content,
+
+        data.responseText,
+
+        data.resultText
+
+    ];
+
+
+    for (
+        const candidate
+        of candidates
+    ) {
+
+        if (
+            typeof candidate ===
+                "string" &&
+            candidate.trim()
+        ) {
+
+            return candidate.trim();
+
+        }
+
+    }
+
+
+    return "";
+
+}
+
+
+// ==========================================================
+// PARSE TEXT LISTING
+// ==========================================================
+
+function parseTextListing(
+    text
+) {
+
+    if (
+        !text ||
+        typeof text !==
+            "string"
+    ) {
+
+        return {};
+
+    }
+
+
+    let clean =
+        text.trim();
+
+
+    clean =
+        clean.replace(
+            /^```(?:json)?/i,
+            ""
+        );
+
+
+    clean =
+        clean.replace(
+            /```$/i,
+            ""
+        );
+
+
+    clean =
+        clean.trim();
+
+
+    const parsed =
+        tryParseJSON(
+            clean
+        );
+
+
+    if (
+        parsed &&
+        typeof parsed ===
+            "object"
+    ) {
+
+        return findListingObject(
+            parsed
+        );
+
+    }
+
+
+    const result = {};
+
+
+    const titleMatch =
+        clean.match(
+            /(?:^|\n)\s*(?:TITLE|Title)\s*[:\-]?\s*(.+)/i
+        );
+
+
+    const descriptionMatch =
+        clean.match(
+            /(?:^|\n)\s*(?:DESCRIPTION|Description)\s*[:\-]?\s*([\s\S]*?)(?=\n\s*(?:HIGHLIGHTS|Highlights|KEYWORDS|Keywords|HASHTAGS|Hashtags|SEO TITLE|SEO Title|SEO DESCRIPTION|SEO Description)\b|$)/i
+        );
+
+
+    const highlightsMatch =
+        clean.match(
+            /(?:^|\n)\s*(?:HIGHLIGHTS|Highlights)\s*[:\-]?\s*([\s\S]*?)(?=\n\s*(?:KEYWORDS|Keywords|HASHTAGS|Hashtags|SEO TITLE|SEO Title|SEO DESCRIPTION|SEO Description)\b|$)/i
+        );
+
+
+    const keywordsMatch =
+        clean.match(
+            /(?:^|\n)\s*(?:KEYWORDS|Keywords)\s*[:\-]?\s*([\s\S]*?)(?=\n\s*(?:HASHTAGS|Hashtags|SEO TITLE|SEO Title|SEO DESCRIPTION|SEO Description)\b|$)/i
+        );
+
+
+    const hashtagsMatch =
+        clean.match(
+            /(?:^|\n)\s*(?:HASHTAGS|Hashtags)\s*[:\-]?\s*([\s\S]*?)(?=\n\s*(?:SEO TITLE|SEO Title|SEO DESCRIPTION|SEO Description)\b|$)/i
+        );
+
+
+    const seoTitleMatch =
+        clean.match(
+            /(?:^|\n)\s*(?:SEO TITLE|SEO Title)\s*[:\-]?\s*([\s\S]*?)(?=\n\s*(?:SEO DESCRIPTION|SEO Description)\b|$)/i
+        );
+
+
+    const seoDescriptionMatch =
+        clean.match(
+            /(?:^|\n)\s*(?:SEO DESCRIPTION|SEO Description)\s*[:\-]?\s*([\s\S]*?)$/i
+        );
+
+
+    if (titleMatch) {
+
+        result.title =
+            titleMatch[1].trim();
+
+    }
+
+
+    if (descriptionMatch) {
+
+        result.description =
+            descriptionMatch[1].trim();
+
+    }
+
+
+    if (highlightsMatch) {
+
+        result.highlights =
+            normalizeArray(
+                highlightsMatch[1]
+            );
+
+    }
+
+
+    if (keywordsMatch) {
+
+        result.keywords =
+            normalizeArray(
+                keywordsMatch[1]
+            );
+
+    }
+
+
+    if (hashtagsMatch) {
+
+        result.hashtags =
+            normalizeArray(
+                hashtagsMatch[1]
+            );
+
+    }
+
+
+    if (seoTitleMatch) {
+
+        result.seoTitle =
+            seoTitleMatch[1].trim();
+
+    }
+
+
+    if (seoDescriptionMatch) {
+
+        result.seoDescription =
+            seoDescriptionMatch[1].trim();
+
+    }
+
+
+    return result;
+
+}
+
+
+// ==========================================================
 // EXTRACT LISTING
 // ==========================================================
 
@@ -1570,55 +2129,193 @@ function extractListing(
     data
 ) {
 
-    const source =
-        data.listing &&
-        typeof data.listing === "object"
+    let source =
+        findListingObject(
+            data
+        );
 
-            ? data.listing
 
-            : data;
+    // If the selected object contains a JSON string
+    const possibleStringFields = [
+
+        "listing",
+
+        "result",
+
+        "output",
+
+        "text",
+
+        "content",
+
+        "response"
+
+    ];
+
+
+    for (
+        const field
+        of possibleStringFields
+    ) {
+
+        if (
+            typeof source[field] ===
+                "string"
+        ) {
+
+            const parsed =
+                tryParseJSON(
+                    source[field]
+                );
+
+
+            if (
+                parsed &&
+                typeof parsed ===
+                    "object"
+            ) {
+
+                source =
+                    parsed;
+
+                break;
+
+            }
+
+        }
+
+    }
+
+
+    let text =
+        extractPossibleText(
+            data
+        );
+
+
+    if (
+        !source.title &&
+        text
+    ) {
+
+        const parsedText =
+            parseTextListing(
+                text
+            );
+
+
+        if (
+            parsedText &&
+            Object.keys(
+                parsedText
+            ).length
+        ) {
+
+            source = {
+
+                ...source,
+
+                ...parsedText
+
+            };
+
+        }
+
+    }
 
 
     return {
 
         title:
+
             source.title ||
+
             source.TITLE ||
+
+            source.productTitle ||
+
+            source.product_title ||
+
             "",
+
 
         description:
+
             source.description ||
+
             source.DESCRIPTION ||
+
+            source.productDescription ||
+
+            source.product_description ||
+
             "",
+
 
         highlights:
+
             normalizeArray(
+
                 source.highlights ||
-                source.HIGHLIGHTS
+
+                source.HIGHLIGHTS ||
+
+                source.keyHighlights ||
+
+                source.key_highlights
+
             ),
+
 
         keywords:
+
             normalizeArray(
+
                 source.keywords ||
-                source.KEYWORDS
+
+                source.KEYWORDS ||
+
+                source.seoKeywords ||
+
+                source.seo_keywords
+
             ),
+
 
         hashtags:
+
             normalizeArray(
+
                 source.hashtags ||
-                source.HASHTAGS
+
+                source.HASHTAGS ||
+
+                source.socialHashtags ||
+
+                source.social_hashtags
+
             ),
 
+
         seoTitle:
+
             source.seoTitle ||
+
             source["SEO TITLE"] ||
+
             source.seo_title ||
+
             "",
 
+
         seoDescription:
+
             source.seoDescription ||
+
             source["SEO DESCRIPTION"] ||
+
             source.seo_description ||
+
             ""
 
     };
@@ -1634,34 +2331,54 @@ function normalizeArray(
     value
 ) {
 
-    if (Array.isArray(value)) {
+    if (
+        Array.isArray(value)
+    ) {
 
         return value
+
             .map(
                 item =>
-                    String(item)
-                        .trim()
+                    String(
+                        item
+                    ).trim()
             )
+
             .filter(Boolean);
 
     }
 
 
-    if (typeof value === "string") {
+    if (
+        typeof value ===
+            "string"
+    ) {
 
         return value
+
             .split(
                 /\n|,/
             )
+
             .map(
                 item =>
+
                     item
+
                         .replace(
                             /^[-•*]\s*/,
                             ""
                         )
+
+                        .replace(
+                            /^\d+[.)]\s*/,
+                            ""
+                        )
+
                         .trim()
+
             )
+
             .filter(Boolean);
 
     }
@@ -1681,79 +2398,135 @@ function displayListing(
 ) {
 
     setOutputValue(
+
         listing.title,
+
         [
+
             "titleResult",
+
             "generatedTitle",
+
             "listingTitle",
+
             "resultTitle"
+
         ]
+
     );
 
 
     setOutputValue(
+
         listing.description,
+
         [
+
             "descriptionResult",
+
             "generatedDescription",
+
             "listingDescription",
+
             "resultDescription"
+
         ]
+
     );
 
 
     setOutputArray(
+
         listing.highlights,
+
         [
+
             "highlightsResult",
+
             "generatedHighlights",
+
             "listingHighlights",
+
             "resultHighlights"
+
         ]
+
     );
 
 
     setOutputArray(
+
         listing.keywords,
+
         [
+
             "keywordsResult",
+
             "generatedKeywords",
+
             "listingKeywords",
+
             "resultKeywords"
+
         ]
+
     );
 
 
     setOutputArray(
+
         listing.hashtags,
+
         [
+
             "hashtagsResult",
+
             "generatedHashtags",
+
             "listingHashtags",
+
             "resultHashtags"
+
         ]
+
     );
 
 
     setOutputValue(
+
         listing.seoTitle,
+
         [
+
             "seoTitleResult",
+
             "generatedSeoTitle",
+
             "seoTitle",
+
             "resultSeoTitle"
+
         ]
+
     );
 
 
     setOutputValue(
+
         listing.seoDescription,
+
         [
+
             "seoDescriptionResult",
+
             "generatedSeoDescription",
+
             "seoDescription",
+
             "resultSeoDescription"
+
         ]
+
     );
 
 
@@ -1803,6 +2576,7 @@ function setOutputValue(
 
 
         showElement(id);
+
 
         return;
 
@@ -1882,6 +2656,7 @@ function setOutputArray(
 
         showElement(id);
 
+
         return;
 
     }
@@ -1939,126 +2714,6 @@ function showResultContainer() {
 // COPY HELPERS
 // ==========================================================
 
-function getListingText() {
-
-    const title =
-        getDisplayedValue(
-            [
-                "titleResult",
-                "generatedTitle",
-                "listingTitle",
-                "resultTitle"
-            ]
-        );
-
-
-    const description =
-        getDisplayedValue(
-            [
-                "descriptionResult",
-                "generatedDescription",
-                "listingDescription",
-                "resultDescription"
-            ]
-        );
-
-
-    const highlights =
-        getDisplayedValue(
-            [
-                "highlightsResult",
-                "generatedHighlights",
-                "listingHighlights",
-                "resultHighlights"
-            ]
-        );
-
-
-    const keywords =
-        getDisplayedValue(
-            [
-                "keywordsResult",
-                "generatedKeywords",
-                "listingKeywords",
-                "resultKeywords"
-            ]
-        );
-
-
-    const hashtags =
-        getDisplayedValue(
-            [
-                "hashtagsResult",
-                "generatedHashtags",
-                "listingHashtags",
-                "resultHashtags"
-            ]
-        );
-
-
-    const seoTitle =
-        getDisplayedValue(
-            [
-                "seoTitleResult",
-                "generatedSeoTitle",
-                "seoTitle",
-                "resultSeoTitle"
-            ]
-        );
-
-
-    const seoDescription =
-        getDisplayedValue(
-            [
-                "seoDescriptionResult",
-                "generatedSeoDescription",
-                "seoDescription",
-                "resultSeoDescription"
-            ]
-        );
-
-
-    return [
-
-        title
-            ? `TITLE\n${title}`
-            : "",
-
-        description
-            ? `DESCRIPTION\n${description}`
-            : "",
-
-        highlights
-            ? `HIGHLIGHTS\n${highlights}`
-            : "",
-
-        keywords
-            ? `KEYWORDS\n${keywords}`
-            : "",
-
-        hashtags
-            ? `HASHTAGS\n${hashtags}`
-            : "",
-
-        seoTitle
-            ? `SEO TITLE\n${seoTitle}`
-            : "",
-
-        seoDescription
-            ? `SEO DESCRIPTION\n${seoDescription}`
-            : ""
-
-    ]
-        .filter(Boolean)
-        .join("\n\n");
-
-}
-
-
-// ==========================================================
-// GET DISPLAYED VALUE
-// ==========================================================
-
 function getDisplayedValue(
     ids
 ) {
@@ -2083,22 +2738,27 @@ function getDisplayedValue(
             "value" in element
         ) {
 
-            if (
-                element.value.trim()
-            ) {
+            const value =
+                String(
+                    element.value || ""
+                ).trim();
 
-                return element.value.trim();
 
+            if (value) {
+                return value;
             }
 
         } else {
 
-            if (
-                element.textContent.trim()
-            ) {
+            const value =
+                String(
+                    element.textContent ||
+                    ""
+                ).trim();
 
-                return element.textContent.trim();
 
+            if (value) {
+                return value;
             }
 
         }
@@ -2107,6 +2767,183 @@ function getDisplayedValue(
 
 
     return "";
+
+}
+
+
+// ==========================================================
+// GET COMPLETE LISTING TEXT
+// ==========================================================
+
+function getListingText() {
+
+    const title =
+        getDisplayedValue(
+
+            [
+
+                "titleResult",
+
+                "generatedTitle",
+
+                "listingTitle",
+
+                "resultTitle"
+
+            ]
+
+        );
+
+
+    const description =
+        getDisplayedValue(
+
+            [
+
+                "descriptionResult",
+
+                "generatedDescription",
+
+                "listingDescription",
+
+                "resultDescription"
+
+            ]
+
+        );
+
+
+    const highlights =
+        getDisplayedValue(
+
+            [
+
+                "highlightsResult",
+
+                "generatedHighlights",
+
+                "listingHighlights",
+
+                "resultHighlights"
+
+            ]
+
+        );
+
+
+    const keywords =
+        getDisplayedValue(
+
+            [
+
+                "keywordsResult",
+
+                "generatedKeywords",
+
+                "listingKeywords",
+
+                "resultKeywords"
+
+            ]
+
+        );
+
+
+    const hashtags =
+        getDisplayedValue(
+
+            [
+
+                "hashtagsResult",
+
+                "generatedHashtags",
+
+                "listingHashtags",
+
+                "resultHashtags"
+
+            ]
+
+        );
+
+
+    const seoTitle =
+        getDisplayedValue(
+
+            [
+
+                "seoTitleResult",
+
+                "generatedSeoTitle",
+
+                "seoTitle",
+
+                "resultSeoTitle"
+
+            ]
+
+        );
+
+
+    const seoDescription =
+        getDisplayedValue(
+
+            [
+
+                "seoDescriptionResult",
+
+                "generatedSeoDescription",
+
+                "seoDescription",
+
+                "resultSeoDescription"
+
+            ]
+
+        );
+
+
+    return [
+
+        title
+            ? `TITLE\n${title}`
+            : "",
+
+
+        description
+            ? `DESCRIPTION\n${description}`
+            : "",
+
+
+        highlights
+            ? `HIGHLIGHTS\n${highlights}`
+            : "",
+
+
+        keywords
+            ? `KEYWORDS\n${keywords}`
+            : "",
+
+
+        hashtags
+            ? `HASHTAGS\n${hashtags}`
+            : "",
+
+
+        seoTitle
+            ? `SEO TITLE\n${seoTitle}`
+            : "",
+
+
+        seoDescription
+            ? `SEO DESCRIPTION\n${seoDescription}`
+            : ""
+
+    ]
+
+        .filter(Boolean)
+
+        .join("\n\n");
 
 }
 
@@ -2124,8 +2961,11 @@ async function copyCompleteListing() {
     if (!text) {
 
         showMessage(
+
             "There is no generated listing to copy.",
+
             "error"
+
         );
 
         return;
@@ -2135,20 +2975,35 @@ async function copyCompleteListing() {
 
     try {
 
-        await navigator.clipboard.writeText(
-            text
-        );
+        if (
+            navigator.clipboard &&
+            navigator.clipboard.writeText
+        ) {
+
+            await navigator.clipboard.writeText(
+                text
+            );
+
+        } else {
+
+            throw new Error(
+                "Clipboard API unavailable"
+            );
+
+        }
 
 
         showMessage(
+
             "Listing copied successfully.",
+
             "success"
+
         );
 
 
     } catch (error) {
 
-        // Older browser fallback
         const textarea =
             document.createElement(
                 "textarea"
@@ -2159,9 +3014,20 @@ async function copyCompleteListing() {
             text;
 
 
+        textarea.style.position =
+            "fixed";
+
+
+        textarea.style.left =
+            "-9999px";
+
+
         document.body.appendChild(
             textarea
         );
+
+
+        textarea.focus();
 
 
         textarea.select();
@@ -2169,21 +3035,42 @@ async function copyCompleteListing() {
 
         try {
 
-            document.execCommand(
-                "copy"
-            );
+            const copied =
+                document.execCommand(
+                    "copy"
+                );
+
+
+            if (!copied) {
+                throw new Error(
+                    "Copy command failed"
+                );
+            }
 
 
             showMessage(
+
                 "Listing copied successfully.",
+
                 "success"
+
             );
+
 
         } catch (copyError) {
 
+            console.error(
+                "[COPY ERROR]",
+                copyError
+            );
+
+
             showMessage(
+
                 "Unable to copy listing.",
+
                 "error"
+
             );
 
         }
@@ -2214,6 +3101,12 @@ async function generateCompleteListing() {
         collectProductData();
 
 
+    console.log(
+        "[PRODUCT DATA]",
+        product
+    );
+
+
     const validation =
         validateProductData(
             product
@@ -2223,8 +3116,11 @@ async function generateCompleteListing() {
     if (!validation.valid) {
 
         showMessage(
+
             validation.message,
+
             "error"
+
         );
 
         return;
@@ -2238,14 +3134,23 @@ async function generateCompleteListing() {
         );
 
 
+    console.log(
+        "[API PAYLOAD]",
+        payload
+    );
+
+
     setGeneratingState(
         true
     );
 
 
     showMessage(
+
         "Generating your product listing...",
+
         "info"
+
     );
 
 
@@ -2257,16 +3162,42 @@ async function generateCompleteListing() {
             );
 
 
+        console.log(
+            "[SERVER DATA]",
+            data
+        );
+
+
         const listing =
             extractListing(
                 data
             );
 
 
-        if (!listing.title) {
+        console.log(
+            "[EXTRACTED LISTING]",
+            listing
+        );
+
+
+        if (
+            !listing.title &&
+            !listing.description &&
+            !listing.highlights.length &&
+            !listing.keywords.length &&
+            !listing.hashtags.length
+        ) {
+
+            console.error(
+                "[EMPTY LISTING RESPONSE]",
+                data
+            );
+
 
             throw new Error(
-                "Server returned an empty listing."
+
+                "Server response received, but no listing content was found."
+
             );
 
         }
@@ -2278,18 +3209,27 @@ async function generateCompleteListing() {
 
 
         const sourceText =
+            data &&
             data.source
+
                 ? ` Source: ${data.source}.`
+
                 : "";
 
 
         showMessage(
+
             `Listing generated successfully.${sourceText}`,
+
             "success"
+
         );
 
 
-        // Save last generated listing
+        // ==================================================
+        // SAVE LAST LISTING
+        // ==================================================
+
         try {
 
             localStorage.setItem(
@@ -2298,21 +3238,29 @@ async function generateCompleteListing() {
 
                 JSON.stringify({
 
-                    product: payload,
+                    product:
+                        payload,
 
-                    listing,
+                    listing:
+                        listing,
 
                     source:
-                        data.source ||
-                        null,
+                        data &&
+                        data.source
+                            ? data.source
+                            : null,
 
                     model:
-                        data.model ||
-                        null,
+                        data &&
+                        data.model
+                            ? data.model
+                            : null,
 
                     version:
-                        data.version ||
-                        "7.1",
+                        data &&
+                        data.version
+                            ? data.version
+                            : "7.1",
 
                     generatedAt:
                         new Date()
@@ -2325,18 +3273,23 @@ async function generateCompleteListing() {
         } catch (storageError) {
 
             console.warn(
+
                 "[LOCAL STORAGE ERROR]",
+
                 storageError
+
             );
 
         }
 
-
     } catch (error) {
 
         console.error(
+
             "[GENERATE ERROR]",
+
             error
+
         );
 
 
@@ -2374,7 +3327,9 @@ function loadLastListing() {
 
         const saved =
             localStorage.getItem(
+
                 "aiSellerToolkitLastListing"
+
             );
 
 
@@ -2407,8 +3362,11 @@ function loadLastListing() {
     } catch (error) {
 
         console.warn(
+
             "[LOAD LAST LISTING ERROR]",
+
             error
+
         );
 
     }
@@ -2417,7 +3375,7 @@ function loadLastListing() {
 
 
 // ==========================================================
-// TEST SERVER
+// CHECK SERVER STATUS
 // ==========================================================
 
 async function checkServerStatus() {
@@ -2426,15 +3384,35 @@ async function checkServerStatus() {
 
         const response =
             await fetch(
+
                 STATUS_ENDPOINT,
+
                 {
-                    method: "GET",
+
+                    method:
+                        "GET",
+
                     headers: {
+
                         "Accept":
                             "application/json"
+
                     }
+
                 }
+
             );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+
+                `Status HTTP ${response.status}`
+
+            );
+
+        }
 
 
         const data =
@@ -2447,9 +3425,11 @@ async function checkServerStatus() {
         ) {
 
             console.log(
-                "[AI SELLER TOOLKIT]",
-                "Backend online",
+
+                "[AI SELLER TOOLKIT] Backend online",
+
                 data
+
             );
 
 
@@ -2459,15 +3439,20 @@ async function checkServerStatus() {
 
 
         throw new Error(
+
             "Backend status check failed"
+
         );
 
 
     } catch (error) {
 
         console.warn(
+
             "[BACKEND STATUS ERROR]",
+
             error
+
         );
 
 
@@ -2490,10 +3475,24 @@ function bindEvents() {
 
     if (categoryElement) {
 
-        categoryElement.addEventListener(
-            "change",
-            handleCategoryChange
-        );
+        if (
+            categoryElement.dataset.aiSellerCategoryBound !==
+            "true"
+        ) {
+
+            categoryElement.dataset.aiSellerCategoryBound =
+                "true";
+
+
+            categoryElement.addEventListener(
+
+                "change",
+
+                handleCategoryChange
+
+            );
+
+        }
 
     }
 
@@ -2527,7 +3526,6 @@ function bindEvents() {
         }
 
 
-        // Avoid duplicate listeners
         if (
             button.dataset.aiSellerBound ===
             "true"
@@ -2543,14 +3541,19 @@ function bindEvents() {
 
 
         button.addEventListener(
+
             "click",
+
             function(event) {
 
                 event.preventDefault();
 
+                event.stopPropagation();
+
                 generateCompleteListing();
 
             }
+
         );
 
     }
@@ -2600,14 +3603,19 @@ function bindEvents() {
 
 
         button.addEventListener(
+
             "click",
+
             function(event) {
 
                 event.preventDefault();
 
+                event.stopPropagation();
+
                 copyCompleteListing();
 
             }
+
         );
 
     }
@@ -2632,7 +3640,7 @@ async function initializeCompleteListingGenerator() {
 
 
     console.log(
-        "Complete Listing Generator 7.1"
+        "Complete Listing Generator 7.2"
     );
 
 
@@ -2686,8 +3694,11 @@ if (
 ) {
 
     document.addEventListener(
+
         "DOMContentLoaded",
+
         initializeCompleteListingGenerator
+
     );
 
 } else {
@@ -2700,24 +3711,28 @@ if (
 // ==========================================================
 // GLOBAL FUNCTIONS
 // ==========================================================
-// These allow HTML onclick="..." to continue working.
 
 window.generateCompleteListing =
     generateCompleteListing;
 
+
 window.generateListing =
     generateCompleteListing;
+
 
 window.copyCompleteListing =
     copyCompleteListing;
 
+
 window.copyListing =
     copyCompleteListing;
+
 
 window.handleCategoryChange =
     handleCategoryChange;
 
 
 // ==========================================================
-// END OF COMPLETE-LISTING-GENERATOR.JS — FINAL VERSION 7.1
+// END
+// COMPLETE-LISTING-GENERATOR.JS — FINAL VERSION 7.2
 // ==========================================================
