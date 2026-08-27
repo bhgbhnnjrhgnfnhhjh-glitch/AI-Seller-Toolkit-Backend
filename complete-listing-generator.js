@@ -2,19 +2,15 @@
 // AI SELLER TOOLKIT
 // COMPLETE-LISTING-GENERATOR.JS — FINAL VERSION 7.2
 // ==========================================================
-// FINAL FIX
-// - Backend 7.1 compatible
-// - Gemini response compatibility
-// - Multiple response formats supported
-// - JSON string response supported
-// - Result display fixed
-// - No false success message
-// - 14 categories supported
-// - Dynamic category fields
-// - Strict frontend validation
-// - Duplicate event protection
-// - Copy listing support
-// - LocalStorage support
+// Stable Frontend
+// Backend 7.1 Compatible
+// Category Aware
+// Strict Fact Guard Compatible
+// Result Display Guaranteed
+// Auto Result Box
+// Duplicate Event Protection
+// Form Submit Protection
+// No Invented Facts
 // ==========================================================
 
 
@@ -40,7 +36,9 @@ const STATUS_ENDPOINT =
 // ==========================================================
 
 let categoryData = [];
+
 let currentCategory = "";
+
 let isGenerating = false;
 
 
@@ -49,6 +47,7 @@ let isGenerating = false;
 // ==========================================================
 
 const SUPPORTED_CATEGORIES = [
+
     "Fashion",
     "Beauty",
     "Electronics",
@@ -63,329 +62,8 @@ const SUPPORTED_CATEGORIES = [
     "Garden",
     "Food",
     "Gifts"
+
 ];
-
-
-// ==========================================================
-// DOM HELPER
-// ==========================================================
-
-function getElement(...ids) {
-
-    for (const id of ids) {
-
-        if (!id) continue;
-
-        const element =
-            document.getElementById(id);
-
-        if (element) {
-            return element;
-        }
-
-    }
-
-    return null;
-}
-
-
-// ==========================================================
-// GET VALUE
-// ==========================================================
-
-function getValue(...ids) {
-
-    const element =
-        getElement(...ids);
-
-    if (!element) {
-        return "";
-    }
-
-    return String(
-        element.value || ""
-    ).trim();
-}
-
-
-// ==========================================================
-// SHOW ELEMENT
-// ==========================================================
-
-function showElement(...ids) {
-
-    for (const id of ids) {
-
-        const element =
-            document.getElementById(id);
-
-        if (element) {
-
-            element.style.display =
-                "";
-
-        }
-
-    }
-
-}
-
-
-// ==========================================================
-// HIDE ELEMENT
-// ==========================================================
-
-function hideElement(...ids) {
-
-    for (const id of ids) {
-
-        const element =
-            document.getElementById(id);
-
-        if (element) {
-
-            element.style.display =
-                "none";
-
-        }
-
-    }
-
-}
-
-
-// ==========================================================
-// MESSAGE ELEMENT
-// ==========================================================
-
-function getMessageElement() {
-
-    return getElement(
-        "message",
-        "errorMessage",
-        "successMessage",
-        "statusMessage",
-        "formMessage"
-    );
-
-}
-
-
-// ==========================================================
-// SHOW MESSAGE
-// ==========================================================
-
-function showMessage(
-    message,
-    type = "error"
-) {
-
-    const element =
-        getMessageElement();
-
-    if (!element) {
-
-        if (type === "error") {
-            console.error(
-                "[AI SELLER TOOLKIT]",
-                message
-            );
-        } else {
-            console.log(
-                "[AI SELLER TOOLKIT]",
-                message
-            );
-        }
-
-        return;
-    }
-
-    element.textContent =
-        String(message);
-
-    element.style.display =
-        "block";
-
-    element.className =
-        `message ${type}`;
-
-}
-
-
-// ==========================================================
-// CLEAR MESSAGE
-// ==========================================================
-
-function clearMessage() {
-
-    const element =
-        getMessageElement();
-
-    if (!element) {
-        return;
-    }
-
-    element.textContent =
-        "";
-
-    element.style.display =
-        "none";
-
-}
-
-
-// ==========================================================
-// CATEGORY NORMALIZER
-// ==========================================================
-
-function normalizeCategory(category) {
-
-    if (!category) {
-        return "";
-    }
-
-    let value =
-        String(category)
-            .trim()
-            .replace(
-                /^[\p{Extended_Pictographic}\p{Emoji_Presentation}\s]+/u,
-                ""
-            )
-            .trim();
-
-    const lower =
-        value.toLowerCase();
-
-    const aliases = {
-
-        "fashion":
-            "Fashion",
-
-        "fashion & clothing":
-            "Fashion",
-
-        "fashion and clothing":
-            "Fashion",
-
-        "clothing":
-            "Fashion",
-
-        "apparel":
-            "Fashion",
-
-        "beauty":
-            "Beauty",
-
-        "personal care":
-            "Beauty",
-
-        "personal-care":
-            "Beauty",
-
-        "electronics":
-            "Electronics",
-
-        "electronic":
-            "Electronics",
-
-        "home & kitchen":
-            "Home & Kitchen",
-
-        "home and kitchen":
-            "Home & Kitchen",
-
-        "home kitchen":
-            "Home & Kitchen",
-
-        "home":
-            "Home & Kitchen",
-
-        "kitchen":
-            "Home & Kitchen",
-
-        "shoes":
-            "Shoes",
-
-        "shoe":
-            "Shoes",
-
-        "footwear":
-            "Shoes",
-
-        "jewellery":
-            "Jewellery",
-
-        "jewelry":
-            "Jewellery",
-
-        "toys":
-            "Toys",
-
-        "toy":
-            "Toys",
-
-        "books":
-            "Books",
-
-        "book":
-            "Books",
-
-        "pet":
-            "Pet",
-
-        "pets":
-            "Pet",
-
-        "sports":
-            "Sports",
-
-        "sport":
-            "Sports",
-
-        "fitness":
-            "Sports",
-
-        "automotive":
-            "Automotive",
-
-        "automobile":
-            "Automotive",
-
-        "car accessories":
-            "Automotive",
-
-        "vehicle accessories":
-            "Automotive",
-
-        "garden":
-            "Garden",
-
-        "gardening":
-            "Garden",
-
-        "food":
-            "Food",
-
-        "foods":
-            "Food",
-
-        "grocery":
-            "Food",
-
-        "gifts":
-            "Gifts",
-
-        "gift":
-            "Gifts"
-
-    };
-
-    return (
-        aliases[lower] ||
-        value
-    );
-
-}
 
 
 // ==========================================================
@@ -561,17 +239,153 @@ const LOCAL_CATEGORY_FIELDS = {
 
 
 // ==========================================================
-// FIND CATEGORY SELECT
+// DOM HELPER
+// ==========================================================
+
+function getElement(...ids) {
+
+    for (const id of ids) {
+
+        if (!id) {
+            continue;
+        }
+
+        const element =
+            document.getElementById(id);
+
+        if (element) {
+            return element;
+        }
+
+    }
+
+    return null;
+
+}
+
+
+// ==========================================================
+// GET VALUE
+// ==========================================================
+
+function getValue(...ids) {
+
+    const element =
+        getElement(...ids);
+
+    if (!element) {
+        return "";
+    }
+
+    return String(
+        element.value || ""
+    ).trim();
+
+}
+
+
+// ==========================================================
+// NORMALIZE CATEGORY
+// ==========================================================
+
+function normalizeCategory(category) {
+
+    if (!category) {
+        return "";
+    }
+
+    let value =
+        String(category)
+            .trim()
+            .replace(
+                /^[\p{Extended_Pictographic}\p{Emoji_Presentation}\s]+/u,
+                ""
+            )
+            .trim();
+
+    const lower =
+        value.toLowerCase();
+
+    const aliases = {
+
+        "fashion": "Fashion",
+        "fashion & clothing": "Fashion",
+        "fashion and clothing": "Fashion",
+        "clothing": "Fashion",
+        "apparel": "Fashion",
+
+        "beauty": "Beauty",
+        "personal care": "Beauty",
+        "personal-care": "Beauty",
+
+        "electronics": "Electronics",
+        "electronic": "Electronics",
+
+        "home & kitchen": "Home & Kitchen",
+        "home and kitchen": "Home & Kitchen",
+        "home kitchen": "Home & Kitchen",
+        "home": "Home & Kitchen",
+        "kitchen": "Home & Kitchen",
+
+        "shoes": "Shoes",
+        "shoe": "Shoes",
+        "footwear": "Shoes",
+
+        "jewellery": "Jewellery",
+        "jewelry": "Jewellery",
+
+        "toys": "Toys",
+        "toy": "Toys",
+
+        "books": "Books",
+        "book": "Books",
+
+        "pet": "Pet",
+        "pets": "Pet",
+
+        "sports": "Sports",
+        "sport": "Sports",
+        "fitness": "Sports",
+
+        "automotive": "Automotive",
+        "automobile": "Automotive",
+        "car accessories": "Automotive",
+        "vehicle accessories": "Automotive",
+
+        "garden": "Garden",
+        "gardening": "Garden",
+
+        "food": "Food",
+        "foods": "Food",
+        "grocery": "Food",
+
+        "gifts": "Gifts",
+        "gift": "Gifts"
+
+    };
+
+    return (
+        aliases[lower] ||
+        value
+    );
+
+}
+
+
+// ==========================================================
+// CATEGORY ELEMENT
 // ==========================================================
 
 function getCategoryElement() {
 
     return getElement(
+
         "category",
         "productCategory",
         "categorySelect",
         "product-category",
         "productCategorySelect"
+
     );
 
 }
@@ -598,18 +412,20 @@ function getSelectedCategory() {
 
 
 // ==========================================================
-// FIND DYNAMIC FIELD CONTAINER
+// DYNAMIC FIELD CONTAINER
 // ==========================================================
 
 function findDynamicFieldContainer() {
 
     return getElement(
+
         "categoryFields",
         "dynamicFields",
         "categorySpecificFields",
         "categoryFieldsContainer",
         "dynamic-category-fields",
         "additionalFields"
+
     );
 
 }
@@ -628,13 +444,10 @@ function renderCategoryFields(category) {
         return;
     }
 
-    container.innerHTML =
-        "";
+    container.innerHTML = "";
 
     const fields =
-        LOCAL_CATEGORY_FIELDS[
-            category
-        ] || [];
+        LOCAL_CATEGORY_FIELDS[category] || [];
 
     if (!fields.length) {
         return;
@@ -656,57 +469,56 @@ function renderCategoryFields(category) {
     grid.className =
         "category-fields-grid";
 
-    for (
-        const [name, label]
-        of fields
-    ) {
+    fields.forEach(
+        ([name, label]) => {
 
-        const wrapper =
-            document.createElement("div");
+            const wrapper =
+                document.createElement("div");
 
-        wrapper.className =
-            "category-field";
+            wrapper.className =
+                "category-field";
 
-        const labelElement =
-            document.createElement("label");
+            const labelElement =
+                document.createElement("label");
 
-        labelElement.textContent =
-            label;
+            labelElement.textContent =
+                label;
 
-        labelElement.htmlFor =
-            `field-${name}`;
+            labelElement.htmlFor =
+                `field-${name}`;
 
-        const input =
-            document.createElement("input");
+            const input =
+                document.createElement("input");
 
-        input.type =
-            "text";
+            input.type =
+                "text";
 
-        input.id =
-            `field-${name}`;
+            input.id =
+                `field-${name}`;
 
-        input.name =
-            name;
+            input.name =
+                name;
 
-        input.placeholder =
-            `Enter ${label} if known`;
+            input.placeholder =
+                `Enter ${label} if known`;
 
-        input.autocomplete =
-            "off";
+            input.autocomplete =
+                "off";
 
-        wrapper.appendChild(
-            labelElement
-        );
+            wrapper.appendChild(
+                labelElement
+            );
 
-        wrapper.appendChild(
-            input
-        );
+            wrapper.appendChild(
+                input
+            );
 
-        grid.appendChild(
-            wrapper
-        );
+            grid.appendChild(
+                wrapper
+            );
 
-    }
+        }
+    );
 
     container.appendChild(
         grid
@@ -772,13 +584,13 @@ async function loadCategories() {
 
         if (
             !data ||
-            !Array.isArray(
-                data.categories
-            )
+            !Array.isArray(data.categories)
         ) {
+
             throw new Error(
-                "Invalid category response."
+                "Invalid category response"
             );
+
         }
 
         categoryData =
@@ -796,13 +608,19 @@ async function loadCategories() {
             error
         );
 
-        populateCategorySelect(
-            categoryElement,
+        const fallback =
             SUPPORTED_CATEGORIES.map(
                 name => ({
                     name
                 })
-            )
+            );
+
+        categoryData =
+            fallback;
+
+        populateCategorySelect(
+            categoryElement,
+            fallback
         );
 
     }
@@ -828,111 +646,72 @@ function populateCategorySelect(
             select.value
         );
 
-    const placeholder =
-        select.querySelector(
-            "option[value='']"
-        );
+    select.innerHTML = "";
 
-    select.innerHTML =
+    const placeholder =
+        document.createElement("option");
+
+    placeholder.value =
         "";
 
-    if (placeholder) {
+    placeholder.textContent =
+        "Select Product Category";
 
-        select.appendChild(
-            placeholder.cloneNode(true)
-        );
+    select.appendChild(
+        placeholder
+    );
 
-    } else {
+    categories.forEach(
+        item => {
 
-        const option =
-            document.createElement("option");
+            let name = "";
 
-        option.value =
-            "";
+            if (typeof item === "string") {
 
-        option.textContent =
-            "Select Product Category";
+                name =
+                    item;
 
-        select.appendChild(
-            option
-        );
-
-    }
-
-    const added =
-        new Set();
-
-    for (
-        const item
-        of categories
-    ) {
-
-        if (!item || !item.name) {
-            continue;
-        }
-
-        const normalized =
-            normalizeCategory(
+            } else if (
+                item &&
                 item.name
+            ) {
+
+                name =
+                    item.name;
+
+            }
+
+            const normalized =
+                normalizeCategory(
+                    name
+                );
+
+            if (
+                !normalized ||
+                !SUPPORTED_CATEGORIES.includes(
+                    normalized
+                )
+            ) {
+
+                return;
+
+            }
+
+            const option =
+                document.createElement("option");
+
+            option.value =
+                normalized;
+
+            option.textContent =
+                normalized;
+
+            select.appendChild(
+                option
             );
 
-        if (
-            !SUPPORTED_CATEGORIES.includes(
-                normalized
-            )
-        ) {
-            continue;
         }
-
-        if (
-            added.has(normalized)
-        ) {
-            continue;
-        }
-
-        added.add(normalized);
-
-        const option =
-            document.createElement("option");
-
-        option.value =
-            normalized;
-
-        option.textContent =
-            normalized;
-
-        select.appendChild(
-            option
-        );
-
-    }
-
-    // Make sure all 14 categories exist
-    for (
-        const category
-        of SUPPORTED_CATEGORIES
-    ) {
-
-        if (
-            added.has(category)
-        ) {
-            continue;
-        }
-
-        const option =
-            document.createElement("option");
-
-        option.value =
-            category;
-
-        option.textContent =
-            category;
-
-        select.appendChild(
-            option
-        );
-
-    }
+    );
 
     if (oldValue) {
 
@@ -947,8 +726,10 @@ function populateCategorySelect(
             );
 
         if (matching) {
+
             select.value =
                 matching.value;
+
         }
 
     }
@@ -971,34 +752,33 @@ function collectCategoryFields(category) {
             category
         ] || [];
 
-    for (
-        const [name]
-        of definitions
-    ) {
+    definitions.forEach(
+        ([name]) => {
 
-        const input =
-            getElement(
-                `field-${name}`,
-                name
-            );
+            const input =
+                getElement(
+                    `field-${name}`,
+                    name
+                );
 
-        if (!input) {
-            continue;
+            if (!input) {
+                return;
+            }
+
+            const value =
+                String(
+                    input.value || ""
+                ).trim();
+
+            if (value) {
+
+                fields[name] =
+                    value;
+
+            }
+
         }
-
-        const value =
-            String(
-                input.value || ""
-            ).trim();
-
-        if (value) {
-
-            fields[name] =
-                value;
-
-        }
-
-    }
+    );
 
     return fields;
 
@@ -1078,33 +858,34 @@ function collectKnownFields(category) {
 
     ];
 
-    for (
-        const name
-        of possibleFields
-    ) {
+    possibleFields.forEach(
+        name => {
 
-        if (fields[name]) {
-            continue;
+            if (fields[name]) {
+                return;
+            }
+
+            const input =
+                getElement(name);
+
+            if (!input) {
+                return;
+            }
+
+            const value =
+                String(
+                    input.value || ""
+                ).trim();
+
+            if (value) {
+
+                fields[name] =
+                    value;
+
+            }
+
         }
-
-        const input =
-            getElement(name);
-
-        if (!input) {
-            continue;
-        }
-
-        const value =
-            String(
-                input.value || ""
-            ).trim();
-
-        if (value) {
-            fields[name] =
-                value;
-        }
-
-    }
+    );
 
     return fields;
 
@@ -1194,9 +975,12 @@ function validateProductData(product) {
     if (!product.category) {
 
         return {
+
             valid: false,
+
             message:
                 "Please select a product category."
+
         };
 
     }
@@ -1208,9 +992,12 @@ function validateProductData(product) {
     ) {
 
         return {
+
             valid: false,
+
             message:
                 "Please select a valid product category."
+
         };
 
     }
@@ -1218,9 +1005,12 @@ function validateProductData(product) {
     if (!product.productName) {
 
         return {
+
             valid: false,
+
             message:
                 "Please enter the product name."
+
         };
 
     }
@@ -1322,29 +1112,30 @@ function buildPayload(product) {
 
     ];
 
-    for (
-        const field
-        of fieldNames
-    ) {
+    fieldNames.forEach(
+        field => {
 
-        if (
-            product[field] !== undefined &&
-            product[field] !== null
-        ) {
+            if (
+                product[field] !== undefined &&
+                product[field] !== null
+            ) {
 
-            const value =
-                String(
-                    product[field]
-                ).trim();
+                const value =
+                    String(
+                        product[field]
+                    ).trim();
 
-            if (value) {
-                payload[field] =
-                    value;
+                if (value) {
+
+                    payload[field] =
+                        value;
+
+                }
+
             }
 
         }
-
-    }
+    );
 
     return payload;
 
@@ -1352,7 +1143,94 @@ function buildPayload(product) {
 
 
 // ==========================================================
-// GENERATE BUTTON STATE
+// MESSAGE ELEMENT
+// ==========================================================
+
+function getMessageElement() {
+
+    return getElement(
+
+        "message",
+        "errorMessage",
+        "successMessage",
+        "statusMessage",
+        "formMessage"
+
+    );
+
+}
+
+
+// ==========================================================
+// SHOW MESSAGE
+// ==========================================================
+
+function showMessage(
+    message,
+    type = "info"
+) {
+
+    const element =
+        getMessageElement();
+
+    if (!element) {
+
+        if (type === "error") {
+
+            console.error(
+                "[AI SELLER TOOLKIT]",
+                message
+            );
+
+        } else {
+
+            console.log(
+                "[AI SELLER TOOLKIT]",
+                message
+            );
+
+        }
+
+        return;
+
+    }
+
+    element.textContent =
+        message;
+
+    element.style.display =
+        "block";
+
+    element.className =
+        `message ${type}`;
+
+}
+
+
+// ==========================================================
+// CLEAR MESSAGE
+// ==========================================================
+
+function clearMessage() {
+
+    const element =
+        getMessageElement();
+
+    if (!element) {
+        return;
+    }
+
+    element.textContent =
+        "";
+
+    element.style.display =
+        "none";
+
+}
+
+
+// ==========================================================
+// GENERATING BUTTON STATE
 // ==========================================================
 
 function setGeneratingState(
@@ -1364,51 +1242,54 @@ function setGeneratingState(
 
     const buttons = [
 
-        "generateListingBtn",
-        "generateCompleteListing",
-        "generateBtn",
-        "generateButton"
+        getElement(
+            "generateListingBtn"
+        ),
 
-    ];
+        getElement(
+            "generateCompleteListing"
+        ),
 
-    for (
-        const id
-        of buttons
-    ) {
+        getElement(
+            "generateBtn"
+        ),
 
-        const button =
-            document.getElementById(id);
+        getElement(
+            "generateButton"
+        )
 
-        if (!button) {
-            continue;
-        }
+    ].filter(Boolean);
 
-        button.disabled =
-            generating;
+    buttons.forEach(
+        button => {
 
-        if (generating) {
+            button.disabled =
+                generating;
 
-            if (
-                !button.dataset.originalText
-            ) {
+            if (generating) {
 
-                button.dataset.originalText =
-                    button.textContent;
+                if (
+                    !button.dataset.originalText
+                ) {
+
+                    button.dataset.originalText =
+                        button.textContent;
+
+                }
+
+                button.textContent =
+                    "Generating...";
+
+            } else {
+
+                button.textContent =
+                    button.dataset.originalText ||
+                    "Generate Complete Listing";
 
             }
 
-            button.textContent =
-                "Generating...";
-
-        } else {
-
-            button.textContent =
-                button.dataset.originalText ||
-                "Generate Complete Listing";
-
         }
-
-    }
+    );
 
 }
 
@@ -1422,7 +1303,7 @@ async function generateListingFromServer(
 ) {
 
     console.log(
-        "[GENERATE REQUEST]",
+        "[LISTING REQUEST]",
         payload
     );
 
@@ -1430,75 +1311,55 @@ async function generateListingFromServer(
         await fetch(
             GENERATE_ENDPOINT,
             {
+
                 method: "POST",
 
                 headers: {
+
                     "Content-Type":
                         "application/json",
 
                     "Accept":
                         "application/json"
+
                 },
 
                 body:
                     JSON.stringify(
                         payload
                     )
+
             }
         );
 
-    const rawText =
-        await response.text();
-
-    console.log(
-        "[SERVER STATUS]",
-        response.status
-    );
-
-    console.log(
-        "[SERVER RAW RESPONSE]",
-        rawText
-    );
-
-    if (!rawText) {
-
-        throw new Error(
-            `Server returned an empty response (${response.status}).`
-        );
-
-    }
-
-    let data;
+    let data = null;
 
     try {
 
         data =
-            JSON.parse(
-                rawText
-            );
+            await response.json();
 
     } catch (error) {
 
         throw new Error(
-            `Server returned invalid JSON (${response.status}).`
+            `Server returned invalid JSON response (${response.status}).`
         );
 
     }
+
+    console.log(
+        "[LISTING RESPONSE]",
+        data
+    );
 
     if (!response.ok) {
 
         throw new Error(
 
             data &&
-            (
-                data.error ||
-                data.message
-            )
+            data.error
 
-                ? (
-                    data.error ||
-                    data.message
-                )
+                ? data.error
 
                 : `Server error: ${response.status}`
 
@@ -1514,15 +1375,9 @@ async function generateListingFromServer(
         throw new Error(
 
             data &&
-            (
-                data.error ||
-                data.message
-            )
+            data.error
 
-                ? (
-                    data.error ||
-                    data.message
-                )
+                ? data.error
 
                 : "Listing generation failed."
 
@@ -1536,623 +1391,7 @@ async function generateListingFromServer(
 
 
 // ==========================================================
-// SAFE JSON PARSER
-// ==========================================================
-
-function tryParseJSON(value) {
-
-    if (
-        value === null ||
-        value === undefined
-    ) {
-        return null;
-    }
-
-    if (
-        typeof value === "object"
-    ) {
-        return value;
-    }
-
-    if (
-        typeof value !== "string"
-    ) {
-        return null;
-    }
-
-    const text =
-        value.trim();
-
-    if (!text) {
-        return null;
-    }
-
-    try {
-
-        return JSON.parse(
-            text
-        );
-
-    } catch (error) {
-
-        // Try removing markdown JSON fences
-        const cleaned =
-            text
-                .replace(
-                    /^```json\s*/i,
-                    ""
-                )
-                .replace(
-                    /^```\s*/i,
-                    ""
-                )
-                .replace(
-                    /\s*```$/i,
-                    ""
-                )
-                .trim();
-
-        try {
-
-            return JSON.parse(
-                cleaned
-            );
-
-        } catch (secondError) {
-
-            return null;
-
-        }
-
-    }
-
-}
-
-
-// ==========================================================
-// FIND LISTING OBJECT
-// ==========================================================
-
-function findListingObject(data) {
-
-    if (!data) {
-        return null;
-    }
-
-    // Direct listing object
-    if (
-        typeof data === "object" &&
-        (
-            data.title ||
-            data.TITLE ||
-            data.description ||
-            data.DESCRIPTION
-        )
-    ) {
-
-        return data;
-
-    }
-
-    // Common nested keys
-    const possibleKeys = [
-
-        "listing",
-        "result",
-        "data",
-        "output",
-        "generatedListing",
-        "generated",
-        "response"
-
-    ];
-
-    for (
-        const key
-        of possibleKeys
-    ) {
-
-        if (
-            data[key] === undefined ||
-            data[key] === null
-        ) {
-            continue;
-        }
-
-        const value =
-            data[key];
-
-        const parsed =
-            tryParseJSON(
-                value
-            );
-
-        if (
-            parsed &&
-            typeof parsed === "object"
-        ) {
-
-            const found =
-                findListingObject(
-                    parsed
-                );
-
-            if (found) {
-                return found;
-            }
-
-        }
-
-        if (
-            typeof value === "object"
-        ) {
-
-            const found =
-                findListingObject(
-                    value
-                );
-
-            if (found) {
-                return found;
-            }
-
-        }
-
-    }
-
-    return null;
-
-}
-
-
-// ==========================================================
-// EXTRACT TEXT FROM POSSIBLE KEYS
-// ==========================================================
-
-function getFirstValue(
-    source,
-    keys
-) {
-
-    if (!source) {
-        return "";
-    }
-
-    for (
-        const key
-        of keys
-    ) {
-
-        if (
-            source[key] === undefined ||
-            source[key] === null
-        ) {
-            continue;
-        }
-
-        const value =
-            source[key];
-
-        if (
-            typeof value === "string" &&
-            value.trim()
-        ) {
-
-            return value.trim();
-
-        }
-
-        if (
-            typeof value === "number"
-        ) {
-
-            return String(value);
-
-        }
-
-    }
-
-    return "";
-
-}
-
-
-// ==========================================================
-// EXTRACT LISTING — FINAL FIX
-// ==========================================================
-
-function extractListing(data) {
-
-    console.log(
-        "[EXTRACT] Full server data:",
-        data
-    );
-
-    let source =
-        findListingObject(
-            data
-        );
-
-    // If nested object was not found,
-    // try direct data
-    if (!source) {
-        source =
-            data;
-    }
-
-    // Sometimes server returns a JSON string
-    const parsedSource =
-        tryParseJSON(
-            source
-        );
-
-    if (
-        parsedSource &&
-        typeof parsedSource === "object"
-    ) {
-
-        source =
-            parsedSource;
-
-    }
-
-    console.log(
-        "[EXTRACT] Listing source:",
-        source
-    );
-
-    const listing = {
-
-        title:
-            getFirstValue(
-                source,
-                [
-                    "title",
-                    "TITLE",
-                    "productTitle",
-                    "PRODUCT TITLE",
-                    "listingTitle",
-                    "listing_title"
-                ]
-            ),
-
-        description:
-            getFirstValue(
-                source,
-                [
-                    "description",
-                    "DESCRIPTION",
-                    "productDescription",
-                    "PRODUCT DESCRIPTION",
-                    "listingDescription",
-                    "listing_description"
-                ]
-            ),
-
-        highlights:
-            normalizeArray(
-                source.highlights ||
-                source.HIGHLIGHTS ||
-                source.bullets ||
-                source.BULLETS ||
-                source.keyFeatures ||
-                source.key_features
-            ),
-
-        keywords:
-            normalizeArray(
-                source.keywords ||
-                source.KEYWORDS ||
-                source.seoKeywords ||
-                source.seo_keywords
-            ),
-
-        hashtags:
-            normalizeArray(
-                source.hashtags ||
-                source.HASHTAGS ||
-                source.hashTags ||
-                source.hash_tags
-            ),
-
-        seoTitle:
-            getFirstValue(
-                source,
-                [
-                    "seoTitle",
-                    "SEO TITLE",
-                    "seo_title",
-                    "SEOTitle"
-                ]
-            ),
-
-        seoDescription:
-            getFirstValue(
-                source,
-                [
-                    "seoDescription",
-                    "SEO DESCRIPTION",
-                    "seo_description",
-                    "SEODescription"
-                ]
-            )
-
-    };
-
-    // ------------------------------------------------------
-    // If listing is still empty, try text response
-    // ------------------------------------------------------
-
-    if (
-        !listing.title &&
-        typeof source === "string"
-    ) {
-
-        const text =
-            source.trim();
-
-        const parsed =
-            parsePlainTextListing(
-                text
-            );
-
-        if (parsed) {
-
-            return parsed;
-
-        }
-
-    }
-
-    console.log(
-        "[EXTRACT] Final listing:",
-        listing
-    );
-
-    return listing;
-
-}
-
-
-// ==========================================================
-// PARSE PLAIN TEXT LISTING
-// ==========================================================
-
-function parsePlainTextListing(text) {
-
-    if (!text) {
-        return null;
-    }
-
-    const result = {
-
-        title: "",
-        description: "",
-        highlights: [],
-        keywords: [],
-        hashtags: [],
-        seoTitle: "",
-        seoDescription: ""
-
-    };
-
-    const lines =
-        text
-            .split("\n")
-            .map(
-                line =>
-                    line.trim()
-            );
-
-    let section =
-        "";
-
-    for (
-        const line
-        of lines
-    ) {
-
-        if (!line) {
-            continue;
-        }
-
-        const upper =
-            line
-                .toUpperCase()
-                .replace(
-                    /[:\-]/g,
-                    ""
-                )
-                .trim();
-
-        if (
-            upper === "TITLE"
-        ) {
-
-            section =
-                "title";
-
-            continue;
-
-        }
-
-        if (
-            upper === "DESCRIPTION"
-        ) {
-
-            section =
-                "description";
-
-            continue;
-
-        }
-
-        if (
-            upper === "HIGHLIGHTS" ||
-            upper === "KEY HIGHLIGHTS"
-        ) {
-
-            section =
-                "highlights";
-
-            continue;
-
-        }
-
-        if (
-            upper === "KEYWORDS" ||
-            upper === "SEO KEYWORDS"
-        ) {
-
-            section =
-                "keywords";
-
-            continue;
-
-        }
-
-        if (
-            upper === "HASHTAGS" ||
-            upper === "HASH TAGS"
-        ) {
-
-            section =
-                "hashtags";
-
-            continue;
-
-        }
-
-        if (
-            upper === "SEO TITLE"
-        ) {
-
-            section =
-                "seoTitle";
-
-            continue;
-
-        }
-
-        if (
-            upper === "SEO DESCRIPTION"
-        ) {
-
-            section =
-                "seoDescription";
-
-            continue;
-
-        }
-
-        if (!section) {
-            continue;
-        }
-
-        if (
-            section === "title"
-        ) {
-
-            if (!result.title) {
-                result.title =
-                    line;
-            }
-
-        } else if (
-            section === "description"
-        ) {
-
-            result.description +=
-                (
-                    result.description
-                        ? " "
-                        : ""
-                ) +
-                line;
-
-        } else if (
-            section === "highlights"
-        ) {
-
-            result.highlights.push(
-                line
-                    .replace(
-                        /^[-•*]\s*/,
-                        ""
-                    )
-                    .trim()
-            );
-
-        } else if (
-            section === "keywords"
-        ) {
-
-            result.keywords.push(
-                line
-                    .replace(
-                        /^[-•*]\s*/,
-                        ""
-                    )
-                    .trim()
-            );
-
-        } else if (
-            section === "hashtags"
-        ) {
-
-            result.hashtags.push(
-                line
-                    .replace(
-                        /^[-•*]\s*/,
-                        ""
-                    )
-                    .trim()
-            );
-
-        } else if (
-            section === "seoTitle"
-        ) {
-
-            if (!result.seoTitle) {
-                result.seoTitle =
-                    line;
-            }
-
-        } else if (
-            section === "seoDescription"
-        ) {
-
-            result.seoDescription +=
-                (
-                    result.seoDescription
-                        ? " "
-                        : ""
-                ) +
-                line;
-
-        }
-
-    }
-
-    if (
-        result.title ||
-        result.description ||
-        result.highlights.length ||
-        result.keywords.length ||
-        result.hashtags.length
-    ) {
-
-        return result;
-
-    }
-
-    return null;
-
-}
-
-
-// ==========================================================
-// ARRAY NORMALIZER
+// NORMALIZE ARRAY
 // ==========================================================
 
 function normalizeArray(value) {
@@ -2161,39 +1400,18 @@ function normalizeArray(value) {
 
         return value
             .map(
-                item => {
-
-                    if (
-                        typeof item === "object"
-                    ) {
-
-                        return String(
-                            item.text ||
-                            item.value ||
-                            item.name ||
-                            ""
-                        ).trim();
-
-                    }
-
-                    return String(
-                        item
-                    ).trim();
-
-                }
+                item =>
+                    String(item)
+                        .trim()
             )
             .filter(Boolean);
 
     }
 
-    if (
-        typeof value === "string"
-    ) {
+    if (typeof value === "string") {
 
         return value
-            .split(
-                /\n|,/
-            )
+            .split(/\n/)
             .map(
                 item =>
                     item
@@ -2213,124 +1431,392 @@ function normalizeArray(value) {
 
 
 // ==========================================================
-// SET OUTPUT VALUE
+// EXTRACT LISTING
 // ==========================================================
 
-function setOutputValue(
-    value,
-    ids
-) {
+function extractListing(data) {
 
-    for (
-        const id
-        of ids
+    console.log(
+        "[EXTRACT LISTING INPUT]",
+        data
+    );
+
+    /*
+     * Backend may return:
+     *
+     * {
+     *   success: true,
+     *   listing: {...}
+     * }
+     *
+     * OR
+     *
+     * {
+     *   success: true,
+     *   title: "...",
+     *   description: "..."
+     * }
+     */
+
+    let source =
+        data &&
+        data.listing;
+
+    if (
+        !source ||
+        typeof source !== "object"
     ) {
 
-        const element =
-            document.getElementById(id);
-
-        if (!element) {
-            continue;
-        }
-
-        const finalValue =
-            value || "";
-
-        if (
-            "value" in element
-        ) {
-
-            element.value =
-                finalValue;
-
-        } else {
-
-            element.textContent =
-                finalValue;
-
-        }
-
-        // Force visibility
-        element.style.display =
-            "";
-
-        return true;
+        source =
+            data;
 
     }
 
-    return false;
+    // Handle nested response if backend uses result
+    if (
+        source &&
+        source.result &&
+        typeof source.result === "object"
+    ) {
+
+        source =
+            source.result;
+
+    }
+
+    const listing = {
+
+        title:
+            source.title ||
+            source.TITLE ||
+            source.productTitle ||
+            "",
+
+        description:
+            source.description ||
+            source.DESCRIPTION ||
+            source.productDescription ||
+            "",
+
+        highlights:
+            normalizeArray(
+                source.highlights ||
+                source.HIGHLIGHTS ||
+                source.bullets
+            ),
+
+        keywords:
+            normalizeArray(
+                source.keywords ||
+                source.KEYWORDS ||
+                source.seoKeywords
+            ),
+
+        hashtags:
+            normalizeArray(
+                source.hashtags ||
+                source.HASHTAGS ||
+                source.tags
+            ),
+
+        seoTitle:
+            source.seoTitle ||
+            source["SEO TITLE"] ||
+            source.seo_title ||
+            "",
+
+        seoDescription:
+            source.seoDescription ||
+            source["SEO DESCRIPTION"] ||
+            source.seo_description ||
+            ""
+
+    };
+
+    console.log(
+        "[EXTRACTED LISTING]",
+        listing
+    );
+
+    return listing;
 
 }
 
 
 // ==========================================================
-// SET OUTPUT ARRAY
+// CREATE RESULT CONTAINER IF MISSING
 // ==========================================================
 
-function setOutputArray(
-    values,
-    ids
-) {
+function ensureResultContainer() {
 
-    const array =
-        Array.isArray(values)
-            ? values
-            : [];
+    const existing =
+        getElement(
 
-    for (
-        const id
-        of ids
-    ) {
+            "resultContainer",
+            "results",
+            "listingResult",
+            "generatedListing",
+            "outputSection",
+            "listingOutput"
 
-        const element =
-            document.getElementById(id);
+        );
 
-        if (!element) {
-            continue;
-        }
+    if (existing) {
 
-        if (
-            element.tagName ===
-            "TEXTAREA"
-        ) {
+        existing.style.display =
+            "block";
 
-            element.value =
-                array.join("\n");
-
-        } else {
-
-            element.innerHTML =
-                "";
-
-            for (
-                const value
-                of array
-            ) {
-
-                const item =
-                    document.createElement(
-                        "li"
-                    );
-
-                item.textContent =
-                    value;
-
-                element.appendChild(
-                    item
-                );
-
-            }
-
-        }
-
-        element.style.display =
-            "";
-
-        return true;
+        return existing;
 
     }
 
-    return false;
+    /*
+     * If HTML has no result container,
+     * create one automatically.
+     */
+
+    const container =
+        document.createElement("section");
+
+    container.id =
+        "aiSellerAutoResult";
+
+    container.className =
+        "ai-seller-result-container";
+
+    container.style.display =
+        "block";
+
+    container.style.marginTop =
+        "25px";
+
+    container.style.padding =
+        "20px";
+
+    container.style.borderRadius =
+        "12px";
+
+    container.style.border =
+        "1px solid #ddd";
+
+    container.style.background =
+        "#ffffff";
+
+    const button =
+        getElement(
+
+            "generateListingBtn",
+            "generateCompleteListing",
+            "generateBtn",
+            "generateButton"
+
+        );
+
+    if (
+        button &&
+        button.parentElement
+    ) {
+
+        button.parentElement.appendChild(
+            container
+        );
+
+    } else {
+
+        document.body.appendChild(
+            container
+        );
+
+    }
+
+    return container;
+
+}
+
+
+// ==========================================================
+// FIND OR CREATE OUTPUT FIELD
+// ==========================================================
+
+function findOrCreateOutput(
+    id,
+    label,
+    container
+) {
+
+    let element =
+        document.getElementById(id);
+
+    if (element) {
+        return element;
+    }
+
+    const wrapper =
+        document.createElement("div");
+
+    wrapper.className =
+        "ai-seller-output-field";
+
+    wrapper.style.marginBottom =
+        "18px";
+
+    const title =
+        document.createElement("h3");
+
+    title.textContent =
+        label;
+
+    title.style.marginBottom =
+        "8px";
+
+    const textarea =
+        document.createElement("textarea");
+
+    textarea.id =
+        id;
+
+    textarea.readOnly =
+        true;
+
+    textarea.rows =
+        label === "DESCRIPTION"
+            ? 7
+            : 3;
+
+    textarea.style.width =
+        "100%";
+
+    textarea.style.boxSizing =
+        "border-box";
+
+    textarea.style.padding =
+        "12px";
+
+    textarea.style.borderRadius =
+        "8px";
+
+    textarea.style.border =
+        "1px solid #ccc";
+
+    textarea.style.resize =
+        "vertical";
+
+    wrapper.appendChild(
+        title
+    );
+
+    wrapper.appendChild(
+        textarea
+    );
+
+    container.appendChild(
+        wrapper
+    );
+
+    return textarea;
+
+}
+
+
+// ==========================================================
+// FIND OR CREATE ARRAY OUTPUT
+// ==========================================================
+
+function findOrCreateArrayOutput(
+    id,
+    label,
+    values,
+    container
+) {
+
+    let element =
+        document.getElementById(id);
+
+    if (!element) {
+
+        const wrapper =
+            document.createElement("div");
+
+        wrapper.className =
+            "ai-seller-output-field";
+
+        wrapper.style.marginBottom =
+            "18px";
+
+        const title =
+            document.createElement("h3");
+
+        title.textContent =
+            label;
+
+        title.style.marginBottom =
+            "8px";
+
+        element =
+            document.createElement("textarea");
+
+        element.id =
+            id;
+
+        element.readOnly =
+            true;
+
+        element.rows =
+            Math.max(
+                3,
+                Math.min(
+                    values.length || 3,
+                    8
+                )
+            );
+
+        element.style.width =
+            "100%";
+
+        element.style.boxSizing =
+            "border-box";
+
+        element.style.padding =
+            "12px";
+
+        element.style.borderRadius =
+            "8px";
+
+        element.style.border =
+            "1px solid #ccc";
+
+        element.style.resize =
+            "vertical";
+
+        wrapper.appendChild(
+            title
+        );
+
+        wrapper.appendChild(
+            element
+        );
+
+        container.appendChild(
+            wrapper
+        );
+
+    }
+
+    if (
+        "value" in element
+    ) {
+
+        element.value =
+            values.join("\n");
+
+    } else {
+
+        element.textContent =
+            values.join("\n");
+
+    }
+
+    return element;
 
 }
 
@@ -2339,196 +1825,300 @@ function setOutputArray(
 // DISPLAY LISTING
 // ==========================================================
 
-function displayListing(listing) {
+function displayListing(
+    listing
+) {
 
     console.log(
         "[DISPLAY LISTING]",
         listing
     );
 
-    const titleShown =
-        setOutputValue(
-            listing.title,
-            [
-                "titleResult",
-                "generatedTitle",
-                "listingTitle",
-                "resultTitle"
-            ]
-        );
+    const container =
+        ensureResultContainer();
 
-    const descriptionShown =
-        setOutputValue(
-            listing.description,
-            [
-                "descriptionResult",
-                "generatedDescription",
-                "listingDescription",
-                "resultDescription"
-            ]
-        );
-
-    const highlightsShown =
-        setOutputArray(
-            listing.highlights,
-            [
-                "highlightsResult",
-                "generatedHighlights",
-                "listingHighlights",
-                "resultHighlights"
-            ]
-        );
-
-    const keywordsShown =
-        setOutputArray(
-            listing.keywords,
-            [
-                "keywordsResult",
-                "generatedKeywords",
-                "listingKeywords",
-                "resultKeywords"
-            ]
-        );
-
-    const hashtagsShown =
-        setOutputArray(
-            listing.hashtags,
-            [
-                "hashtagsResult",
-                "generatedHashtags",
-                "listingHashtags",
-                "resultHashtags"
-            ]
-        );
-
-    const seoTitleShown =
-        setOutputValue(
-            listing.seoTitle,
-            [
-                "seoTitleResult",
-                "generatedSeoTitle",
-                "seoTitle",
-                "resultSeoTitle"
-            ]
-        );
-
-    const seoDescriptionShown =
-        setOutputValue(
-            listing.seoDescription,
-            [
-                "seoDescriptionResult",
-                "generatedSeoDescription",
-                "seoDescription",
-                "resultSeoDescription"
-            ]
-        );
-
-    const anythingShown =
-        titleShown ||
-        descriptionShown ||
-        highlightsShown ||
-        keywordsShown ||
-        hashtagsShown ||
-        seoTitleShown ||
-        seoDescriptionShown;
-
-    if (!anythingShown) {
+    if (!container) {
 
         throw new Error(
-            "Listing was generated by the server, but the result fields were not found on this page. Please check the result element IDs in complete-listing-generator.html."
+            "Unable to create listing result area."
         );
 
     }
 
-    showResultContainer();
+    /*
+     * Use existing HTML fields first.
+     * If missing, automatically create them.
+     */
 
-    return true;
+    setExistingOrCreateText(
+        "titleResult",
+        "TITLE",
+        listing.title,
+        container
+    );
+
+    setExistingOrCreateText(
+        "descriptionResult",
+        "DESCRIPTION",
+        listing.description,
+        container
+    );
+
+    setExistingOrCreateArray(
+        "highlightsResult",
+        "HIGHLIGHTS",
+        listing.highlights,
+        container
+    );
+
+    setExistingOrCreateArray(
+        "keywordsResult",
+        "KEYWORDS",
+        listing.keywords,
+        container
+    );
+
+    setExistingOrCreateArray(
+        "hashtagsResult",
+        "HASHTAGS",
+        listing.hashtags,
+        container
+    );
+
+    setExistingOrCreateText(
+        "seoTitleResult",
+        "SEO TITLE",
+        listing.seoTitle,
+        container
+    );
+
+    setExistingOrCreateText(
+        "seoDescriptionResult",
+        "SEO DESCRIPTION",
+        listing.seoDescription,
+        container
+    );
+
+    /*
+     * Scroll result into view so user can immediately
+     * see generated listing.
+     */
+
+    setTimeout(
+        () => {
+
+            container.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+        },
+        100
+    );
 
 }
 
 
 // ==========================================================
-// SHOW RESULT CONTAINER
+// SET EXISTING OR CREATE TEXT
 // ==========================================================
 
-function showResultContainer() {
+function setExistingOrCreateText(
+    primaryId,
+    label,
+    value,
+    container
+) {
 
-    const containers = [
+    const alternateIds = {
 
-        "resultContainer",
-        "results",
-        "listingResult",
-        "generatedListing",
-        "outputSection",
-        "listingOutput",
-        "resultSection",
-        "resultsSection"
+        titleResult: [
+            "generatedTitle",
+            "listingTitle",
+            "resultTitle"
+        ],
 
+        descriptionResult: [
+            "generatedDescription",
+            "listingDescription",
+            "resultDescription"
+        ],
+
+        seoTitleResult: [
+            "generatedSeoTitle",
+            "seoTitle",
+            "resultSeoTitle"
+        ],
+
+        seoDescriptionResult: [
+            "generatedSeoDescription",
+            "seoDescription",
+            "resultSeoDescription"
+        ]
+
+    };
+
+    const ids = [
+        primaryId,
+        ...(alternateIds[primaryId] || [])
     ];
 
-    let shown =
-        false;
+    let element = null;
 
     for (
         const id
-        of containers
+        of ids
     ) {
 
-        const element =
+        element =
             document.getElementById(id);
 
-        if (!element) {
-            continue;
+        if (element) {
+            break;
         }
 
-        element.style.display =
-            "block";
+    }
 
-        element.hidden =
-            false;
+    if (!element) {
 
-        shown =
-            true;
+        element =
+            findOrCreateOutput(
+                primaryId,
+                label,
+                container
+            );
 
     }
 
-    // Scroll to result if found
-    if (shown) {
+    if (
+        "value" in element
+    ) {
 
-        setTimeout(() => {
+        element.value =
+            value || "";
 
-            const firstResult =
-                getElement(
-                    "resultContainer",
-                    "listingResult",
-                    "generatedListing",
-                    "outputSection",
-                    "listingOutput",
-                    "resultSection",
-                    "resultsSection",
-                    "results"
-                );
+    } else {
 
-            if (firstResult) {
+        element.textContent =
+            value || "";
 
-                try {
+    }
 
-                    firstResult.scrollIntoView({
-                        behavior: "smooth",
-                        block: "start"
-                    });
+    element.style.display =
+        "block";
 
-                } catch (error) {
+}
 
-                    firstResult.scrollIntoView();
+
+// ==========================================================
+// SET EXISTING OR CREATE ARRAY
+// ==========================================================
+
+function setExistingOrCreateArray(
+    primaryId,
+    label,
+    values,
+    container
+) {
+
+    const alternateIds = {
+
+        highlightsResult: [
+            "generatedHighlights",
+            "listingHighlights",
+            "resultHighlights"
+        ],
+
+        keywordsResult: [
+            "generatedKeywords",
+            "listingKeywords",
+            "resultKeywords"
+        ],
+
+        hashtagsResult: [
+            "generatedHashtags",
+            "listingHashtags",
+            "resultHashtags"
+        ]
+
+    };
+
+    const ids = [
+        primaryId,
+        ...(alternateIds[primaryId] || [])
+    ];
+
+    let element = null;
+
+    for (
+        const id
+        of ids
+    ) {
+
+        element =
+            document.getElementById(id);
+
+        if (element) {
+            break;
+        }
+
+    }
+
+    if (!element) {
+
+        element =
+            findOrCreateArrayOutput(
+                primaryId,
+                label,
+                values,
+                container
+            );
+
+    } else {
+
+        if (
+            element.tagName ===
+            "TEXTAREA"
+        ) {
+
+            element.value =
+                values.join("\n");
+
+        } else if (
+            element.tagName ===
+            "INPUT"
+        ) {
+
+            element.value =
+                values.join(", ");
+
+        } else {
+
+            element.innerHTML =
+                "";
+
+            values.forEach(
+                value => {
+
+                    const li =
+                        document.createElement("li");
+
+                    li.textContent =
+                        value;
+
+                    element.appendChild(
+                        li
+                    );
 
                 }
+            );
 
-            }
-
-        }, 100);
+        }
 
     }
+
+    element.style.display =
+        "block";
 
 }
 
@@ -2552,28 +2142,22 @@ function getDisplayedValue(ids) {
         }
 
         if (
-            "value" in element
+            "value" in element &&
+            String(element.value).trim()
         ) {
 
-            const value =
-                String(
-                    element.value || ""
-                ).trim();
+            return String(
+                element.value
+            ).trim();
 
-            if (value) {
-                return value;
-            }
+        }
 
-        } else {
+        if (
+            element.textContent &&
+            element.textContent.trim()
+        ) {
 
-            const value =
-                String(
-                    element.textContent || ""
-                ).trim();
-
-            if (value) {
-                return value;
-            }
+            return element.textContent.trim();
 
         }
 
@@ -2618,4 +2202,20 @@ function getListingText() {
         getDisplayedValue([
             "keywordsResult",
             "generatedKeywords",
-            "
+            "listingKeywords",
+            "resultKeywords"
+        ]);
+
+    const hashtags =
+        getDisplayedValue([
+            "hashtagsResult",
+            "generatedHashtags",
+            "listingHashtags",
+            "resultHashtags"
+        ]);
+
+    const seoTitle =
+        getDisplayedValue([
+            "seoTitleResult",
+            "generatedSeoTitle",
+            "seoTitle",
