@@ -3,13 +3,13 @@
 // COMPLETE-LISTING-GENERATOR.JS — FINAL VERSION 7.2
 // ==========================================================
 // Stable Frontend
-// Backend 7.x Compatible
-// Category Aware
-// Strict Response Handling
-// No Fake Success
-// No Duplicate Click
-// Works with onclick HTML
-// Handles multiple Gemini response formats
+// Backend 7.1 Compatible
+// Strict Fact Guard Compatible
+// All Categories Supported
+// Generate Button Fixed
+// Response Parser Fixed
+// Duplicate Event Protection
+// Form Submit Protection
 // ==========================================================
 
 
@@ -35,294 +35,14 @@ const STATUS_ENDPOINT =
 // ==========================================================
 
 let isGenerating = false;
-let categoryData = [];
 let currentCategory = "";
 
 
 // ==========================================================
-// DOM HELPERS
+// CATEGORY LIST
 // ==========================================================
 
-function getElement(...ids) {
-
-    for (const id of ids) {
-
-        if (!id) continue;
-
-        const element =
-            document.getElementById(id);
-
-        if (element) {
-            return element;
-        }
-    }
-
-    return null;
-}
-
-
-function getValue(...ids) {
-
-    const element =
-        getElement(...ids);
-
-    if (!element) {
-        return "";
-    }
-
-    return String(
-        element.value || ""
-    ).trim();
-}
-
-
-function setElementText(
-    element,
-    value
-) {
-
-    if (!element) return;
-
-    const text =
-        value == null
-            ? ""
-            : String(value);
-
-    if ("value" in element) {
-        element.value = text;
-    } else {
-        element.textContent = text;
-    }
-
-}
-
-
-// ==========================================================
-// MESSAGE SYSTEM
-// ==========================================================
-
-function getMessageElement() {
-
-    return getElement(
-        "message",
-        "statusMessage",
-        "formMessage",
-        "errorMessage",
-        "successMessage"
-    );
-
-}
-
-
-function showMessage(
-    message,
-    type = "info"
-) {
-
-    const element =
-        getMessageElement();
-
-    console.log(
-        `[AI SELLER TOOLKIT ${type.toUpperCase()}]`,
-        message
-    );
-
-    if (!element) {
-        return;
-    }
-
-    element.textContent =
-        String(message);
-
-    element.style.display =
-        "block";
-
-    element.className =
-        "message " + type;
-
-}
-
-
-function clearMessage() {
-
-    const element =
-        getMessageElement();
-
-    if (!element) {
-        return;
-    }
-
-    element.textContent =
-        "";
-
-    element.style.display =
-        "none";
-
-}
-
-
-// ==========================================================
-// CATEGORY NORMALIZER
-// ==========================================================
-
-function normalizeCategory(category) {
-
-    if (!category) {
-        return "";
-    }
-
-    let value =
-        String(category)
-            .trim();
-
-    // Remove emoji from beginning
-    value =
-        value.replace(
-            /^[\p{Extended_Pictographic}\p{Emoji_Presentation}\s]+/u,
-            ""
-        )
-        .trim();
-
-    const lower =
-        value.toLowerCase();
-
-    const aliases = {
-
-        "fashion":
-            "Fashion",
-
-        "fashion & clothing":
-            "Fashion",
-
-        "fashion and clothing":
-            "Fashion",
-
-        "clothing":
-            "Fashion",
-
-        "apparel":
-            "Fashion",
-
-        "beauty":
-            "Beauty",
-
-        "personal care":
-            "Beauty",
-
-        "personal-care":
-            "Beauty",
-
-        "electronics":
-            "Electronics",
-
-        "electronic":
-            "Electronics",
-
-        "home":
-            "Home & Kitchen",
-
-        "kitchen":
-            "Home & Kitchen",
-
-        "home kitchen":
-            "Home & Kitchen",
-
-        "home & kitchen":
-            "Home & Kitchen",
-
-        "home and kitchen":
-            "Home & Kitchen",
-
-        "shoes":
-            "Shoes",
-
-        "shoe":
-            "Shoes",
-
-        "footwear":
-            "Shoes",
-
-        "jewellery":
-            "Jewellery",
-
-        "jewelry":
-            "Jewellery",
-
-        "toys":
-            "Toys",
-
-        "toy":
-            "Toys",
-
-        "books":
-            "Books",
-
-        "book":
-            "Books",
-
-        "pet":
-            "Pet",
-
-        "pets":
-            "Pet",
-
-        "sports":
-            "Sports",
-
-        "sport":
-            "Sports",
-
-        "fitness":
-            "Sports",
-
-        "automotive":
-            "Automotive",
-
-        "automobile":
-            "Automotive",
-
-        "car accessories":
-            "Automotive",
-
-        "vehicle accessories":
-            "Automotive",
-
-        "garden":
-            "Garden",
-
-        "gardening":
-            "Garden",
-
-        "food":
-            "Food",
-
-        "foods":
-            "Food",
-
-        "grocery":
-            "Food",
-
-        "gifts":
-            "Gifts",
-
-        "gift":
-            "Gifts"
-
-    };
-
-    return (
-        aliases[lower] ||
-        value
-    );
-
-}
-
-
-// ==========================================================
-// SUPPORTED CATEGORIES
-// ==========================================================
-
-const SUPPORTED_CATEGORIES = [
+const CATEGORIES = [
 
     "Fashion",
     "Beauty",
@@ -487,52 +207,200 @@ const CATEGORY_FIELDS = {
 
 
 // ==========================================================
+// DOM HELPER
+// ==========================================================
+
+function $(id) {
+
+    return document.getElementById(id);
+
+}
+
+
+function firstElement(ids) {
+
+    for (const id of ids) {
+
+        const el = $(id);
+
+        if (el) {
+            return el;
+        }
+
+    }
+
+    return null;
+
+}
+
+
+function getValue(ids) {
+
+    const el = firstElement(ids);
+
+    if (!el) {
+        return "";
+    }
+
+    return String(el.value || "").trim();
+
+}
+
+
+// ==========================================================
+// MESSAGE
+// ==========================================================
+
+function getMessageElement() {
+
+    return firstElement([
+
+        "message",
+        "statusMessage",
+        "formMessage",
+        "errorMessage",
+        "successMessage"
+
+    ]);
+
+}
+
+
+function showMessage(text, type = "info") {
+
+    const el = getMessageElement();
+
+    if (!el) {
+
+        if (type === "error") {
+            console.error(text);
+        } else {
+            console.log(text);
+        }
+
+        return;
+
+    }
+
+    el.textContent = text;
+
+    el.style.display = "block";
+
+    el.className =
+        "message " + type;
+
+}
+
+
+function clearMessage() {
+
+    const el = getMessageElement();
+
+    if (!el) {
+        return;
+    }
+
+    el.textContent = "";
+
+    el.style.display = "none";
+
+}
+
+
+// ==========================================================
 // CATEGORY SELECT
 // ==========================================================
 
 function getCategoryElement() {
 
-    return getElement(
+    return firstElement([
+
         "category",
         "productCategory",
         "categorySelect",
         "product-category",
         "productCategorySelect"
-    );
+
+    ]);
 
 }
 
 
-function getSelectedCategory() {
+function normalizeCategory(value) {
 
-    const element =
-        getCategoryElement();
-
-    if (!element) {
+    if (!value) {
         return "";
     }
 
-    return normalizeCategory(
-        element.value
-    );
+    let text =
+        String(value)
+            .trim()
+            .replace(
+                /^[\p{Extended_Pictographic}\p{Emoji_Presentation}\s]+/u,
+                ""
+            )
+            .trim();
 
-}
+    const lower =
+        text.toLowerCase();
 
+    const map = {
 
-// ==========================================================
-// DYNAMIC CATEGORY CONTAINER
-// ==========================================================
+        "fashion": "Fashion",
+        "fashion & clothing": "Fashion",
+        "fashion and clothing": "Fashion",
+        "clothing": "Fashion",
+        "apparel": "Fashion",
 
-function getCategoryContainer() {
+        "beauty": "Beauty",
+        "personal care": "Beauty",
+        "personal-care": "Beauty",
 
-    return getElement(
-        "categoryFields",
-        "dynamicFields",
-        "categorySpecificFields",
-        "categoryFieldsContainer",
-        "dynamic-category-fields",
-        "additionalFields"
-    );
+        "electronics": "Electronics",
+        "electronic": "Electronics",
+
+        "home": "Home & Kitchen",
+        "kitchen": "Home & Kitchen",
+        "home kitchen": "Home & Kitchen",
+        "home & kitchen": "Home & Kitchen",
+        "home and kitchen": "Home & Kitchen",
+
+        "shoe": "Shoes",
+        "shoes": "Shoes",
+        "footwear": "Shoes",
+
+        "jewellery": "Jewellery",
+        "jewelry": "Jewellery",
+
+        "toy": "Toys",
+        "toys": "Toys",
+
+        "book": "Books",
+        "books": "Books",
+
+        "pet": "Pet",
+        "pets": "Pet",
+
+        "sport": "Sports",
+        "sports": "Sports",
+        "fitness": "Sports",
+
+        "automotive": "Automotive",
+        "automobile": "Automotive",
+
+        "garden": "Garden",
+        "gardening": "Garden",
+
+        "food": "Food",
+        "foods": "Food",
+        "grocery": "Food",
+
+        "gift": "Gifts",
+        "gifts": "Gifts"
+
+    };
+
+    return map[lower] || text;
 
 }
 
@@ -541,10 +409,26 @@ function getCategoryContainer() {
 // RENDER CATEGORY FIELDS
 // ==========================================================
 
+function getDynamicContainer() {
+
+    return firstElement([
+
+        "categoryFields",
+        "dynamicFields",
+        "categorySpecificFields",
+        "categoryFieldsContainer",
+        "dynamic-category-fields",
+        "additionalFields"
+
+    ]);
+
+}
+
+
 function renderCategoryFields(category) {
 
     const container =
-        getCategoryContainer();
+        getDynamicContainer();
 
     if (!container) {
         return;
@@ -565,9 +449,7 @@ function renderCategoryFields(category) {
     heading.textContent =
         category + " Product Information";
 
-    container.appendChild(
-        heading
-    );
+    container.appendChild(heading);
 
     const grid =
         document.createElement("div");
@@ -575,62 +457,48 @@ function renderCategoryFields(category) {
     grid.className =
         "category-fields-grid";
 
-    fields.forEach(
-        ([name, label]) => {
+    fields.forEach(function(field) {
 
-            const wrapper =
-                document.createElement("div");
+        const name = field[0];
+        const label = field[1];
 
-            wrapper.className =
-                "category-field";
+        const wrapper =
+            document.createElement("div");
 
-            const labelElement =
-                document.createElement("label");
+        wrapper.className =
+            "category-field";
 
-            labelElement.textContent =
-                label;
+        const labelEl =
+            document.createElement("label");
 
-            labelElement.htmlFor =
-                "field-" + name;
+        labelEl.textContent =
+            label;
 
-            const input =
-                document.createElement("input");
+        labelEl.htmlFor =
+            "field-" + name;
 
-            input.type =
-                "text";
+        const input =
+            document.createElement("input");
 
-            input.id =
-                "field-" + name;
+        input.type = "text";
 
-            input.name =
-                name;
+        input.id =
+            "field-" + name;
 
-            input.placeholder =
-                "Enter " +
-                label +
-                " if known";
+        input.name = name;
 
-            input.autocomplete =
-                "off";
+        input.placeholder =
+            "Enter " + label + " if known";
 
-            wrapper.appendChild(
-                labelElement
-            );
+        wrapper.appendChild(labelEl);
 
-            wrapper.appendChild(
-                input
-            );
+        wrapper.appendChild(input);
 
-            grid.appendChild(
-                wrapper
-            );
+        grid.appendChild(wrapper);
 
-        }
-    );
+    });
 
-    container.appendChild(
-        grid
-    );
+    container.appendChild(grid);
 
 }
 
@@ -641,14 +509,18 @@ function renderCategoryFields(category) {
 
 function handleCategoryChange() {
 
-    const category =
-        getSelectedCategory();
+    const select =
+        getCategoryElement();
+
+    if (!select) {
+        return;
+    }
 
     currentCategory =
-        category;
+        normalizeCategory(select.value);
 
     renderCategoryFields(
-        category
+        currentCategory
     );
 
 }
@@ -681,43 +553,48 @@ async function loadCategories() {
                 }
             );
 
+        if (!response.ok) {
+            throw new Error(
+                "Category server error: " +
+                response.status
+            );
+        }
+
         const data =
             await response.json();
 
         if (
-            !response.ok ||
             !data ||
-            !Array.isArray(
-                data.categories
-            )
+            !Array.isArray(data.categories)
         ) {
+
             throw new Error(
                 "Invalid categories response"
             );
+
         }
 
-        categoryData =
-            data.categories;
-
-        populateCategorySelect(
+        fillCategories(
             select,
-            categoryData
+            data.categories
         );
 
     } catch (error) {
 
         console.warn(
-            "[CATEGORY API FALLBACK]",
+            "Using local categories.",
             error
         );
 
-        populateCategorySelect(
+        fillCategories(
             select,
-            SUPPORTED_CATEGORIES.map(
-                name => ({
-                    name
-                })
-            )
+            CATEGORIES.map(function(name) {
+
+                return {
+                    name: name
+                };
+
+            })
         );
 
     }
@@ -725,23 +602,10 @@ async function loadCategories() {
 }
 
 
-// ==========================================================
-// POPULATE CATEGORY SELECT
-// ==========================================================
+function fillCategories(select, categories) {
 
-function populateCategorySelect(
-    select,
-    categories
-) {
-
-    if (!select) {
-        return;
-    }
-
-    const previous =
-        normalizeCategory(
-            select.value
-        );
+    const oldValue =
+        normalizeCategory(select.value);
 
     select.innerHTML = "";
 
@@ -753,67 +617,50 @@ function populateCategorySelect(
     placeholder.textContent =
         "Select Product Category";
 
-    select.appendChild(
-        placeholder
-    );
+    select.appendChild(placeholder);
 
-    categories.forEach(
-        item => {
+    categories.forEach(function(item) {
 
-            const name =
-                typeof item === "string"
-                    ? item
-                    : item &&
-                      item.name;
+        const name =
+            typeof item === "string"
+                ? item
+                : item.name;
 
-            if (!name) {
-                return;
-            }
-
-            const normalized =
-                normalizeCategory(
-                    name
-                );
-
-            if (
-                !SUPPORTED_CATEGORIES.includes(
-                    normalized
-                )
-            ) {
-                return;
-            }
-
-            const option =
-                document.createElement("option");
-
-            option.value =
-                normalized;
-
-            option.textContent =
-                normalized;
-
-            select.appendChild(
-                option
-            );
-
+        if (!name) {
+            return;
         }
-    );
-
-    if (previous) {
 
         const option =
-            Array.from(
-                select.options
-            ).find(
-                item =>
-                    normalizeCategory(
-                        item.value
-                    ) === previous
-            );
+            document.createElement("option");
 
-        if (option) {
-            select.value =
-                option.value;
+        option.value = name;
+
+        option.textContent = name;
+
+        select.appendChild(option);
+
+    });
+
+    if (oldValue) {
+
+        for (
+            const option
+            of select.options
+        ) {
+
+            if (
+                normalizeCategory(
+                    option.value
+                ) === oldValue
+            ) {
+
+                select.value =
+                    option.value;
+
+                break;
+
+            }
+
         }
 
     }
@@ -827,42 +674,37 @@ function populateCategorySelect(
 // COLLECT CATEGORY FIELDS
 // ==========================================================
 
-function collectCategoryFields(
-    category
-) {
+function collectFields(category) {
 
     const result = {};
 
-    const definitions =
-        CATEGORY_FIELDS[
-            category
-        ] || [];
+    const fields =
+        CATEGORY_FIELDS[category] || [];
 
-    definitions.forEach(
-        ([name]) => {
+    fields.forEach(function(field) {
 
-            const input =
-                getElement(
-                    "field-" + name,
-                    name
-                );
+        const name = field[0];
 
-            if (!input) {
-                return;
-            }
+        const input =
+            firstElement([
+                "field-" + name,
+                name
+            ]);
 
-            const value =
-                String(
-                    input.value || ""
-                ).trim();
-
-            if (value) {
-                result[name] =
-                    value;
-            }
-
+        if (!input) {
+            return;
         }
-    );
+
+        const value =
+            String(
+                input.value || ""
+            ).trim();
+
+        if (value) {
+            result[name] = value;
+        }
+
+    });
 
     return result;
 
@@ -870,86 +712,84 @@ function collectCategoryFields(
 
 
 // ==========================================================
-// COLLECT PRODUCT DATA
+// COLLECT PRODUCT
 // ==========================================================
 
 function collectProductData() {
 
+    const categoryElement =
+        getCategoryElement();
+
     const category =
-        getSelectedCategory();
+        categoryElement
+            ? normalizeCategory(
+                categoryElement.value
+            )
+            : "";
 
-    const productName =
-        getValue(
-            "productName",
-            "product_name",
-            "name"
-        );
+    const product = {
 
-    const brand =
-        getValue(
-            "brand",
-            "brandName",
-            "productBrand"
-        );
+        category: category,
 
-    const price =
-        getValue(
-            "price",
-            "productPrice",
-            "product_price"
-        );
+        productName:
+            getValue([
+                "productName",
+                "product_name",
+                "name"
+            ]),
 
-    const productFeatures =
-        getValue(
-            "productFeatures",
-            "features",
-            "product_features",
-            "featuresText"
-        );
+        brand:
+            getValue([
+                "brand",
+                "brandName",
+                "productBrand"
+            ]),
 
-    const extraProductInformation =
-        getValue(
-            "extraProductInformation",
-            "extraInfo",
-            "productDetails",
-            "productDetailsExtra",
-            "additionalInformation",
-            "additionalInfo"
-        );
+        price:
+            getValue([
+                "price",
+                "productPrice",
+                "product_price"
+            ]),
 
-    const categoryFields =
-        collectCategoryFields(
-            category
-        );
+        productFeatures:
+            getValue([
+                "productFeatures",
+                "features",
+                "product_features",
+                "featuresText"
+            ]),
 
-    return {
-
-        category,
-
-        productName,
-
-        brand,
-
-        price,
-
-        productFeatures,
-
-        extraProductInformation,
-
-        ...categoryFields
+        extraProductInformation:
+            getValue([
+                "extraProductInformation",
+                "extraInfo",
+                "productDetails",
+                "productDetailsExtra",
+                "additionalInformation",
+                "additionalInfo"
+            ])
 
     };
+
+    const categoryFields =
+        collectFields(category);
+
+    Object.assign(
+        product,
+        categoryFields
+    );
+
+    return product;
 
 }
 
 
 // ==========================================================
-// VALIDATION
+// VALIDATE
 // ==========================================================
 
-function validateProductData(
-    product
-) {
+function validateProduct(product) {
 
     if (!product.category) {
 
@@ -962,7 +802,7 @@ function validateProductData(
     }
 
     if (
-        !SUPPORTED_CATEGORIES.includes(
+        !CATEGORIES.includes(
             product.category
         )
     ) {
@@ -996,116 +836,27 @@ function validateProductData(
 // BUILD PAYLOAD
 // ==========================================================
 
-function buildPayload(
-    product
-) {
+function buildPayload(product) {
 
-    const payload = {
+    const payload = {};
 
-        category:
-            product.category,
+    Object.keys(product).forEach(function(key) {
 
-        productName:
-            product.productName,
+        const value =
+            product[key];
 
-        brand:
-            product.brand,
+        if (
+            value !== undefined &&
+            value !== null &&
+            String(value).trim() !== ""
+        ) {
 
-        price:
-            product.price,
-
-        productFeatures:
-            product.productFeatures,
-
-        extraProductInformation:
-            product.extraProductInformation
-
-    };
-
-    const fields = [
-
-        "material",
-        "fabric",
-        "fabricMaterial",
-
-        "color",
-        "size",
-        "pattern",
-        "fit",
-        "occasion",
-        "quantity",
-
-        "formTexture",
-        "variant",
-        "ingredients",
-        "skinType",
-        "hairType",
-        "fragrance",
-
-        "model",
-        "storage",
-        "ram",
-        "battery",
-        "connectivity",
-        "compatibility",
-        "warranty",
-
-        "sizeDimensions",
-        "capacity",
-        "usage",
-
-        "design",
-        "stone",
-
-        "ageGroup",
-        "productType",
-
-        "author",
-        "language",
-        "format",
-        "pages",
-        "publisher",
-        "edition",
-        "isbn",
-
-        "petType",
-        "flavour",
-
-        "sportType",
-
-        "vehicleCompatibility",
-        "dimensions",
-
-        "plantCompatibility",
-
-        "dietaryInformation",
-
-        "giftType"
-
-    ];
-
-    fields.forEach(
-        field => {
-
-            if (
-                product[field] !== undefined &&
-                product[field] !== null
-            ) {
-
-                const value =
-                    String(
-                        product[field]
-                    ).trim();
-
-                if (value) {
-                    payload[field] =
-                        value;
-                }
-
-            }
+            payload[key] =
+                String(value).trim();
 
         }
-    );
+
+    });
 
     return payload;
 
@@ -1116,240 +867,120 @@ function buildPayload(
 // BUTTON STATE
 // ==========================================================
 
-function setGeneratingState(
-    state
-) {
+function setButtonState(disabled) {
 
-    isGenerating =
-        Boolean(state);
+    const buttons = [
 
-    const ids = [
-
-        "generateListingBtn",
-        "generateCompleteListing",
-        "generateBtn",
-        "generateButton"
+        $("generateListingBtn"),
+        $("generateCompleteListing"),
+        $("generateBtn"),
+        $("generateButton")
 
     ];
 
-    ids.forEach(
-        id => {
+    buttons.forEach(function(button) {
 
-            const button =
-                document.getElementById(id);
+        if (!button) {
+            return;
+        }
 
-            if (!button) {
-                return;
-            }
+        if (!button.dataset.originalText) {
 
-            button.disabled =
-                isGenerating;
-
-            if (
-                isGenerating
-            ) {
-
-                if (
-                    !button.dataset.originalText
-                ) {
-
-                    button.dataset.originalText =
-                        button.textContent;
-
-                }
-
-                button.textContent =
-                    "Generating...";
-
-            } else {
-
-                button.textContent =
-                    button.dataset.originalText ||
-                    "Generate Complete Listing";
-
-            }
+            button.dataset.originalText =
+                button.textContent;
 
         }
-    );
+
+        button.disabled =
+            disabled;
+
+        button.textContent =
+            disabled
+                ? "Generating..."
+                : button.dataset.originalText;
+
+    });
 
 }
 
 
 // ==========================================================
-// SERVER REQUEST
+// API REQUEST
 // ==========================================================
 
-async function generateListingFromServer(
-    payload
-) {
+async function requestListing(payload) {
 
     console.log(
-        "[GENERATE REQUEST]",
+        "Sending listing request:",
         payload
     );
 
-    let response;
+    const response =
+        await fetch(
+            GENERATE_ENDPOINT,
+            {
+                method: "POST",
 
-    try {
+                headers: {
+                    "Content-Type":
+                        "application/json",
 
-        response =
-            await fetch(
-                GENERATE_ENDPOINT,
-                {
-                    method: "POST",
+                    "Accept":
+                        "application/json"
+                },
 
-                    headers: {
-                        "Content-Type":
-                            "application/json",
-
-                        "Accept":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify(
-                            payload
-                        )
-                }
-            );
-
-    } catch (networkError) {
-
-        throw new Error(
-            "Cannot connect to the AI Seller Toolkit server. Please try again."
+                body:
+                    JSON.stringify(payload)
+            }
         );
-
-    }
 
     const rawText =
         await response.text();
 
     console.log(
-        "[SERVER STATUS]",
-        response.status
-    );
-
-    console.log(
-        "[SERVER RAW RESPONSE]",
+        "Backend response:",
         rawText
     );
 
-    let data = null;
+    let data;
 
     try {
 
         data =
-            JSON.parse(
-                rawText
-            );
+            JSON.parse(rawText);
 
-    } catch (parseError) {
+    } catch (error) {
 
         throw new Error(
-            "Server returned an invalid response."
+            "Backend returned invalid JSON."
         );
 
     }
 
-    console.log(
-        "[SERVER JSON]",
-        data
-    );
-
     if (!response.ok) {
 
         throw new Error(
-            data &&
-            data.error
-                ? data.error
-                : "Server error " +
-                  response.status
+            data.error ||
+            data.message ||
+            "Server error " +
+            response.status
         );
 
     }
 
     if (
-        !data ||
         data.success !== true
     ) {
 
         throw new Error(
-            data &&
-            data.error
-                ? data.error
-                : "Listing generation failed."
+            data.error ||
+            data.message ||
+            "Listing generation failed."
         );
 
     }
 
     return data;
-
-}
-
-
-// ==========================================================
-// TEXT CLEANER
-// ==========================================================
-
-function cleanText(value) {
-
-    if (
-        value === undefined ||
-        value === null
-    ) {
-        return "";
-    }
-
-    if (
-        typeof value === "string"
-    ) {
-        return value.trim();
-    }
-
-    return String(value).trim();
-
-}
-
-
-// ==========================================================
-// ARRAY NORMALIZER
-// ==========================================================
-
-function normalizeArray(value) {
-
-    if (
-        Array.isArray(value)
-    ) {
-
-        return value
-            .map(
-                item =>
-                    cleanText(item)
-            )
-            .filter(Boolean);
-
-    }
-
-    if (
-        typeof value === "string"
-    ) {
-
-        return value
-            .split(/\r?\n|,/)
-            .map(
-                item =>
-                    item
-                        .replace(
-                            /^\s*[-•*]\s*/,
-                            ""
-                        )
-                        .trim()
-            )
-            .filter(Boolean);
-
-    }
-
-    return [];
 
 }
 
@@ -1361,496 +992,148 @@ function normalizeArray(value) {
 function extractListing(data) {
 
     console.log(
-        "[EXTRACT LISTING INPUT]",
+        "Parsing listing:",
         data
     );
 
-    // ------------------------------------------------------
-    // Possible listing locations
-    // ------------------------------------------------------
-
-    let source = data;
+    let source =
+        data.listing;
 
     if (
-        data &&
-        data.listing &&
-        typeof data.listing === "object"
+        !source ||
+        typeof source !== "object"
     ) {
 
-        source =
-            data.listing;
-
-    } else if (
-        data &&
-        data.result &&
-        typeof data.result === "object"
-    ) {
-
-        source =
-            data.result;
-
-    } else if (
-        data &&
-        data.data &&
-        typeof data.data === "object"
-    ) {
-
-        source =
-            data.data;
+        source = data;
 
     }
 
-    // ------------------------------------------------------
-    // Helper for multiple key names
-    // ------------------------------------------------------
-
-    function pick(...keys) {
-
-        for (
-            const key
-            of keys
-        ) {
-
-            if (
-                source &&
-                source[key] !== undefined &&
-                source[key] !== null &&
-                String(
-                    source[key]
-                ).trim()
-            ) {
-
-                return source[key];
-
-            }
-
-            if (
-                data &&
-                data[key] !== undefined &&
-                data[key] !== null &&
-                String(
-                    data[key]
-                ).trim()
-            ) {
-
-                return data[key];
-
-            }
-
-        }
-
-        return "";
-
-    }
-
-    const listing = {
+    return {
 
         title:
-            cleanText(
-                pick(
-                    "title",
-                    "TITLE",
-                    "productTitle",
-                    "PRODUCT TITLE"
-                )
-            ),
+            source.title ||
+            source.TITLE ||
+            "",
 
         description:
-            cleanText(
-                pick(
-                    "description",
-                    "DESCRIPTION",
-                    "productDescription",
-                    "PRODUCT DESCRIPTION"
-                )
-            ),
+            source.description ||
+            source.DESCRIPTION ||
+            "",
 
         highlights:
-            normalizeArray(
-                pick(
-                    "highlights",
-                    "HIGHLIGHTS",
-                    "keyFeatures",
-                    "features"
-                )
+            toArray(
+                source.highlights ||
+                source.HIGHLIGHTS
             ),
 
         keywords:
-            normalizeArray(
-                pick(
-                    "keywords",
-                    "KEYWORDS",
-                    "seoKeywords",
-                    "SEO KEYWORDS"
-                )
+            toArray(
+                source.keywords ||
+                source.KEYWORDS
             ),
 
         hashtags:
-            normalizeArray(
-                pick(
-                    "hashtags",
-                    "HASHTAGS"
-                )
+            toArray(
+                source.hashtags ||
+                source.HASHTAGS
             ),
 
         seoTitle:
-            cleanText(
-                pick(
-                    "seoTitle",
-                    "SEO TITLE",
-                    "seo_title"
-                )
-            ),
+            source.seoTitle ||
+            source["SEO TITLE"] ||
+            source.seo_title ||
+            "",
 
         seoDescription:
-            cleanText(
-                pick(
-                    "seoDescription",
-                    "SEO DESCRIPTION",
-                    "seo_description"
-                )
-            )
+            source.seoDescription ||
+            source["SEO DESCRIPTION"] ||
+            source.seo_description ||
+            ""
 
     };
-
-    // ------------------------------------------------------
-    // If server returns JSON as string
-    // ------------------------------------------------------
-
-    if (
-        !listing.title &&
-        typeof source === "string"
-    ) {
-
-        try {
-
-            const parsed =
-                JSON.parse(
-                    source
-                );
-
-            return extractListing(
-                {
-                    ...data,
-                    listing:
-                        parsed
-                }
-            );
-
-        } catch (error) {
-
-            // Not JSON.
-            // Try plain text parser below.
-
-        }
-
-    }
-
-    // ------------------------------------------------------
-    // Plain text fallback
-    // ------------------------------------------------------
-
-    if (
-        !listing.title
-    ) {
-
-        const possibleText =
-            pick(
-                "text",
-                "output",
-                "content",
-                "response",
-                "generatedText"
-            );
-
-        if (
-            possibleText &&
-            typeof possibleText === "string"
-        ) {
-
-            const parsed =
-                parseListingText(
-                    possibleText
-                );
-
-            if (parsed.title) {
-                return parsed;
-            }
-
-        }
-
-    }
-
-    console.log(
-        "[EXTRACTED LISTING]",
-        listing
-    );
-
-    return listing;
 
 }
 
 
 // ==========================================================
-// PARSE PLAIN TEXT LISTING
+// ARRAY CONVERTER
 // ==========================================================
 
-function parseListingText(
-    text
-) {
+function toArray(value) {
 
-    const result = {
+    if (Array.isArray(value)) {
 
-        title: "",
-        description: "",
-        highlights: [],
-        keywords: [],
-        hashtags: [],
-        seoTitle: "",
-        seoDescription: ""
+        return value
+            .map(function(item) {
 
-    };
+                return String(item).trim();
 
-    if (!text) {
-        return result;
+            })
+            .filter(Boolean);
+
     }
 
-    const lines =
-        String(text)
-            .split(/\r?\n/);
+    if (typeof value === "string") {
 
-    let section = "";
+        return value
+            .split(/\n|,/)
+            .map(function(item) {
 
-    lines.forEach(
-        rawLine => {
-
-            const line =
-                rawLine.trim();
-
-            if (!line) {
-                return;
-            }
-
-            const upper =
-                line
+                return item
                     .replace(
-                        /[*#:_-]/g,
-                        " "
+                        /^[-•*]\s*/,
+                        ""
                     )
-                    .trim()
-                    .toUpperCase();
+                    .trim();
 
-            if (
-                upper === "TITLE"
-            ) {
-
-                section =
-                    "title";
-
-                return;
-
-            }
-
-            if (
-                upper === "DESCRIPTION"
-            ) {
-
-                section =
-                    "description";
-
-                return;
-
-            }
-
-            if (
-                upper === "HIGHLIGHTS"
-            ) {
-
-                section =
-                    "highlights";
-
-                return;
-
-            }
-
-            if (
-                upper === "KEYWORDS"
-            ) {
-
-                section =
-                    "keywords";
-
-                return;
-
-            }
-
-            if (
-                upper === "HASHTAGS"
-            ) {
-
-                section =
-                    "hashtags";
-
-                return;
-
-            }
-
-            if (
-                upper === "SEO TITLE"
-            ) {
-
-                section =
-                    "seoTitle";
-
-                return;
-
-            }
-
-            if (
-                upper === "SEO DESCRIPTION"
-            ) {
-
-                section =
-                    "seoDescription";
-
-                return;
-
-            }
-
-            const cleaned =
-                line.replace(
-                    /^\s*[-•*]\s*/,
-                    ""
-                );
-
-            if (
-                section === "title"
-            ) {
-
-                if (!result.title) {
-                    result.title =
-                        cleaned;
-                }
-
-            } else if (
-                section === "description"
-            ) {
-
-                result.description +=
-                    (
-                        result.description
-                            ? " "
-                            : ""
-                    ) +
-                    cleaned;
-
-            } else if (
-                section === "highlights"
-            ) {
-
-                result.highlights.push(
-                    cleaned
-                );
-
-            } else if (
-                section === "keywords"
-            ) {
-
-                result.keywords.push(
-                    cleaned
-                );
-
-            } else if (
-                section === "hashtags"
-            ) {
-
-                result.hashtags.push(
-                    cleaned
-                );
-
-            } else if (
-                section === "seoTitle"
-            ) {
-
-                result.seoTitle +=
-                    (
-                        result.seoTitle
-                            ? " "
-                            : ""
-                    ) +
-                    cleaned;
-
-            } else if (
-                section === "seoDescription"
-            ) {
-
-                result.seoDescription +=
-                    (
-                        result.seoDescription
-                            ? " "
-                            : ""
-                    ) +
-                    cleaned;
-
-            }
-
-        }
-    );
-
-    return result;
-
-}
-
-
-// ==========================================================
-// FIND OUTPUT ELEMENT
-// ==========================================================
-
-function findOutputElement(
-    ids
-) {
-
-    for (
-        const id
-        of ids
-    ) {
-
-        const element =
-            document.getElementById(id);
-
-        if (element) {
-            return element;
-        }
+            })
+            .filter(Boolean);
 
     }
 
-    return null;
+    return [];
 
 }
 
 
 // ==========================================================
-// DISPLAY VALUE
+// FIND OUTPUT
 // ==========================================================
 
-function displayValue(
-    value,
-    ids
-) {
+function findOutput(ids) {
+
+    return firstElement(ids);
+
+}
+
+
+// ==========================================================
+// SET OUTPUT
+// ==========================================================
+
+function setOutput(ids, value) {
 
     const element =
-        findOutputElement(
-            ids
-        );
+        findOutput(ids);
 
     if (!element) {
         return false;
     }
 
-    setElementText(
-        element,
-        value || ""
-    );
+    const text =
+        value || "";
+
+    if (
+        "value" in element
+    ) {
+
+        element.value = text;
+
+    } else {
+
+        element.textContent = text;
+
+    }
 
     element.style.display =
         "block";
@@ -1861,18 +1144,13 @@ function displayValue(
 
 
 // ==========================================================
-// DISPLAY ARRAY
+// SET ARRAY OUTPUT
 // ==========================================================
 
-function displayArray(
-    values,
-    ids
-) {
+function setArrayOutput(ids, values) {
 
     const element =
-        findOutputElement(
-            ids
-        );
+        findOutput(ids);
 
     if (!element) {
         return false;
@@ -1893,26 +1171,19 @@ function displayArray(
 
     } else {
 
-        element.innerHTML =
-            "";
+        element.innerHTML = "";
 
-        array.forEach(
-            item => {
+        array.forEach(function(value) {
 
-                const li =
-                    document.createElement(
-                        "li"
-                    );
+            const li =
+                document.createElement("li");
 
-                li.textContent =
-                    item;
+            li.textContent =
+                value;
 
-                element.appendChild(
-                    li
-                );
+            element.appendChild(li);
 
-            }
-        );
+        });
 
     }
 
@@ -1925,100 +1196,82 @@ function displayArray(
 
 
 // ==========================================================
-// DISPLAY COMPLETE LISTING
+// DISPLAY LISTING
 // ==========================================================
 
-function displayListing(
-    listing
-) {
+function displayListing(listing) {
 
-    console.log(
-        "[DISPLAY LISTING]",
-        listing
-    );
-
-    displayValue(
-        listing.title,
+    setOutput(
         [
             "titleResult",
             "generatedTitle",
             "listingTitle",
             "resultTitle"
-        ]
+        ],
+        listing.title
     );
 
-    displayValue(
-        listing.description,
+    setOutput(
         [
             "descriptionResult",
             "generatedDescription",
             "listingDescription",
             "resultDescription"
-        ]
+        ],
+        listing.description
     );
 
-    displayArray(
-        listing.highlights,
+    setArrayOutput(
         [
             "highlightsResult",
             "generatedHighlights",
             "listingHighlights",
             "resultHighlights"
-        ]
+        ],
+        listing.highlights
     );
 
-    displayArray(
-        listing.keywords,
+    setArrayOutput(
         [
             "keywordsResult",
             "generatedKeywords",
             "listingKeywords",
             "resultKeywords"
-        ]
+        ],
+        listing.keywords
     );
 
-    displayArray(
-        listing.hashtags,
+    setArrayOutput(
         [
             "hashtagsResult",
             "generatedHashtags",
             "listingHashtags",
             "resultHashtags"
-        ]
+        ],
+        listing.hashtags
     );
 
-    displayValue(
-        listing.seoTitle,
+    setOutput(
         [
             "seoTitleResult",
             "generatedSeoTitle",
             "seoTitle",
             "resultSeoTitle"
-        ]
+        ],
+        listing.seoTitle
     );
 
-    displayValue(
-        listing.seoDescription,
+    setOutput(
         [
             "seoDescriptionResult",
             "generatedSeoDescription",
             "seoDescription",
             "resultSeoDescription"
-        ]
+        ],
+        listing.seoDescription
     );
 
-    showResultContainer();
-
-}
-
-
-// ==========================================================
-// SHOW RESULT CONTAINER
-// ==========================================================
-
-function showResultContainer() {
-
-    const ids = [
+    const containers = [
 
         "resultContainer",
         "results",
@@ -2029,134 +1282,265 @@ function showResultContainer() {
 
     ];
 
-    ids.forEach(
-        id => {
+    containers.forEach(function(id) {
 
-            const element =
-                document.getElementById(id);
+        const el = $(id);
 
-            if (element) {
+        if (el) {
 
-                element.style.display =
-                    "block";
-
-            }
+            el.style.display =
+                "block";
 
         }
-    );
+
+    });
 
 }
 
 
 // ==========================================================
-// GET DISPLAYED VALUE
+// MAIN GENERATE FUNCTION
 // ==========================================================
 
-function getDisplayedValue(
-    ids
-) {
+async function generateCompleteListing(event) {
 
-    const element =
-        findOutputElement(
-            ids
+    if (event) {
+        event.preventDefault();
+    }
+
+    if (isGenerating) {
+        return;
+    }
+
+    clearMessage();
+
+    const product =
+        collectProductData();
+
+    console.log(
+        "Collected product:",
+        product
+    );
+
+    const validation =
+        validateProduct(product);
+
+    if (!validation.valid) {
+
+        showMessage(
+            validation.message,
+            "error"
         );
 
-    if (!element) {
+        return;
+
+    }
+
+    const payload =
+        buildPayload(product);
+
+    console.log(
+        "Final API payload:",
+        payload
+    );
+
+    isGenerating = true;
+
+    setButtonState(true);
+
+    showMessage(
+        "Generating your product listing...",
+        "info"
+    );
+
+    try {
+
+        const data =
+            await requestListing(
+                payload
+            );
+
+        console.log(
+            "Successful backend data:",
+            data
+        );
+
+        const listing =
+            extractListing(data);
+
+        if (!listing.title) {
+
+            console.error(
+                "No title found in response:",
+                data
+            );
+
+            throw new Error(
+                "Backend returned success, but no listing data was found."
+            );
+
+        }
+
+        displayListing(
+            listing
+        );
+
+        try {
+
+            localStorage.setItem(
+                "aiSellerToolkitLastListing",
+                JSON.stringify({
+
+                    product:
+                        payload,
+
+                    listing:
+                        listing,
+
+                    source:
+                        data.source ||
+                        null,
+
+                    model:
+                        data.model ||
+                        null,
+
+                    version:
+                        data.version ||
+                        "7.1",
+
+                    generatedAt:
+                        new Date()
+                            .toISOString()
+
+                })
+            );
+
+        } catch (storageError) {
+
+            console.warn(
+                "LocalStorage unavailable:",
+                storageError
+            );
+
+        }
+
+        showMessage(
+            "Listing generated successfully.",
+            "success"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "LISTING GENERATION ERROR:",
+            error
+        );
+
+        showMessage(
+            error.message ||
+            "Unable to generate listing. Please try again.",
+            "error"
+        );
+
+    } finally {
+
+        isGenerating = false;
+
+        setButtonState(false);
+
+    }
+
+}
+
+
+// ==========================================================
+// COPY LISTING
+// ==========================================================
+
+function getText(ids) {
+
+    const el =
+        firstElement(ids);
+
+    if (!el) {
         return "";
     }
 
     if (
-        "value" in element
+        "value" in el
     ) {
 
         return String(
-            element.value || ""
+            el.value || ""
         ).trim();
 
     }
 
     return String(
-        element.textContent || ""
+        el.textContent || ""
     ).trim();
 
 }
 
 
-// ==========================================================
-// GET COMPLETE LISTING TEXT
-// ==========================================================
-
-function getListingText() {
+function getCompleteListingText() {
 
     const title =
-        getDisplayedValue(
-            [
-                "titleResult",
-                "generatedTitle",
-                "listingTitle",
-                "resultTitle"
-            ]
-        );
+        getText([
+            "titleResult",
+            "generatedTitle",
+            "listingTitle",
+            "resultTitle"
+        ]);
 
     const description =
-        getDisplayedValue(
-            [
-                "descriptionResult",
-                "generatedDescription",
-                "listingDescription",
-                "resultDescription"
-            ]
-        );
+        getText([
+            "descriptionResult",
+            "generatedDescription",
+            "listingDescription",
+            "resultDescription"
+        ]);
 
     const highlights =
-        getDisplayedValue(
-            [
-                "highlightsResult",
-                "generatedHighlights",
-                "listingHighlights",
-                "resultHighlights"
-            ]
-        );
+        getText([
+            "highlightsResult",
+            "generatedHighlights",
+            "listingHighlights",
+            "resultHighlights"
+        ]);
 
     const keywords =
-        getDisplayedValue(
-            [
-                "keywordsResult",
-                "generatedKeywords",
-                "listingKeywords",
-                "resultKeywords"
-            ]
-        );
+        getText([
+            "keywordsResult",
+            "generatedKeywords",
+            "listingKeywords",
+            "resultKeywords"
+        ]);
 
     const hashtags =
-        getDisplayedValue(
-            [
-                "hashtagsResult",
-                "generatedHashtags",
-                "listingHashtags",
-                "resultHashtags"
-            ]
-        );
+        getText([
+            "hashtagsResult",
+            "generatedHashtags",
+            "listingHashtags",
+            "resultHashtags"
+        ]);
 
     const seoTitle =
-        getDisplayedValue(
-            [
-                "seoTitleResult",
-                "generatedSeoTitle",
-                "seoTitle",
-                "resultSeoTitle"
-            ]
-        );
+        getText([
+            "seoTitleResult",
+            "generatedSeoTitle",
+            "seoTitle",
+            "resultSeoTitle"
+        ]);
 
     const seoDescription =
-        getDisplayedValue(
-            [
-                "seoDescriptionResult",
-                "generatedSeoDescription",
-                "seoDescription",
-                "resultSeoDescription"
-            ]
-        );
+        getText([
+            "seoDescriptionResult",
+            "generatedSeoDescription",
+            "seoDescription",
+            "resultSeoDescription"
+        ]);
 
     return [
 
@@ -2165,33 +1549,27 @@ function getListingText() {
             : "",
 
         description
-            ? "DESCRIPTION\n" +
-              description
+            ? "DESCRIPTION\n" + description
             : "",
 
         highlights
-            ? "HIGHLIGHTS\n" +
-              highlights
+            ? "HIGHLIGHTS\n" + highlights
             : "",
 
         keywords
-            ? "KEYWORDS\n" +
-              keywords
+            ? "KEYWORDS\n" + keywords
             : "",
 
         hashtags
-            ? "HASHTAGS\n" +
-              hashtags
+            ? "HASHTAGS\n" + hashtags
             : "",
 
         seoTitle
-            ? "SEO TITLE\n" +
-              seoTitle
+            ? "SEO TITLE\n" + seoTitle
             : "",
 
         seoDescription
-            ? "SEO DESCRIPTION\n" +
-              seoDescription
+            ? "SEO DESCRIPTION\n" + seoDescription
             : ""
 
     ]
@@ -2201,14 +1579,14 @@ function getListingText() {
 }
 
 
-// ==========================================================
-// COPY LISTING
-// ==========================================================
+async function copyCompleteListing(event) {
 
-async function copyCompleteListing() {
+    if (event) {
+        event.preventDefault();
+    }
 
     const text =
-        getListingText();
+        getCompleteListingText();
 
     if (!text) {
 
@@ -2218,26 +1596,14 @@ async function copyCompleteListing() {
         );
 
         return;
+
     }
 
     try {
 
-        if (
-            navigator.clipboard &&
-            navigator.clipboard.writeText
-        ) {
-
-            await navigator.clipboard.writeText(
-                text
-            );
-
-        } else {
-
-            throw new Error(
-                "Clipboard API unavailable"
-            );
-
-        }
+        await navigator.clipboard.writeText(
+            text
+        );
 
         showMessage(
             "Listing copied successfully.",
@@ -2247,32 +1613,19 @@ async function copyCompleteListing() {
     } catch (error) {
 
         const textarea =
-            document.createElement(
-                "textarea"
-            );
+            document.createElement("textarea");
 
-        textarea.value =
-            text;
-
-        textarea.style.position =
-            "fixed";
-
-        textarea.style.opacity =
-            "0";
+        textarea.value = text;
 
         document.body.appendChild(
             textarea
         );
 
-        textarea.focus();
-
         textarea.select();
 
         try {
 
-            document.execCommand(
-                "copy"
-            );
+            document.execCommand("copy");
 
             showMessage(
                 "Listing copied successfully.",
@@ -2282,4 +1635,359 @@ async function copyCompleteListing() {
         } catch (copyError) {
 
             showMessage(
-                "
+                "Unable to copy listing.",
+                "error"
+            );
+
+        }
+
+        textarea.remove();
+
+    }
+
+}
+
+
+// ==========================================================
+// SERVER STATUS
+// ==========================================================
+
+async function checkServerStatus() {
+
+    try {
+
+        const response =
+            await fetch(
+                STATUS_ENDPOINT,
+                {
+                    method: "GET",
+                    headers: {
+                        "Accept":
+                            "application/json"
+                    }
+                }
+            );
+
+        if (!response.ok) {
+            throw new Error(
+                "Status HTTP " +
+                response.status
+            );
+        }
+
+        const data =
+            await response.json();
+
+        console.log(
+            "AI Seller Toolkit Backend:",
+            data
+        );
+
+        return data;
+
+    } catch (error) {
+
+        console.warn(
+            "Backend status check failed:",
+            error
+        );
+
+        return null;
+
+    }
+
+}
+
+
+// ==========================================================
+// LOAD LAST LISTING
+// ==========================================================
+
+function loadLastListing() {
+
+    try {
+
+        const saved =
+            localStorage.getItem(
+                "aiSellerToolkitLastListing"
+            );
+
+        if (!saved) {
+            return;
+        }
+
+        const data =
+            JSON.parse(saved);
+
+        if (
+            data &&
+            data.listing &&
+            data.listing.title
+        ) {
+
+            displayListing(
+                data.listing
+            );
+
+        }
+
+    } catch (error) {
+
+        console.warn(
+            "Could not load last listing:",
+            error
+        );
+
+    }
+
+}
+
+
+// ==========================================================
+// BIND GENERATE BUTTON
+// ==========================================================
+
+function bindGenerateButtons() {
+
+    const ids = [
+
+        "generateListingBtn",
+        "generateCompleteListing",
+        "generateBtn",
+        "generateButton"
+
+    ];
+
+    ids.forEach(function(id) {
+
+        const button = $(id);
+
+        if (!button) {
+            return;
+        }
+
+        if (
+            button.dataset.aiSellerBound ===
+            "true"
+        ) {
+            return;
+        }
+
+        button.dataset.aiSellerBound =
+            "true";
+
+        button.addEventListener(
+            "click",
+            generateCompleteListing
+        );
+
+    });
+
+}
+
+
+// ==========================================================
+// BIND COPY BUTTON
+// ==========================================================
+
+function bindCopyButtons() {
+
+    const ids = [
+
+        "copyListingBtn",
+        "copyCompleteListing",
+        "copyButton",
+        "copyListing"
+
+    ];
+
+    ids.forEach(function(id) {
+
+        const button = $(id);
+
+        if (!button) {
+            return;
+        }
+
+        if (
+            button.dataset.aiSellerCopyBound ===
+            "true"
+        ) {
+            return;
+        }
+
+        button.dataset.aiSellerCopyBound =
+            "true";
+
+        button.addEventListener(
+            "click",
+            copyCompleteListing
+        );
+
+    });
+
+}
+
+
+// ==========================================================
+// FORM SUBMIT FIX
+// ==========================================================
+
+function bindFormSubmit() {
+
+    const buttons = [
+
+        "generateListingBtn",
+        "generateCompleteListing",
+        "generateBtn",
+        "generateButton"
+
+    ];
+
+    buttons.forEach(function(id) {
+
+        const button = $(id);
+
+        if (!button) {
+            return;
+        }
+
+        const form =
+            button.closest("form");
+
+        if (!form) {
+            return;
+        }
+
+        if (
+            form.dataset.aiSellerSubmitBound ===
+            "true"
+        ) {
+            return;
+        }
+
+        form.dataset.aiSellerSubmitBound =
+            "true";
+
+        form.addEventListener(
+            "submit",
+            function(event) {
+
+                event.preventDefault();
+
+                generateCompleteListing(
+                    event
+                );
+
+            }
+        );
+
+    });
+
+}
+
+
+// ==========================================================
+// INITIALIZE
+// ==========================================================
+
+async function initialize() {
+
+    console.log(
+        "=================================================="
+    );
+
+    console.log(
+        "AI SELLER TOOLKIT - COMPLETE LISTING GENERATOR 7.2"
+    );
+
+    console.log(
+        "Backend:",
+        API_BASE_URL
+    );
+
+    console.log(
+        "=================================================="
+    );
+
+    const category =
+        getCategoryElement();
+
+    if (category) {
+
+        category.addEventListener(
+            "change",
+            handleCategoryChange
+        );
+
+        if (
+            category.options.length <= 1
+        ) {
+
+            await loadCategories();
+
+        } else {
+
+            handleCategoryChange();
+
+        }
+
+    }
+
+    bindGenerateButtons();
+
+    bindCopyButtons();
+
+    bindFormSubmit();
+
+    await checkServerStatus();
+
+    loadLastListing();
+
+}
+
+
+// ==========================================================
+// AUTO START
+// ==========================================================
+
+if (
+    document.readyState ===
+    "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initialize
+    );
+
+} else {
+
+    initialize();
+
+}
+
+
+// ==========================================================
+// GLOBAL FUNCTIONS
+// ==========================================================
+
+window.generateCompleteListing =
+    generateCompleteListing;
+
+window.generateListing =
+    generateCompleteListing;
+
+window.copyCompleteListing =
+    copyCompleteListing;
+
+window.copyListing =
+    copyCompleteListing;
+
+window.handleCategoryChange =
+    handleCategoryChange;
+
+
+// ==========================================================
+// END — FINAL VERSION 7.2
+// ==========================================================
