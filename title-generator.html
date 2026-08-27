@@ -1,90 +1,284 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="hi">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+    <title>AI Title Generator | AI Seller Toolkit</title>
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
+    <style>
+        * {
+            box-sizing: border-box;
+        }
 
-<title>AI Product Title Generator</title>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #222;
+        }
 
-<link
-    rel="stylesheet"
-    href="style.css"
->
+        .container {
+            width: 100%;
+            max-width: 850px;
+            margin: auto;
+            padding: 20px;
+        }
 
+        .header {
+            background: linear-gradient(135deg, #6c5ce7, #0984e3);
+            color: white;
+            padding: 25px 20px;
+            border-radius: 18px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: 0.95;
+        }
+
+        .card {
+            background: white;
+            border-radius: 18px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.07);
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        select,
+        input,
+        textarea {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+            margin-bottom: 18px;
+        }
+
+        select:focus,
+        input:focus,
+        textarea:focus {
+            border-color: #6c5ce7;
+        }
+
+        textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .category-btn {
+            border: 1px solid #ddd;
+            background: #fff;
+            padding: 13px 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        .category-btn:hover {
+            border-color: #6c5ce7;
+        }
+
+        .category-btn.active {
+            background: #6c5ce7;
+            color: white;
+            border-color: #6c5ce7;
+        }
+
+        .generate-btn {
+            width: 100%;
+            border: none;
+            padding: 15px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #6c5ce7, #0984e3);
+            color: white;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        .status.success {
+            display: block;
+            background: #e9f9ee;
+            color: #16833b;
+        }
+
+        .status.error {
+            display: block;
+            background: #fff0f0;
+            color: #c62828;
+        }
+
+        .result-box {
+            display: none;
+        }
+
+        .result-title {
+            background: #f7f7ff;
+            border: 1px solid #e3e3ff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            font-size: 17px;
+            font-weight: bold;
+        }
+
+        .result-number {
+            color: #6c5ce7;
+            margin-right: 5px;
+        }
+
+        .copy-btn {
+            width: 100%;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            background: #222;
+            color: white;
+            cursor: pointer;
+            font-size: 15px;
+            margin-top: 5px;
+        }
+
+        .api-info {
+            font-size: 13px;
+            color: #666;
+            word-break: break-all;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 12px;
+            }
+
+            .category-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 23px;
+            }
+        }
+    </style>
 </head>
-
 
 <body>
 
+<div class="container">
 
-<header>
-
-    <h1>🤖 AI Seller Toolkit</h1>
-
-    <a href="tools.html">
-        ⬅ Back
-    </a>
-
-</header>
-
-
-<section class="hero">
-
-    <h2>
-        AI Product Title Generator
-    </h2>
-
-    <p>
-        Create High Converting Product Titles with AI
-    </p>
-
-</section>
-
-
-<section class="tools">
+    <div class="header">
+        <h1>✨ AI Title Generator</h1>
+        <p>हर Category के लिए SEO-friendly Product Titles</p>
+    </div>
 
     <div class="card">
 
+        <label>📂 Product Category</label>
 
-        <!-- PRODUCT NAME -->
+        <div class="category-grid">
 
-        <label for="product">
-            Product Name
+            <button class="category-btn active" data-category="Fashion">
+                👗 Fashion
+            </button>
+
+            <button class="category-btn" data-category="Beauty">
+                💄 Beauty
+            </button>
+
+            <button class="category-btn" data-category="Electronics">
+                📱 Electronics
+            </button>
+
+            <button class="category-btn" data-category="Home & Kitchen">
+                🏠 Home & Kitchen
+            </button>
+
+            <button class="category-btn" data-category="Shoes">
+                👟 Shoes
+            </button>
+
+            <button class="category-btn" data-category="Jewellery">
+                💍 Jewellery
+            </button>
+
+            <button class="category-btn" data-category="Toys">
+                🧸 Toys
+            </button>
+
+            <button class="category-btn" data-category="Books">
+                📚 Books
+            </button>
+
+            <button class="category-btn" data-category="Pet">
+                🐶 Pet
+            </button>
+
+            <button class="category-btn" data-category="Sports">
+                🏋️ Sports
+            </button>
+
+            <button class="category-btn" data-category="Automotive">
+                🚗 Automotive
+            </button>
+
+            <button class="category-btn" data-category="Garden">
+                🌱 Garden
+            </button>
+
+            <button class="category-btn" data-category="Food">
+                🍎 Food
+            </button>
+
+            <button class="category-btn" data-category="Gifts">
+                🎁 Gifts
+            </button>
+
+        </div>
+
+        <label for="productName">
+            Product Name *
         </label>
 
         <input
             type="text"
-            id="product"
-            placeholder="Example: Cotton T-Shirt"
+            id="productName"
+            placeholder="जैसे: Cotton Kurti"
         >
-
-
-        <br><br>
-
-
-        <!-- CATEGORY -->
-
-        <label for="category">
-            Category
-        </label>
-
-        <input
-            type="text"
-            id="category"
-            placeholder="Example: Men's Clothing"
-        >
-
-
-        <br><br>
-
-
-        <!-- BRAND -->
 
         <label for="brand">
             Brand
@@ -93,92 +287,493 @@
         <input
             type="text"
             id="brand"
-            placeholder="Example: Fashion Hud"
+            placeholder="जैसे: Test Brand"
         >
 
+        <label for="details">
+            Product Details
+        </label>
 
-        <br><br>
+        <textarea
+            id="details"
+            placeholder="Product के बारे में उपलब्ध जानकारी लिखें..."
+        ></textarea>
 
-
-        <!-- MAIN KEYWORD -->
-
-        <label for="keyword">
-            Main Keyword
+        <label for="keywords">
+            Important Keywords
         </label>
 
         <input
             type="text"
-            id="keyword"
-            placeholder="Example: Black Cotton T-Shirt"
+            id="keywords"
+            placeholder="जैसे: cotton, floral, women, casual"
         >
-
-
-        <br><br>
-
-
-        <!-- GENERATE BUTTON -->
 
         <button
             type="button"
-            onclick="generateTitle()"
+            class="generate-btn"
+            id="generateBtn"
         >
-
-            🤖 Generate AI Title
-
+            ✨ Generate Product Titles
         </button>
 
-
-        <h3>
-            Generated AI Title
-        </h3>
-
-
-        <!-- RESULT -->
-
-        <textarea
-            id="result"
-            rows="10"
-            readonly
-            style="width:100%;"
-            placeholder="Your AI generated titles will appear here..."
-        ></textarea>
-
-
-        <br><br>
-
-
-        <!-- COPY BUTTON -->
-
-        <button
-            type="button"
-            onclick="copyTitle()"
-        >
-
-            📋 Copy Title
-
-        </button>
-
+        <div id="status" class="status"></div>
 
     </div>
 
-</section>
+
+    <div class="card result-box" id="resultBox">
+
+        <h2>🎯 Generated Titles</h2>
+
+        <div id="titlesContainer"></div>
+
+        <button
+            type="button"
+            class="copy-btn"
+            id="copyAllBtn"
+        >
+            📋 Copy All Titles
+        </button>
+
+    </div>
 
 
-<!-- =====================================
-     NO POPUP SCRIPT
-     पहले load होगा
-===================================== -->
+    <div class="card">
+        <strong>Backend API</strong>
+        <p class="api-info" id="apiInfo"></p>
+    </div>
 
-<script src="no-popup.js"></script>
+</div>
 
 
-<!-- =====================================
-     TITLE GENERATOR SCRIPT
-===================================== -->
+<script>
 
-<script src="title-generator.js"></script>
+    // ==========================================================
+    // AI SELLER TOOLKIT
+    // TITLE GENERATOR
+    // FRONTEND — FINAL
+    // ==========================================================
 
+    const API_BASE_URL =
+        "https://ai-seller-toolkit-backend-1.onrender.com";
+
+    const API_URL =
+        API_BASE_URL + "/api/generate-title";
+
+
+    // ----------------------------------------------------------
+    // CATEGORY
+    // ----------------------------------------------------------
+
+    let selectedCategory = "Fashion";
+
+
+    // ----------------------------------------------------------
+    // CATEGORY BUTTONS
+    // ----------------------------------------------------------
+
+    const categoryButtons =
+        document.querySelectorAll(".category-btn");
+
+    categoryButtons.forEach(button => {
+
+        button.addEventListener("click", function () {
+
+            categoryButtons.forEach(btn => {
+                btn.classList.remove("active");
+            });
+
+            this.classList.add("active");
+
+            selectedCategory =
+                this.dataset.category;
+
+        });
+
+    });
+
+
+    // ----------------------------------------------------------
+    // ELEMENTS
+    // ----------------------------------------------------------
+
+    const productName =
+        document.getElementById("productName");
+
+    const brand =
+        document.getElementById("brand");
+
+    const details =
+        document.getElementById("details");
+
+    const keywords =
+        document.getElementById("keywords");
+
+    const generateBtn =
+        document.getElementById("generateBtn");
+
+    const statusBox =
+        document.getElementById("status");
+
+    const resultBox =
+        document.getElementById("resultBox");
+
+    const titlesContainer =
+        document.getElementById("titlesContainer");
+
+    const copyAllBtn =
+        document.getElementById("copyAllBtn");
+
+    const apiInfo =
+        document.getElementById("apiInfo");
+
+
+    apiInfo.textContent = API_URL;
+
+
+    // ----------------------------------------------------------
+    // STATUS
+    // ----------------------------------------------------------
+
+    function showStatus(message, type) {
+
+        statusBox.textContent = message;
+
+        statusBox.className =
+            "status " + type;
+
+    }
+
+
+    function hideStatus() {
+
+        statusBox.textContent = "";
+
+        statusBox.className =
+            "status";
+
+    }
+
+
+    // ----------------------------------------------------------
+    // CLEAN TITLE
+    // ----------------------------------------------------------
+
+    function cleanTitle(title) {
+
+        if (!title) {
+            return "";
+        }
+
+        return String(title)
+            .replace(/^["'`]+|["'`]+$/g, "")
+            .replace(/^\d+[\.\)\-\s]+/, "")
+            .trim();
+
+    }
+
+
+    // ----------------------------------------------------------
+    // DISPLAY TITLES
+    // ----------------------------------------------------------
+
+    function displayTitles(titles) {
+
+        titlesContainer.innerHTML = "";
+
+        if (!Array.isArray(titles) || titles.length === 0) {
+
+            resultBox.style.display = "none";
+
+            throw new Error(
+                "Backend ने कोई title वापस नहीं भेजा।"
+            );
+
+        }
+
+
+        const cleanedTitles = titles
+            .map(cleanTitle)
+            .filter(title => title.length > 0);
+
+
+        if (cleanedTitles.length === 0) {
+
+            resultBox.style.display = "none";
+
+            throw new Error(
+                "Valid titles नहीं मिले।"
+            );
+
+        }
+
+
+        cleanedTitles.forEach((title, index) => {
+
+            const div =
+                document.createElement("div");
+
+            div.className =
+                "result-title";
+
+            div.innerHTML =
+                `<span class="result-number">${index + 1}.</span> ` +
+                escapeHtml(title);
+
+            titlesContainer.appendChild(div);
+
+        });
+
+
+        resultBox.style.display = "block";
+
+    }
+
+
+    // ----------------------------------------------------------
+    // HTML ESCAPE
+    // ----------------------------------------------------------
+
+    function escapeHtml(text) {
+
+        const div =
+            document.createElement("div");
+
+        div.textContent = text;
+
+        return div.innerHTML;
+
+    }
+
+
+    // ----------------------------------------------------------
+    // GENERATE
+    // ----------------------------------------------------------
+
+    generateBtn.addEventListener("click", async function () {
+
+        hideStatus();
+
+        const name =
+            productName.value.trim();
+
+        const brandValue =
+            brand.value.trim();
+
+        const detailsValue =
+            details.value.trim();
+
+        const keywordsValue =
+            keywords.value.trim();
+
+
+        // Product name validation
+
+        if (!name) {
+
+            showStatus(
+                "❌ Product Name डालना जरूरी है।",
+                "error"
+            );
+
+            productName.focus();
+
+            return;
+
+        }
+
+
+        // Loading
+
+        generateBtn.disabled = true;
+
+        generateBtn.textContent =
+            "⏳ Generating Titles...";
+
+
+        resultBox.style.display = "none";
+
+
+        try {
+
+            const response =
+                await fetch(API_URL, {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        category: selectedCategory,
+
+                        productName: name,
+
+                        brand: brandValue,
+
+                        productDetails: detailsValue,
+
+                        keywords: keywordsValue
+
+                    })
+
+                });
+
+
+            let data;
+
+            try {
+
+                data =
+                    await response.json();
+
+            } catch (jsonError) {
+
+                throw new Error(
+                    "Backend से valid JSON response नहीं मिला।"
+                );
+
+            }
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.error ||
+                    data.message ||
+                    `Server Error: ${response.status}`
+                );
+
+            }
+
+
+            if (
+                !data ||
+                data.success !== true
+            ) {
+
+                throw new Error(
+                    data.error ||
+                    "Title generation failed."
+                );
+
+            }
+
+
+            let titles =
+                data.titles;
+
+
+            // Extra compatibility
+
+            if (!Array.isArray(titles)) {
+
+                if (
+                    data.result &&
+                    Array.isArray(data.result.titles)
+                ) {
+
+                    titles =
+                        data.result.titles;
+
+                }
+
+            }
+
+
+            displayTitles(titles);
+
+
+            showStatus(
+                "✅ Titles successfully generated!",
+                "success"
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "TITLE GENERATOR ERROR:",
+                error
+            );
+
+
+            showStatus(
+                "❌ " + (
+                    error.message ||
+                    "Title generate नहीं हो पाया।"
+                ),
+                "error"
+            );
+
+        } finally {
+
+            generateBtn.disabled = false;
+
+            generateBtn.textContent =
+                "✨ Generate Product Titles";
+
+        }
+
+    });
+
+
+    // ----------------------------------------------------------
+    // COPY ALL
+    // ----------------------------------------------------------
+
+    copyAllBtn.addEventListener("click", async function () {
+
+        const titleElements =
+            document.querySelectorAll(".result-title");
+
+        if (!titleElements.length) {
+
+            return;
+
+        }
+
+
+        const titles =
+            Array.from(titleElements)
+                .map(element =>
+                    element.textContent
+                        .replace(/^\d+\.\s*/, "")
+                        .trim()
+                );
+
+
+        try {
+
+            await navigator.clipboard.writeText(
+                titles.join("\n")
+            );
+
+            copyAllBtn.textContent =
+                "✅ Copied!";
+
+            setTimeout(() => {
+
+                copyAllBtn.textContent =
+                    "📋 Copy All Titles";
+
+            }, 1500);
+
+        } catch (error) {
+
+            showStatus(
+                "❌ Copy नहीं हो पाया।",
+                "error"
+            );
+
+        }
+
+    });
+
+</script>
 
 </body>
-
 </html>
