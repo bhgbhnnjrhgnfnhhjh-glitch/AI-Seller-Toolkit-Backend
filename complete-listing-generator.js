@@ -2,14 +2,19 @@
 // AI SELLER TOOLKIT
 // COMPLETE-LISTING-GENERATOR.JS — FINAL VERSION 7.2
 // ==========================================================
-// Stable Frontend
-// Backend 7.1 Compatible
-// Strict Fact Guard Compatible
-// All Categories Supported
-// Generate Button Fixed
-// Response Parser Fixed
-// Duplicate Event Protection
-// Form Submit Protection
+// FINAL FIX
+// - Backend 7.1 compatible
+// - Gemini response compatibility
+// - Multiple response formats supported
+// - JSON string response supported
+// - Result display fixed
+// - No false success message
+// - 14 categories supported
+// - Dynamic category fields
+// - Strict frontend validation
+// - Duplicate event protection
+// - Copy listing support
+// - LocalStorage support
 // ==========================================================
 
 
@@ -21,29 +26,29 @@ const API_BASE_URL =
     "https://ai-seller-toolkit-backend-1.onrender.com";
 
 const GENERATE_ENDPOINT =
-    API_BASE_URL + "/api/generate-listing";
+    `${API_BASE_URL}/api/generate-listing`;
 
 const CATEGORIES_ENDPOINT =
-    API_BASE_URL + "/api/categories";
+    `${API_BASE_URL}/api/categories`;
 
 const STATUS_ENDPOINT =
-    API_BASE_URL + "/api/status";
+    `${API_BASE_URL}/api/status`;
 
 
 // ==========================================================
 // GLOBAL STATE
 // ==========================================================
 
-let isGenerating = false;
+let categoryData = [];
 let currentCategory = "";
+let isGenerating = false;
 
 
 // ==========================================================
-// CATEGORY LIST
+// SUPPORTED CATEGORIES
 // ==========================================================
 
-const CATEGORIES = [
-
+const SUPPORTED_CATEGORIES = [
     "Fashion",
     "Beauty",
     "Electronics",
@@ -58,17 +63,339 @@ const CATEGORIES = [
     "Garden",
     "Food",
     "Gifts"
-
 ];
 
 
 // ==========================================================
-// CATEGORY FIELDS
+// DOM HELPER
 // ==========================================================
 
-const CATEGORY_FIELDS = {
+function getElement(...ids) {
+
+    for (const id of ids) {
+
+        if (!id) continue;
+
+        const element =
+            document.getElementById(id);
+
+        if (element) {
+            return element;
+        }
+
+    }
+
+    return null;
+}
+
+
+// ==========================================================
+// GET VALUE
+// ==========================================================
+
+function getValue(...ids) {
+
+    const element =
+        getElement(...ids);
+
+    if (!element) {
+        return "";
+    }
+
+    return String(
+        element.value || ""
+    ).trim();
+}
+
+
+// ==========================================================
+// SHOW ELEMENT
+// ==========================================================
+
+function showElement(...ids) {
+
+    for (const id of ids) {
+
+        const element =
+            document.getElementById(id);
+
+        if (element) {
+
+            element.style.display =
+                "";
+
+        }
+
+    }
+
+}
+
+
+// ==========================================================
+// HIDE ELEMENT
+// ==========================================================
+
+function hideElement(...ids) {
+
+    for (const id of ids) {
+
+        const element =
+            document.getElementById(id);
+
+        if (element) {
+
+            element.style.display =
+                "none";
+
+        }
+
+    }
+
+}
+
+
+// ==========================================================
+// MESSAGE ELEMENT
+// ==========================================================
+
+function getMessageElement() {
+
+    return getElement(
+        "message",
+        "errorMessage",
+        "successMessage",
+        "statusMessage",
+        "formMessage"
+    );
+
+}
+
+
+// ==========================================================
+// SHOW MESSAGE
+// ==========================================================
+
+function showMessage(
+    message,
+    type = "error"
+) {
+
+    const element =
+        getMessageElement();
+
+    if (!element) {
+
+        if (type === "error") {
+            console.error(
+                "[AI SELLER TOOLKIT]",
+                message
+            );
+        } else {
+            console.log(
+                "[AI SELLER TOOLKIT]",
+                message
+            );
+        }
+
+        return;
+    }
+
+    element.textContent =
+        String(message);
+
+    element.style.display =
+        "block";
+
+    element.className =
+        `message ${type}`;
+
+}
+
+
+// ==========================================================
+// CLEAR MESSAGE
+// ==========================================================
+
+function clearMessage() {
+
+    const element =
+        getMessageElement();
+
+    if (!element) {
+        return;
+    }
+
+    element.textContent =
+        "";
+
+    element.style.display =
+        "none";
+
+}
+
+
+// ==========================================================
+// CATEGORY NORMALIZER
+// ==========================================================
+
+function normalizeCategory(category) {
+
+    if (!category) {
+        return "";
+    }
+
+    let value =
+        String(category)
+            .trim()
+            .replace(
+                /^[\p{Extended_Pictographic}\p{Emoji_Presentation}\s]+/u,
+                ""
+            )
+            .trim();
+
+    const lower =
+        value.toLowerCase();
+
+    const aliases = {
+
+        "fashion":
+            "Fashion",
+
+        "fashion & clothing":
+            "Fashion",
+
+        "fashion and clothing":
+            "Fashion",
+
+        "clothing":
+            "Fashion",
+
+        "apparel":
+            "Fashion",
+
+        "beauty":
+            "Beauty",
+
+        "personal care":
+            "Beauty",
+
+        "personal-care":
+            "Beauty",
+
+        "electronics":
+            "Electronics",
+
+        "electronic":
+            "Electronics",
+
+        "home & kitchen":
+            "Home & Kitchen",
+
+        "home and kitchen":
+            "Home & Kitchen",
+
+        "home kitchen":
+            "Home & Kitchen",
+
+        "home":
+            "Home & Kitchen",
+
+        "kitchen":
+            "Home & Kitchen",
+
+        "shoes":
+            "Shoes",
+
+        "shoe":
+            "Shoes",
+
+        "footwear":
+            "Shoes",
+
+        "jewellery":
+            "Jewellery",
+
+        "jewelry":
+            "Jewellery",
+
+        "toys":
+            "Toys",
+
+        "toy":
+            "Toys",
+
+        "books":
+            "Books",
+
+        "book":
+            "Books",
+
+        "pet":
+            "Pet",
+
+        "pets":
+            "Pet",
+
+        "sports":
+            "Sports",
+
+        "sport":
+            "Sports",
+
+        "fitness":
+            "Sports",
+
+        "automotive":
+            "Automotive",
+
+        "automobile":
+            "Automotive",
+
+        "car accessories":
+            "Automotive",
+
+        "vehicle accessories":
+            "Automotive",
+
+        "garden":
+            "Garden",
+
+        "gardening":
+            "Garden",
+
+        "food":
+            "Food",
+
+        "foods":
+            "Food",
+
+        "grocery":
+            "Food",
+
+        "gifts":
+            "Gifts",
+
+        "gift":
+            "Gifts"
+
+    };
+
+    return (
+        aliases[lower] ||
+        value
+    );
+
+}
+
+
+// ==========================================================
+// CATEGORY FIELD DEFINITIONS
+// ==========================================================
+
+const LOCAL_CATEGORY_FIELDS = {
 
     "Fashion": [
+
         ["fabricMaterial", "Fabric / Material"],
         ["color", "Color"],
         ["size", "Size"],
@@ -76,9 +403,11 @@ const CATEGORY_FIELDS = {
         ["fit", "Fit"],
         ["occasion", "Occasion"],
         ["quantity", "Quantity"]
+
     ],
 
     "Beauty": [
+
         ["formTexture", "Form / Texture"],
         ["color", "Color"],
         ["quantity", "Quantity"],
@@ -87,9 +416,11 @@ const CATEGORY_FIELDS = {
         ["skinType", "Skin Type"],
         ["hairType", "Hair Type"],
         ["fragrance", "Fragrance"]
+
     ],
 
     "Electronics": [
+
         ["model", "Model"],
         ["color", "Color"],
         ["storage", "Storage"],
@@ -99,18 +430,22 @@ const CATEGORY_FIELDS = {
         ["compatibility", "Compatibility"],
         ["warranty", "Warranty"],
         ["quantity", "Quantity"]
+
     ],
 
     "Home & Kitchen": [
+
         ["material", "Material"],
         ["color", "Color"],
         ["sizeDimensions", "Size / Dimensions"],
         ["capacity", "Capacity"],
         ["quantity", "Quantity"],
         ["usage", "Usage"]
+
     ],
 
     "Shoes": [
+
         ["fabricMaterial", "Fabric / Material"],
         ["color", "Color"],
         ["size", "Size"],
@@ -118,9 +453,11 @@ const CATEGORY_FIELDS = {
         ["fit", "Fit"],
         ["occasion", "Occasion"],
         ["quantity", "Quantity"]
+
     ],
 
     "Jewellery": [
+
         ["material", "Material"],
         ["color", "Color"],
         ["design", "Design"],
@@ -128,18 +465,22 @@ const CATEGORY_FIELDS = {
         ["stone", "Stone"],
         ["occasion", "Occasion"],
         ["quantity", "Quantity"]
+
     ],
 
     "Toys": [
+
         ["material", "Material"],
         ["color", "Color"],
         ["size", "Size"],
         ["ageGroup", "Age Group"],
         ["quantity", "Quantity"],
         ["productType", "Product Type"]
+
     ],
 
     "Books": [
+
         ["author", "Author"],
         ["language", "Language"],
         ["format", "Format"],
@@ -147,260 +488,129 @@ const CATEGORY_FIELDS = {
         ["publisher", "Publisher"],
         ["edition", "Edition"],
         ["isbn", "ISBN"]
+
     ],
 
     "Pet": [
+
         ["petType", "Pet Type"],
         ["material", "Material"],
         ["size", "Size"],
         ["quantity", "Quantity"],
         ["ingredients", "Ingredients"],
         ["flavour", "Flavour"]
+
     ],
 
     "Sports": [
+
         ["material", "Material"],
         ["color", "Color"],
         ["size", "Size"],
         ["sportType", "Sport Type"],
         ["quantity", "Quantity"],
         ["usage", "Usage"]
+
     ],
 
     "Automotive": [
+
         ["model", "Model"],
         ["vehicleCompatibility", "Vehicle Compatibility"],
         ["material", "Material"],
         ["color", "Color"],
         ["dimensions", "Dimensions"],
         ["quantity", "Quantity"]
+
     ],
 
     "Garden": [
+
         ["material", "Material"],
         ["color", "Color"],
         ["size", "Size"],
         ["quantity", "Quantity"],
         ["plantCompatibility", "Plant Compatibility"],
         ["usage", "Usage"]
+
     ],
 
     "Food": [
+
         ["ingredients", "Ingredients"],
         ["flavour", "Flavour"],
         ["quantity", "Quantity"],
         ["formTexture", "Form"],
         ["variant", "Variant"],
         ["dietaryInformation", "Dietary Information"]
+
     ],
 
     "Gifts": [
+
         ["material", "Material"],
         ["color", "Color"],
         ["size", "Size"],
         ["occasion", "Occasion"],
         ["quantity", "Quantity"],
         ["giftType", "Gift Type"]
+
     ]
 
 };
 
 
 // ==========================================================
-// DOM HELPER
-// ==========================================================
-
-function $(id) {
-
-    return document.getElementById(id);
-
-}
-
-
-function firstElement(ids) {
-
-    for (const id of ids) {
-
-        const el = $(id);
-
-        if (el) {
-            return el;
-        }
-
-    }
-
-    return null;
-
-}
-
-
-function getValue(ids) {
-
-    const el = firstElement(ids);
-
-    if (!el) {
-        return "";
-    }
-
-    return String(el.value || "").trim();
-
-}
-
-
-// ==========================================================
-// MESSAGE
-// ==========================================================
-
-function getMessageElement() {
-
-    return firstElement([
-
-        "message",
-        "statusMessage",
-        "formMessage",
-        "errorMessage",
-        "successMessage"
-
-    ]);
-
-}
-
-
-function showMessage(text, type = "info") {
-
-    const el = getMessageElement();
-
-    if (!el) {
-
-        if (type === "error") {
-            console.error(text);
-        } else {
-            console.log(text);
-        }
-
-        return;
-
-    }
-
-    el.textContent = text;
-
-    el.style.display = "block";
-
-    el.className =
-        "message " + type;
-
-}
-
-
-function clearMessage() {
-
-    const el = getMessageElement();
-
-    if (!el) {
-        return;
-    }
-
-    el.textContent = "";
-
-    el.style.display = "none";
-
-}
-
-
-// ==========================================================
-// CATEGORY SELECT
+// FIND CATEGORY SELECT
 // ==========================================================
 
 function getCategoryElement() {
 
-    return firstElement([
-
+    return getElement(
         "category",
         "productCategory",
         "categorySelect",
         "product-category",
         "productCategorySelect"
-
-    ]);
+    );
 
 }
 
 
-function normalizeCategory(value) {
+// ==========================================================
+// GET SELECTED CATEGORY
+// ==========================================================
 
-    if (!value) {
+function getSelectedCategory() {
+
+    const element =
+        getCategoryElement();
+
+    if (!element) {
         return "";
     }
 
-    let text =
-        String(value)
-            .trim()
-            .replace(
-                /^[\p{Extended_Pictographic}\p{Emoji_Presentation}\s]+/u,
-                ""
-            )
-            .trim();
+    return normalizeCategory(
+        element.value
+    );
 
-    const lower =
-        text.toLowerCase();
+}
 
-    const map = {
 
-        "fashion": "Fashion",
-        "fashion & clothing": "Fashion",
-        "fashion and clothing": "Fashion",
-        "clothing": "Fashion",
-        "apparel": "Fashion",
+// ==========================================================
+// FIND DYNAMIC FIELD CONTAINER
+// ==========================================================
 
-        "beauty": "Beauty",
-        "personal care": "Beauty",
-        "personal-care": "Beauty",
+function findDynamicFieldContainer() {
 
-        "electronics": "Electronics",
-        "electronic": "Electronics",
-
-        "home": "Home & Kitchen",
-        "kitchen": "Home & Kitchen",
-        "home kitchen": "Home & Kitchen",
-        "home & kitchen": "Home & Kitchen",
-        "home and kitchen": "Home & Kitchen",
-
-        "shoe": "Shoes",
-        "shoes": "Shoes",
-        "footwear": "Shoes",
-
-        "jewellery": "Jewellery",
-        "jewelry": "Jewellery",
-
-        "toy": "Toys",
-        "toys": "Toys",
-
-        "book": "Books",
-        "books": "Books",
-
-        "pet": "Pet",
-        "pets": "Pet",
-
-        "sport": "Sports",
-        "sports": "Sports",
-        "fitness": "Sports",
-
-        "automotive": "Automotive",
-        "automobile": "Automotive",
-
-        "garden": "Garden",
-        "gardening": "Garden",
-
-        "food": "Food",
-        "foods": "Food",
-        "grocery": "Food",
-
-        "gift": "Gifts",
-        "gifts": "Gifts"
-
-    };
-
-    return map[lower] || text;
+    return getElement(
+        "categoryFields",
+        "dynamicFields",
+        "categorySpecificFields",
+        "categoryFieldsContainer",
+        "dynamic-category-fields",
+        "additionalFields"
+    );
 
 }
 
@@ -409,35 +619,22 @@ function normalizeCategory(value) {
 // RENDER CATEGORY FIELDS
 // ==========================================================
 
-function getDynamicContainer() {
-
-    return firstElement([
-
-        "categoryFields",
-        "dynamicFields",
-        "categorySpecificFields",
-        "categoryFieldsContainer",
-        "dynamic-category-fields",
-        "additionalFields"
-
-    ]);
-
-}
-
-
 function renderCategoryFields(category) {
 
     const container =
-        getDynamicContainer();
+        findDynamicFieldContainer();
 
     if (!container) {
         return;
     }
 
-    container.innerHTML = "";
+    container.innerHTML =
+        "";
 
     const fields =
-        CATEGORY_FIELDS[category] || [];
+        LOCAL_CATEGORY_FIELDS[
+            category
+        ] || [];
 
     if (!fields.length) {
         return;
@@ -447,9 +644,11 @@ function renderCategoryFields(category) {
         document.createElement("h3");
 
     heading.textContent =
-        category + " Product Information";
+        `${category} Product Information`;
 
-    container.appendChild(heading);
+    container.appendChild(
+        heading
+    );
 
     const grid =
         document.createElement("div");
@@ -457,10 +656,10 @@ function renderCategoryFields(category) {
     grid.className =
         "category-fields-grid";
 
-    fields.forEach(function(field) {
-
-        const name = field[0];
-        const label = field[1];
+    for (
+        const [name, label]
+        of fields
+    ) {
 
         const wrapper =
             document.createElement("div");
@@ -468,37 +667,50 @@ function renderCategoryFields(category) {
         wrapper.className =
             "category-field";
 
-        const labelEl =
+        const labelElement =
             document.createElement("label");
 
-        labelEl.textContent =
+        labelElement.textContent =
             label;
 
-        labelEl.htmlFor =
-            "field-" + name;
+        labelElement.htmlFor =
+            `field-${name}`;
 
         const input =
             document.createElement("input");
 
-        input.type = "text";
+        input.type =
+            "text";
 
         input.id =
-            "field-" + name;
+            `field-${name}`;
 
-        input.name = name;
+        input.name =
+            name;
 
         input.placeholder =
-            "Enter " + label + " if known";
+            `Enter ${label} if known`;
 
-        wrapper.appendChild(labelEl);
+        input.autocomplete =
+            "off";
 
-        wrapper.appendChild(input);
+        wrapper.appendChild(
+            labelElement
+        );
 
-        grid.appendChild(wrapper);
+        wrapper.appendChild(
+            input
+        );
 
-    });
+        grid.appendChild(
+            wrapper
+        );
 
-    container.appendChild(grid);
+    }
+
+    container.appendChild(
+        grid
+    );
 
 }
 
@@ -509,18 +721,14 @@ function renderCategoryFields(category) {
 
 function handleCategoryChange() {
 
-    const select =
-        getCategoryElement();
-
-    if (!select) {
-        return;
-    }
+    const category =
+        getSelectedCategory();
 
     currentCategory =
-        normalizeCategory(select.value);
+        category;
 
     renderCategoryFields(
-        currentCategory
+        category
     );
 
 }
@@ -532,10 +740,10 @@ function handleCategoryChange() {
 
 async function loadCategories() {
 
-    const select =
+    const categoryElement =
         getCategoryElement();
 
-    if (!select) {
+    if (!categoryElement) {
         return;
     }
 
@@ -555,8 +763,7 @@ async function loadCategories() {
 
         if (!response.ok) {
             throw new Error(
-                "Category server error: " +
-                response.status
+                `Category API error: ${response.status}`
             );
         }
 
@@ -565,36 +772,37 @@ async function loadCategories() {
 
         if (
             !data ||
-            !Array.isArray(data.categories)
+            !Array.isArray(
+                data.categories
+            )
         ) {
-
             throw new Error(
-                "Invalid categories response"
+                "Invalid category response."
             );
-
         }
 
-        fillCategories(
-            select,
-            data.categories
+        categoryData =
+            data.categories;
+
+        populateCategorySelect(
+            categoryElement,
+            categoryData
         );
 
     } catch (error) {
 
         console.warn(
-            "Using local categories.",
+            "[CATEGORY LOAD ERROR]",
             error
         );
 
-        fillCategories(
-            select,
-            CATEGORIES.map(function(name) {
-
-                return {
-                    name: name
-                };
-
-            })
+        populateCategorySelect(
+            categoryElement,
+            SUPPORTED_CATEGORIES.map(
+                name => ({
+                    name
+                })
+            )
         );
 
     }
@@ -602,65 +810,145 @@ async function loadCategories() {
 }
 
 
-function fillCategories(select, categories) {
+// ==========================================================
+// POPULATE CATEGORY SELECT
+// ==========================================================
+
+function populateCategorySelect(
+    select,
+    categories
+) {
+
+    if (!select) {
+        return;
+    }
 
     const oldValue =
-        normalizeCategory(select.value);
-
-    select.innerHTML = "";
+        normalizeCategory(
+            select.value
+        );
 
     const placeholder =
-        document.createElement("option");
+        select.querySelector(
+            "option[value='']"
+        );
 
-    placeholder.value = "";
+    select.innerHTML =
+        "";
 
-    placeholder.textContent =
-        "Select Product Category";
+    if (placeholder) {
 
-    select.appendChild(placeholder);
+        select.appendChild(
+            placeholder.cloneNode(true)
+        );
 
-    categories.forEach(function(item) {
+    } else {
 
-        const name =
-            typeof item === "string"
-                ? item
-                : item.name;
+        const option =
+            document.createElement("option");
 
-        if (!name) {
-            return;
+        option.value =
+            "";
+
+        option.textContent =
+            "Select Product Category";
+
+        select.appendChild(
+            option
+        );
+
+    }
+
+    const added =
+        new Set();
+
+    for (
+        const item
+        of categories
+    ) {
+
+        if (!item || !item.name) {
+            continue;
+        }
+
+        const normalized =
+            normalizeCategory(
+                item.name
+            );
+
+        if (
+            !SUPPORTED_CATEGORIES.includes(
+                normalized
+            )
+        ) {
+            continue;
+        }
+
+        if (
+            added.has(normalized)
+        ) {
+            continue;
+        }
+
+        added.add(normalized);
+
+        const option =
+            document.createElement("option");
+
+        option.value =
+            normalized;
+
+        option.textContent =
+            normalized;
+
+        select.appendChild(
+            option
+        );
+
+    }
+
+    // Make sure all 14 categories exist
+    for (
+        const category
+        of SUPPORTED_CATEGORIES
+    ) {
+
+        if (
+            added.has(category)
+        ) {
+            continue;
         }
 
         const option =
             document.createElement("option");
 
-        option.value = name;
+        option.value =
+            category;
 
-        option.textContent = name;
+        option.textContent =
+            category;
 
-        select.appendChild(option);
+        select.appendChild(
+            option
+        );
 
-    });
+    }
 
     if (oldValue) {
 
-        for (
-            const option
-            of select.options
-        ) {
+        const matching =
+            Array.from(
+                select.options
+            ).find(
+                option =>
+                    normalizeCategory(
+                        option.value
+                    ) === oldValue
+            );
 
-            if (
-                normalizeCategory(
-                    option.value
-                ) === oldValue
-            ) {
-
-                select.value =
-                    option.value;
-
-                break;
-
-            }
-
+        if (matching) {
+            select.value =
+                matching.value;
         }
 
     }
@@ -674,25 +962,28 @@ function fillCategories(select, categories) {
 // COLLECT CATEGORY FIELDS
 // ==========================================================
 
-function collectFields(category) {
+function collectCategoryFields(category) {
 
-    const result = {};
+    const fields = {};
 
-    const fields =
-        CATEGORY_FIELDS[category] || [];
+    const definitions =
+        LOCAL_CATEGORY_FIELDS[
+            category
+        ] || [];
 
-    fields.forEach(function(field) {
-
-        const name = field[0];
+    for (
+        const [name]
+        of definitions
+    ) {
 
         const input =
-            firstElement([
-                "field-" + name,
+            getElement(
+                `field-${name}`,
                 name
-            ]);
+            );
 
         if (!input) {
-            return;
+            continue;
         }
 
         const value =
@@ -701,95 +992,204 @@ function collectFields(category) {
             ).trim();
 
         if (value) {
-            result[name] = value;
+
+            fields[name] =
+                value;
+
         }
 
-    });
+    }
 
-    return result;
+    return fields;
 
 }
 
 
 // ==========================================================
-// COLLECT PRODUCT
+// COLLECT ALL KNOWN FIELDS
+// ==========================================================
+
+function collectKnownFields(category) {
+
+    const fields =
+        collectCategoryFields(
+            category
+        );
+
+    const possibleFields = [
+
+        "material",
+        "fabric",
+        "fabricMaterial",
+
+        "color",
+        "size",
+        "pattern",
+        "fit",
+        "occasion",
+        "quantity",
+
+        "formTexture",
+        "variant",
+        "ingredients",
+        "skinType",
+        "hairType",
+        "fragrance",
+
+        "model",
+        "storage",
+        "ram",
+        "battery",
+        "connectivity",
+        "compatibility",
+        "warranty",
+
+        "sizeDimensions",
+        "capacity",
+        "usage",
+
+        "design",
+        "stone",
+
+        "ageGroup",
+        "productType",
+
+        "author",
+        "language",
+        "format",
+        "pages",
+        "publisher",
+        "edition",
+        "isbn",
+
+        "petType",
+        "flavour",
+
+        "sportType",
+
+        "vehicleCompatibility",
+        "dimensions",
+
+        "plantCompatibility",
+
+        "dietaryInformation",
+
+        "giftType"
+
+    ];
+
+    for (
+        const name
+        of possibleFields
+    ) {
+
+        if (fields[name]) {
+            continue;
+        }
+
+        const input =
+            getElement(name);
+
+        if (!input) {
+            continue;
+        }
+
+        const value =
+            String(
+                input.value || ""
+            ).trim();
+
+        if (value) {
+            fields[name] =
+                value;
+        }
+
+    }
+
+    return fields;
+
+}
+
+
+// ==========================================================
+// COLLECT PRODUCT DATA
 // ==========================================================
 
 function collectProductData() {
 
-    const categoryElement =
-        getCategoryElement();
-
     const category =
-        categoryElement
-            ? normalizeCategory(
-                categoryElement.value
-            )
-            : "";
+        getSelectedCategory();
 
-    const product = {
+    const productName =
+        getValue(
+            "productName",
+            "product_name",
+            "name"
+        );
 
-        category: category,
+    const brand =
+        getValue(
+            "brand",
+            "brandName",
+            "productBrand"
+        );
 
-        productName:
-            getValue([
-                "productName",
-                "product_name",
-                "name"
-            ]),
+    const price =
+        getValue(
+            "price",
+            "productPrice",
+            "product_price"
+        );
 
-        brand:
-            getValue([
-                "brand",
-                "brandName",
-                "productBrand"
-            ]),
+    const productFeatures =
+        getValue(
+            "productFeatures",
+            "features",
+            "product_features",
+            "featuresText"
+        );
 
-        price:
-            getValue([
-                "price",
-                "productPrice",
-                "product_price"
-            ]),
+    const extraProductInformation =
+        getValue(
+            "extraProductInformation",
+            "extraInfo",
+            "productDetails",
+            "productDetailsExtra",
+            "additionalInformation",
+            "additionalInfo"
+        );
 
-        productFeatures:
-            getValue([
-                "productFeatures",
-                "features",
-                "product_features",
-                "featuresText"
-            ]),
+    const fields =
+        collectKnownFields(
+            category
+        );
 
-        extraProductInformation:
-            getValue([
-                "extraProductInformation",
-                "extraInfo",
-                "productDetails",
-                "productDetailsExtra",
-                "additionalInformation",
-                "additionalInfo"
-            ])
+    return {
+
+        category,
+
+        productName,
+
+        brand,
+
+        price,
+
+        productFeatures,
+
+        extraProductInformation,
+
+        ...fields
 
     };
-
-    const categoryFields =
-        collectFields(category);
-
-    Object.assign(
-        product,
-        categoryFields
-    );
-
-    return product;
 
 }
 
 
 // ==========================================================
-// VALIDATE
+// VALIDATE PRODUCT
 // ==========================================================
 
-function validateProduct(product) {
+function validateProductData(product) {
 
     if (!product.category) {
 
@@ -802,7 +1202,7 @@ function validateProduct(product) {
     }
 
     if (
-        !CATEGORIES.includes(
+        !SUPPORTED_CATEGORIES.includes(
             product.category
         )
     ) {
@@ -833,30 +1233,118 @@ function validateProduct(product) {
 
 
 // ==========================================================
-// BUILD PAYLOAD
+// BUILD API PAYLOAD
 // ==========================================================
 
 function buildPayload(product) {
 
-    const payload = {};
+    const payload = {
 
-    Object.keys(product).forEach(function(key) {
+        category:
+            product.category,
 
-        const value =
-            product[key];
+        productName:
+            product.productName,
+
+        brand:
+            product.brand,
+
+        price:
+            product.price,
+
+        productFeatures:
+            product.productFeatures,
+
+        extraProductInformation:
+            product.extraProductInformation
+
+    };
+
+    const fieldNames = [
+
+        "material",
+        "fabric",
+        "fabricMaterial",
+
+        "color",
+        "size",
+        "pattern",
+        "fit",
+        "occasion",
+        "quantity",
+
+        "formTexture",
+        "variant",
+        "ingredients",
+        "skinType",
+        "hairType",
+        "fragrance",
+
+        "model",
+        "storage",
+        "ram",
+        "battery",
+        "connectivity",
+        "compatibility",
+        "warranty",
+
+        "sizeDimensions",
+        "capacity",
+        "usage",
+
+        "design",
+        "stone",
+
+        "ageGroup",
+        "productType",
+
+        "author",
+        "language",
+        "format",
+        "pages",
+        "publisher",
+        "edition",
+        "isbn",
+
+        "petType",
+        "flavour",
+
+        "sportType",
+
+        "vehicleCompatibility",
+        "dimensions",
+
+        "plantCompatibility",
+
+        "dietaryInformation",
+
+        "giftType"
+
+    ];
+
+    for (
+        const field
+        of fieldNames
+    ) {
 
         if (
-            value !== undefined &&
-            value !== null &&
-            String(value).trim() !== ""
+            product[field] !== undefined &&
+            product[field] !== null
         ) {
 
-            payload[key] =
-                String(value).trim();
+            const value =
+                String(
+                    product[field]
+                ).trim();
+
+            if (value) {
+                payload[field] =
+                    value;
+            }
 
         }
 
-    });
+    }
 
     return payload;
 
@@ -864,42 +1352,63 @@ function buildPayload(product) {
 
 
 // ==========================================================
-// BUTTON STATE
+// GENERATE BUTTON STATE
 // ==========================================================
 
-function setButtonState(disabled) {
+function setGeneratingState(
+    generating
+) {
+
+    isGenerating =
+        generating;
 
     const buttons = [
 
-        $("generateListingBtn"),
-        $("generateCompleteListing"),
-        $("generateBtn"),
-        $("generateButton")
+        "generateListingBtn",
+        "generateCompleteListing",
+        "generateBtn",
+        "generateButton"
 
     ];
 
-    buttons.forEach(function(button) {
+    for (
+        const id
+        of buttons
+    ) {
+
+        const button =
+            document.getElementById(id);
 
         if (!button) {
-            return;
-        }
-
-        if (!button.dataset.originalText) {
-
-            button.dataset.originalText =
-                button.textContent;
-
+            continue;
         }
 
         button.disabled =
-            disabled;
+            generating;
 
-        button.textContent =
-            disabled
-                ? "Generating..."
-                : button.dataset.originalText;
+        if (generating) {
 
-    });
+            if (
+                !button.dataset.originalText
+            ) {
+
+                button.dataset.originalText =
+                    button.textContent;
+
+            }
+
+            button.textContent =
+                "Generating...";
+
+        } else {
+
+            button.textContent =
+                button.dataset.originalText ||
+                "Generate Complete Listing";
+
+        }
+
+    }
 
 }
 
@@ -908,10 +1417,12 @@ function setButtonState(disabled) {
 // API REQUEST
 // ==========================================================
 
-async function requestListing(payload) {
+async function generateListingFromServer(
+    payload
+) {
 
     console.log(
-        "Sending listing request:",
+        "[GENERATE REQUEST]",
         payload
     );
 
@@ -930,7 +1441,9 @@ async function requestListing(payload) {
                 },
 
                 body:
-                    JSON.stringify(payload)
+                    JSON.stringify(
+                        payload
+                    )
             }
         );
 
@@ -938,21 +1451,36 @@ async function requestListing(payload) {
         await response.text();
 
     console.log(
-        "Backend response:",
+        "[SERVER STATUS]",
+        response.status
+    );
+
+    console.log(
+        "[SERVER RAW RESPONSE]",
         rawText
     );
+
+    if (!rawText) {
+
+        throw new Error(
+            `Server returned an empty response (${response.status}).`
+        );
+
+    }
 
     let data;
 
     try {
 
         data =
-            JSON.parse(rawText);
+            JSON.parse(
+                rawText
+            );
 
     } catch (error) {
 
         throw new Error(
-            "Backend returned invalid JSON."
+            `Server returned invalid JSON (${response.status}).`
         );
 
     }
@@ -960,22 +1488,44 @@ async function requestListing(payload) {
     if (!response.ok) {
 
         throw new Error(
-            data.error ||
-            data.message ||
-            "Server error " +
-            response.status
+
+            data &&
+            (
+                data.error ||
+                data.message
+            )
+
+                ? (
+                    data.error ||
+                    data.message
+                )
+
+                : `Server error: ${response.status}`
+
         );
 
     }
 
     if (
+        !data ||
         data.success !== true
     ) {
 
         throw new Error(
-            data.error ||
-            data.message ||
-            "Listing generation failed."
+
+            data &&
+            (
+                data.error ||
+                data.message
+            )
+
+                ? (
+                    data.error ||
+                    data.message
+                )
+
+                : "Listing generation failed."
+
         );
 
     }
@@ -986,107 +1536,673 @@ async function requestListing(payload) {
 
 
 // ==========================================================
-// EXTRACT LISTING
+// SAFE JSON PARSER
 // ==========================================================
 
-function extractListing(data) {
-
-    console.log(
-        "Parsing listing:",
-        data
-    );
-
-    let source =
-        data.listing;
+function tryParseJSON(value) {
 
     if (
-        !source ||
-        typeof source !== "object"
+        value === null ||
+        value === undefined
     ) {
-
-        source = data;
-
+        return null;
     }
 
-    return {
+    if (
+        typeof value === "object"
+    ) {
+        return value;
+    }
 
-        title:
-            source.title ||
-            source.TITLE ||
-            "",
+    if (
+        typeof value !== "string"
+    ) {
+        return null;
+    }
 
-        description:
-            source.description ||
-            source.DESCRIPTION ||
-            "",
+    const text =
+        value.trim();
 
-        highlights:
-            toArray(
-                source.highlights ||
-                source.HIGHLIGHTS
-            ),
+    if (!text) {
+        return null;
+    }
 
-        keywords:
-            toArray(
-                source.keywords ||
-                source.KEYWORDS
-            ),
+    try {
 
-        hashtags:
-            toArray(
-                source.hashtags ||
-                source.HASHTAGS
-            ),
+        return JSON.parse(
+            text
+        );
 
-        seoTitle:
-            source.seoTitle ||
-            source["SEO TITLE"] ||
-            source.seo_title ||
-            "",
+    } catch (error) {
 
-        seoDescription:
-            source.seoDescription ||
-            source["SEO DESCRIPTION"] ||
-            source.seo_description ||
-            ""
+        // Try removing markdown JSON fences
+        const cleaned =
+            text
+                .replace(
+                    /^```json\s*/i,
+                    ""
+                )
+                .replace(
+                    /^```\s*/i,
+                    ""
+                )
+                .replace(
+                    /\s*```$/i,
+                    ""
+                )
+                .trim();
 
-    };
+        try {
+
+            return JSON.parse(
+                cleaned
+            );
+
+        } catch (secondError) {
+
+            return null;
+
+        }
+
+    }
 
 }
 
 
 // ==========================================================
-// ARRAY CONVERTER
+// FIND LISTING OBJECT
 // ==========================================================
 
-function toArray(value) {
+function findListingObject(data) {
 
-    if (Array.isArray(value)) {
+    if (!data) {
+        return null;
+    }
 
-        return value
-            .map(function(item) {
+    // Direct listing object
+    if (
+        typeof data === "object" &&
+        (
+            data.title ||
+            data.TITLE ||
+            data.description ||
+            data.DESCRIPTION
+        )
+    ) {
 
-                return String(item).trim();
-
-            })
-            .filter(Boolean);
+        return data;
 
     }
 
-    if (typeof value === "string") {
+    // Common nested keys
+    const possibleKeys = [
 
-        return value
-            .split(/\n|,/)
-            .map(function(item) {
+        "listing",
+        "result",
+        "data",
+        "output",
+        "generatedListing",
+        "generated",
+        "response"
 
-                return item
+    ];
+
+    for (
+        const key
+        of possibleKeys
+    ) {
+
+        if (
+            data[key] === undefined ||
+            data[key] === null
+        ) {
+            continue;
+        }
+
+        const value =
+            data[key];
+
+        const parsed =
+            tryParseJSON(
+                value
+            );
+
+        if (
+            parsed &&
+            typeof parsed === "object"
+        ) {
+
+            const found =
+                findListingObject(
+                    parsed
+                );
+
+            if (found) {
+                return found;
+            }
+
+        }
+
+        if (
+            typeof value === "object"
+        ) {
+
+            const found =
+                findListingObject(
+                    value
+                );
+
+            if (found) {
+                return found;
+            }
+
+        }
+
+    }
+
+    return null;
+
+}
+
+
+// ==========================================================
+// EXTRACT TEXT FROM POSSIBLE KEYS
+// ==========================================================
+
+function getFirstValue(
+    source,
+    keys
+) {
+
+    if (!source) {
+        return "";
+    }
+
+    for (
+        const key
+        of keys
+    ) {
+
+        if (
+            source[key] === undefined ||
+            source[key] === null
+        ) {
+            continue;
+        }
+
+        const value =
+            source[key];
+
+        if (
+            typeof value === "string" &&
+            value.trim()
+        ) {
+
+            return value.trim();
+
+        }
+
+        if (
+            typeof value === "number"
+        ) {
+
+            return String(value);
+
+        }
+
+    }
+
+    return "";
+
+}
+
+
+// ==========================================================
+// EXTRACT LISTING — FINAL FIX
+// ==========================================================
+
+function extractListing(data) {
+
+    console.log(
+        "[EXTRACT] Full server data:",
+        data
+    );
+
+    let source =
+        findListingObject(
+            data
+        );
+
+    // If nested object was not found,
+    // try direct data
+    if (!source) {
+        source =
+            data;
+    }
+
+    // Sometimes server returns a JSON string
+    const parsedSource =
+        tryParseJSON(
+            source
+        );
+
+    if (
+        parsedSource &&
+        typeof parsedSource === "object"
+    ) {
+
+        source =
+            parsedSource;
+
+    }
+
+    console.log(
+        "[EXTRACT] Listing source:",
+        source
+    );
+
+    const listing = {
+
+        title:
+            getFirstValue(
+                source,
+                [
+                    "title",
+                    "TITLE",
+                    "productTitle",
+                    "PRODUCT TITLE",
+                    "listingTitle",
+                    "listing_title"
+                ]
+            ),
+
+        description:
+            getFirstValue(
+                source,
+                [
+                    "description",
+                    "DESCRIPTION",
+                    "productDescription",
+                    "PRODUCT DESCRIPTION",
+                    "listingDescription",
+                    "listing_description"
+                ]
+            ),
+
+        highlights:
+            normalizeArray(
+                source.highlights ||
+                source.HIGHLIGHTS ||
+                source.bullets ||
+                source.BULLETS ||
+                source.keyFeatures ||
+                source.key_features
+            ),
+
+        keywords:
+            normalizeArray(
+                source.keywords ||
+                source.KEYWORDS ||
+                source.seoKeywords ||
+                source.seo_keywords
+            ),
+
+        hashtags:
+            normalizeArray(
+                source.hashtags ||
+                source.HASHTAGS ||
+                source.hashTags ||
+                source.hash_tags
+            ),
+
+        seoTitle:
+            getFirstValue(
+                source,
+                [
+                    "seoTitle",
+                    "SEO TITLE",
+                    "seo_title",
+                    "SEOTitle"
+                ]
+            ),
+
+        seoDescription:
+            getFirstValue(
+                source,
+                [
+                    "seoDescription",
+                    "SEO DESCRIPTION",
+                    "seo_description",
+                    "SEODescription"
+                ]
+            )
+
+    };
+
+    // ------------------------------------------------------
+    // If listing is still empty, try text response
+    // ------------------------------------------------------
+
+    if (
+        !listing.title &&
+        typeof source === "string"
+    ) {
+
+        const text =
+            source.trim();
+
+        const parsed =
+            parsePlainTextListing(
+                text
+            );
+
+        if (parsed) {
+
+            return parsed;
+
+        }
+
+    }
+
+    console.log(
+        "[EXTRACT] Final listing:",
+        listing
+    );
+
+    return listing;
+
+}
+
+
+// ==========================================================
+// PARSE PLAIN TEXT LISTING
+// ==========================================================
+
+function parsePlainTextListing(text) {
+
+    if (!text) {
+        return null;
+    }
+
+    const result = {
+
+        title: "",
+        description: "",
+        highlights: [],
+        keywords: [],
+        hashtags: [],
+        seoTitle: "",
+        seoDescription: ""
+
+    };
+
+    const lines =
+        text
+            .split("\n")
+            .map(
+                line =>
+                    line.trim()
+            );
+
+    let section =
+        "";
+
+    for (
+        const line
+        of lines
+    ) {
+
+        if (!line) {
+            continue;
+        }
+
+        const upper =
+            line
+                .toUpperCase()
+                .replace(
+                    /[:\-]/g,
+                    ""
+                )
+                .trim();
+
+        if (
+            upper === "TITLE"
+        ) {
+
+            section =
+                "title";
+
+            continue;
+
+        }
+
+        if (
+            upper === "DESCRIPTION"
+        ) {
+
+            section =
+                "description";
+
+            continue;
+
+        }
+
+        if (
+            upper === "HIGHLIGHTS" ||
+            upper === "KEY HIGHLIGHTS"
+        ) {
+
+            section =
+                "highlights";
+
+            continue;
+
+        }
+
+        if (
+            upper === "KEYWORDS" ||
+            upper === "SEO KEYWORDS"
+        ) {
+
+            section =
+                "keywords";
+
+            continue;
+
+        }
+
+        if (
+            upper === "HASHTAGS" ||
+            upper === "HASH TAGS"
+        ) {
+
+            section =
+                "hashtags";
+
+            continue;
+
+        }
+
+        if (
+            upper === "SEO TITLE"
+        ) {
+
+            section =
+                "seoTitle";
+
+            continue;
+
+        }
+
+        if (
+            upper === "SEO DESCRIPTION"
+        ) {
+
+            section =
+                "seoDescription";
+
+            continue;
+
+        }
+
+        if (!section) {
+            continue;
+        }
+
+        if (
+            section === "title"
+        ) {
+
+            if (!result.title) {
+                result.title =
+                    line;
+            }
+
+        } else if (
+            section === "description"
+        ) {
+
+            result.description +=
+                (
+                    result.description
+                        ? " "
+                        : ""
+                ) +
+                line;
+
+        } else if (
+            section === "highlights"
+        ) {
+
+            result.highlights.push(
+                line
                     .replace(
                         /^[-•*]\s*/,
                         ""
                     )
-                    .trim();
+                    .trim()
+            );
 
-            })
+        } else if (
+            section === "keywords"
+        ) {
+
+            result.keywords.push(
+                line
+                    .replace(
+                        /^[-•*]\s*/,
+                        ""
+                    )
+                    .trim()
+            );
+
+        } else if (
+            section === "hashtags"
+        ) {
+
+            result.hashtags.push(
+                line
+                    .replace(
+                        /^[-•*]\s*/,
+                        ""
+                    )
+                    .trim()
+            );
+
+        } else if (
+            section === "seoTitle"
+        ) {
+
+            if (!result.seoTitle) {
+                result.seoTitle =
+                    line;
+            }
+
+        } else if (
+            section === "seoDescription"
+        ) {
+
+            result.seoDescription +=
+                (
+                    result.seoDescription
+                        ? " "
+                        : ""
+                ) +
+                line;
+
+        }
+
+    }
+
+    if (
+        result.title ||
+        result.description ||
+        result.highlights.length ||
+        result.keywords.length ||
+        result.hashtags.length
+    ) {
+
+        return result;
+
+    }
+
+    return null;
+
+}
+
+
+// ==========================================================
+// ARRAY NORMALIZER
+// ==========================================================
+
+function normalizeArray(value) {
+
+    if (Array.isArray(value)) {
+
+        return value
+            .map(
+                item => {
+
+                    if (
+                        typeof item === "object"
+                    ) {
+
+                        return String(
+                            item.text ||
+                            item.value ||
+                            item.name ||
+                            ""
+                        ).trim();
+
+                    }
+
+                    return String(
+                        item
+                    ).trim();
+
+                }
+            )
+            .filter(Boolean);
+
+    }
+
+    if (
+        typeof value === "string"
+    ) {
+
+        return value
+            .split(
+                /\n|,/
+            )
+            .map(
+                item =>
+                    item
+                        .replace(
+                            /^[-•*]\s*/,
+                            ""
+                        )
+                        .trim()
+            )
             .filter(Boolean);
 
     }
@@ -1097,100 +2213,124 @@ function toArray(value) {
 
 
 // ==========================================================
-// FIND OUTPUT
+// SET OUTPUT VALUE
 // ==========================================================
 
-function findOutput(ids) {
+function setOutputValue(
+    value,
+    ids
+) {
 
-    return firstElement(ids);
-
-}
-
-
-// ==========================================================
-// SET OUTPUT
-// ==========================================================
-
-function setOutput(ids, value) {
-
-    const element =
-        findOutput(ids);
-
-    if (!element) {
-        return false;
-    }
-
-    const text =
-        value || "";
-
-    if (
-        "value" in element
+    for (
+        const id
+        of ids
     ) {
 
-        element.value = text;
+        const element =
+            document.getElementById(id);
 
-    } else {
+        if (!element) {
+            continue;
+        }
 
-        element.textContent = text;
+        const finalValue =
+            value || "";
+
+        if (
+            "value" in element
+        ) {
+
+            element.value =
+                finalValue;
+
+        } else {
+
+            element.textContent =
+                finalValue;
+
+        }
+
+        // Force visibility
+        element.style.display =
+            "";
+
+        return true;
 
     }
 
-    element.style.display =
-        "block";
-
-    return true;
+    return false;
 
 }
 
 
 // ==========================================================
-// SET ARRAY OUTPUT
+// SET OUTPUT ARRAY
 // ==========================================================
 
-function setArrayOutput(ids, values) {
-
-    const element =
-        findOutput(ids);
-
-    if (!element) {
-        return false;
-    }
+function setOutputArray(
+    values,
+    ids
+) {
 
     const array =
         Array.isArray(values)
             ? values
             : [];
 
-    if (
-        element.tagName ===
-        "TEXTAREA"
+    for (
+        const id
+        of ids
     ) {
 
-        element.value =
-            array.join("\n");
+        const element =
+            document.getElementById(id);
 
-    } else {
+        if (!element) {
+            continue;
+        }
 
-        element.innerHTML = "";
+        if (
+            element.tagName ===
+            "TEXTAREA"
+        ) {
 
-        array.forEach(function(value) {
+            element.value =
+                array.join("\n");
 
-            const li =
-                document.createElement("li");
+        } else {
 
-            li.textContent =
-                value;
+            element.innerHTML =
+                "";
 
-            element.appendChild(li);
+            for (
+                const value
+                of array
+            ) {
 
-        });
+                const item =
+                    document.createElement(
+                        "li"
+                    );
+
+                item.textContent =
+                    value;
+
+                element.appendChild(
+                    item
+                );
+
+            }
+
+        }
+
+        element.style.display =
+            "";
+
+        return true;
 
     }
 
-    element.style.display =
-        "block";
-
-    return true;
+    return false;
 
 }
 
@@ -1201,75 +2341,117 @@ function setArrayOutput(ids, values) {
 
 function displayListing(listing) {
 
-    setOutput(
-        [
-            "titleResult",
-            "generatedTitle",
-            "listingTitle",
-            "resultTitle"
-        ],
-        listing.title
+    console.log(
+        "[DISPLAY LISTING]",
+        listing
     );
 
-    setOutput(
-        [
-            "descriptionResult",
-            "generatedDescription",
-            "listingDescription",
-            "resultDescription"
-        ],
-        listing.description
-    );
+    const titleShown =
+        setOutputValue(
+            listing.title,
+            [
+                "titleResult",
+                "generatedTitle",
+                "listingTitle",
+                "resultTitle"
+            ]
+        );
 
-    setArrayOutput(
-        [
-            "highlightsResult",
-            "generatedHighlights",
-            "listingHighlights",
-            "resultHighlights"
-        ],
-        listing.highlights
-    );
+    const descriptionShown =
+        setOutputValue(
+            listing.description,
+            [
+                "descriptionResult",
+                "generatedDescription",
+                "listingDescription",
+                "resultDescription"
+            ]
+        );
 
-    setArrayOutput(
-        [
-            "keywordsResult",
-            "generatedKeywords",
-            "listingKeywords",
-            "resultKeywords"
-        ],
-        listing.keywords
-    );
+    const highlightsShown =
+        setOutputArray(
+            listing.highlights,
+            [
+                "highlightsResult",
+                "generatedHighlights",
+                "listingHighlights",
+                "resultHighlights"
+            ]
+        );
 
-    setArrayOutput(
-        [
-            "hashtagsResult",
-            "generatedHashtags",
-            "listingHashtags",
-            "resultHashtags"
-        ],
-        listing.hashtags
-    );
+    const keywordsShown =
+        setOutputArray(
+            listing.keywords,
+            [
+                "keywordsResult",
+                "generatedKeywords",
+                "listingKeywords",
+                "resultKeywords"
+            ]
+        );
 
-    setOutput(
-        [
-            "seoTitleResult",
-            "generatedSeoTitle",
-            "seoTitle",
-            "resultSeoTitle"
-        ],
-        listing.seoTitle
-    );
+    const hashtagsShown =
+        setOutputArray(
+            listing.hashtags,
+            [
+                "hashtagsResult",
+                "generatedHashtags",
+                "listingHashtags",
+                "resultHashtags"
+            ]
+        );
 
-    setOutput(
-        [
-            "seoDescriptionResult",
-            "generatedSeoDescription",
-            "seoDescription",
-            "resultSeoDescription"
-        ],
-        listing.seoDescription
-    );
+    const seoTitleShown =
+        setOutputValue(
+            listing.seoTitle,
+            [
+                "seoTitleResult",
+                "generatedSeoTitle",
+                "seoTitle",
+                "resultSeoTitle"
+            ]
+        );
+
+    const seoDescriptionShown =
+        setOutputValue(
+            listing.seoDescription,
+            [
+                "seoDescriptionResult",
+                "generatedSeoDescription",
+                "seoDescription",
+                "resultSeoDescription"
+            ]
+        );
+
+    const anythingShown =
+        titleShown ||
+        descriptionShown ||
+        highlightsShown ||
+        keywordsShown ||
+        hashtagsShown ||
+        seoTitleShown ||
+        seoDescriptionShown;
+
+    if (!anythingShown) {
+
+        throw new Error(
+            "Listing was generated by the server, but the result fields were not found on this page. Please check the result element IDs in complete-listing-generator.html."
+        );
+
+    }
+
+    showResultContainer();
+
+    return true;
+
+}
+
+
+// ==========================================================
+// SHOW RESULT CONTAINER
+// ==========================================================
+
+function showResultContainer() {
 
     const containers = [
 
@@ -1278,216 +2460,138 @@ function displayListing(listing) {
         "listingResult",
         "generatedListing",
         "outputSection",
-        "listingOutput"
+        "listingOutput",
+        "resultSection",
+        "resultsSection"
 
     ];
 
-    containers.forEach(function(id) {
+    let shown =
+        false;
 
-        const el = $(id);
-
-        if (el) {
-
-            el.style.display =
-                "block";
-
-        }
-
-    });
-
-}
-
-
-// ==========================================================
-// MAIN GENERATE FUNCTION
-// ==========================================================
-
-async function generateCompleteListing(event) {
-
-    if (event) {
-        event.preventDefault();
-    }
-
-    if (isGenerating) {
-        return;
-    }
-
-    clearMessage();
-
-    const product =
-        collectProductData();
-
-    console.log(
-        "Collected product:",
-        product
-    );
-
-    const validation =
-        validateProduct(product);
-
-    if (!validation.valid) {
-
-        showMessage(
-            validation.message,
-            "error"
-        );
-
-        return;
-
-    }
-
-    const payload =
-        buildPayload(product);
-
-    console.log(
-        "Final API payload:",
-        payload
-    );
-
-    isGenerating = true;
-
-    setButtonState(true);
-
-    showMessage(
-        "Generating your product listing...",
-        "info"
-    );
-
-    try {
-
-        const data =
-            await requestListing(
-                payload
-            );
-
-        console.log(
-            "Successful backend data:",
-            data
-        );
-
-        const listing =
-            extractListing(data);
-
-        if (!listing.title) {
-
-            console.error(
-                "No title found in response:",
-                data
-            );
-
-            throw new Error(
-                "Backend returned success, but no listing data was found."
-            );
-
-        }
-
-        displayListing(
-            listing
-        );
-
-        try {
-
-            localStorage.setItem(
-                "aiSellerToolkitLastListing",
-                JSON.stringify({
-
-                    product:
-                        payload,
-
-                    listing:
-                        listing,
-
-                    source:
-                        data.source ||
-                        null,
-
-                    model:
-                        data.model ||
-                        null,
-
-                    version:
-                        data.version ||
-                        "7.1",
-
-                    generatedAt:
-                        new Date()
-                            .toISOString()
-
-                })
-            );
-
-        } catch (storageError) {
-
-            console.warn(
-                "LocalStorage unavailable:",
-                storageError
-            );
-
-        }
-
-        showMessage(
-            "Listing generated successfully.",
-            "success"
-        );
-
-    } catch (error) {
-
-        console.error(
-            "LISTING GENERATION ERROR:",
-            error
-        );
-
-        showMessage(
-            error.message ||
-            "Unable to generate listing. Please try again.",
-            "error"
-        );
-
-    } finally {
-
-        isGenerating = false;
-
-        setButtonState(false);
-
-    }
-
-}
-
-
-// ==========================================================
-// COPY LISTING
-// ==========================================================
-
-function getText(ids) {
-
-    const el =
-        firstElement(ids);
-
-    if (!el) {
-        return "";
-    }
-
-    if (
-        "value" in el
+    for (
+        const id
+        of containers
     ) {
 
-        return String(
-            el.value || ""
-        ).trim();
+        const element =
+            document.getElementById(id);
+
+        if (!element) {
+            continue;
+        }
+
+        element.style.display =
+            "block";
+
+        element.hidden =
+            false;
+
+        shown =
+            true;
 
     }
 
-    return String(
-        el.textContent || ""
-    ).trim();
+    // Scroll to result if found
+    if (shown) {
+
+        setTimeout(() => {
+
+            const firstResult =
+                getElement(
+                    "resultContainer",
+                    "listingResult",
+                    "generatedListing",
+                    "outputSection",
+                    "listingOutput",
+                    "resultSection",
+                    "resultsSection",
+                    "results"
+                );
+
+            if (firstResult) {
+
+                try {
+
+                    firstResult.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start"
+                    });
+
+                } catch (error) {
+
+                    firstResult.scrollIntoView();
+
+                }
+
+            }
+
+        }, 100);
+
+    }
 
 }
 
 
-function getCompleteListingText() {
+// ==========================================================
+// GET DISPLAYED VALUE
+// ==========================================================
+
+function getDisplayedValue(ids) {
+
+    for (
+        const id
+        of ids
+    ) {
+
+        const element =
+            document.getElementById(id);
+
+        if (!element) {
+            continue;
+        }
+
+        if (
+            "value" in element
+        ) {
+
+            const value =
+                String(
+                    element.value || ""
+                ).trim();
+
+            if (value) {
+                return value;
+            }
+
+        } else {
+
+            const value =
+                String(
+                    element.textContent || ""
+                ).trim();
+
+            if (value) {
+                return value;
+            }
+
+        }
+
+    }
+
+    return "";
+
+}
+
+
+// ==========================================================
+// GET COMPLETE LISTING TEXT
+// ==========================================================
+
+function getListingText() {
 
     const title =
-        getText([
+        getDisplayedValue([
             "titleResult",
             "generatedTitle",
             "listingTitle",
@@ -1495,7 +2599,7 @@ function getCompleteListingText() {
         ]);
 
     const description =
-        getText([
+        getDisplayedValue([
             "descriptionResult",
             "generatedDescription",
             "listingDescription",
@@ -1503,7 +2607,7 @@ function getCompleteListingText() {
         ]);
 
     const highlights =
-        getText([
+        getDisplayedValue([
             "highlightsResult",
             "generatedHighlights",
             "listingHighlights",
@@ -1511,483 +2615,7 @@ function getCompleteListingText() {
         ]);
 
     const keywords =
-        getText([
+        getDisplayedValue([
             "keywordsResult",
             "generatedKeywords",
-            "listingKeywords",
-            "resultKeywords"
-        ]);
-
-    const hashtags =
-        getText([
-            "hashtagsResult",
-            "generatedHashtags",
-            "listingHashtags",
-            "resultHashtags"
-        ]);
-
-    const seoTitle =
-        getText([
-            "seoTitleResult",
-            "generatedSeoTitle",
-            "seoTitle",
-            "resultSeoTitle"
-        ]);
-
-    const seoDescription =
-        getText([
-            "seoDescriptionResult",
-            "generatedSeoDescription",
-            "seoDescription",
-            "resultSeoDescription"
-        ]);
-
-    return [
-
-        title
-            ? "TITLE\n" + title
-            : "",
-
-        description
-            ? "DESCRIPTION\n" + description
-            : "",
-
-        highlights
-            ? "HIGHLIGHTS\n" + highlights
-            : "",
-
-        keywords
-            ? "KEYWORDS\n" + keywords
-            : "",
-
-        hashtags
-            ? "HASHTAGS\n" + hashtags
-            : "",
-
-        seoTitle
-            ? "SEO TITLE\n" + seoTitle
-            : "",
-
-        seoDescription
-            ? "SEO DESCRIPTION\n" + seoDescription
-            : ""
-
-    ]
-        .filter(Boolean)
-        .join("\n\n");
-
-}
-
-
-async function copyCompleteListing(event) {
-
-    if (event) {
-        event.preventDefault();
-    }
-
-    const text =
-        getCompleteListingText();
-
-    if (!text) {
-
-        showMessage(
-            "There is no generated listing to copy.",
-            "error"
-        );
-
-        return;
-
-    }
-
-    try {
-
-        await navigator.clipboard.writeText(
-            text
-        );
-
-        showMessage(
-            "Listing copied successfully.",
-            "success"
-        );
-
-    } catch (error) {
-
-        const textarea =
-            document.createElement("textarea");
-
-        textarea.value = text;
-
-        document.body.appendChild(
-            textarea
-        );
-
-        textarea.select();
-
-        try {
-
-            document.execCommand("copy");
-
-            showMessage(
-                "Listing copied successfully.",
-                "success"
-            );
-
-        } catch (copyError) {
-
-            showMessage(
-                "Unable to copy listing.",
-                "error"
-            );
-
-        }
-
-        textarea.remove();
-
-    }
-
-}
-
-
-// ==========================================================
-// SERVER STATUS
-// ==========================================================
-
-async function checkServerStatus() {
-
-    try {
-
-        const response =
-            await fetch(
-                STATUS_ENDPOINT,
-                {
-                    method: "GET",
-                    headers: {
-                        "Accept":
-                            "application/json"
-                    }
-                }
-            );
-
-        if (!response.ok) {
-            throw new Error(
-                "Status HTTP " +
-                response.status
-            );
-        }
-
-        const data =
-            await response.json();
-
-        console.log(
-            "AI Seller Toolkit Backend:",
-            data
-        );
-
-        return data;
-
-    } catch (error) {
-
-        console.warn(
-            "Backend status check failed:",
-            error
-        );
-
-        return null;
-
-    }
-
-}
-
-
-// ==========================================================
-// LOAD LAST LISTING
-// ==========================================================
-
-function loadLastListing() {
-
-    try {
-
-        const saved =
-            localStorage.getItem(
-                "aiSellerToolkitLastListing"
-            );
-
-        if (!saved) {
-            return;
-        }
-
-        const data =
-            JSON.parse(saved);
-
-        if (
-            data &&
-            data.listing &&
-            data.listing.title
-        ) {
-
-            displayListing(
-                data.listing
-            );
-
-        }
-
-    } catch (error) {
-
-        console.warn(
-            "Could not load last listing:",
-            error
-        );
-
-    }
-
-}
-
-
-// ==========================================================
-// BIND GENERATE BUTTON
-// ==========================================================
-
-function bindGenerateButtons() {
-
-    const ids = [
-
-        "generateListingBtn",
-        "generateCompleteListing",
-        "generateBtn",
-        "generateButton"
-
-    ];
-
-    ids.forEach(function(id) {
-
-        const button = $(id);
-
-        if (!button) {
-            return;
-        }
-
-        if (
-            button.dataset.aiSellerBound ===
-            "true"
-        ) {
-            return;
-        }
-
-        button.dataset.aiSellerBound =
-            "true";
-
-        button.addEventListener(
-            "click",
-            generateCompleteListing
-        );
-
-    });
-
-}
-
-
-// ==========================================================
-// BIND COPY BUTTON
-// ==========================================================
-
-function bindCopyButtons() {
-
-    const ids = [
-
-        "copyListingBtn",
-        "copyCompleteListing",
-        "copyButton",
-        "copyListing"
-
-    ];
-
-    ids.forEach(function(id) {
-
-        const button = $(id);
-
-        if (!button) {
-            return;
-        }
-
-        if (
-            button.dataset.aiSellerCopyBound ===
-            "true"
-        ) {
-            return;
-        }
-
-        button.dataset.aiSellerCopyBound =
-            "true";
-
-        button.addEventListener(
-            "click",
-            copyCompleteListing
-        );
-
-    });
-
-}
-
-
-// ==========================================================
-// FORM SUBMIT FIX
-// ==========================================================
-
-function bindFormSubmit() {
-
-    const buttons = [
-
-        "generateListingBtn",
-        "generateCompleteListing",
-        "generateBtn",
-        "generateButton"
-
-    ];
-
-    buttons.forEach(function(id) {
-
-        const button = $(id);
-
-        if (!button) {
-            return;
-        }
-
-        const form =
-            button.closest("form");
-
-        if (!form) {
-            return;
-        }
-
-        if (
-            form.dataset.aiSellerSubmitBound ===
-            "true"
-        ) {
-            return;
-        }
-
-        form.dataset.aiSellerSubmitBound =
-            "true";
-
-        form.addEventListener(
-            "submit",
-            function(event) {
-
-                event.preventDefault();
-
-                generateCompleteListing(
-                    event
-                );
-
-            }
-        );
-
-    });
-
-}
-
-
-// ==========================================================
-// INITIALIZE
-// ==========================================================
-
-async function initialize() {
-
-    console.log(
-        "=================================================="
-    );
-
-    console.log(
-        "AI SELLER TOOLKIT - COMPLETE LISTING GENERATOR 7.2"
-    );
-
-    console.log(
-        "Backend:",
-        API_BASE_URL
-    );
-
-    console.log(
-        "=================================================="
-    );
-
-    const category =
-        getCategoryElement();
-
-    if (category) {
-
-        category.addEventListener(
-            "change",
-            handleCategoryChange
-        );
-
-        if (
-            category.options.length <= 1
-        ) {
-
-            await loadCategories();
-
-        } else {
-
-            handleCategoryChange();
-
-        }
-
-    }
-
-    bindGenerateButtons();
-
-    bindCopyButtons();
-
-    bindFormSubmit();
-
-    await checkServerStatus();
-
-    loadLastListing();
-
-}
-
-
-// ==========================================================
-// AUTO START
-// ==========================================================
-
-if (
-    document.readyState ===
-    "loading"
-) {
-
-    document.addEventListener(
-        "DOMContentLoaded",
-        initialize
-    );
-
-} else {
-
-    initialize();
-
-}
-
-
-// ==========================================================
-// GLOBAL FUNCTIONS
-// ==========================================================
-
-window.generateCompleteListing =
-    generateCompleteListing;
-
-window.generateListing =
-    generateCompleteListing;
-
-window.copyCompleteListing =
-    copyCompleteListing;
-
-window.copyListing =
-    copyCompleteListing;
-
-window.handleCategoryChange =
-    handleCategoryChange;
-
-
-// ==========================================================
-// END — FINAL VERSION 7.2
-// ==========================================================
+            "
