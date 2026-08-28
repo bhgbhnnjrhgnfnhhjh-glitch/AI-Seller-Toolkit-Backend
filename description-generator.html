@@ -22,15 +22,9 @@
 
         body {
             margin: 0;
-            font-family:
-                Arial,
-                sans-serif;
-
-            background:
-                #f5f7fb;
-
-            color:
-                #222;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #222;
         }
 
         .container {
@@ -41,21 +35,16 @@
         }
 
         .header {
-            background:
-                linear-gradient(
-                    135deg,
-                    #6c5ce7,
-                    #0984e3
-                );
+            background: linear-gradient(
+                135deg,
+                #6c5ce7,
+                #0984e3
+            );
 
             color: white;
-
             padding: 26px 20px;
-
             border-radius: 18px;
-
             text-align: center;
-
             margin-bottom: 20px;
         }
 
@@ -71,11 +60,8 @@
 
         .card {
             background: white;
-
             border-radius: 18px;
-
             padding: 22px;
-
             margin-bottom: 20px;
 
             box-shadow:
@@ -85,9 +71,7 @@
 
         label {
             display: block;
-
             font-weight: bold;
-
             margin-bottom: 8px;
         }
 
@@ -99,8 +83,7 @@
 
             padding: 13px;
 
-            border:
-                1px solid #ddd;
+            border: 1px solid #ddd;
 
             border-radius: 10px;
 
@@ -114,9 +97,7 @@
         input:focus,
         select:focus,
         textarea:focus {
-
-            border-color:
-                #6c5ce7;
+            border-color: #6c5ce7;
         }
 
         textarea {
@@ -142,11 +123,9 @@
 
         .category-btn {
 
-            border:
-                1px solid #ddd;
+            border: 1px solid #ddd;
 
-            background:
-                #fff;
+            background: #fff;
 
             padding: 13px 9px;
 
@@ -163,19 +142,16 @@
 
         .category-btn:hover {
 
-            border-color:
-                #6c5ce7;
+            border-color: #6c5ce7;
         }
 
         .category-btn.active {
 
-            background:
-                #6c5ce7;
+            background: #6c5ce7;
 
             color: white;
 
-            border-color:
-                #6c5ce7;
+            border-color: #6c5ce7;
         }
 
         .generate-btn {
@@ -228,22 +204,18 @@
 
             display: block;
 
-            background:
-                #e9f9ee;
+            background: #e9f9ee;
 
-            color:
-                #16833b;
+            color: #16833b;
         }
 
         .status.error {
 
             display: block;
 
-            background:
-                #fff0f0;
+            background: #fff0f0;
 
-            color:
-                #c62828;
+            color: #c62828;
         }
 
         .result-box {
@@ -251,13 +223,32 @@
             display: none;
         }
 
+        .result-section {
+
+            margin-bottom: 18px;
+        }
+
+        .result-section:last-child {
+
+            margin-bottom: 0;
+        }
+
+        .result-title {
+
+            font-size: 16px;
+
+            font-weight: bold;
+
+            margin-bottom: 8px;
+
+            color: #333;
+        }
+
         .result-description {
 
-            background:
-                #f8f8ff;
+            background: #f8f8ff;
 
-            border:
-                1px solid #e2e2ff;
+            border: 1px solid #e2e2ff;
 
             border-radius: 12px;
 
@@ -268,20 +259,74 @@
             white-space: pre-wrap;
 
             overflow-wrap: anywhere;
-
-            margin-bottom: 14px;
         }
 
-        .result-heading {
+        .result-list {
 
-            font-size: 18px;
+            background: #f8f8ff;
+
+            border: 1px solid #e2e2ff;
+
+            border-radius: 12px;
+
+            padding: 14px 18px;
+
+            line-height: 1.7;
+
+            margin: 0;
+
+        }
+
+        .result-list li {
+
+            margin-bottom: 6px;
+        }
+
+        .result-list li:last-child {
+
+            margin-bottom: 0;
+        }
+
+        .result-info {
+
+            background: #f8f8ff;
+
+            border: 1px solid #e2e2ff;
+
+            border-radius: 12px;
+
+            padding: 14px 17px;
+
+            line-height: 1.7;
+
+        }
+
+        .info-row {
+
+            margin-bottom: 7px;
+        }
+
+        .info-row:last-child {
+
+            margin-bottom: 0;
+        }
+
+        .info-label {
 
             font-weight: bold;
+        }
 
-            margin-bottom: 10px;
+        .counter {
 
-            color:
-                #333;
+            font-size: 13px;
+
+            color: #666;
+
+            text-align: right;
+
+            margin-top: 8px;
+
+            margin-bottom: 15px;
         }
 
         .copy-btn {
@@ -294,8 +339,7 @@
 
             border-radius: 10px;
 
-            background:
-                #222;
+            background: #222;
 
             color: white;
 
@@ -303,47 +347,28 @@
 
             font-size: 15px;
 
-            margin-top: 5px;
+            margin-top: 8px;
         }
 
         .copy-btn:hover {
 
-            background:
-                #000;
-        }
-
-        .counter {
-
-            font-size: 13px;
-
-            color:
-                #666;
-
-            text-align: right;
-
-            margin-top: -12px;
-
-            margin-bottom: 15px;
+            background: #000;
         }
 
         .api-info {
 
             font-size: 13px;
 
-            color:
-                #666;
+            color: #666;
 
-            word-break:
-                break-all;
+            word-break: break-all;
         }
 
         .rules {
 
-            background:
-                #f7f9ff;
+            background: #f7f9ff;
 
-            border:
-                1px solid #e2e7ff;
+            border: 1px solid #e2e7ff;
 
             border-radius: 12px;
 
@@ -361,8 +386,7 @@
             }
 
             .category-grid {
-                grid-template-columns:
-                    1fr;
+                grid-template-columns: 1fr;
             }
 
             .header h1 {
@@ -382,7 +406,9 @@
 <div class="container">
 
 
-    <!-- HEADER -->
+    <!-- ==================================================
+         HEADER
+    ================================================== -->
 
     <div class="header">
 
@@ -397,7 +423,9 @@
     </div>
 
 
-    <!-- FORM -->
+    <!-- ==================================================
+         FORM
+    ================================================== -->
 
     <div class="card">
 
@@ -538,7 +566,9 @@
         </div>
 
 
-        <!-- PRODUCT NAME -->
+        <!-- ==================================================
+             PRODUCT NAME
+        ================================================== -->
 
         <label for="productName">
             Product Name *
@@ -551,7 +581,9 @@
         >
 
 
-        <!-- BRAND -->
+        <!-- ==================================================
+             BRAND
+        ================================================== -->
 
         <label for="brand">
             Brand
@@ -564,7 +596,9 @@
         >
 
 
-        <!-- DETAILS -->
+        <!-- ==================================================
+             PRODUCT DETAILS
+        ================================================== -->
 
         <label for="productDetails">
             Product Details
@@ -576,7 +610,9 @@
         ></textarea>
 
 
-        <!-- KEYWORDS -->
+        <!-- ==================================================
+             KEYWORDS
+        ================================================== -->
 
         <label for="keywords">
             Important Keywords
@@ -589,7 +625,9 @@
         >
 
 
-        <!-- GENERATE -->
+        <!-- ==================================================
+             GENERATE BUTTON
+        ================================================== -->
 
         <button
             type="button"
@@ -600,6 +638,8 @@
         </button>
 
 
+        <!-- STATUS -->
+
         <div
             id="status"
             class="status"
@@ -608,7 +648,9 @@
     </div>
 
 
-    <!-- RESULT -->
+    <!-- ==================================================
+         RESULT
+    ================================================== -->
 
     <div
         id="resultBox"
@@ -620,11 +662,107 @@
         </div>
 
 
-        <div
-            id="descriptionResult"
-            class="result-description"
-        ></div>
+        <!-- SHORT DESCRIPTION -->
 
+        <div
+            id="shortDescriptionSection"
+            class="result-section"
+            style="display:none;"
+        >
+
+            <div class="result-title">
+                📌 Short Description
+            </div>
+
+            <div
+                id="shortDescriptionResult"
+                class="result-description"
+            ></div>
+
+        </div>
+
+
+        <!-- MAIN DESCRIPTION -->
+
+        <div
+            id="mainDescriptionSection"
+            class="result-section"
+            style="display:none;"
+        >
+
+            <div class="result-title">
+                📖 Product Description
+            </div>
+
+            <div
+                id="descriptionResult"
+                class="result-description"
+            ></div>
+
+        </div>
+
+
+        <!-- HIGHLIGHTS -->
+
+        <div
+            id="highlightsSection"
+            class="result-section"
+            style="display:none;"
+        >
+
+            <div class="result-title">
+                ⭐ Highlights
+            </div>
+
+            <ul
+                id="highlightsResult"
+                class="result-list"
+            ></ul>
+
+        </div>
+
+
+        <!-- PRODUCT INFORMATION -->
+
+        <div
+            id="productInformationSection"
+            class="result-section"
+            style="display:none;"
+        >
+
+            <div class="result-title">
+                📋 Product Information
+            </div>
+
+            <div
+                id="productInformationResult"
+                class="result-info"
+            ></div>
+
+        </div>
+
+
+        <!-- FALLBACK / RAW RESULT -->
+
+        <div
+            id="rawResultSection"
+            class="result-section"
+            style="display:none;"
+        >
+
+            <div class="result-title">
+                📝 Generated Content
+            </div>
+
+            <div
+                id="rawResult"
+                class="result-description"
+            ></div>
+
+        </div>
+
+
+        <!-- CHARACTER COUNTER -->
 
         <div
             id="descriptionCounter"
@@ -634,18 +772,22 @@
         </div>
 
 
+        <!-- COPY -->
+
         <button
             type="button"
             id="copyBtn"
             class="copy-btn"
         >
-            📋 Copy Description
+            📋 Copy Full Description
         </button>
 
     </div>
 
 
-    <!-- RULES -->
+    <!-- ==================================================
+         STRICT FACTUAL AI RULES
+    ================================================== -->
 
     <div class="card">
 
@@ -683,12 +825,18 @@
 
             ✅ Unsupported technical specifications नहीं
 
+            <br>
+
+            ✅ सभी 14 categories के लिए category-aware description
+
         </div>
 
     </div>
 
 
-    <!-- API -->
+    <!-- ==================================================
+         API INFO
+    ================================================== -->
 
     <div class="card">
 
@@ -713,9 +861,14 @@
 // ==========================================================
 // AI SELLER TOOLKIT
 // DESCRIPTION GENERATOR
-// FRONTEND — FINAL
+// FRONTEND — FINAL VERSION
+// Object Response Fixed
 // ==========================================================
 
+
+// ==========================================================
+// BACKEND
+// ==========================================================
 
 const API_BASE_URL =
     "https://ai-seller-toolkit-backend-1.onrender.com";
@@ -724,6 +877,11 @@ const API_BASE_URL =
 const API_URL =
     API_BASE_URL +
     "/api/generate-description";
+
+
+document.getElementById(
+    "apiInfo"
+).textContent = API_URL;
 
 
 // ==========================================================
@@ -786,9 +944,63 @@ const resultBox =
     );
 
 
+const shortDescriptionSection =
+    document.getElementById(
+        "shortDescriptionSection"
+    );
+
+
+const shortDescriptionResult =
+    document.getElementById(
+        "shortDescriptionResult"
+    );
+
+
+const mainDescriptionSection =
+    document.getElementById(
+        "mainDescriptionSection"
+    );
+
+
 const descriptionResult =
     document.getElementById(
         "descriptionResult"
+    );
+
+
+const highlightsSection =
+    document.getElementById(
+        "highlightsSection"
+    );
+
+
+const highlightsResult =
+    document.getElementById(
+        "highlightsResult"
+    );
+
+
+const productInformationSection =
+    document.getElementById(
+        "productInformationSection"
+    );
+
+
+const productInformationResult =
+    document.getElementById(
+        "productInformationResult"
+    );
+
+
+const rawResultSection =
+    document.getElementById(
+        "rawResultSection"
+    );
+
+
+const rawResult =
+    document.getElementById(
+        "rawResult"
     );
 
 
@@ -804,11 +1016,6 @@ const copyBtn =
     );
 
 
-document.getElementById(
-    "apiInfo"
-).textContent = API_URL;
-
-
 // ==========================================================
 // CATEGORY SELECTION
 // ==========================================================
@@ -821,10 +1028,13 @@ categoryButtons.forEach(
             () => {
 
                 categoryButtons.forEach(
-                    btn =>
+                    btn => {
+
                         btn.classList.remove(
                             "active"
-                        )
+                        );
+
+                    }
                 );
 
 
@@ -835,6 +1045,12 @@ categoryButtons.forEach(
 
                 selectedCategory =
                     button.dataset.category;
+
+
+                console.log(
+                    "Selected Category:",
+                    selectedCategory
+                );
 
             }
         );
@@ -873,6 +1089,843 @@ function hideStatus() {
 
 
 // ==========================================================
+// RESET RESULTS
+// ==========================================================
+
+function resetResults() {
+
+    resultBox.style.display =
+        "none";
+
+
+    shortDescriptionSection.style.display =
+        "none";
+
+
+    mainDescriptionSection.style.display =
+        "none";
+
+
+    highlightsSection.style.display =
+        "none";
+
+
+    productInformationSection.style.display =
+        "none";
+
+
+    rawResultSection.style.display =
+        "none";
+
+
+    shortDescriptionResult.textContent =
+        "";
+
+
+    descriptionResult.textContent =
+        "";
+
+
+    highlightsResult.innerHTML =
+        "";
+
+
+    productInformationResult.innerHTML =
+        "";
+
+
+    rawResult.textContent =
+        "";
+
+
+    descriptionCounter.textContent =
+        "0 characters";
+
+}
+
+
+// ==========================================================
+// SAFE TEXT CONVERTER
+// ==========================================================
+
+function safeText(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "";
+
+    }
+
+
+    if (
+        typeof value === "string" ||
+        typeof value === "number" ||
+        typeof value === "boolean"
+    ) {
+
+        return String(value);
+
+    }
+
+
+    return "";
+
+}
+
+
+// ==========================================================
+// ARRAY CONVERTER
+// ==========================================================
+
+function toArray(value) {
+
+    if (
+        Array.isArray(value)
+    ) {
+
+        return value;
+
+    }
+
+
+    if (
+        typeof value === "string"
+    ) {
+
+        return value
+            .split(/\n|•|,/)
+            .map(
+                item =>
+                    item.trim()
+            )
+            .filter(Boolean);
+
+    }
+
+
+    return [];
+
+}
+
+
+// ==========================================================
+// PRODUCT INFORMATION RENDER
+// ==========================================================
+
+function renderProductInformation(
+    value
+) {
+
+    productInformationResult.innerHTML =
+        "";
+
+
+    if (!value) {
+
+        return false;
+
+    }
+
+
+    if (
+        typeof value === "string"
+    ) {
+
+        productInformationResult.textContent =
+            value;
+
+        return true;
+
+    }
+
+
+    if (
+        Array.isArray(value)
+    ) {
+
+        const list =
+            document.createElement(
+                "ul"
+            );
+
+        list.className =
+            "result-list";
+
+
+        value.forEach(
+            item => {
+
+                const li =
+                    document.createElement(
+                        "li"
+                    );
+
+
+                if (
+                    typeof item === "object" &&
+                    item !== null
+                ) {
+
+                    li.textContent =
+                        Object.entries(item)
+                            .map(
+                                ([key, val]) =>
+                                    `${key}: ${safeText(val)}`
+                            )
+                            .join(" | ");
+
+                }
+                else {
+
+                    li.textContent =
+                        safeText(item);
+
+                }
+
+
+                list.appendChild(
+                    li
+                );
+
+            }
+        );
+
+
+        productInformationResult.appendChild(
+            list
+        );
+
+        return true;
+
+    }
+
+
+    if (
+        typeof value === "object"
+    ) {
+
+        Object.entries(value)
+            .forEach(
+                ([key, val]) => {
+
+                    const row =
+                        document.createElement(
+                            "div"
+                        );
+
+                    row.className =
+                        "info-row";
+
+
+                    const label =
+                        document.createElement(
+                            "span"
+                        );
+
+                    label.className =
+                        "info-label";
+
+
+                    label.textContent =
+                        formatLabel(key) +
+                        ": ";
+
+
+                    const text =
+                        document.createElement(
+                            "span"
+                        );
+
+
+                    if (
+                        typeof val === "object"
+                    ) {
+
+                        text.textContent =
+                            JSON.stringify(
+                                val
+                            );
+
+                    }
+                    else {
+
+                        text.textContent =
+                            safeText(val);
+
+                    }
+
+
+                    row.appendChild(
+                        label
+                    );
+
+                    row.appendChild(
+                        text
+                    );
+
+
+                    productInformationResult.appendChild(
+                        row
+                    );
+
+                }
+            );
+
+
+        return true;
+
+    }
+
+
+    return false;
+
+}
+
+
+// ==========================================================
+// LABEL FORMATTER
+// ==========================================================
+
+function formatLabel(
+    key
+) {
+
+    return String(key)
+        .replace(
+            /([A-Z])/g,
+            " $1"
+        )
+        .replace(
+            /^./,
+            char =>
+                char.toUpperCase()
+        )
+        .trim();
+
+}
+
+
+// ==========================================================
+// RENDER HIGHLIGHTS
+// ==========================================================
+
+function renderHighlights(
+    value
+) {
+
+    highlightsResult.innerHTML =
+        "";
+
+
+    const items =
+        toArray(value);
+
+
+    if (
+        items.length === 0
+    ) {
+
+        return false;
+
+    }
+
+
+    items.forEach(
+        item => {
+
+            const li =
+                document.createElement(
+                    "li"
+                );
+
+
+            if (
+                typeof item === "object" &&
+                item !== null
+            ) {
+
+                li.textContent =
+                    Object.entries(item)
+                        .map(
+                            ([key, val]) =>
+                                `${formatLabel(key)}: ${safeText(val)}`
+                        )
+                        .join(" | ");
+
+            }
+            else {
+
+                li.textContent =
+                    safeText(item);
+
+            }
+
+
+            highlightsResult.appendChild(
+                li
+            );
+
+        }
+    );
+
+
+    return true;
+
+}
+
+
+// ==========================================================
+// NORMALIZE BACKEND RESPONSE
+// ==========================================================
+
+function normalizeResponse(
+    data
+) {
+
+    let source =
+        data;
+
+
+    // ------------------------------------------
+    // Common wrapper
+    // ------------------------------------------
+
+    if (
+        data &&
+        data.result &&
+        typeof data.result === "object"
+    ) {
+
+        source =
+            data.result;
+
+    }
+
+
+    // ------------------------------------------
+    // Another possible wrapper
+    // ------------------------------------------
+
+    if (
+        source &&
+        source.data &&
+        typeof source.data === "object"
+    ) {
+
+        source =
+            source.data;
+
+    }
+
+
+    // ------------------------------------------
+    // String response
+    // ------------------------------------------
+
+    if (
+        typeof source === "string"
+    ) {
+
+        return {
+
+            shortDescription: "",
+
+            description:
+                source.trim(),
+
+            highlights: [],
+
+            productInformation: null,
+
+            raw: source.trim()
+
+        };
+
+    }
+
+
+    // ------------------------------------------
+    // Object response
+    // ------------------------------------------
+
+    if (
+        source &&
+        typeof source === "object"
+    ) {
+
+        const shortDescription =
+            safeText(
+                source.shortDescription ||
+                source.short_description ||
+                source.summary ||
+                ""
+            ).trim();
+
+
+        const description =
+            safeText(
+                source.description ||
+                source.productDescription ||
+                source.product_description ||
+                source.content ||
+                source.text ||
+                ""
+            ).trim();
+
+
+        const highlights =
+            source.highlights ||
+            source.keyFeatures ||
+            source.key_features ||
+            source.features ||
+            [];
+
+
+        const productInformation =
+            source.productInformation ||
+            source.product_information ||
+            source.productInfo ||
+            source.product_info ||
+            source.specifications ||
+            null;
+
+
+        return {
+
+            shortDescription,
+
+            description,
+
+            highlights,
+
+            productInformation,
+
+            raw: ""
+
+        };
+
+    }
+
+
+    return {
+
+        shortDescription: "",
+
+        description: "",
+
+        highlights: [],
+
+        productInformation: null,
+
+        raw: ""
+
+    };
+
+}
+
+
+// ==========================================================
+// FULL COPY TEXT BUILDER
+// ==========================================================
+
+function buildCopyText(
+    normalized
+) {
+
+    const sections = [];
+
+
+    if (
+        normalized.shortDescription
+    ) {
+
+        sections.push(
+            "SHORT DESCRIPTION\n\n" +
+            normalized.shortDescription
+        );
+
+    }
+
+
+    if (
+        normalized.description
+    ) {
+
+        sections.push(
+            "PRODUCT DESCRIPTION\n\n" +
+            normalized.description
+        );
+
+    }
+
+
+    const highlightItems =
+        toArray(
+            normalized.highlights
+        );
+
+
+    if (
+        highlightItems.length
+    ) {
+
+        sections.push(
+            "HIGHLIGHTS\n\n" +
+            highlightItems
+                .map(
+                    item =>
+                        "• " +
+                        safeText(item)
+                )
+                .join("\n")
+        );
+
+    }
+
+
+    if (
+        normalized.productInformation
+    ) {
+
+        let infoText = "";
+
+
+        if (
+            typeof normalized.productInformation ===
+            "string"
+        ) {
+
+            infoText =
+                normalized.productInformation;
+
+        }
+        else if (
+            Array.isArray(
+                normalized.productInformation
+            )
+        ) {
+
+            infoText =
+                normalized.productInformation
+                    .map(
+                        item =>
+                            "• " +
+                            (
+                                typeof item === "object"
+                                    ? Object.entries(item)
+                                        .map(
+                                            ([key, val]) =>
+                                                `${formatLabel(key)}: ${safeText(val)}`
+                                        )
+                                        .join(" | ")
+                                    : safeText(item)
+                            )
+                    )
+                    .join("\n");
+
+        }
+        else {
+
+            infoText =
+                Object.entries(
+                    normalized.productInformation
+                )
+                .map(
+                    ([key, val]) =>
+                        `${formatLabel(key)}: ${safeText(val)}`
+                )
+                .join("\n");
+
+        }
+
+
+        if (infoText.trim()) {
+
+            sections.push(
+                "PRODUCT INFORMATION\n\n" +
+                infoText.trim()
+            );
+
+        }
+
+    }
+
+
+    if (
+        sections.length === 0 &&
+        normalized.raw
+    ) {
+
+        sections.push(
+            normalized.raw
+        );
+
+    }
+
+
+    return sections.join(
+        "\n\n"
+    ).trim();
+
+}
+
+
+// ==========================================================
+// RENDER FINAL RESULT
+// ==========================================================
+
+function renderResult(
+    normalized
+) {
+
+    resetResults();
+
+
+    let hasResult =
+        false;
+
+
+    // ------------------------------------------
+    // Short Description
+    // ------------------------------------------
+
+    if (
+        normalized.shortDescription
+    ) {
+
+        shortDescriptionResult.textContent =
+            normalized.shortDescription;
+
+
+        shortDescriptionSection.style.display =
+            "block";
+
+
+        hasResult =
+            true;
+
+    }
+
+
+    // ------------------------------------------
+    // Main Description
+    // ------------------------------------------
+
+    if (
+        normalized.description
+    ) {
+
+        descriptionResult.textContent =
+            normalized.description;
+
+
+        mainDescriptionSection.style.display =
+            "block";
+
+
+        hasResult =
+            true;
+
+    }
+
+
+    // ------------------------------------------
+    // Highlights
+    // ------------------------------------------
+
+    if (
+        renderHighlights(
+            normalized.highlights
+        )
+    ) {
+
+        highlightsSection.style.display =
+            "block";
+
+
+        hasResult =
+            true;
+
+    }
+
+
+    // ------------------------------------------
+    // Product Information
+    // ------------------------------------------
+
+    if (
+        renderProductInformation(
+            normalized.productInformation
+        )
+    ) {
+
+        productInformationSection.style.display =
+            "block";
+
+
+        hasResult =
+            true;
+
+    }
+
+
+    // ------------------------------------------
+    // Raw fallback
+    // ------------------------------------------
+
+    if (
+        !hasResult &&
+        normalized.raw
+    ) {
+
+        rawResult.textContent =
+            normalized.raw;
+
+
+        rawResultSection.style.display =
+            "block";
+
+
+        hasResult =
+            true;
+
+    }
+
+
+    // ------------------------------------------
+    // Copy text
+    // ------------------------------------------
+
+    const fullText =
+        buildCopyText(
+            normalized
+        );
+
+
+    descriptionCounter.textContent =
+        fullText.length +
+        " characters";
+
+
+    if (
+        hasResult
+    ) {
+
+        resultBox.style.display =
+            "block";
+
+    }
+
+
+    return hasResult;
+
+}
+
+
+// ==========================================================
 // GENERATE DESCRIPTION
 // ==========================================================
 
@@ -899,6 +1952,10 @@ generateBtn.addEventListener(
             keywords.value.trim();
 
 
+        // ------------------------------------------
+        // Validation
+        // ------------------------------------------
+
         if (!name) {
 
             showStatus(
@@ -906,12 +1963,18 @@ generateBtn.addEventListener(
                 "error"
             );
 
+
             productName.focus();
+
 
             return;
 
         }
 
+
+        // ------------------------------------------
+        // Loading
+        // ------------------------------------------
 
         generateBtn.disabled =
             true;
@@ -921,22 +1984,28 @@ generateBtn.addEventListener(
             "⏳ Generating Description...";
 
 
-        resultBox.style.display =
-            "none";
+        resetResults();
 
 
         try {
+
+            // --------------------------------------
+            // API Request
+            // --------------------------------------
 
             const response =
                 await fetch(
                     API_URL,
                     {
 
-                        method: "POST",
+                        method:
+                            "POST",
 
                         headers: {
+
                             "Content-Type":
                                 "application/json"
+
                         },
 
                         body:
@@ -963,6 +2032,10 @@ generateBtn.addEventListener(
                 );
 
 
+            // --------------------------------------
+            // Read Response
+            // --------------------------------------
+
             let data;
 
 
@@ -975,29 +2048,88 @@ generateBtn.addEventListener(
             catch {
 
                 throw new Error(
-                    "Backend से valid response नहीं मिला।"
+                    "Backend से valid JSON response नहीं मिला।"
                 );
 
             }
 
+
+            console.log(
+                "DESCRIPTION API RESPONSE:",
+                data
+            );
+
+
+            // --------------------------------------
+            // HTTP Error
+            // --------------------------------------
 
             if (!response.ok) {
 
+                let errorMessage =
+                    "Server Error: " +
+                    response.status;
+
+
+                if (
+                    data &&
+                    data.error
+                ) {
+
+                    if (
+                        typeof data.error ===
+                        "string"
+                    ) {
+
+                        errorMessage =
+                            data.error;
+
+                    }
+                    else if (
+                        typeof data.error ===
+                        "object"
+                    ) {
+
+                        errorMessage =
+                            data.error.message ||
+                            JSON.stringify(
+                                data.error
+                            );
+
+                    }
+
+                }
+
+
+                if (
+                    data &&
+                    data.message
+                ) {
+
+                    errorMessage =
+                        data.message;
+
+                }
+
+
                 throw new Error(
-                    data.error ||
-                    data.message ||
-                    `Server Error: ${response.status}`
+                    errorMessage
                 );
 
             }
 
 
+            // --------------------------------------
+            // Success check
+            // --------------------------------------
+
             if (
-                !data ||
-                data.success !== true
+                data &&
+                data.success === false
             ) {
 
                 throw new Error(
+                    data.message ||
                     data.error ||
                     "Description generation failed."
                 );
@@ -1005,41 +2137,49 @@ generateBtn.addEventListener(
             }
 
 
-            const description =
-                String(
-                    data.description ||
-                    data.result?.description ||
-                    ""
-                ).trim();
+            // --------------------------------------
+            // Normalize Object/String
+            // --------------------------------------
+
+            const normalized =
+                normalizeResponse(
+                    data
+                );
 
 
-            if (!description) {
+            console.log(
+                "NORMALIZED DESCRIPTION:",
+                normalized
+            );
+
+
+            // --------------------------------------
+            // Render
+            // --------------------------------------
+
+            const rendered =
+                renderResult(
+                    normalized
+                );
+
+
+            if (!rendered) {
 
                 throw new Error(
-                    "Backend ने description वापस नहीं भेजा।"
+                    "Backend से description का usable content नहीं मिला।"
                 );
 
             }
 
 
-            descriptionResult.textContent =
-                description;
-
-
-            descriptionCounter.textContent =
-                description.length +
-                " characters";
-
-
-            resultBox.style.display =
-                "block";
-
+            // --------------------------------------
+            // Success
+            // --------------------------------------
 
             showStatus(
                 "✅ Product Description successfully generated!",
                 "success"
             );
-
 
         }
         catch (error) {
@@ -1076,18 +2216,52 @@ generateBtn.addEventListener(
 
 
 // ==========================================================
-// COPY
+// COPY FULL DESCRIPTION
 // ==========================================================
 
 copyBtn.addEventListener(
     "click",
     async () => {
 
+        const normalized = {
+
+            shortDescription:
+                shortDescriptionResult.textContent.trim(),
+
+            description:
+                descriptionResult.textContent.trim(),
+
+            highlights:
+                Array.from(
+                    highlightsResult.querySelectorAll("li")
+                )
+                .map(
+                    li =>
+                        li.textContent.trim()
+                ),
+
+            productInformation:
+                productInformationResult.textContent.trim(),
+
+            raw:
+                rawResult.textContent.trim()
+
+        };
+
+
         const text =
-            descriptionResult.textContent.trim();
+            buildCopyText(
+                normalized
+            );
 
 
         if (!text) {
+
+            showStatus(
+                "❌ Copy करने के लिए description उपलब्ध नहीं है।",
+                "error"
+            );
+
 
             return;
 
@@ -1109,7 +2283,7 @@ copyBtn.addEventListener(
                 () => {
 
                     copyBtn.textContent =
-                        "📋 Copy Description";
+                        "📋 Copy Full Description";
 
                 },
                 1500
@@ -1119,14 +2293,95 @@ copyBtn.addEventListener(
         }
         catch {
 
-            showStatus(
-                "❌ Description copy नहीं हो पाया।",
-                "error"
-            );
+            // ----------------------------------
+            // Fallback Copy
+            // ----------------------------------
+
+            try {
+
+                const temp =
+                    document.createElement(
+                        "textarea"
+                    );
+
+
+                temp.value =
+                    text;
+
+
+                temp.style.position =
+                    "fixed";
+
+
+                temp.style.opacity =
+                    "0";
+
+
+                document.body.appendChild(
+                    temp
+                );
+
+
+                temp.focus();
+
+
+                temp.select();
+
+
+                document.execCommand(
+                    "copy"
+                );
+
+
+                temp.remove();
+
+
+                copyBtn.textContent =
+                    "✅ Copied!";
+
+
+                setTimeout(
+                    () => {
+
+                        copyBtn.textContent =
+                            "📋 Copy Full Description";
+
+                    },
+                    1500
+                );
+
+            }
+            catch {
+
+                showStatus(
+                    "❌ Description copy नहीं हो पाया।",
+                    "error"
+                );
+
+            }
 
         }
 
     }
+);
+
+
+// ==========================================================
+// END
+// ==========================================================
+
+console.log(
+    "AI Seller Toolkit Description Generator loaded."
+);
+
+console.log(
+    "Backend:",
+    API_URL
+);
+
+console.log(
+    "Selected Category:",
+    selectedCategory
 );
 
 
