@@ -1,249 +1,377 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-<title>AI Product Description Generator</title>
+    <title>
+        AI Description Generator | AI Seller Toolkit
+    </title>
 
-<link rel="stylesheet" href="style.css">
+    <style>
 
-<style>
+        * {
+            box-sizing: border-box;
+        }
 
-.generator-container {
+        body {
+            margin: 0;
+            font-family:
+                Arial,
+                sans-serif;
 
-    max-width: 750px;
+            background:
+                #f5f7fb;
 
-    margin: 30px auto;
+            color:
+                #222;
+        }
 
-    background: #ffffff;
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: auto;
+            padding: 18px;
+        }
 
-    padding: 25px;
+        .header {
+            background:
+                linear-gradient(
+                    135deg,
+                    #6c5ce7,
+                    #0984e3
+                );
 
-    border-radius: 14px;
+            color: white;
 
-    box-shadow:
-        0 5px 18px rgba(0,0,0,0.12);
+            padding: 26px 20px;
 
-}
+            border-radius: 18px;
 
-.generator-container h2 {
+            text-align: center;
 
-    text-align: center;
+            margin-bottom: 20px;
+        }
 
-    color: #2563eb;
+        .header h1 {
+            margin: 0 0 8px;
+            font-size: 27px;
+        }
 
-    margin-bottom: 25px;
+        .header p {
+            margin: 0;
+            opacity: .95;
+        }
 
-}
+        .card {
+            background: white;
 
-.form-group {
+            border-radius: 18px;
 
-    margin-bottom: 16px;
+            padding: 22px;
 
-}
+            margin-bottom: 20px;
 
-.form-group label {
+            box-shadow:
+                0 5px 20px
+                rgba(0,0,0,.07);
+        }
 
-    display: block;
+        label {
+            display: block;
 
-    font-weight: bold;
+            font-weight: bold;
 
-    margin-bottom: 7px;
+            margin-bottom: 8px;
+        }
 
-}
+        input,
+        select,
+        textarea {
 
-.form-group input,
-.form-group select,
-.form-group textarea {
+            width: 100%;
 
-    width: 100%;
+            padding: 13px;
 
-    box-sizing: border-box;
+            border:
+                1px solid #ddd;
 
-    padding: 12px;
+            border-radius: 10px;
 
-    border: 1px solid #d1d5db;
+            font-size: 15px;
 
-    border-radius: 7px;
+            outline: none;
 
-    font-size: 16px;
+            margin-bottom: 18px;
+        }
 
-    outline: none;
+        input:focus,
+        select:focus,
+        textarea:focus {
 
-}
+            border-color:
+                #6c5ce7;
+        }
 
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
+        textarea {
 
-    border-color: #2563eb;
+            min-height: 140px;
 
-}
+            resize: vertical;
 
-.generate-btn {
+            line-height: 1.6;
+        }
 
-    width: 100%;
+        .category-grid {
 
-    padding: 14px;
+            display: grid;
 
-    background: #16a34a;
+            grid-template-columns:
+                repeat(2, 1fr);
 
-    color: white;
+            gap: 10px;
 
-    border: none;
+            margin-bottom: 20px;
+        }
 
-    border-radius: 7px;
+        .category-btn {
 
-    font-size: 18px;
+            border:
+                1px solid #ddd;
 
-    font-weight: bold;
+            background:
+                #fff;
 
-    cursor: pointer;
+            padding: 13px 9px;
 
-}
+            border-radius: 10px;
 
-.generate-btn:hover {
+            cursor: pointer;
 
-    background: #15803d;
+            font-size: 14px;
 
-}
+            text-align: left;
 
-.generate-btn:disabled {
+            transition: .2s;
+        }
 
-    background: #9ca3af;
+        .category-btn:hover {
 
-    cursor: not-allowed;
+            border-color:
+                #6c5ce7;
+        }
 
-}
+        .category-btn.active {
 
-.status {
+            background:
+                #6c5ce7;
 
-    text-align: center;
+            color: white;
 
-    margin-top: 15px;
+            border-color:
+                #6c5ce7;
+        }
 
-    min-height: 22px;
+        .generate-btn {
 
-    font-size: 14px;
+            width: 100%;
 
-    color: #555;
+            border: none;
 
-}
+            padding: 15px;
 
-.result-box {
+            border-radius: 12px;
 
-    width: 100%;
+            background:
+                linear-gradient(
+                    135deg,
+                    #6c5ce7,
+                    #0984e3
+                );
 
-    min-height: 280px;
+            color: white;
 
-    margin-top: 20px;
+            font-size: 17px;
 
-    padding: 16px;
+            font-weight: bold;
 
-    box-sizing: border-box;
+            cursor: pointer;
+        }
 
-    background: #f8fafc;
+        .generate-btn:disabled {
 
-    border: 1px solid #d1d5db;
+            opacity: .6;
 
-    border-radius: 8px;
+            cursor: not-allowed;
+        }
 
-    resize: vertical;
+        .status {
 
-    white-space: pre-wrap;
+            margin-top: 15px;
 
-    word-break: break-word;
+            padding: 12px;
 
-    line-height: 1.8;
+            border-radius: 10px;
 
-    font-size: 16px;
+            display: none;
 
-    font-family: Arial, sans-serif;
+            line-height: 1.5;
+        }
 
-}
+        .status.success {
 
-.copy-btn {
+            display: block;
 
-    width: 100%;
+            background:
+                #e9f9ee;
 
-    margin-top: 12px;
+            color:
+                #16833b;
+        }
 
-    padding: 13px;
+        .status.error {
 
-    background: #2563eb;
+            display: block;
 
-    color: white;
+            background:
+                #fff0f0;
 
-    border: none;
+            color:
+                #c62828;
+        }
 
-    border-radius: 7px;
+        .result-box {
 
-    font-size: 17px;
+            display: none;
+        }
 
-    cursor: pointer;
+        .result-description {
 
-}
+            background:
+                #f8f8ff;
 
-.copy-btn:hover {
+            border:
+                1px solid #e2e2ff;
 
-    background: #1d4ed8;
+            border-radius: 12px;
 
-}
+            padding: 17px;
 
-.clear-btn {
+            line-height: 1.7;
 
-    width: 100%;
+            white-space: pre-wrap;
 
-    margin-top: 10px;
+            overflow-wrap: anywhere;
 
-    padding: 13px;
+            margin-bottom: 14px;
+        }
 
-    background: #dc2626;
+        .result-heading {
 
-    color: white;
+            font-size: 18px;
 
-    border: none;
+            font-weight: bold;
 
-    border-radius: 7px;
+            margin-bottom: 10px;
 
-    font-size: 17px;
+            color:
+                #333;
+        }
 
-    cursor: pointer;
+        .copy-btn {
 
-}
+            width: 100%;
 
-.clear-btn:hover {
+            border: none;
 
-    background: #b91c1c;
+            padding: 13px;
 
-}
+            border-radius: 10px;
 
-.info-box {
+            background:
+                #222;
 
-    margin-top: 18px;
+            color: white;
 
-    padding: 14px;
+            cursor: pointer;
 
-    background: #eff6ff;
+            font-size: 15px;
 
-    border-left: 4px solid #2563eb;
+            margin-top: 5px;
+        }
 
-    border-radius: 6px;
+        .copy-btn:hover {
 
-    font-size: 14px;
+            background:
+                #000;
+        }
 
-    line-height: 1.6;
+        .counter {
 
-}
+            font-size: 13px;
 
-</style>
+            color:
+                #666;
+
+            text-align: right;
+
+            margin-top: -12px;
+
+            margin-bottom: 15px;
+        }
+
+        .api-info {
+
+            font-size: 13px;
+
+            color:
+                #666;
+
+            word-break:
+                break-all;
+        }
+
+        .rules {
+
+            background:
+                #f7f9ff;
+
+            border:
+                1px solid #e2e7ff;
+
+            border-radius: 12px;
+
+            padding: 15px;
+
+            line-height: 1.7;
+
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+
+            .container {
+                padding: 12px;
+            }
+
+            .category-grid {
+                grid-template-columns:
+                    1fr;
+            }
+
+            .header h1 {
+                font-size: 23px;
+            }
+
+        }
+
+    </style>
 
 </head>
 
@@ -251,300 +379,758 @@
 <body>
 
 
-<header>
-
-<h1>🤖 AI Seller Toolkit</h1>
-
-<a href="tools.html">⬅ Back to Tools</a>
-
-</header>
+<div class="container">
 
 
-<section class="hero">
+    <!-- HEADER -->
 
-<h2>📝 AI Product Description Generator</h2>
+    <div class="header">
 
-<p>
-Create Professional Product Descriptions with AI
-</p>
+        <h1>
+            📝 AI Description Generator
+        </h1>
 
-</section>
+        <p>
+            हर Category के लिए factual और marketplace-ready descriptions
+        </p>
 
-
-<div class="generator-container">
-
-
-<h2>
-Create Product Description
-</h2>
+    </div>
 
 
-<div class="form-group">
+    <!-- FORM -->
 
-<label for="product">
-Product Name
-</label>
+    <div class="card">
 
-<input
-    type="text"
-    id="product"
-    placeholder="Example: Cotton T-Shirt"
->
+        <label>
+            📂 Product Category
+        </label>
+
+
+        <div class="category-grid">
+
+
+            <button
+                type="button"
+                class="category-btn active"
+                data-category="Fashion"
+            >
+                👗 Fashion
+            </button>
+
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Beauty"
+            >
+                💄 Beauty
+            </button>
+
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Electronics"
+            >
+                📱 Electronics
+            </button>
+
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Home & Kitchen"
+            >
+                🏠 Home & Kitchen
+            </button>
+
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Shoes"
+            >
+                👟 Shoes
+            </button>
+
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Jewellery"
+            >
+                💍 Jewellery
+            </button>
+
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Toys"
+            >
+                🧸 Toys
+            </button>
+
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Books"
+            >
+                📚 Books
+            </button>
+
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Pet"
+            >
+                🐶 Pet
+            </button>
+
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Sports"
+            >
+                🏋️ Sports
+            </button>
+
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Automotive"
+            >
+                🚗 Automotive
+            </button>
+
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Garden"
+            >
+                🌱 Garden
+            </button>
+
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Food"
+            >
+                🍎 Food
+            </button>
+
+
+            <button
+                type="button"
+                class="category-btn"
+                data-category="Gifts"
+            >
+                🎁 Gifts
+            </button>
+
+
+        </div>
+
+
+        <!-- PRODUCT NAME -->
+
+        <label for="productName">
+            Product Name *
+        </label>
+
+        <input
+            type="text"
+            id="productName"
+            placeholder="Example: Cotton Kurti"
+        >
+
+
+        <!-- BRAND -->
+
+        <label for="brand">
+            Brand
+        </label>
+
+        <input
+            type="text"
+            id="brand"
+            placeholder="Example: Test Brand"
+        >
+
+
+        <!-- DETAILS -->
+
+        <label for="productDetails">
+            Product Details
+        </label>
+
+        <textarea
+            id="productDetails"
+            placeholder="Product के बारे में उपलब्ध जानकारी लिखें..."
+        ></textarea>
+
+
+        <!-- KEYWORDS -->
+
+        <label for="keywords">
+            Important Keywords
+        </label>
+
+        <input
+            type="text"
+            id="keywords"
+            placeholder="Example: cotton, floral, women, casual"
+        >
+
+
+        <!-- GENERATE -->
+
+        <button
+            type="button"
+            id="generateBtn"
+            class="generate-btn"
+        >
+            ✨ Generate Product Description
+        </button>
+
+
+        <div
+            id="status"
+            class="status"
+        ></div>
+
+    </div>
+
+
+    <!-- RESULT -->
+
+    <div
+        id="resultBox"
+        class="card result-box"
+    >
+
+        <div class="result-heading">
+            📝 Generated Description
+        </div>
+
+
+        <div
+            id="descriptionResult"
+            class="result-description"
+        ></div>
+
+
+        <div
+            id="descriptionCounter"
+            class="counter"
+        >
+            0 characters
+        </div>
+
+
+        <button
+            type="button"
+            id="copyBtn"
+            class="copy-btn"
+        >
+            📋 Copy Description
+        </button>
+
+    </div>
+
+
+    <!-- RULES -->
+
+    <div class="card">
+
+        <div class="rules">
+
+            <strong>
+                🛡️ Strict Factual AI
+            </strong>
+
+            <br>
+
+            ✅ केवल seller द्वारा दी गई information का उपयोग
+
+            <br>
+
+            ✅ Missing specifications invent नहीं होंगी
+
+            <br>
+
+            ✅ Fake claims नहीं
+
+            <br>
+
+            ✅ Fake benefits नहीं
+
+            <br>
+
+            ✅ Fake certification नहीं
+
+            <br>
+
+            ✅ Unsupported medical claims नहीं
+
+            <br>
+
+            ✅ Unsupported technical specifications नहीं
+
+        </div>
+
+    </div>
+
+
+    <!-- API -->
+
+    <div class="card">
+
+        <strong>
+            Backend API
+        </strong>
+
+        <p
+            class="api-info"
+            id="apiInfo"
+        ></p>
+
+    </div>
+
 
 </div>
 
 
-<div class="form-group">
+<script>
 
-<label for="brand">
-Brand Name
-</label>
 
-<input
-    type="text"
-    id="brand"
-    placeholder="Example: Fashion Hud"
->
+// ==========================================================
+// AI SELLER TOOLKIT
+// DESCRIPTION GENERATOR
+// FRONTEND — FINAL
+// ==========================================================
 
-</div>
 
+const API_BASE_URL =
+    "https://ai-seller-toolkit-backend-1.onrender.com";
 
-<div class="form-group">
 
-<label for="category">
-Category
-</label>
+const API_URL =
+    API_BASE_URL +
+    "/api/generate-description";
 
-<input
-    type="text"
-    id="category"
-    placeholder="Example: Men's Clothing"
->
 
-</div>
+// ==========================================================
+// STATE
+// ==========================================================
 
+let selectedCategory =
+    "Fashion";
 
-<div class="form-group">
 
-<label for="material">
-Material
-</label>
+// ==========================================================
+// ELEMENTS
+// ==========================================================
 
-<input
-    type="text"
-    id="material"
-    placeholder="Example: 100% Cotton"
->
+const categoryButtons =
+    document.querySelectorAll(
+        ".category-btn"
+    );
 
-</div>
 
+const productName =
+    document.getElementById(
+        "productName"
+    );
 
-<div class="form-group">
 
-<label for="audience">
-Target Audience
-</label>
+const brand =
+    document.getElementById(
+        "brand"
+    );
 
-<select id="audience">
 
-<option value="Men">
-Men
-</option>
+const productDetails =
+    document.getElementById(
+        "productDetails"
+    );
 
-<option value="Women">
-Women
-</option>
 
-<option value="Kids">
-Kids
-</option>
+const keywords =
+    document.getElementById(
+        "keywords"
+    );
 
-<option value="Unisex">
-Unisex
-</option>
 
-</select>
+const generateBtn =
+    document.getElementById(
+        "generateBtn"
+    );
 
-</div>
 
+const statusBox =
+    document.getElementById(
+        "status"
+    );
 
-<div class="form-group">
 
-<label for="color">
-Color
-</label>
+const resultBox =
+    document.getElementById(
+        "resultBox"
+    );
 
-<input
-    type="text"
-    id="color"
-    placeholder="Example: Black"
->
 
-</div>
+const descriptionResult =
+    document.getElementById(
+        "descriptionResult"
+    );
 
 
-<div class="form-group">
+const descriptionCounter =
+    document.getElementById(
+        "descriptionCounter"
+    );
 
-<label for="features">
-Known Features
-</label>
 
-<textarea
-    id="features"
-    rows="4"
-    placeholder="Example: Round neck, short sleeves"
-></textarea>
+const copyBtn =
+    document.getElementById(
+        "copyBtn"
+    );
 
-</div>
 
+document.getElementById(
+    "apiInfo"
+).textContent = API_URL;
 
-<div class="form-group">
 
-<label for="extra">
-Extra Information
-</label>
+// ==========================================================
+// CATEGORY SELECTION
+// ==========================================================
 
-<textarea
-    id="extra"
-    rows="4"
-    placeholder="Enter only information you know about the product"
-></textarea>
+categoryButtons.forEach(
+    button => {
 
-</div>
+        button.addEventListener(
+            "click",
+            () => {
 
+                categoryButtons.forEach(
+                    btn =>
+                        btn.classList.remove(
+                            "active"
+                        )
+                );
 
-<div class="form-group">
 
-<label for="marketplace">
-Marketplace
-</label>
+                button.classList.add(
+                    "active"
+                );
 
-<select id="marketplace">
 
-<option value="Amazon">
-Amazon
-</option>
+                selectedCategory =
+                    button.dataset.category;
 
-<option value="Flipkart">
-Flipkart
-</option>
+            }
+        );
 
-<option value="Meesho">
-Meesho
-</option>
+    }
+);
 
-<option value="Shopify">
-Shopify
-</option>
 
-<option value="Etsy">
-Etsy
-</option>
+// ==========================================================
+// STATUS
+// ==========================================================
 
-</select>
+function showStatus(
+    message,
+    type
+) {
 
-</div>
+    statusBox.textContent =
+        message;
 
+    statusBox.className =
+        "status " + type;
 
-<button
-    type="button"
-    class="generate-btn"
-    id="generateBtn"
->
+}
 
-🤖 Generate AI Description
 
-</button>
+function hideStatus() {
 
+    statusBox.textContent =
+        "";
 
-<div
-    class="status"
-    id="status"
-    aria-live="polite"
-></div>
+    statusBox.className =
+        "status";
 
+}
 
-<textarea
-    class="result-box"
-    id="result"
-    readonly
-    placeholder="Your AI generated product description will appear here..."
-></textarea>
 
+// ==========================================================
+// GENERATE DESCRIPTION
+// ==========================================================
 
-<button
-    type="button"
-    class="copy-btn"
-    id="copyBtn"
->
+generateBtn.addEventListener(
+    "click",
+    async () => {
 
-📋 Copy Description
+        hideStatus();
 
-</button>
 
+        const name =
+            productName.value.trim();
 
-<button
-    type="button"
-    class="clear-btn"
-    id="clearBtn"
->
 
-🗑️ Clear
+        const brandValue =
+            brand.value.trim();
 
-</button>
 
+        const detailsValue =
+            productDetails.value.trim();
 
-<div class="info-box">
 
-<strong>
-🛡️ Safe AI Filtering
-</strong>
+        const keywordsValue =
+            keywords.value.trim();
 
-<br><br>
 
-AI केवल आपके द्वारा दी गई जानकारी का उपयोग करेगा।
+        if (!name) {
 
-<br><br>
+            showStatus(
+                "❌ Product Name डालना जरूरी है।",
+                "error"
+            );
 
-❌ Fake claims नहीं
+            productName.focus();
 
-<br>
+            return;
 
-❌ दूसरा brand नहीं
+        }
 
-<br>
 
-❌ Fake price या offer नहीं
+        generateBtn.disabled =
+            true;
 
-<br>
 
-❌ बिना जानकारी के features नहीं
+        generateBtn.textContent =
+            "⏳ Generating Description...";
 
-<br>
 
-❌ Fake warranty या delivery information नहीं
+        resultBox.style.display =
+            "none";
 
-</div>
 
+        try {
 
-</div>
+            const response =
+                await fetch(
+                    API_URL,
+                    {
 
+                        method: "POST",
 
-<!--
-IMPORTANT SCRIPT ORDER
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
 
-1. no-popup.js
-2. description-generator.js
--->
+                        body:
+                            JSON.stringify({
 
-<script
-    src="no-popup.js"
-    defer
-></script>
+                                category:
+                                    selectedCategory,
 
-<script src="no-popup.js" defer></script>
-<script src="description-generator.js" defer></script>
+                                productName:
+                                    name,
 
+                                brand:
+                                    brandValue,
+
+                                productDetails:
+                                    detailsValue,
+
+                                keywords:
+                                    keywordsValue
+
+                            })
+
+                    }
+                );
+
+
+            let data;
+
+
+            try {
+
+                data =
+                    await response.json();
+
+            }
+            catch {
+
+                throw new Error(
+                    "Backend से valid response नहीं मिला।"
+                );
+
+            }
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    data.error ||
+                    data.message ||
+                    `Server Error: ${response.status}`
+                );
+
+            }
+
+
+            if (
+                !data ||
+                data.success !== true
+            ) {
+
+                throw new Error(
+                    data.error ||
+                    "Description generation failed."
+                );
+
+            }
+
+
+            const description =
+                String(
+                    data.description ||
+                    data.result?.description ||
+                    ""
+                ).trim();
+
+
+            if (!description) {
+
+                throw new Error(
+                    "Backend ने description वापस नहीं भेजा।"
+                );
+
+            }
+
+
+            descriptionResult.textContent =
+                description;
+
+
+            descriptionCounter.textContent =
+                description.length +
+                " characters";
+
+
+            resultBox.style.display =
+                "block";
+
+
+            showStatus(
+                "✅ Product Description successfully generated!",
+                "success"
+            );
+
+
+        }
+        catch (error) {
+
+            console.error(
+                "DESCRIPTION GENERATOR ERROR:",
+                error
+            );
+
+
+            showStatus(
+                "❌ " +
+                (
+                    error.message ||
+                    "Description generate नहीं हो पाया।"
+                ),
+                "error"
+            );
+
+        }
+        finally {
+
+            generateBtn.disabled =
+                false;
+
+
+            generateBtn.textContent =
+                "✨ Generate Product Description";
+
+        }
+
+    }
+);
+
+
+// ==========================================================
+// COPY
+// ==========================================================
+
+copyBtn.addEventListener(
+    "click",
+    async () => {
+
+        const text =
+            descriptionResult.textContent.trim();
+
+
+        if (!text) {
+
+            return;
+
+        }
+
+
+        try {
+
+            await navigator.clipboard.writeText(
+                text
+            );
+
+
+            copyBtn.textContent =
+                "✅ Copied!";
+
+
+            setTimeout(
+                () => {
+
+                    copyBtn.textContent =
+                        "📋 Copy Description";
+
+                },
+                1500
+            );
+
+
+        }
+        catch {
+
+            showStatus(
+                "❌ Description copy नहीं हो पाया।",
+                "error"
+            );
+
+        }
+
+    }
+);
+
+
+</script>
 
 </body>
 
