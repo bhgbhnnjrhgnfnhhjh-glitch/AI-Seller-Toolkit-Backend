@@ -1,16 +1,18 @@
 // ==========================================================
 // AI SELLER TOOLKIT
-// COMPLETE-LISTING-GENERATOR.JS — FINAL VERSION 7.2
+// COMPLETE-LISTING-GENERATOR.JS — FINAL VERSION 11.0
 // ==========================================================
-// Stable Frontend
-// Backend 7.1 Compatible
+// Backend Version 11 Compatible
+// Gemini Interactions API Compatible
 // Category Aware
-// Strict Fact Guard Compatible
+// 14 Categories
+// Strict Factual Data Handling
+// Dynamic Category Fields
+// Safe JSON Response Handling
 // Result Display Guaranteed
-// Auto Result Box
+// Button + Form Submit Protection
 // Duplicate Event Protection
-// Form Submit Protection
-// No Invented Facts
+// Mobile Friendly
 // ==========================================================
 
 
@@ -29,17 +31,6 @@ const CATEGORIES_ENDPOINT =
 
 const STATUS_ENDPOINT =
     `${API_BASE_URL}/api/status`;
-
-
-// ==========================================================
-// GLOBAL STATE
-// ==========================================================
-
-let categoryData = [];
-
-let currentCategory = "";
-
-let isGenerating = false;
 
 
 // ==========================================================
@@ -67,7 +58,7 @@ const SUPPORTED_CATEGORIES = [
 
 
 // ==========================================================
-// CATEGORY FIELD DEFINITIONS
+// CATEGORY FIELDS
 // ==========================================================
 
 const LOCAL_CATEGORY_FIELDS = {
@@ -239,6 +230,17 @@ const LOCAL_CATEGORY_FIELDS = {
 
 
 // ==========================================================
+// STATE
+// ==========================================================
+
+let currentCategory = "";
+
+let isGenerating = false;
+
+let initialized = false;
+
+
+// ==========================================================
 // DOM HELPER
 // ==========================================================
 
@@ -246,9 +248,7 @@ function getElement(...ids) {
 
     for (const id of ids) {
 
-        if (!id) {
-            continue;
-        }
+        if (!id) continue;
 
         const element =
             document.getElementById(id);
@@ -265,7 +265,7 @@ function getElement(...ids) {
 
 
 // ==========================================================
-// GET VALUE
+// VALUE HELPER
 // ==========================================================
 
 function getValue(...ids) {
@@ -285,7 +285,7 @@ function getValue(...ids) {
 
 
 // ==========================================================
-// NORMALIZE CATEGORY
+// CATEGORY NORMALIZER
 // ==========================================================
 
 function normalizeCategory(category) {
@@ -308,66 +308,129 @@ function normalizeCategory(category) {
 
     const aliases = {
 
-        "fashion": "Fashion",
-        "fashion & clothing": "Fashion",
-        "fashion and clothing": "Fashion",
-        "clothing": "Fashion",
-        "apparel": "Fashion",
+        "fashion":
+            "Fashion",
 
-        "beauty": "Beauty",
-        "personal care": "Beauty",
-        "personal-care": "Beauty",
+        "fashion & clothing":
+            "Fashion",
 
-        "electronics": "Electronics",
-        "electronic": "Electronics",
+        "fashion and clothing":
+            "Fashion",
 
-        "home & kitchen": "Home & Kitchen",
-        "home and kitchen": "Home & Kitchen",
-        "home kitchen": "Home & Kitchen",
-        "home": "Home & Kitchen",
-        "kitchen": "Home & Kitchen",
+        "clothing":
+            "Fashion",
 
-        "shoes": "Shoes",
-        "shoe": "Shoes",
-        "footwear": "Shoes",
+        "apparel":
+            "Fashion",
 
-        "jewellery": "Jewellery",
-        "jewelry": "Jewellery",
+        "beauty":
+            "Beauty",
 
-        "toys": "Toys",
-        "toy": "Toys",
+        "personal care":
+            "Beauty",
 
-        "books": "Books",
-        "book": "Books",
+        "personal-care":
+            "Beauty",
 
-        "pet": "Pet",
-        "pets": "Pet",
+        "electronics":
+            "Electronics",
 
-        "sports": "Sports",
-        "sport": "Sports",
-        "fitness": "Sports",
+        "electronic":
+            "Electronics",
 
-        "automotive": "Automotive",
-        "automobile": "Automotive",
-        "car accessories": "Automotive",
-        "vehicle accessories": "Automotive",
+        "home & kitchen":
+            "Home & Kitchen",
 
-        "garden": "Garden",
-        "gardening": "Garden",
+        "home and kitchen":
+            "Home & Kitchen",
 
-        "food": "Food",
-        "foods": "Food",
-        "grocery": "Food",
+        "home kitchen":
+            "Home & Kitchen",
 
-        "gifts": "Gifts",
-        "gift": "Gifts"
+        "home":
+            "Home & Kitchen",
+
+        "kitchen":
+            "Home & Kitchen",
+
+        "shoes":
+            "Shoes",
+
+        "shoe":
+            "Shoes",
+
+        "footwear":
+            "Shoes",
+
+        "jewellery":
+            "Jewellery",
+
+        "jewelry":
+            "Jewellery",
+
+        "toys":
+            "Toys",
+
+        "toy":
+            "Toys",
+
+        "books":
+            "Books",
+
+        "book":
+            "Books",
+
+        "pet":
+            "Pet",
+
+        "pets":
+            "Pet",
+
+        "sports":
+            "Sports",
+
+        "sport":
+            "Sports",
+
+        "fitness":
+            "Sports",
+
+        "automotive":
+            "Automotive",
+
+        "automobile":
+            "Automotive",
+
+        "car accessories":
+            "Automotive",
+
+        "vehicle accessories":
+            "Automotive",
+
+        "garden":
+            "Garden",
+
+        "gardening":
+            "Garden",
+
+        "food":
+            "Food",
+
+        "foods":
+            "Food",
+
+        "grocery":
+            "Food",
+
+        "gifts":
+            "Gifts",
+
+        "gift":
+            "Gifts"
 
     };
 
-    return (
-        aliases[lower] ||
-        value
-    );
+    return aliases[lower] || value;
 
 }
 
@@ -392,7 +455,7 @@ function getCategoryElement() {
 
 
 // ==========================================================
-// GET SELECTED CATEGORY
+// GET CATEGORY
 // ==========================================================
 
 function getSelectedCategory() {
@@ -457,7 +520,10 @@ function renderCategoryFields(category) {
         document.createElement("h3");
 
     heading.textContent =
-        `${category} Product Information`;
+        "📋 Category Details";
+
+    heading.style.marginBottom =
+        "12px";
 
     container.appendChild(
         heading
@@ -468,6 +534,15 @@ function renderCategoryFields(category) {
 
     grid.className =
         "category-fields-grid";
+
+    grid.style.display =
+        "grid";
+
+    grid.style.gridTemplateColumns =
+        "repeat(2, minmax(0, 1fr))";
+
+    grid.style.gap =
+        "12px";
 
     fields.forEach(
         ([name, label]) => {
@@ -504,6 +579,18 @@ function renderCategoryFields(category) {
 
             input.autocomplete =
                 "off";
+
+            input.style.width =
+                "100%";
+
+            input.style.padding =
+                "12px";
+
+            input.style.borderRadius =
+                "8px";
+
+            input.style.border =
+                "1px solid #ddd";
 
             wrapper.appendChild(
                 labelElement
@@ -547,199 +634,6 @@ function handleCategoryChange() {
 
 
 // ==========================================================
-// LOAD CATEGORIES
-// ==========================================================
-
-async function loadCategories() {
-
-    const categoryElement =
-        getCategoryElement();
-
-    if (!categoryElement) {
-        return;
-    }
-
-    try {
-
-        const response =
-            await fetch(
-                CATEGORIES_ENDPOINT,
-                {
-                    method: "GET",
-                    headers: {
-                        "Accept":
-                            "application/json"
-                    }
-                }
-            );
-
-        if (!response.ok) {
-            throw new Error(
-                `Category API error: ${response.status}`
-            );
-        }
-
-        const data =
-            await response.json();
-
-        if (
-            !data ||
-            !Array.isArray(data.categories)
-        ) {
-
-            throw new Error(
-                "Invalid category response"
-            );
-
-        }
-
-        categoryData =
-            data.categories;
-
-        populateCategorySelect(
-            categoryElement,
-            categoryData
-        );
-
-    } catch (error) {
-
-        console.warn(
-            "[CATEGORY LOAD ERROR]",
-            error
-        );
-
-        const fallback =
-            SUPPORTED_CATEGORIES.map(
-                name => ({
-                    name
-                })
-            );
-
-        categoryData =
-            fallback;
-
-        populateCategorySelect(
-            categoryElement,
-            fallback
-        );
-
-    }
-
-}
-
-
-// ==========================================================
-// POPULATE CATEGORY SELECT
-// ==========================================================
-
-function populateCategorySelect(
-    select,
-    categories
-) {
-
-    if (!select) {
-        return;
-    }
-
-    const oldValue =
-        normalizeCategory(
-            select.value
-        );
-
-    select.innerHTML = "";
-
-    const placeholder =
-        document.createElement("option");
-
-    placeholder.value =
-        "";
-
-    placeholder.textContent =
-        "Select Product Category";
-
-    select.appendChild(
-        placeholder
-    );
-
-    categories.forEach(
-        item => {
-
-            let name = "";
-
-            if (typeof item === "string") {
-
-                name =
-                    item;
-
-            } else if (
-                item &&
-                item.name
-            ) {
-
-                name =
-                    item.name;
-
-            }
-
-            const normalized =
-                normalizeCategory(
-                    name
-                );
-
-            if (
-                !normalized ||
-                !SUPPORTED_CATEGORIES.includes(
-                    normalized
-                )
-            ) {
-
-                return;
-
-            }
-
-            const option =
-                document.createElement("option");
-
-            option.value =
-                normalized;
-
-            option.textContent =
-                normalized;
-
-            select.appendChild(
-                option
-            );
-
-        }
-    );
-
-    if (oldValue) {
-
-        const matching =
-            Array.from(
-                select.options
-            ).find(
-                option =>
-                    normalizeCategory(
-                        option.value
-                    ) === oldValue
-            );
-
-        if (matching) {
-
-            select.value =
-                matching.value;
-
-        }
-
-    }
-
-    handleCategoryChange();
-
-}
-
-
-// ==========================================================
 // COLLECT CATEGORY FIELDS
 // ==========================================================
 
@@ -760,113 +654,6 @@ function collectCategoryFields(category) {
                     `field-${name}`,
                     name
                 );
-
-            if (!input) {
-                return;
-            }
-
-            const value =
-                String(
-                    input.value || ""
-                ).trim();
-
-            if (value) {
-
-                fields[name] =
-                    value;
-
-            }
-
-        }
-    );
-
-    return fields;
-
-}
-
-
-// ==========================================================
-// COLLECT ALL KNOWN FIELDS
-// ==========================================================
-
-function collectKnownFields(category) {
-
-    const fields =
-        collectCategoryFields(
-            category
-        );
-
-    const possibleFields = [
-
-        "material",
-        "fabric",
-        "fabricMaterial",
-
-        "color",
-        "size",
-        "pattern",
-        "fit",
-        "occasion",
-        "quantity",
-
-        "formTexture",
-        "variant",
-        "ingredients",
-        "skinType",
-        "hairType",
-        "fragrance",
-
-        "model",
-        "storage",
-        "ram",
-        "battery",
-        "connectivity",
-        "compatibility",
-        "warranty",
-
-        "sizeDimensions",
-        "capacity",
-        "usage",
-
-        "design",
-        "stone",
-
-        "ageGroup",
-        "productType",
-
-        "author",
-        "language",
-        "format",
-        "pages",
-        "publisher",
-        "edition",
-        "isbn",
-
-        "petType",
-        "flavour",
-
-        "sportType",
-
-        "vehicleCompatibility",
-        "dimensions",
-
-        "plantCompatibility",
-
-        "dietaryInformation",
-
-        "giftType"
-
-    ];
-
-    possibleFields.forEach(
-        name => {
-
-            if (fields[name]) {
-                return;
-            }
-
-            const input =
-                getElement(name);
 
             if (!input) {
                 return;
@@ -941,7 +728,7 @@ function collectProductData() {
         );
 
     const fields =
-        collectKnownFields(
+        collectCategoryFields(
             category
         );
 
@@ -967,7 +754,7 @@ function collectProductData() {
 
 
 // ==========================================================
-// VALIDATE PRODUCT
+// VALIDATION
 // ==========================================================
 
 function validateProductData(product) {
@@ -979,7 +766,7 @@ function validateProductData(product) {
             valid: false,
 
             message:
-                "Please select a product category."
+                "❌ Please select a product category."
 
         };
 
@@ -996,7 +783,7 @@ function validateProductData(product) {
             valid: false,
 
             message:
-                "Please select a valid product category."
+                "❌ Please select a valid product category."
 
         };
 
@@ -1009,7 +796,7 @@ function validateProductData(product) {
             valid: false,
 
             message:
-                "Please enter the product name."
+                "❌ Please enter the product name."
 
         };
 
@@ -1023,7 +810,7 @@ function validateProductData(product) {
 
 
 // ==========================================================
-// BUILD API PAYLOAD
+// BUILD PAYLOAD
 // ==========================================================
 
 function buildPayload(product) {
@@ -1113,24 +900,15 @@ function buildPayload(product) {
     ];
 
     fieldNames.forEach(
-        field => {
+        name => {
 
             if (
-                product[field] !== undefined &&
-                product[field] !== null
+                product[name] !== undefined &&
+                product[name] !== ""
             ) {
 
-                const value =
-                    String(
-                        product[field]
-                    ).trim();
-
-                if (value) {
-
-                    payload[field] =
-                        value;
-
-                }
+                payload[name] =
+                    product[name];
 
             }
 
@@ -1143,1021 +921,228 @@ function buildPayload(product) {
 
 
 // ==========================================================
-// MESSAGE ELEMENT
+// STATUS MESSAGE
 // ==========================================================
 
-function getMessageElement() {
+function showStatus(message, type = "success") {
 
-    return getElement(
+    let status =
+        getElement(
+            "completeListingStatus",
+            "status",
+            "listingStatus"
+        );
 
-        "message",
-        "errorMessage",
-        "successMessage",
-        "statusMessage",
-        "formMessage"
+    if (!status) {
 
-    );
+        status =
+            document.createElement("div");
 
-}
+        status.id =
+            "completeListingStatus";
 
+        const formCard =
+            document.querySelector(
+                ".card"
+            );
 
-// ==========================================================
-// SHOW MESSAGE
-// ==========================================================
+        if (formCard) {
 
-function showMessage(
-    message,
-    type = "info"
-) {
-
-    const element =
-        getMessageElement();
-
-    if (!element) {
-
-        if (type === "error") {
-
-            console.error(
-                "[AI SELLER TOOLKIT]",
-                message
+            formCard.appendChild(
+                status
             );
 
         } else {
 
-            console.log(
-                "[AI SELLER TOOLKIT]",
-                message
+            document.body.appendChild(
+                status
             );
 
         }
 
-        return;
-
     }
 
-    element.textContent =
+    status.textContent =
         message;
 
-    element.style.display =
+    status.style.display =
         "block";
 
-    element.className =
-        `message ${type}`;
+    status.style.marginTop =
+        "14px";
+
+    status.style.padding =
+        "12px";
+
+    status.style.borderRadius =
+        "10px";
+
+    status.style.lineHeight =
+        "1.5";
+
+    if (type === "error") {
+
+        status.style.background =
+            "#fff0f0";
+
+        status.style.color =
+            "#c62828";
+
+    } else {
+
+        status.style.background =
+            "#e9f9ee";
+
+        status.style.color =
+            "#16833b";
+
+    }
 
 }
 
 
 // ==========================================================
-// CLEAR MESSAGE
+// HIDE STATUS
 // ==========================================================
 
-function clearMessage() {
+function hideStatus() {
 
-    const element =
-        getMessageElement();
+    const status =
+        getElement(
+            "completeListingStatus",
+            "status",
+            "listingStatus"
+        );
 
-    if (!element) {
+    if (!status) {
         return;
     }
 
-    element.textContent =
-        "";
-
-    element.style.display =
+    status.style.display =
         "none";
 
 }
 
 
 // ==========================================================
-// GENERATING BUTTON STATE
+// SAFE STRING
 // ==========================================================
 
-function setGeneratingState(
-    generating
-) {
-
-    isGenerating =
-        generating;
-
-    const buttons = [
-
-        getElement(
-            "generateListingBtn"
-        ),
-
-        getElement(
-            "generateCompleteListing"
-        ),
-
-        getElement(
-            "generateBtn"
-        ),
-
-        getElement(
-            "generateButton"
-        )
-
-    ].filter(Boolean);
-
-    buttons.forEach(
-        button => {
-
-            button.disabled =
-                generating;
-
-            if (generating) {
-
-                if (
-                    !button.dataset.originalText
-                ) {
-
-                    button.dataset.originalText =
-                        button.textContent;
-
-                }
-
-                button.textContent =
-                    "Generating...";
-
-            } else {
-
-                button.textContent =
-                    button.dataset.originalText ||
-                    "Generate Complete Listing";
-
-            }
-
-        }
-    );
-
-}
-
-
-// ==========================================================
-// API REQUEST
-// ==========================================================
-
-async function generateListingFromServer(
-    payload
-) {
-
-    console.log(
-        "[LISTING REQUEST]",
-        payload
-    );
-
-    const response =
-        await fetch(
-            GENERATE_ENDPOINT,
-            {
-
-                method: "POST",
-
-                headers: {
-
-                    "Content-Type":
-                        "application/json",
-
-                    "Accept":
-                        "application/json"
-
-                },
-
-                body:
-                    JSON.stringify(
-                        payload
-                    )
-
-            }
-        );
-
-    let data = null;
-
-    try {
-
-        data =
-            await response.json();
-
-    } catch (error) {
-
-        throw new Error(
-            `Server returned invalid JSON response (${response.status}).`
-        );
-
-    }
-
-    console.log(
-        "[LISTING RESPONSE]",
-        data
-    );
-
-    if (!response.ok) {
-
-        throw new Error(
-
-            data &&
-            data.error
-
-                ? data.error
-
-                : `Server error: ${response.status}`
-
-        );
-
-    }
+function safeString(value) {
 
     if (
-        !data ||
-        data.success !== true
+        value === null ||
+        value === undefined
     ) {
 
-        throw new Error(
-
-            data &&
-            data.error
-
-                ? data.error
-
-                : "Listing generation failed."
-
-        );
-
-    }
-
-    return data;
-
-}
-
-
-// ==========================================================
-// NORMALIZE ARRAY
-// ==========================================================
-
-function normalizeArray(value) {
-
-    if (Array.isArray(value)) {
-
-        return value
-            .map(
-                item =>
-                    String(item)
-                        .trim()
-            )
-            .filter(Boolean);
+        return "";
 
     }
 
     if (typeof value === "string") {
 
-        return value
-            .split(/\n/)
-            .map(
-                item =>
-                    item
-                        .replace(
-                            /^[-•*]\s*/,
-                            ""
-                        )
-                        .trim()
+        return value.trim();
+
+    }
+
+    if (
+        typeof value === "number" ||
+        typeof value === "boolean"
+    ) {
+
+        return String(value);
+
+    }
+
+    return "";
+
+}
+
+
+// ==========================================================
+// FIND TEXT INSIDE RESPONSE
+// ==========================================================
+
+function findTextValue(data, keys = []) {
+
+    if (!data) {
+        return "";
+    }
+
+    if (typeof data === "string") {
+        return data.trim();
+    }
+
+    if (Array.isArray(data)) {
+
+        for (const item of data) {
+
+            const found =
+                findTextValue(
+                    item,
+                    keys
+                );
+
+            if (found) {
+                return found;
+            }
+
+        }
+
+        return "";
+
+    }
+
+    if (typeof data !== "object") {
+        return "";
+    }
+
+    for (const key of keys) {
+
+        if (
+            Object.prototype.hasOwnProperty.call(
+                data,
+                key
             )
-            .filter(Boolean);
+        ) {
+
+            const value =
+                safeString(
+                    data[key]
+                );
+
+            if (value) {
+                return value;
+            }
+
+        }
 
     }
 
-    return [];
+    const nestedKeys = [
+
+        "listing",
+        "result",
+        "data",
+        "output",
+        "response",
+        "content"
 
-}
-
-
-// ==========================================================
-// EXTRACT LISTING
-// ==========================================================
-
-function extractListing(data) {
-
-    console.log(
-        "[EXTRACT LISTING INPUT]",
-        data
-    );
-
-    /*
-     * Backend may return:
-     *
-     * {
-     *   success: true,
-     *   listing: {...}
-     * }
-     *
-     * OR
-     *
-     * {
-     *   success: true,
-     *   title: "...",
-     *   description: "..."
-     * }
-     */
-
-    let source =
-        data &&
-        data.listing;
-
-    if (
-        !source ||
-        typeof source !== "object"
-    ) {
-
-        source =
-            data;
-
-    }
-
-    // Handle nested response if backend uses result
-    if (
-        source &&
-        source.result &&
-        typeof source.result === "object"
-    ) {
-
-        source =
-            source.result;
-
-    }
-
-    const listing = {
-
-        title:
-            source.title ||
-            source.TITLE ||
-            source.productTitle ||
-            "",
-
-        description:
-            source.description ||
-            source.DESCRIPTION ||
-            source.productDescription ||
-            "",
-
-        highlights:
-            normalizeArray(
-                source.highlights ||
-                source.HIGHLIGHTS ||
-                source.bullets
-            ),
-
-        keywords:
-            normalizeArray(
-                source.keywords ||
-                source.KEYWORDS ||
-                source.seoKeywords
-            ),
-
-        hashtags:
-            normalizeArray(
-                source.hashtags ||
-                source.HASHTAGS ||
-                source.tags
-            ),
-
-        seoTitle:
-            source.seoTitle ||
-            source["SEO TITLE"] ||
-            source.seo_title ||
-            "",
-
-        seoDescription:
-            source.seoDescription ||
-            source["SEO DESCRIPTION"] ||
-            source.seo_description ||
-            ""
-
-    };
-
-    console.log(
-        "[EXTRACTED LISTING]",
-        listing
-    );
-
-    return listing;
-
-}
-
-
-// ==========================================================
-// CREATE RESULT CONTAINER IF MISSING
-// ==========================================================
-
-function ensureResultContainer() {
-
-    const existing =
-        getElement(
-
-            "resultContainer",
-            "results",
-            "listingResult",
-            "generatedListing",
-            "outputSection",
-            "listingOutput"
-
-        );
-
-    if (existing) {
-
-        existing.style.display =
-            "block";
-
-        return existing;
-
-    }
-
-    /*
-     * If HTML has no result container,
-     * create one automatically.
-     */
-
-    const container =
-        document.createElement("section");
-
-    container.id =
-        "aiSellerAutoResult";
-
-    container.className =
-        "ai-seller-result-container";
-
-    container.style.display =
-        "block";
-
-    container.style.marginTop =
-        "25px";
-
-    container.style.padding =
-        "20px";
-
-    container.style.borderRadius =
-        "12px";
-
-    container.style.border =
-        "1px solid #ddd";
-
-    container.style.background =
-        "#ffffff";
-
-    const button =
-        getElement(
-
-            "generateListingBtn",
-            "generateCompleteListing",
-            "generateBtn",
-            "generateButton"
-
-        );
-
-    if (
-        button &&
-        button.parentElement
-    ) {
-
-        button.parentElement.appendChild(
-            container
-        );
-
-    } else {
-
-        document.body.appendChild(
-            container
-        );
-
-    }
-
-    return container;
-
-}
-
-
-// ==========================================================
-// FIND OR CREATE OUTPUT FIELD
-// ==========================================================
-
-function findOrCreateOutput(
-    id,
-    label,
-    container
-) {
-
-    let element =
-        document.getElementById(id);
-
-    if (element) {
-        return element;
-    }
-
-    const wrapper =
-        document.createElement("div");
-
-    wrapper.className =
-        "ai-seller-output-field";
-
-    wrapper.style.marginBottom =
-        "18px";
-
-    const title =
-        document.createElement("h3");
-
-    title.textContent =
-        label;
-
-    title.style.marginBottom =
-        "8px";
-
-    const textarea =
-        document.createElement("textarea");
-
-    textarea.id =
-        id;
-
-    textarea.readOnly =
-        true;
-
-    textarea.rows =
-        label === "DESCRIPTION"
-            ? 7
-            : 3;
-
-    textarea.style.width =
-        "100%";
-
-    textarea.style.boxSizing =
-        "border-box";
-
-    textarea.style.padding =
-        "12px";
-
-    textarea.style.borderRadius =
-        "8px";
-
-    textarea.style.border =
-        "1px solid #ccc";
-
-    textarea.style.resize =
-        "vertical";
-
-    wrapper.appendChild(
-        title
-    );
-
-    wrapper.appendChild(
-        textarea
-    );
-
-    container.appendChild(
-        wrapper
-    );
-
-    return textarea;
-
-}
-
-
-// ==========================================================
-// FIND OR CREATE ARRAY OUTPUT
-// ==========================================================
-
-function findOrCreateArrayOutput(
-    id,
-    label,
-    values,
-    container
-) {
-
-    let element =
-        document.getElementById(id);
-
-    if (!element) {
-
-        const wrapper =
-            document.createElement("div");
-
-        wrapper.className =
-            "ai-seller-output-field";
-
-        wrapper.style.marginBottom =
-            "18px";
-
-        const title =
-            document.createElement("h3");
-
-        title.textContent =
-            label;
-
-        title.style.marginBottom =
-            "8px";
-
-        element =
-            document.createElement("textarea");
-
-        element.id =
-            id;
-
-        element.readOnly =
-            true;
-
-        element.rows =
-            Math.max(
-                3,
-                Math.min(
-                    values.length || 3,
-                    8
-                )
-            );
-
-        element.style.width =
-            "100%";
-
-        element.style.boxSizing =
-            "border-box";
-
-        element.style.padding =
-            "12px";
-
-        element.style.borderRadius =
-            "8px";
-
-        element.style.border =
-            "1px solid #ccc";
-
-        element.style.resize =
-            "vertical";
-
-        wrapper.appendChild(
-            title
-        );
-
-        wrapper.appendChild(
-            element
-        );
-
-        container.appendChild(
-            wrapper
-        );
-
-    }
-
-    if (
-        "value" in element
-    ) {
-
-        element.value =
-            values.join("\n");
-
-    } else {
-
-        element.textContent =
-            values.join("\n");
-
-    }
-
-    return element;
-
-}
-
-
-// ==========================================================
-// DISPLAY LISTING
-// ==========================================================
-
-function displayListing(
-    listing
-) {
-
-    console.log(
-        "[DISPLAY LISTING]",
-        listing
-    );
-
-    const container =
-        ensureResultContainer();
-
-    if (!container) {
-
-        throw new Error(
-            "Unable to create listing result area."
-        );
-
-    }
-
-    /*
-     * Use existing HTML fields first.
-     * If missing, automatically create them.
-     */
-
-    setExistingOrCreateText(
-        "titleResult",
-        "TITLE",
-        listing.title,
-        container
-    );
-
-    setExistingOrCreateText(
-        "descriptionResult",
-        "DESCRIPTION",
-        listing.description,
-        container
-    );
-
-    setExistingOrCreateArray(
-        "highlightsResult",
-        "HIGHLIGHTS",
-        listing.highlights,
-        container
-    );
-
-    setExistingOrCreateArray(
-        "keywordsResult",
-        "KEYWORDS",
-        listing.keywords,
-        container
-    );
-
-    setExistingOrCreateArray(
-        "hashtagsResult",
-        "HASHTAGS",
-        listing.hashtags,
-        container
-    );
-
-    setExistingOrCreateText(
-        "seoTitleResult",
-        "SEO TITLE",
-        listing.seoTitle,
-        container
-    );
-
-    setExistingOrCreateText(
-        "seoDescriptionResult",
-        "SEO DESCRIPTION",
-        listing.seoDescription,
-        container
-    );
-
-    /*
-     * Scroll result into view so user can immediately
-     * see generated listing.
-     */
-
-    setTimeout(
-        () => {
-
-            container.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
-
-        },
-        100
-    );
-
-}
-
-
-// ==========================================================
-// SET EXISTING OR CREATE TEXT
-// ==========================================================
-
-function setExistingOrCreateText(
-    primaryId,
-    label,
-    value,
-    container
-) {
-
-    const alternateIds = {
-
-        titleResult: [
-            "generatedTitle",
-            "listingTitle",
-            "resultTitle"
-        ],
-
-        descriptionResult: [
-            "generatedDescription",
-            "listingDescription",
-            "resultDescription"
-        ],
-
-        seoTitleResult: [
-            "generatedSeoTitle",
-            "seoTitle",
-            "resultSeoTitle"
-        ],
-
-        seoDescriptionResult: [
-            "generatedSeoDescription",
-            "seoDescription",
-            "resultSeoDescription"
-        ]
-
-    };
-
-    const ids = [
-        primaryId,
-        ...(alternateIds[primaryId] || [])
     ];
 
-    let element = null;
+    for (const key of nestedKeys) {
 
-    for (
-        const id
-        of ids
-    ) {
+        if (data[key]) {
 
-        element =
-            document.getElementById(id);
+            const found =
+                findTextValue(
+                    data[key],
+                    keys
+                );
 
-        if (element) {
-            break;
-        }
-
-    }
-
-    if (!element) {
-
-        element =
-            findOrCreateOutput(
-                primaryId,
-                label,
-                container
-            );
-
-    }
-
-    if (
-        "value" in element
-    ) {
-
-        element.value =
-            value || "";
-
-    } else {
-
-        element.textContent =
-            value || "";
-
-    }
-
-    element.style.display =
-        "block";
-
-}
-
-
-// ==========================================================
-// SET EXISTING OR CREATE ARRAY
-// ==========================================================
-
-function setExistingOrCreateArray(
-    primaryId,
-    label,
-    values,
-    container
-) {
-
-    const alternateIds = {
-
-        highlightsResult: [
-            "generatedHighlights",
-            "listingHighlights",
-            "resultHighlights"
-        ],
-
-        keywordsResult: [
-            "generatedKeywords",
-            "listingKeywords",
-            "resultKeywords"
-        ],
-
-        hashtagsResult: [
-            "generatedHashtags",
-            "listingHashtags",
-            "resultHashtags"
-        ]
-
-    };
-
-    const ids = [
-        primaryId,
-        ...(alternateIds[primaryId] || [])
-    ];
-
-    let element = null;
-
-    for (
-        const id
-        of ids
-    ) {
-
-        element =
-            document.getElementById(id);
-
-        if (element) {
-            break;
-        }
-
-    }
-
-    if (!element) {
-
-        element =
-            findOrCreateArrayOutput(
-                primaryId,
-                label,
-                values,
-                container
-            );
-
-    } else {
-
-        if (
-            element.tagName ===
-            "TEXTAREA"
-        ) {
-
-            element.value =
-                values.join("\n");
-
-        } else if (
-            element.tagName ===
-            "INPUT"
-        ) {
-
-            element.value =
-                values.join(", ");
-
-        } else {
-
-            element.innerHTML =
-                "";
-
-            values.forEach(
-                value => {
-
-                    const li =
-                        document.createElement("li");
-
-                    li.textContent =
-                        value;
-
-                    element.appendChild(
-                        li
-                    );
-
-                }
-            );
-
-        }
-
-    }
-
-    element.style.display =
-        "block";
-
-}
-
-
-// ==========================================================
-// GET DISPLAYED VALUE
-// ==========================================================
-
-function getDisplayedValue(ids) {
-
-    for (
-        const id
-        of ids
-    ) {
-
-        const element =
-            document.getElementById(id);
-
-        if (!element) {
-            continue;
-        }
-
-        if (
-            "value" in element &&
-            String(element.value).trim()
-        ) {
-
-            return String(
-                element.value
-            ).trim();
-
-        }
-
-        if (
-            element.textContent &&
-            element.textContent.trim()
-        ) {
-
-            return element.textContent.trim();
+            if (found) {
+                return found;
+            }
 
         }
 
@@ -2169,53 +1154,1271 @@ function getDisplayedValue(ids) {
 
 
 // ==========================================================
-// GET COMPLETE LISTING TEXT
+// EXTRACT LISTING
 // ==========================================================
 
-function getListingText() {
+function extractListing(data) {
+
+    let listing = {
+
+        title: "",
+
+        description: "",
+
+        highlights: [],
+
+        keywords: []
+
+    };
+
+
+    // ------------------------------
+    // TITLE
+    // ------------------------------
+
+    listing.title =
+        findTextValue(
+            data,
+            [
+                "title",
+                "productTitle",
+                "listingTitle"
+            ]
+        );
+
+
+    // ------------------------------
+    // DESCRIPTION
+    // ------------------------------
+
+    listing.description =
+        findTextValue(
+            data,
+            [
+                "description",
+                "productDescription",
+                "product_description"
+            ]
+        );
+
+
+    // ------------------------------
+    // HIGHLIGHTS
+    // ------------------------------
+
+    let highlights =
+        findArrayValue(
+            data,
+            [
+                "highlights",
+                "keyFeatures",
+                "features",
+                "bulletPoints",
+                "bullets"
+            ]
+        );
+
+    listing.highlights =
+        highlights;
+
+
+    // ------------------------------
+    // KEYWORDS
+    // ------------------------------
+
+    let keywords =
+        findArrayValue(
+            data,
+            [
+                "keywords",
+                "seoKeywords",
+                "searchKeywords"
+            ]
+        );
+
+    listing.keywords =
+        keywords;
+
+
+    // ------------------------------
+    // STRING RESULT
+    // ------------------------------
+
+    if (
+        !listing.title &&
+        !listing.description &&
+        !listing.highlights.length &&
+        !listing.keywords.length
+    ) {
+
+        const possibleText =
+            findTextValue(
+                data,
+                [
+                    "text",
+                    "output_text",
+                    "generatedText"
+                ]
+            );
+
+        if (possibleText) {
+
+            listing.description =
+                possibleText;
+
+        }
+
+    }
+
+
+    return listing;
+
+}
+
+
+// ==========================================================
+// FIND ARRAY
+// ==========================================================
+
+function findArrayValue(data, keys = []) {
+
+    if (!data) {
+        return [];
+    }
+
+    if (typeof data !== "object") {
+        return [];
+    }
+
+    if (Array.isArray(data)) {
+
+        return data
+            .map(
+                item =>
+                    safeString(item)
+            )
+            .filter(Boolean);
+
+    }
+
+    for (const key of keys) {
+
+        if (
+            Object.prototype.hasOwnProperty.call(
+                data,
+                key
+            )
+        ) {
+
+            const value =
+                data[key];
+
+            if (Array.isArray(value)) {
+
+                return value
+                    .map(
+                        item => {
+
+                            if (
+                                typeof item ===
+                                "string"
+                            ) {
+
+                                return item.trim();
+
+                            }
+
+                            if (
+                                item &&
+                                typeof item ===
+                                "object"
+                            ) {
+
+                                return (
+                                    item.text ||
+                                    item.value ||
+                                    item.name ||
+                                    ""
+                                )
+                                    .toString()
+                                    .trim();
+
+                            }
+
+                            return "";
+
+                        }
+                    )
+                    .filter(Boolean);
+
+            }
+
+            if (typeof value === "string") {
+
+                return value
+                    .split(/\n|•|;/)
+                    .map(
+                        item =>
+                            item
+                                .replace(
+                                    /^\s*[-*•\d.)]+\s*/,
+                                    ""
+                                )
+                                .trim()
+                    )
+                    .filter(Boolean);
+
+            }
+
+        }
+
+    }
+
+    const nestedKeys = [
+
+        "listing",
+        "result",
+        "data",
+        "output",
+        "response"
+
+    ];
+
+    for (const key of nestedKeys) {
+
+        if (data[key]) {
+
+            const found =
+                findArrayValue(
+                    data[key],
+                    keys
+                );
+
+            if (found.length) {
+                return found;
+            }
+
+        }
+
+    }
+
+    return [];
+
+}
+
+
+// ==========================================================
+// CREATE RESULT BOX
+// ==========================================================
+
+function createResultBox() {
+
+    let box =
+        document.getElementById(
+            "completeListingResult"
+        );
+
+    if (box) {
+        return box;
+    }
+
+    box =
+        document.createElement("div");
+
+    box.id =
+        "completeListingResult";
+
+    box.className =
+        "card";
+
+    box.style.marginTop =
+        "20px";
+
+    box.innerHTML = `
+
+        <h2 style="margin-top:0;">
+            📝 Generated Complete Listing
+        </h2>
+
+        <div id="listingTitleSection">
+
+            <h3>🏷️ Product Title</h3>
+
+            <div
+                id="generatedTitle"
+                style="
+                    background:#f8f8ff;
+                    border:1px solid #e2e2ff;
+                    padding:15px;
+                    border-radius:10px;
+                    line-height:1.6;
+                    white-space:pre-wrap;
+                    overflow-wrap:anywhere;
+                "
+            ></div>
+
+            <button
+                type="button"
+                id="copyListingTitle"
+                style="
+                    width:100%;
+                    margin-top:10px;
+                    padding:12px;
+                    border:0;
+                    border-radius:9px;
+                    background:#222;
+                    color:white;
+                "
+            >
+                📋 Copy Title
+            </button>
+
+        </div>
+
+
+        <div
+            id="listingDescriptionSection"
+            style="margin-top:20px;"
+        >
+
+            <h3>📝 Product Description</h3>
+
+            <div
+                id="generatedDescription"
+                style="
+                    background:#f8f8ff;
+                    border:1px solid #e2e2ff;
+                    padding:15px;
+                    border-radius:10px;
+                    line-height:1.7;
+                    white-space:pre-wrap;
+                    overflow-wrap:anywhere;
+                "
+            ></div>
+
+            <button
+                type="button"
+                id="copyListingDescription"
+                style="
+                    width:100%;
+                    margin-top:10px;
+                    padding:12px;
+                    border:0;
+                    border-radius:9px;
+                    background:#222;
+                    color:white;
+                "
+            >
+                📋 Copy Description
+            </button>
+
+        </div>
+
+
+        <div
+            id="listingHighlightsSection"
+            style="margin-top:20px;"
+        >
+
+            <h3>⭐ Highlights</h3>
+
+            <div
+                id="generatedHighlights"
+                style="
+                    background:#f8f8ff;
+                    border:1px solid #e2e2ff;
+                    padding:15px;
+                    border-radius:10px;
+                    line-height:1.7;
+                "
+            ></div>
+
+        </div>
+
+
+        <div
+            id="listingKeywordsSection"
+            style="margin-top:20px;"
+        >
+
+            <h3>🔎 SEO Keywords</h3>
+
+            <div
+                id="generatedKeywords"
+                style="
+                    background:#f8f8ff;
+                    border:1px solid #e2e2ff;
+                    padding:15px;
+                    border-radius:10px;
+                    line-height:1.7;
+                "
+            ></div>
+
+        </div>
+
+
+        <button
+            type="button"
+            id="copyCompleteListing"
+            style="
+                width:100%;
+                margin-top:20px;
+                padding:14px;
+                border:0;
+                border-radius:10px;
+                background:#222;
+                color:white;
+                font-weight:bold;
+            "
+        >
+            📋 Copy Complete Listing
+        </button>
+
+    `;
+
+
+    const container =
+        document.querySelector(
+            ".container"
+        );
+
+    if (container) {
+
+        container.appendChild(
+            box
+        );
+
+    } else {
+
+        document.body.appendChild(
+            box
+        );
+
+    }
+
+
+    setupCopyButtons();
+
+    return box;
+
+}
+
+
+// ==========================================================
+// DISPLAY LISTING
+// ==========================================================
+
+function displayListing(listing) {
+
+    const box =
+        createResultBox();
 
     const title =
-        getDisplayedValue([
-            "titleResult",
-            "generatedTitle",
-            "listingTitle",
-            "resultTitle"
-        ]);
+        document.getElementById(
+            "generatedTitle"
+        );
 
     const description =
-        getDisplayedValue([
-            "descriptionResult",
-            "generatedDescription",
-            "listingDescription",
-            "resultDescription"
-        ]);
+        document.getElementById(
+            "generatedDescription"
+        );
 
     const highlights =
-        getDisplayedValue([
-            "highlightsResult",
-            "generatedHighlights",
-            "listingHighlights",
-            "resultHighlights"
-        ]);
+        document.getElementById(
+            "generatedHighlights"
+        );
 
     const keywords =
-        getDisplayedValue([
-            "keywordsResult",
-            "generatedKeywords",
-            "listingKeywords",
-            "resultKeywords"
-        ]);
+        document.getElementById(
+            "generatedKeywords"
+        );
 
-    const hashtags =
-        getDisplayedValue([
-            "hashtagsResult",
-            "generatedHashtags",
-            "listingHashtags",
-            "resultHashtags"
-        ]);
 
-    const seoTitle =
-        getDisplayedValue([
-            "seoTitleResult",
-            "generatedSeoTitle",
-            "seoTitle",
+    title.textContent =
+        listing.title ||
+        "No title returned";
+
+
+    description.textContent =
+        listing.description ||
+        "No description returned";
+
+
+    highlights.innerHTML = "";
+
+    if (
+        listing.highlights &&
+        listing.highlights.length
+    ) {
+
+        listing.highlights.forEach(
+            item => {
+
+                const div =
+                    document.createElement(
+                        "div"
+                    );
+
+                div.textContent =
+                    "• " + item;
+
+                highlights.appendChild(
+                    div
+                );
+
+            }
+        );
+
+    } else {
+
+        highlights.textContent =
+            "No highlights returned.";
+
+    }
+
+
+    keywords.textContent =
+        listing.keywords &&
+        listing.keywords.length
+            ? listing.keywords.join(
+                ", "
+            )
+            : "No keywords returned.";
+
+
+    box.style.display =
+        "block";
+
+
+    box.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+
+}
+
+
+// ==========================================================
+// COPY BUTTONS
+// ==========================================================
+
+function setupCopyButtons() {
+
+    const titleButton =
+        document.getElementById(
+            "copyListingTitle"
+        );
+
+    const descriptionButton =
+        document.getElementById(
+            "copyListingDescription"
+        );
+
+    const completeButton =
+        document.getElementById(
+            "copyCompleteListing"
+        );
+
+
+    if (
+        titleButton &&
+        !titleButton.dataset.bound
+    ) {
+
+        titleButton.dataset.bound =
+            "true";
+
+        titleButton.addEventListener(
+            "click",
+            async () => {
+
+                const text =
+                    getElement(
+                        "generatedTitle"
+                    )
+                        ?.textContent
+                        .trim();
+
+                if (!text) return;
+
+                await copyText(
+                    text,
+                    titleButton,
+                    "✅ Title Copied!"
+                );
+
+            }
+        );
+
+    }
+
+
+    if (
+        descriptionButton &&
+        !descriptionButton.dataset.bound
+    ) {
+
+        descriptionButton.dataset.bound =
+            "true";
+
+        descriptionButton.addEventListener(
+            "click",
+            async () => {
+
+                const text =
+                    getElement(
+                        "generatedDescription"
+                    )
+                        ?.textContent
+                        .trim();
+
+                if (!text) return;
+
+                await copyText(
+                    text,
+                    descriptionButton,
+                    "✅ Description Copied!"
+                );
+
+            }
+        );
+
+    }
+
+
+    if (
+        completeButton &&
+        !completeButton.dataset.bound
+    ) {
+
+        completeButton.dataset.bound =
+            "true";
+
+        completeButton.addEventListener(
+            "click",
+            async () => {
+
+                const title =
+                    getValueFromElement(
+                        "generatedTitle"
+                    );
+
+                const description =
+                    getValueFromElement(
+                        "generatedDescription"
+                    );
+
+                const highlights =
+                    getValueFromElement(
+                        "generatedHighlights"
+                    );
+
+                const keywords =
+                    getValueFromElement(
+                        "generatedKeywords"
+                    );
+
+
+                const completeText = [
+
+                    "PRODUCT TITLE",
+                    title,
+
+                    "",
+
+                    "PRODUCT DESCRIPTION",
+                    description,
+
+                    "",
+
+                    "HIGHLIGHTS",
+                    highlights,
+
+                    "",
+
+                    "SEO KEYWORDS",
+                    keywords
+
+                ]
+                    .join("\n")
+                    .trim();
+
+
+                await copyText(
+                    completeText,
+                    completeButton,
+                    "✅ Complete Listing Copied!"
+                );
+
+            }
+        );
+
+    }
+
+}
+
+
+// ==========================================================
+// GET ELEMENT TEXT
+// ==========================================================
+
+function getValueFromElement(id) {
+
+    const element =
+        document.getElementById(id);
+
+    if (!element) {
+        return "";
+    }
+
+    return element.textContent.trim();
+
+}
+
+
+// ==========================================================
+// COPY TEXT
+// ==========================================================
+
+async function copyText(
+    text,
+    button,
+    successText
+) {
+
+    try {
+
+        await navigator.clipboard.writeText(
+            text
+        );
+
+        const oldText =
+            button.textContent;
+
+        button.textContent =
+            successText;
+
+        setTimeout(
+            () => {
+
+                button.textContent =
+                    oldText;
+
+            },
+            1500
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            "COPY ERROR:",
+            error
+        );
+
+        showStatus(
+            "❌ Copy नहीं हो पाया।",
+            "error"
+        );
+
+    }
+
+}
+
+
+// ==========================================================
+// GENERATE LISTING
+// ==========================================================
+
+async function generateCompleteListing() {
+
+    if (isGenerating) {
+        return;
+    }
+
+    hideStatus();
+
+
+    const product =
+        collectProductData();
+
+
+    const validation =
+        validateProductData(
+            product
+        );
+
+
+    if (!validation.valid) {
+
+        showStatus(
+            validation.message,
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const payload =
+        buildPayload(
+            product
+        );
+
+
+    const generateButton =
+        getElement(
+            "generateBtn",
+            "generateListingBtn",
+            "generateCompleteListingBtn",
+            "generateButton"
+        );
+
+
+    isGenerating =
+        true;
+
+
+    if (generateButton) {
+
+        generateButton.disabled =
+            true;
+
+        generateButton.dataset.originalText =
+            generateButton.textContent;
+
+        generateButton.textContent =
+            "⏳ Generating Complete Listing...";
+
+    }
+
+
+    const oldResult =
+        document.getElementById(
+            "completeListingResult"
+        );
+
+    if (oldResult) {
+
+        oldResult.style.display =
+            "none";
+
+    }
+
+
+    showStatus(
+        "⏳ AI listing तैयार कर रहा है...",
+        "success"
+    );
+
+
+    try {
+
+        console.log(
+            "COMPLETE LISTING REQUEST:",
+            payload
+        );
+
+
+        const response =
+            await fetch(
+                GENERATE_ENDPOINT,
+                {
+
+                    method:
+                        "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "Accept":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify(
+                            payload
+                        )
+
+                }
+            );
+
+
+        const rawText =
+            await response.text();
+
+
+        console.log(
+            "COMPLETE LISTING RAW RESPONSE:",
+            rawText
+        );
+
+
+        let data;
+
+
+        try {
+
+            data =
+                JSON.parse(
+                    rawText
+                );
+
+        }
+        catch {
+
+            throw new Error(
+                "Backend ने valid JSON response नहीं दिया।"
+            );
+
+        }
+
+
+        if (!response.ok) {
+
+            const backendError =
+                findTextValue(
+                    data,
+                    [
+                        "error",
+                        "message",
+                        "details"
+                    ]
+                );
+
+
+            throw new Error(
+
+                backendError ||
+                `Server Error: ${response.status}`
+
+            );
+
+        }
+
+
+        if (
+            data &&
+            data.success === false
+        ) {
+
+            throw new Error(
+
+                findTextValue(
+                    data,
+                    [
+                        "error",
+                        "message"
+                    ]
+                ) ||
+                "Listing generation failed."
+
+            );
+
+        }
+
+
+        const listing =
+            extractListing(
+                data
+            );
+
+
+        console.log(
+            "EXTRACTED LISTING:",
+            listing
+        );
+
+
+        if (
+            !listing.title &&
+            !listing.description &&
+            !listing.highlights.length &&
+            !listing.keywords.length
+        ) {
+
+            throw new Error(
+                "Backend से listing content नहीं मिला। Browser Console में response check करें।"
+            );
+
+        }
+
+
+        displayListing(
+            listing
+        );
+
+
+        showStatus(
+            "✅ Complete Product Listing successfully generated!",
+            "success"
+        );
+
+
+    }
+    catch (error) {
+
+        console.error(
+            "COMPLETE LISTING GENERATOR ERROR:",
+            error
+        );
+
+
+        showStatus(
+            "❌ " +
+            (
+                error.message ||
+                "Complete listing generate नहीं हो पाई।"
+            ),
+            "error"
+        );
+
+    }
+    finally {
+
+        isGenerating =
+            false;
+
+
+        if (generateButton) {
+
+            generateButton.disabled =
+                false;
+
+            generateButton.textContent =
+                generateButton.dataset.originalText ||
+                "✨ Generate Complete Listing";
+
+        }
+
+    }
+
+}
+
+
+// ==========================================================
+// FIND GENERATE BUTTON
+// ==========================================================
+
+function findGenerateButton() {
+
+    return getElement(
+
+        "generateBtn",
+
+        "generateListingBtn",
+
+        "generateCompleteListingBtn",
+
+        "generateButton",
+
+        "generate-listing-btn"
+
+    ) || document.querySelector(
+
+        'button[type="submit"]'
+
+    );
+
+}
+
+
+// ==========================================================
+// INITIALIZE
+// ==========================================================
+
+function initializeCompleteListingGenerator() {
+
+    if (initialized) {
+        return;
+    }
+
+    initialized =
+        true;
+
+
+    const categoryElement =
+        getCategoryElement();
+
+
+    if (categoryElement) {
+
+        categoryElement.addEventListener(
+            "change",
+            handleCategoryChange
+        );
+
+    }
+
+
+    const generateButton =
+        findGenerateButton();
+
+
+    if (!generateButton) {
+
+        console.error(
+            "❌ Generate Complete Listing button नहीं मिला।"
+        );
+
+        return;
+
+    }
+
+
+    // Prevent duplicate event binding
+
+    if (
+        generateButton.dataset.completeListingBound ===
+        "true"
+    ) {
+
+        return;
+
+    }
+
+
+    generateButton.dataset.completeListingBound =
+        "true";
+
+
+    generateButton.addEventListener(
+        "click",
+        function(event) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            generateCompleteListing();
+
+        }
+    );
+
+
+    // If button is inside a form
+
+    const form =
+        generateButton.closest(
+            "form"
+        );
+
+
+    if (
+        form &&
+        form.dataset.completeListingFormBound !==
+        "true"
+    ) {
+
+        form.dataset.completeListingFormBound =
+            "true";
+
+
+        form.addEventListener(
+            "submit",
+            function(event) {
+
+                event.preventDefault();
+
+                generateCompleteListing();
+
+            }
+        );
+
+    }
+
+
+    // Initial category
+
+    currentCategory =
+        getSelectedCategory();
+
+
+    if (currentCategory) {
+
+        renderCategoryFields(
+            currentCategory
+        );
+
+    }
+
+
+    console.log(
+        "✅ Complete Listing Generator initialized successfully."
+    );
+
+    console.log(
+        "API:",
+        GENERATE_ENDPOINT
+    );
+
+}
+
+
+// ==========================================================
+// DOM READY
+// ==========================================================
+
+if (
+    document.readyState ===
+    "loading"
+) {
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        initializeCompleteListingGenerator
+    );
+
+} else {
+
+    initializeCompleteListingGenerator();
+
+}
+
+
+// ==========================================================
+// GLOBAL FALLBACK
+// ==========================================================
+
+window.generateCompleteListing =
+    generateCompleteListing;
+
+
+// ==========================================================
+// DEBUG INFORMATION
+// ==========================================================
+
+console.log(
+    "================================================"
+);
+
+console.log(
+    "AI SELLER TOOLKIT - COMPLETE LISTING GENERATOR"
+);
+
+console.log(
+    "Version: 11.0"
+);
+
+console.log(
+    "Backend:",
+    API_BASE_URL
+);
+
+console.log(
+    "Endpoint:",
+    GENERATE_ENDPOINT
+);
+
+console.log(
+    "Categories:",
+    SUPPORTED_CATEGORIES.length
+);
+
+console.log(
+    "================================================"
+);
