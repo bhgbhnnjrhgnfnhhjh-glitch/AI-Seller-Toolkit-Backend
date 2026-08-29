@@ -110,11 +110,27 @@
 <div class="seo-box">
 
 
-<label>
+<!-- PRODUCT NAME -->
+
+<label for="productName">
 Product Name
 </label>
 
-<<select id="category">
+<input
+type="text"
+id="productName"
+placeholder="Example: Cotton Kurti"
+autocomplete="off"
+>
+
+
+<!-- CATEGORY -->
+
+<label for="category">
+Category
+</label>
+
+<select id="category">
 
 <option value="">Select Category</option>
 
@@ -136,29 +152,23 @@ Product Name
 </select>
 
 
-<label>
-Category
-</label>
+<!-- BRAND -->
 
-<input
-type="text"
-id="category"
-placeholder="Example: Men's Clothing"
->
-
-
-<label>
+<label for="brand">
 Brand Name
 </label>
 
 <input
 type="text"
 id="brand"
-placeholder="Example: Fashion Hud"
+placeholder="Example: Test Brand"
+autocomplete="off"
 >
 
 
-<label>
+<!-- MAIN KEYWORD -->
+
+<label for="keyword">
 Main Keyword
 </label>
 
@@ -166,10 +176,13 @@ Main Keyword
 type="text"
 id="keyword"
 placeholder="Example: Black Cotton T-Shirt"
+autocomplete="off"
 >
 
 
-<label>
+<!-- MARKETPLACE -->
+
+<label for="marketplace">
 Target Marketplace
 </label>
 
@@ -202,6 +215,8 @@ All Marketplaces
 </select>
 
 
+<!-- GENERATE BUTTON -->
+
 <button
 id="generateBtn"
 type="button"
@@ -212,10 +227,14 @@ type="button"
 </button>
 
 
+<!-- STATUS -->
+
 <div id="status"></div>
 
 
-<label>
+<!-- RESULT -->
+
+<label for="result">
 Generated SEO Keywords
 </label>
 
@@ -225,6 +244,8 @@ readonly
 placeholder="Your AI SEO keywords will appear here..."
 ></textarea>
 
+
+<!-- COPY BUTTON -->
 
 <button
 id="copyBtn"
