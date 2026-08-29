@@ -1,347 +1,402 @@
-/* =========================================
-   AI SEO KEYWORD GENERATOR
-   FINAL VERSION
-========================================= */
+/* =========================================================
+   AI SELLER TOOLKIT
+   SEO KEYWORD GENERATOR
+   FINAL VERSION 12
 
-const generateBtn = document.getElementById("generateBtn");
-const copyBtn = document.getElementById("copyBtn");
-const result = document.getElementById("result");
-const status = document.getElementById("status");
+   Backend:
+   /api/generate-keywords
 
-generateBtn.addEventListener("click", generateSEO);
-copyBtn.addEventListener("click", copySEO);
+   Supports:
+   Fashion
+   Beauty
+   Electronics
+   Home & Kitchen
+   Shoes
+   Jewellery
+   Toys
+   Books
+   Pet
+   Sports
+   Automotive
+   Garden
+   Food
+   Gifts
+========================================================= */
+
+const API_URL =
+    "https://ai-seller-toolkit-backend-1.onrender.com";
+
+const generateBtn =
+    document.getElementById(
+        "generateBtn"
+    );
+
+const copyBtn =
+    document.getElementById(
+        "copyBtn"
+    );
+
+const result =
+    document.getElementById(
+        "result"
+    );
+
+const status =
+    document.getElementById(
+        "status"
+    );
 
 
-/* =========================================
-   GENERATE SEO
-========================================= */
+// =========================================================
+// CATEGORY LIST
+// =========================================================
+
+const SEO_CATEGORIES = [
+
+    "Fashion",
+    "Beauty",
+    "Electronics",
+    "Home & Kitchen",
+    "Shoes",
+    "Jewellery",
+    "Toys",
+    "Books",
+    "Pet",
+    "Sports",
+    "Automotive",
+    "Garden",
+    "Food",
+    "Gifts"
+
+];
+
+
+// =========================================================
+// EVENTS
+// =========================================================
+
+if (generateBtn) {
+
+    generateBtn.addEventListener(
+        "click",
+        generateSEO
+    );
+
+}
+
+if (copyBtn) {
+
+    copyBtn.addEventListener(
+        "click",
+        copySEO
+    );
+
+}
+
+
+// =========================================================
+// GENERATE SEO
+// =========================================================
 
 async function generateSEO() {
 
-    const product = document.getElementById("product").value.trim();
-    const category = document.getElementById("category").value.trim();
-    const brand = document.getElementById("brand").value.trim();
-    const mainKeyword = document.getElementById("keyword").value.trim();
-    const marketplace = document.getElementById("marketplace").value;
+    const product =
+        document
+            .getElementById(
+                "product"
+            )
+            .value
+            .trim();
 
-    if (product === "") {
-        alert("Please enter Product Name.");
+    const category =
+        document
+            .getElementById(
+                "category"
+            )
+            .value
+            .trim();
+
+    const brand =
+        document
+            .getElementById(
+                "brand"
+            )
+            .value
+            .trim();
+
+    const mainKeyword =
+        document
+            .getElementById(
+                "keyword"
+            )
+            .value
+            .trim();
+
+    const marketplace =
+        document
+            .getElementById(
+                "marketplace"
+            )
+            .value;
+
+    // -------------------------------------------------------
+    // VALIDATION
+    // -------------------------------------------------------
+
+    if (!product) {
+
+        showStatus(
+            "❌ Please enter Product Name."
+        );
+
         return;
+
     }
 
-    if (mainKeyword === "") {
-        alert("Please enter Main Keyword.");
+    if (!category) {
+
+        showStatus(
+            "❌ Please select Product Category."
+        );
+
         return;
+
     }
+
+    if (!mainKeyword) {
+
+        showStatus(
+            "❌ Please enter Main Keyword."
+        );
+
+        return;
+
+    }
+
+    // -------------------------------------------------------
+    // UI
+    // -------------------------------------------------------
 
     generateBtn.disabled = true;
-    generateBtn.innerText = "⏳ Generating SEO Keywords...";
 
-    status.innerText = "AI SEO keywords बना रहा है...";
-    result.value = "⏳ Please wait...";
+    generateBtn.innerText =
+        "⏳ Generating SEO Keywords...";
 
+    showStatus(
+        "AI SEO keywords बना रहा है..."
+    );
 
-    const prompt = `
-You are an expert eCommerce SEO keyword generator.
-
-PRODUCT:
-${product}
-
-CATEGORY:
-${category || "Not specified"}
-
-BRAND:
-${brand || "Not specified"}
-
-MAIN KEYWORD:
-${mainKeyword}
-
-MARKETPLACE:
-${marketplace}
-
-
-IMPORTANT:
-
-Generate useful SEO keywords based ONLY on the information above.
-
-The MAIN KEYWORD is extremely important.
-
-The exact main keyword MUST be included in the result.
-
-STRICT RULES:
-
-1. Maximum 20 keywords.
-
-2. Do not force 20 keywords.
-
-3. Main Keyword must be included.
-
-4. Product-related keywords are preferred.
-
-5. Brand + Product keywords are allowed.
-
-6. Category + Product keywords are allowed.
-
-7. Brand + Category + Product keywords are allowed when natural.
-
-8. Never invent another brand.
-
-9. Never invent another product.
-
-10. Never invent color.
-
-11. Never invent material.
-
-12. Never invent size.
-
-13. Never invent features.
-
-14. Never invent benefits.
-
-15. Never invent price.
-
-16. Never invent offers.
-
-17. Never invent quality claims.
-
-18. Do NOT use:
-Buy
-Shop
-Online
-Store
-Sale
-Offer
-Deal
-Best
-Premium
-Amazing
-Excellent
-Trending
-Viral
-Bestseller
-
-19. Do not return the brand alone.
-
-20. Do not return the category alone.
-
-21. Do not change "Men's Clothing" into "Man Clothing".
-
-22. Do not change "Men's" into "Man".
-
-23. Do not create unrelated keywords.
-
-24. Do not create random word combinations.
-
-25. Do not duplicate keywords.
-
-26. T-Shirt, Tshirt and T Shirt should be treated as the same keyword.
-
-27. Return one keyword per line.
-
-28. Do not number the keywords.
-
-29. Return keywords only.
-
-GOOD EXAMPLES:
-
-Black Cotton T-Shirt
-Cotton T-Shirt
-Black T-Shirt
-Fashion Hud Black Cotton T-Shirt
-Fashion Hud Cotton T-Shirt
-Fashion Hud T-Shirt
-Men's Black Cotton T-Shirt
-Men's Cotton T-Shirt
-Men's Black T-Shirt
-Fashion Hud Men's T-Shirt
-
-BAD EXAMPLES:
-
-Fashion Hud
-Men's Clothing
-Man Clothing
-Buy Black Cotton T-Shirt
-Black Cotton T-Shirt Online
-Best Black Cotton T-Shirt
-Premium Cotton T-Shirt
-`;
+    result.value =
+        "⏳ Please wait...";
 
 
     try {
 
-        const response = await fetch(
-            "https://ai-seller-toolkit-backend-1.onrender.com/generate",
-            {
-                method: "POST",
+        // ---------------------------------------------------
+        // API REQUEST
+        // ---------------------------------------------------
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+        const response =
+            await fetch(
+                API_URL +
+                "/api/generate-keywords",
+                {
 
-                body: JSON.stringify({
-                    prompt: prompt
-                })
-            }
-        );
+                    method: "POST",
 
+                    headers: {
+
+                        "Content-Type":
+                            "application/json"
+
+                    },
+
+                    body:
+                        JSON.stringify({
+
+                            category:
+                                category,
+
+                            productName:
+                                product,
+
+                            brand:
+                                brand,
+
+                            productDetails:
+                                "",
+
+                            mainKeyword:
+                                mainKeyword,
+
+                            marketplace:
+                                marketplace
+
+                        })
+
+                }
+            );
+
+
+        // ---------------------------------------------------
+        // READ RESPONSE
+        // ---------------------------------------------------
+
+        let data = null;
+
+        try {
+
+            data =
+                await response.json();
+
+        }
+        catch {
+
+            throw new Error(
+                "Backend ने valid JSON response नहीं दिया।"
+            );
+
+        }
+
+
+        // ---------------------------------------------------
+        // API ERROR
+        // ---------------------------------------------------
 
         if (!response.ok) {
 
             throw new Error(
-                "Backend Error: " + response.status
+                data &&
+                data.error
+                    ? data.error
+                    : "Backend Error: " +
+                      response.status
             );
 
         }
 
 
-        const data = await response.json();
-
-
-        if (!data || !data.result) {
+        if (
+            !data ||
+            data.success !== true
+        ) {
 
             throw new Error(
-                "AI ने कोई result नहीं दिया।"
+                data &&
+                data.error
+                    ? data.error
+                    : "SEO keywords generate नहीं हुए।"
             );
 
         }
 
 
-        /*
-         * AI result को filter करें
-         */
+        // ---------------------------------------------------
+        // KEYWORDS
+        // ---------------------------------------------------
 
-        let keywords = parseKeywords(data.result);
-
-
-        /*
-         * Main Keyword को सबसे पहले रखें
-         */
-
-        const mainExact =
-            cleanDisplayKeyword(mainKeyword);
-
-        keywords = removeDuplicateKeywords(keywords);
+        let keywords =
+            Array.isArray(
+                data.keywords
+            )
+                ? data.keywords
+                : [];
 
 
-        /*
-         * Main keyword पहले
-         */
-
-        keywords = prioritizeMainKeyword(
-            keywords,
-            mainExact
-        );
-
-
-        /*
-         * अगर AI ने Main Keyword नहीं दिया,
-         * तो हम user द्वारा दिया गया exact
-         * Main Keyword जोड़ेंगे।
-         */
-
-        const hasMainKeyword =
-            keywords.some(function(item) {
-
-                return normalizeKeyword(item) ===
-                       normalizeKeyword(mainExact);
-
-            });
+        // Clean
+        keywords =
+            keywords
+                .map(
+                    cleanKeyword
+                )
+                .filter(Boolean);
 
 
-        if (!hasMainKeyword) {
-
-            keywords.unshift(mainExact);
-
-        }
-
-
-        /*
-         * Related useful keywords
-         */
-
-        const generated = buildSafeKeywords(
-            product,
-            category,
-            brand,
-            mainKeyword
-        );
+        // Remove duplicates
+        keywords =
+            removeDuplicates(
+                keywords
+            );
 
 
-        /*
-         * AI keywords + safe keywords
-         */
-
-        keywords = mergeKeywords(
-            keywords,
-            generated
-        );
+        // Main keyword first
+        keywords =
+            prioritizeMainKeyword(
+                keywords,
+                mainKeyword
+            );
 
 
-        /*
-         * Final filtering
-         */
-
-        keywords = strictFinalFilter(
-            keywords,
-            product,
-            category,
-            brand,
-            mainKeyword
-        );
-
-
-        /*
-         * Main keyword फिर से सुनिश्चित करें
-         */
-
-        const exactMain =
-            cleanDisplayKeyword(mainKeyword);
+        // Make sure exact main keyword exists
+        const mainExists =
+            keywords.some(
+                item =>
+                    normalizeKeyword(
+                        item
+                    ) ===
+                    normalizeKeyword(
+                        mainKeyword
+                    )
+            );
 
 
-        const exists =
-            keywords.some(function(item) {
+        if (!mainExists) {
 
-                return normalizeKeyword(item) ===
-                       normalizeKeyword(exactMain);
-
-            });
-
-
-        if (!exists) {
-
-            keywords.unshift(exactMain);
+            keywords.unshift(
+                mainKeyword
+            );
 
         }
 
 
-        /*
-         * Maximum 20
-         */
+        // Maximum 20
+        keywords =
+            keywords.slice(
+                0,
+                20
+            );
 
-        keywords = keywords.slice(0, 20);
 
+        if (!keywords.length) {
+
+            throw new Error(
+                "AI ने कोई keyword नहीं दिया।"
+            );
+
+        }
+
+
+        // ---------------------------------------------------
+        // DISPLAY
+        // ---------------------------------------------------
 
         result.value =
-            keywords.map(function(item, index) {
+            keywords
+                .map(
+                    (item, index) =>
+                        (
+                            index + 1
+                        ) +
+                        ". " +
+                        item
+                )
+                .join("\n");
 
-                return (index + 1) + ". " + item;
 
-            }).join("\n");
-
-
-        status.innerText =
+        showStatus(
             "✅ " +
             keywords.length +
-            " relevant SEO keywords generated.";
+            " relevant SEO keywords generated."
+        );
 
 
-    } catch (error) {
+    }
+    catch (error) {
 
         console.error(
             "SEO Generator Error:",
             error
         );
-
 
         result.value =
             "❌ SEO Keywords generate नहीं हो सके.\n\n" +
@@ -349,711 +404,64 @@ Premium Cotton T-Shirt
             error.message;
 
 
+        showStatus(
+            "❌ Please try again."
+        );
+
+    }
+    finally {
+
+        generateBtn.disabled =
+            false;
+
+        generateBtn.innerText =
+            "🤖 Generate SEO Keywords";
+
+    }
+
+}
+
+
+// =========================================================
+// SHOW STATUS
+// =========================================================
+
+function showStatus(message) {
+
+    if (status) {
+
         status.innerText =
-            "Please try again.";
+            message;
 
     }
 
-
-    generateBtn.disabled = false;
-
-    generateBtn.innerText =
-        "🤖 Generate SEO Keywords";
 }
 
 
-/* =========================================
-   PARSE AI KEYWORDS
-========================================= */
+// =========================================================
+// CLEAN KEYWORD
+// =========================================================
 
-function parseKeywords(text) {
-
-    return text
-        .split(/\r?\n/)
-        .map(function(line) {
-
-            let value = line.trim();
-
-            value = value.replace(
-                /^\d+[\.\)\-:]\s*/,
-                ""
-            );
-
-            value = value.replace(
-                /^[-•*]\s*/,
-                ""
-            );
-
-            return value.trim();
-
-        })
-        .filter(function(value) {
-
-            return value !== "";
-
-        });
-
-}
-
-
-/* =========================================
-   BUILD SAFE KEYWORDS
-========================================= */
-
-function buildSafeKeywords(
-    product,
-    category,
-    brand,
-    mainKeyword
+function cleanKeyword(
+    value
 ) {
 
-    const list = [];
-
-
-    const p =
-        cleanDisplayKeyword(product);
-
-    const m =
-        cleanDisplayKeyword(mainKeyword);
-
-    const b =
-        cleanDisplayKeyword(brand);
-
-    const c =
-        cleanDisplayKeyword(category);
-
-
-    /*
-     * Exact Main Keyword
-     */
-
-    if (m) {
-        list.push(m);
-    }
-
-
-    /*
-     * Product
-     */
-
-    if (p) {
-        list.push(p);
-    }
-
-
-    /*
-     * Main Keyword + Product
-     * केवल तभी जब अलग हों
-     */
-
-    if (
-        m &&
-        p &&
-        normalizeKeyword(m) !==
-        normalizeKeyword(p)
-    ) {
-
-        /*
-         * Main keyword पहले ही काफी specific है,
-         * इसलिए unnecessary combination नहीं बनाते।
-         */
-
-    }
-
-
-    /*
-     * Brand + Product
-     */
-
-    if (b && p) {
-
-        list.push(
-            b + " " + p
-        );
-
-    }
-
-
-    /*
-     * Brand + Main Keyword
-     */
-
-    if (b && m) {
-
-        list.push(
-            b + " " + m
-        );
-
-    }
-
-
-    /*
-     * Category + Product
-     */
-
-    if (c && p) {
-
-        list.push(
-            c + " " + p
-        );
-
-    }
-
-
-    /*
-     * Category + Main Keyword
-     */
-
-    if (c && m) {
-
-        list.push(
-            c + " " + m
-        );
-
-    }
-
-
-    /*
-     * Brand + Category + Product
-     */
-
-    if (b && c && p) {
-
-        list.push(
-            b + " " + c + " " + p
-        );
-
-    }
-
-
-    /*
-     * Brand + Category + Main Keyword
-     */
-
-    if (b && c && m) {
-
-        list.push(
-            b + " " + c + " " + m
-        );
-
-    }
-
-
-    /*
-     * Main Keyword से useful parts
-     */
-
-    const words =
-        normalizeWords(mainKeyword);
-
-
-    if (words.length >= 2) {
-
-        list.push(
-            capitalizeWords(
-                words.join(" ")
-            )
-        );
-
-    }
-
-
-    /*
-     * Black + T-Shirt जैसे natural
-     * combinations निकालना
-     */
-
-    if (
-        words.length >= 3
-    ) {
-
-        for (
-            let i = 0;
-            i < words.length;
-            i++
-        ) {
-
-            if (
-                words[i] === "tshirt"
-            ) {
-
-                const before =
-                    words.slice(
-                        0,
-                        i
-                    );
-
-
-                if (
-                    before.length > 0
-                ) {
-
-                    list.push(
-                        capitalizeWords(
-                            before.join(" ")
-                        ) +
-                        " T-Shirt"
-                    );
-
-                }
-
-            }
-
-        }
-
-    }
-
-
-    return list;
-
-}
-
-
-/* =========================================
-   STRICT FINAL FILTER
-========================================= */
-
-function strictFinalFilter(
-    keywords,
-    product,
-    category,
-    brand,
-    mainKeyword
-) {
-
-    const sourceWords = [
-        ...normalizeWords(product),
-        ...normalizeWords(category),
-        ...normalizeWords(brand),
-        ...normalizeWords(mainKeyword)
-    ];
-
-
-    const uniqueSourceWords =
-        [...new Set(sourceWords)];
-
-
-    const productWords =
-        normalizeWords(product);
-
-
-    const forbidden = [
-        "buy",
-        "shop",
-        "online",
-        "store",
-        "sale",
-        "offer",
-        "deal",
-        "best",
-        "premium",
-        "amazing",
-        "excellent",
-        "trending",
-        "viral",
-        "bestseller",
-        "guaranteed",
-        "guarantee"
-    ];
-
-
-    const brandOnly =
-        normalizeKeyword(brand);
-
-
-    const categoryOnly =
-        normalizeKeyword(category);
-
-
-    const finalList = [];
-
-    const seen = new Set();
-
-
-    keywords.forEach(function(item) {
-
-        let keyword =
-            cleanDisplayKeyword(item);
-
-
-        if (!keyword) {
-            return;
-        }
-
-
-        /*
-         * Too long
-         */
-
-        if (keyword.length > 100) {
-            return;
-        }
-
-
-        /*
-         * Remove punctuation
-         */
-
-        if (
-            keyword.includes("#") ||
-            keyword.includes("!") ||
-            keyword.includes("?") ||
-            keyword.includes(".")
-        ) {
-
-            return;
-
-        }
-
-
-        const normalized =
-            normalizeKeyword(keyword);
-
-
-        /*
-         * Duplicate
-         */
-
-        if (seen.has(normalized)) {
-            return;
-        }
-
-
-        /*
-         * Brand alone
-         */
-
-        if (
-            brandOnly &&
-            normalized === brandOnly
-        ) {
-
-            return;
-
-        }
-
-
-        /*
-         * Category alone
-         */
-
-        if (
-            categoryOnly &&
-            normalized === categoryOnly
-        ) {
-
-            return;
-
-        }
-
-
-        /*
-         * Forbidden words
-         */
-
-        const words =
-            normalizeWords(keyword);
-
-
-        for (
-            let i = 0;
-            i < forbidden.length;
-            i++
-        ) {
-
-            if (
-                words.includes(
-                    forbidden[i]
-                )
-            ) {
-
-                return;
-
-            }
-
-        }
-
-
-        /*
-         * Wrong "Man Clothing"
-         */
-
-        if (
-            normalized.includes(
-                "man clothing"
-            )
-        ) {
-
-            return;
-
-        }
-
-
-        if (
-            normalized.includes(
-                "men clothing"
-            )
-        ) {
-
-            return;
-
-        }
-
-
-        if (
-            normalized.includes(
-                "male clothing"
-            )
-        ) {
-
-            return;
-
-        }
-
-
-        /*
-         * Must contain product-related word
-         */
-
-        let related =
-            false;
-
-
-        productWords.forEach(function(word) {
-
-            if (
-                words.includes(word)
-            ) {
-
-                related = true;
-
-            }
-
-        });
-
-
-        /*
-         * Main keyword words are also valid
-         */
-
-        normalizeWords(mainKeyword)
-            .forEach(function(word) {
-
-                if (
-                    words.includes(word)
-                ) {
-
-                    related = true;
-
-                }
-
-            });
-
-
-        if (!related) {
-            return;
-        }
-
-
-        /*
-         * Unknown words check
-         */
-
-        let hasUnknown =
-            false;
-
-
-        words.forEach(function(word) {
-
-            if (
-                !uniqueSourceWords.includes(
-                    word
-                )
-            ) {
-
-                /*
-                 * Allow tshirt normalization
-                 */
-
-                if (
-                    word !== "tshirt"
-                ) {
-
-                    hasUnknown = true;
-
-                }
-
-            }
-
-        });
-
-
-        if (hasUnknown) {
-            return;
-        }
-
-
-        seen.add(normalized);
-
-        finalList.push(keyword);
-
-    });
-
-
-    return finalList;
-
-}
-
-
-/* =========================================
-   MERGE KEYWORDS
-========================================= */
-
-function mergeKeywords(
-    first,
-    second
-) {
-
-    const output = [];
-
-    const seen = new Set();
-
-
-    [...first, ...second]
-        .forEach(function(item) {
-
-            const normalized =
-                normalizeKeyword(item);
-
-
-            if (
-                !normalized ||
-                seen.has(normalized)
-            ) {
-
-                return;
-
-            }
-
-
-            seen.add(normalized);
-
-            output.push(item);
-
-        });
-
-
-    return output;
-
-}
-
-
-/* =========================================
-   REMOVE DUPLICATES
-========================================= */
-
-function removeDuplicateKeywords(
-    keywords
-) {
-
-    const output = [];
-
-    const seen = new Set();
-
-
-    keywords.forEach(function(item) {
-
-        const normalized =
-            normalizeKeyword(item);
-
-
-        if (
-            !normalized ||
-            seen.has(normalized)
-        ) {
-
-            return;
-
-        }
-
-
-        seen.add(normalized);
-
-        output.push(item);
-
-    });
-
-
-    return output;
-
-}
-
-
-/* =========================================
-   PRIORITIZE MAIN KEYWORD
-========================================= */
-
-function prioritizeMainKeyword(
-    keywords,
-    mainKeyword
-) {
-
-    const target =
-        normalizeKeyword(mainKeyword);
-
-
-    const index =
-        keywords.findIndex(function(item) {
-
-            return (
-                normalizeKeyword(item) ===
-                target
-            );
-
-        });
-
-
-    if (
-        index > 0
-    ) {
-
-        const item =
-            keywords.splice(
-                index,
-                1
-            )[0];
-
-
-        keywords.unshift(item);
-
-    }
-
-
-    return keywords;
-
-}
-
-
-/* =========================================
-   CLEAN DISPLAY KEYWORD
-========================================= */
-
-function cleanDisplayKeyword(
-    text
-) {
-
-    if (!text) {
+    if (!value) {
         return "";
     }
 
-
-    return text
+    return String(value)
+        .trim()
         .replace(
             /^\d+[\.\)\-:]\s*/,
             ""
         )
         .replace(
             /^[-•*]\s*/,
+            ""
+        )
+        .replace(
+            /^["']|["']$/g,
             ""
         )
         .replace(
@@ -1065,9 +473,9 @@ function cleanDisplayKeyword(
 }
 
 
-/* =========================================
-   NORMALIZE KEYWORD
-========================================= */
+// =========================================================
+// NORMALIZE KEYWORD
+// =========================================================
 
 function normalizeKeyword(
     text
@@ -1077,8 +485,7 @@ function normalizeKeyword(
         return "";
     }
 
-
-    return text
+    return String(text)
         .toLowerCase()
         .replace(
             /['’]/g,
@@ -1105,14 +512,6 @@ function normalizeKeyword(
             "tshirt"
         )
         .replace(
-            /\bmens\b/g,
-            "men"
-        )
-        .replace(
-            /\bmen s\b/g,
-            "men"
-        )
-        .replace(
             /\s+/g,
             " "
         )
@@ -1121,85 +520,103 @@ function normalizeKeyword(
 }
 
 
-/* =========================================
-   NORMALIZE WORDS
-========================================= */
+// =========================================================
+// REMOVE DUPLICATES
+// =========================================================
 
-function normalizeWords(
-    text
+function removeDuplicates(
+    keywords
 ) {
 
-    const normalized =
-        normalizeKeyword(text);
+    const output = [];
 
+    const seen =
+        new Set();
 
-    if (!normalized) {
-        return [];
-    }
+    keywords.forEach(
+        keyword => {
 
-
-    return normalized
-        .split(" ")
-        .filter(function(word) {
-
-            return word !== "";
-
-        });
-
-}
-
-
-/* =========================================
-   CAPITALIZE WORDS
-========================================= */
-
-function capitalizeWords(
-    text
-) {
-
-    return text
-        .split(" ")
-        .map(function(word) {
+            const normalized =
+                normalizeKeyword(
+                    keyword
+                );
 
             if (
-                word === "tshirt"
+                !normalized ||
+                seen.has(
+                    normalized
+                )
             ) {
 
-                return "T-Shirt";
+                return;
 
             }
 
-
-            if (
-                word === "men"
-            ) {
-
-                return "Men's";
-
-            }
-
-
-            return (
-                word.charAt(0)
-                    .toUpperCase() +
-                word.slice(1)
+            seen.add(
+                normalized
             );
 
-        })
-        .join(" ");
+            output.push(
+                keyword
+            );
+
+        }
+    );
+
+    return output;
 
 }
 
 
-/* =========================================
-   COPY SEO
-========================================= */
+// =========================================================
+// PRIORITIZE MAIN KEYWORD
+// =========================================================
+
+function prioritizeMainKeyword(
+    keywords,
+    mainKeyword
+) {
+
+    const target =
+        normalizeKeyword(
+            mainKeyword
+        );
+
+    const index =
+        keywords.findIndex(
+            item =>
+                normalizeKeyword(
+                    item
+                ) === target
+        );
+
+    if (index > 0) {
+
+        const item =
+            keywords.splice(
+                index,
+                1
+            )[0];
+
+        keywords.unshift(
+            item
+        );
+
+    }
+
+    return keywords;
+
+}
+
+
+// =========================================================
+// COPY SEO
+// =========================================================
 
 function copySEO() {
 
     const text =
         result.value.trim();
-
 
     if (
         !text ||
@@ -1222,42 +639,55 @@ function copySEO() {
     ) {
 
         navigator.clipboard
-            .writeText(text)
-            .then(function() {
+            .writeText(
+                text
+            )
+            .then(
+                function() {
 
-                alert(
-                    "✅ SEO Keywords copied successfully!"
-                );
+                    alert(
+                        "✅ SEO Keywords copied successfully!"
+                    );
 
-            })
-            .catch(function() {
+                }
+            )
+            .catch(
+                function() {
 
-                fallbackCopy(text);
+                    fallbackCopy(
+                        text
+                    );
 
-            });
+                }
+            );
 
-    } else {
+    }
+    else {
 
-        fallbackCopy(text);
+        fallbackCopy(
+            text
+        );
 
     }
 
 }
 
 
-/* =========================================
-   COPY FALLBACK
-========================================= */
+// =========================================================
+// COPY FALLBACK
+// =========================================================
 
-function fallbackCopy(text) {
+function fallbackCopy(
+    text
+) {
 
     const textarea =
         document.createElement(
             "textarea"
         );
 
-
-    textarea.value = text;
+    textarea.value =
+        text;
 
     textarea.style.position =
         "fixed";
@@ -1265,14 +695,11 @@ function fallbackCopy(text) {
     textarea.style.left =
         "-9999px";
 
-
     document.body.appendChild(
         textarea
     );
 
-
     textarea.select();
-
 
     try {
 
@@ -1280,19 +707,18 @@ function fallbackCopy(text) {
             "copy"
         );
 
-
         alert(
             "✅ SEO Keywords copied successfully!"
         );
 
-    } catch(error) {
+    }
+    catch (error) {
 
         alert(
             "❌ Copy नहीं हो सका।"
         );
 
     }
-
 
     textarea.remove();
 
