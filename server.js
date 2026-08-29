@@ -1,17 +1,20 @@
 // ==========================================================
 // AI SELLER TOOLKIT
-// SERVER.JS — FINAL VERSION 11
+// SERVER.JS — FINAL VERSION 12
 // ==========================================================
 // Gemini Interactions API
 // @google/genai >= 2.0.0
 //
-// Endpoints:
+// Existing endpoints preserved:
 // GET  /
 // GET  /api/status
 // GET  /api/categories
 // POST /api/generate-title
 // POST /api/generate-description
 // POST /api/generate-listing
+//
+// NEW:
+// POST /api/generate-keywords
 //
 // Categories:
 // Fashion
@@ -36,7 +39,6 @@ const express = require("express");
 const cors = require("cors");
 const { GoogleGenAI } = require("@google/genai");
 
-
 // ==========================================================
 // APP
 // ==========================================================
@@ -57,7 +59,6 @@ app.use(
     })
 );
 
-
 // ==========================================================
 // CONFIG
 // ==========================================================
@@ -72,7 +73,6 @@ const MODEL =
     process.env.GEMINI_MODEL ||
     "gemini-3.6-flash";
 
-
 // ==========================================================
 // GEMINI CLIENT
 // ==========================================================
@@ -86,7 +86,6 @@ if (GEMINI_API_KEY) {
     });
 
 }
-
 
 // ==========================================================
 // CATEGORIES
@@ -110,7 +109,6 @@ const CATEGORIES = [
     "Gifts"
 
 ];
-
 
 // ==========================================================
 // CATEGORY RULES
@@ -137,11 +135,12 @@ Use only seller-provided facts.
 Do not invent ingredients, skin benefits, medical benefits,
 dermatologist claims, certifications, SPF, quantity,
 fragrance or suitability.
+
 Do not make medical claims.
 `,
 
     "Electronics": `
-Focus on electronic and tech products.
+Focus on electronic and technology products.
 
 Use only provided specifications such as:
 product type, connectivity, compatibility, battery,
@@ -276,7 +275,6 @@ materials, packaging, certification or features.
 
 };
 
-
 // ==========================================================
 // NORMALIZE CATEGORY
 // ==========================================================
@@ -287,10 +285,18 @@ function normalizeCategory(category) {
         return "";
     }
 
-    const value =
+    let value =
         String(category)
             .trim()
             .toLowerCase();
+
+    // Remove common emoji prefixes
+    value =
+        value.replace(
+            /^[^\p{L}\p{N}]+/u,
+            ""
+        )
+        .trim();
 
     const found =
         CATEGORIES.find(
@@ -301,14 +307,16 @@ function normalizeCategory(category) {
     return found || "";
 }
 
-
 // ==========================================================
 // CLEAN STRING
 // ==========================================================
 
 function cleanString(value) {
 
-    if (value === null || value === undefined) {
+    if (
+        value === null ||
+        value === undefined
+    ) {
         return "";
     }
 
@@ -318,7 +326,6 @@ function cleanString(value) {
 
     return String(value).trim();
 }
-
 
 // ==========================================================
 // SAFE JSON PARSER
@@ -333,15 +340,21 @@ function safeJsonParse(text) {
     let cleaned =
         String(text).trim();
 
-
-    // Remove markdown code fences
     cleaned =
         cleaned
-            .replace(/^```json\s*/i, "")
-            .replace(/^```\s*/i, "")
-            .replace(/\s*```$/i, "")
+            .replace(
+                /^```json\s*/i,
+                ""
+            )
+            .replace(
+                /^```\s*/i,
+                ""
+            )
+            .replace(
+                /\s*```$/i,
+                ""
+            )
             .trim();
-
 
     try {
 
@@ -350,7 +363,6 @@ function safeJsonParse(text) {
     }
     catch (error) {
 
-        // Try extracting first JSON object
         const objectStart =
             cleaned.indexOf("{");
 
@@ -376,8 +388,6 @@ function safeJsonParse(text) {
 
         }
 
-
-        // Try extracting JSON array
         const arrayStart =
             cleaned.indexOf("[");
 
@@ -406,9 +416,7 @@ function safeJsonParse(text) {
     }
 
     return null;
-
 }
-
 
 // ==========================================================
 // GET TEXT FROM INTERACTION
@@ -420,8 +428,6 @@ function getInteractionText(interaction) {
         return "";
     }
 
-
-    // Official SDK helper
     if (
         typeof interaction.output_text === "string" &&
         interaction.output_text.trim()
@@ -431,14 +437,11 @@ function getInteractionText(interaction) {
 
     }
 
-
-    // Fallback: inspect steps
     if (
         Array.isArray(interaction.steps)
     ) {
 
         const textParts = [];
-
 
         for (
             const step of interaction.steps
@@ -472,7 +475,6 @@ function getInteractionText(interaction) {
 
         }
 
-
         if (textParts.length) {
 
             return textParts
@@ -483,11 +485,8 @@ function getInteractionText(interaction) {
 
     }
 
-
     return "";
-
 }
-
 
 // ==========================================================
 // CALL GEMINI
@@ -503,7 +502,6 @@ async function callGemini(prompt) {
 
     }
 
-
     if (!ai) {
 
         ai =
@@ -513,24 +511,19 @@ async function callGemini(prompt) {
 
     }
 
-
     const interaction =
         await ai.interactions.create({
 
-            model:
-                MODEL,
+            model: MODEL,
 
-            input:
-                prompt
+            input: prompt
 
         });
-
 
     const text =
         getInteractionText(
             interaction
         );
-
 
     if (!text) {
 
@@ -543,18 +536,14 @@ async function callGemini(prompt) {
             )
         );
 
-
         throw new Error(
             "Gemini ने कोई usable text response नहीं दिया।"
         );
 
     }
 
-
     return text;
-
 }
-
 
 // ==========================================================
 // COMMON FACTUAL RULES
@@ -582,9 +571,360 @@ STRICT FACTUAL RULES:
 
 `;
 
+// ==========================================================
+// SEO FORBIDDEN WORDS
+// ==========================================================
+
+const SEO_FORBIDDEN_WORDS = [
+
+    "buy",
+    "shop",
+    "online",
+    "store",
+    "sale",
+    "offer",
+    "deal",
+    "best",
+    "premium",
+    "amazing",
+    "excellent",
+    "trending",
+    "viral",
+    "bestseller",
+    "guaranteed",
+    "guarantee",
+    "cheap",
+    "discount",
+    "free"
+
+];
 
 // ==========================================================
-// HEALTH / ROOT
+// NORMALIZE SEO KEYWORD
+// ==========================================================
+
+function normalizeSEOKeyword(text) {
+
+    if (!text) {
+        return "";
+    }
+
+    return String(text)
+        .toLowerCase()
+        .replace(
+            /['’]/g,
+            ""
+        )
+        .replace(
+            /[-_/]/g,
+            " "
+        )
+        .replace(
+            /[^a-z0-9\s]/g,
+            ""
+        )
+        .replace(
+            /\bt[\s-]*shirt\b/g,
+            "tshirt"
+        )
+        .replace(
+            /\bt shirt\b/g,
+            "tshirt"
+        )
+        .replace(
+            /\btshirt\b/g,
+            "tshirt"
+        )
+        .replace(
+            /\bgrams?\b/g,
+            "g"
+        )
+        .replace(
+            /\bkilograms?\b/g,
+            "kg"
+        )
+        .replace(
+            /\bmilliliters?\b/g,
+            "ml"
+        )
+        .replace(
+            /\bliters?\b/g,
+            "l"
+        )
+        .replace(
+            /\s+/g,
+            " "
+        )
+        .trim();
+}
+
+// ==========================================================
+// CLEAN SEO KEYWORD
+// ==========================================================
+
+function cleanSEOKeyword(text) {
+
+    if (!text) {
+        return "";
+    }
+
+    let value =
+        String(text)
+            .trim()
+            .replace(
+                /^\d+[\.\)\-:]\s*/,
+                ""
+            )
+            .replace(
+                /^[-•*]\s*/,
+                ""
+            )
+            .replace(
+                /^["']|["']$/g,
+                ""
+            )
+            .replace(
+                /\s+/g,
+                " "
+            )
+            .trim();
+
+    return value;
+}
+
+// ==========================================================
+// FILTER SEO KEYWORDS
+// ==========================================================
+
+function filterSEOKeywords(
+    keywords,
+    productName,
+    category,
+    brand,
+    mainKeyword
+) {
+
+    const product =
+        cleanString(productName);
+
+    const cat =
+        cleanString(category);
+
+    const br =
+        cleanString(brand);
+
+    const main =
+        cleanString(mainKeyword);
+
+    const sourceText =
+        [
+            product,
+            cat,
+            br,
+            main
+        ]
+        .filter(Boolean)
+        .join(" ");
+
+    const sourceNormalized =
+        normalizeSEOKeyword(
+            sourceText
+        );
+
+    const sourceWords =
+        new Set(
+            sourceNormalized
+                .split(" ")
+                .filter(Boolean)
+        );
+
+    const brandNormalized =
+        normalizeSEOKeyword(br);
+
+    const categoryNormalized =
+        normalizeSEOKeyword(cat);
+
+    const finalKeywords = [];
+
+    const seen = new Set();
+
+    for (
+        const rawKeyword of keywords
+    ) {
+
+        const keyword =
+            cleanSEOKeyword(
+                rawKeyword
+            );
+
+        if (!keyword) {
+            continue;
+        }
+
+        if (
+            keyword.length > 100
+        ) {
+            continue;
+        }
+
+        if (
+            keyword.includes("#") ||
+            keyword.includes("!") ||
+            keyword.includes("?") ||
+            keyword.includes(".") ||
+            keyword.includes("<") ||
+            keyword.includes(">") ||
+            keyword.includes("{") ||
+            keyword.includes("}")
+        ) {
+            continue;
+        }
+
+        const normalized =
+            normalizeSEOKeyword(
+                keyword
+            );
+
+        if (!normalized) {
+            continue;
+        }
+
+        if (seen.has(normalized)) {
+            continue;
+        }
+
+        // Brand alone is not useful SEO keyword
+        if (
+            brandNormalized &&
+            normalized === brandNormalized
+        ) {
+            continue;
+        }
+
+        // Category alone is not useful SEO keyword
+        if (
+            categoryNormalized &&
+            normalized === categoryNormalized
+        ) {
+            continue;
+        }
+
+        const keywordWords =
+            normalized
+                .split(" ")
+                .filter(Boolean);
+
+        // Forbidden commercial/promotional words
+        const hasForbidden =
+            SEO_FORBIDDEN_WORDS.some(
+                word =>
+                    keywordWords.includes(word)
+            );
+
+        if (hasForbidden) {
+            continue;
+        }
+
+        // Must have meaningful relation
+        // to seller supplied product information.
+        let related = false;
+
+        for (
+            const word of keywordWords
+        ) {
+
+            if (
+                sourceWords.has(word)
+            ) {
+
+                related = true;
+                break;
+
+            }
+
+        }
+
+        if (!related) {
+            continue;
+        }
+
+        // Avoid random one-word keywords
+        if (
+            keywordWords.length === 1 &&
+            normalizeSEOKeyword(product) !== normalized &&
+            normalizeSEOKeyword(main) !== normalized
+        ) {
+            continue;
+        }
+
+        seen.add(normalized);
+
+        finalKeywords.push(
+            keyword
+        );
+
+        if (
+            finalKeywords.length >= 20
+        ) {
+            break;
+        }
+
+    }
+
+    // Always put exact Main Keyword first
+    if (main) {
+
+        const mainClean =
+            cleanSEOKeyword(
+                main
+            );
+
+        const mainNormalized =
+            normalizeSEOKeyword(
+                mainClean
+            );
+
+        const existingIndex =
+            finalKeywords.findIndex(
+                item =>
+                    normalizeSEOKeyword(
+                        item
+                    ) === mainNormalized
+            );
+
+        if (existingIndex > 0) {
+
+            const existing =
+                finalKeywords.splice(
+                    existingIndex,
+                    1
+                )[0];
+
+            finalKeywords.unshift(
+                existing
+            );
+
+        }
+        else if (
+            existingIndex === -1
+        ) {
+
+            finalKeywords.unshift(
+                mainClean
+            );
+
+        }
+
+    }
+
+    return finalKeywords.slice(
+        0,
+        20
+    );
+}
+
+// ==========================================================
+// ROOT
 // ==========================================================
 
 app.get(
@@ -599,7 +939,7 @@ app.get(
                 "AI Seller Toolkit Backend",
 
             version:
-                "11.0",
+                "12.0",
 
             status:
                 "online",
@@ -611,7 +951,9 @@ app.get(
                 "Interactions API",
 
             geminiConfigured:
-                Boolean(GEMINI_API_KEY),
+                Boolean(
+                    GEMINI_API_KEY
+                ),
 
             endpoints: [
 
@@ -619,7 +961,8 @@ app.get(
                 "/api/categories",
                 "/api/generate-title",
                 "/api/generate-description",
-                "/api/generate-listing"
+                "/api/generate-listing",
+                "/api/generate-keywords"
 
             ]
 
@@ -627,7 +970,6 @@ app.get(
 
     }
 );
-
 
 // ==========================================================
 // STATUS
@@ -645,7 +987,7 @@ app.get(
                 "AI Seller Toolkit Backend",
 
             version:
-                "11.0",
+                "12.0",
 
             status:
                 "online",
@@ -657,7 +999,9 @@ app.get(
                 "Interactions API",
 
             geminiConfigured:
-                Boolean(GEMINI_API_KEY),
+                Boolean(
+                    GEMINI_API_KEY
+                ),
 
             endpoints: [
 
@@ -665,7 +1009,8 @@ app.get(
                 "/api/categories",
                 "/api/generate-title",
                 "/api/generate-description",
-                "/api/generate-listing"
+                "/api/generate-listing",
+                "/api/generate-keywords"
 
             ]
 
@@ -673,7 +1018,6 @@ app.get(
 
     }
 );
-
 
 // ==========================================================
 // CATEGORIES
@@ -695,7 +1039,6 @@ app.get(
     }
 );
 
-
 // ==========================================================
 // GENERATE TITLE
 // ==========================================================
@@ -707,21 +1050,17 @@ app.post(
         try {
 
             const {
-
                 category,
                 productName,
                 brand,
                 productDetails,
                 keywords
-
             } = req.body || {};
-
 
             const normalizedCategory =
                 normalizeCategory(
                     category
                 );
-
 
             if (!normalizedCategory) {
 
@@ -736,7 +1075,6 @@ app.post(
 
             }
 
-
             if (!cleanString(productName)) {
 
                 return res.status(400).json({
@@ -750,12 +1088,10 @@ app.post(
 
             }
 
-
             const categoryRule =
                 CATEGORY_RULES[
                     normalizedCategory
                 ] || "";
-
 
             const prompt = `
 
@@ -812,25 +1148,23 @@ Return ONLY valid JSON in this exact structure:
 
 `;
 
-
             const output =
                 await callGemini(
                     prompt
                 );
-
 
             const parsed =
                 safeJsonParse(
                     output
                 );
 
-
             let titles = [];
-
 
             if (
                 parsed &&
-                Array.isArray(parsed.titles)
+                Array.isArray(
+                    parsed.titles
+                )
             ) {
 
                 titles =
@@ -840,8 +1174,6 @@ Return ONLY valid JSON in this exact structure:
 
             }
 
-
-            // Fallback if model returns plain lines
             if (
                 titles.length === 0
             ) {
@@ -849,22 +1181,22 @@ Return ONLY valid JSON in this exact structure:
                 titles =
                     output
                         .split("\n")
-                        .map(line =>
-                            line
-                                .replace(
-                                    /^\s*[\d.)-]+\s*/,
-                                    ""
-                                )
-                                .replace(
-                                    /^["']|["']$/g,
-                                    ""
-                                )
-                                .trim()
+                        .map(
+                            line =>
+                                line
+                                    .replace(
+                                        /^\s*[\d.)-]+\s*/,
+                                        ""
+                                    )
+                                    .replace(
+                                        /^["']|["']$/g,
+                                        ""
+                                    )
+                                    .trim()
                         )
                         .filter(Boolean);
 
             }
-
 
             titles =
                 [
@@ -874,7 +1206,6 @@ Return ONLY valid JSON in this exact structure:
                 ]
                 .slice(0, 5);
 
-
             if (!titles.length) {
 
                 throw new Error(
@@ -882,7 +1213,6 @@ Return ONLY valid JSON in this exact structure:
                 );
 
             }
-
 
             return res.json({
 
@@ -892,7 +1222,6 @@ Return ONLY valid JSON in this exact structure:
                     normalizedCategory,
 
                 titles:
-
                     titles
 
             });
@@ -904,7 +1233,6 @@ Return ONLY valid JSON in this exact structure:
                 "GENERATE TITLE ERROR:",
                 error
             );
-
 
             return res.status(500).json({
 
@@ -921,7 +1249,6 @@ Return ONLY valid JSON in this exact structure:
     }
 );
 
-
 // ==========================================================
 // GENERATE DESCRIPTION
 // ==========================================================
@@ -933,21 +1260,17 @@ app.post(
         try {
 
             const {
-
                 category,
                 productName,
                 brand,
                 productDetails,
                 keywords
-
             } = req.body || {};
-
 
             const normalizedCategory =
                 normalizeCategory(
                     category
                 );
-
 
             if (!normalizedCategory) {
 
@@ -962,7 +1285,6 @@ app.post(
 
             }
 
-
             if (!cleanString(productName)) {
 
                 return res.status(400).json({
@@ -976,12 +1298,10 @@ app.post(
 
             }
 
-
             const categoryRule =
                 CATEGORY_RULES[
                     normalizedCategory
                 ] || "";
-
 
             const prompt = `
 
@@ -1030,14 +1350,12 @@ DESCRIPTION REQUIREMENTS:
 
 `;
 
-
             const description =
                 (
                     await callGemini(
                         prompt
                     )
                 ).trim();
-
 
             if (!description) {
 
@@ -1046,11 +1364,6 @@ DESCRIPTION REQUIREMENTS:
                 );
 
             }
-
-
-            // IMPORTANT:
-            // Frontend को direct string देना है.
-            // इससे [object Object] की समस्या नहीं होगी.
 
             return res.json({
 
@@ -1072,7 +1385,6 @@ DESCRIPTION REQUIREMENTS:
                 error
             );
 
-
             return res.status(500).json({
 
                 success: false,
@@ -1088,7 +1400,6 @@ DESCRIPTION REQUIREMENTS:
     }
 );
 
-
 // ==========================================================
 // GENERATE COMPLETE LISTING
 // ==========================================================
@@ -1100,7 +1411,6 @@ app.post(
         try {
 
             const {
-
                 category,
                 productName,
                 productDetails,
@@ -1110,15 +1420,12 @@ app.post(
                 size,
                 material,
                 imageDescription
-
             } = req.body || {};
-
 
             const normalizedCategory =
                 normalizeCategory(
                     category
                 );
-
 
             if (!normalizedCategory) {
 
@@ -1133,7 +1440,6 @@ app.post(
 
             }
 
-
             if (!cleanString(productName)) {
 
                 return res.status(400).json({
@@ -1147,12 +1453,10 @@ app.post(
 
             }
 
-
             const categoryRule =
                 CATEGORY_RULES[
                     normalizedCategory
                 ] || "";
-
 
             const prompt = `
 
@@ -1234,18 +1538,15 @@ Return ONLY valid JSON:
 
 `;
 
-
             const output =
                 await callGemini(
                     prompt
                 );
 
-
             const parsed =
                 safeJsonParse(
                     output
                 );
-
 
             if (
                 parsed &&
@@ -1291,11 +1592,6 @@ Return ONLY valid JSON:
 
             }
 
-
-            // ==================================================
-            // FALLBACK
-            // ==================================================
-
             return res.json({
 
                 success: true,
@@ -1327,7 +1623,6 @@ Return ONLY valid JSON:
                 error
             );
 
-
             return res.status(500).json({
 
                 success: false,
@@ -1343,6 +1638,307 @@ Return ONLY valid JSON:
     }
 );
 
+// ==========================================================
+// NEW — GENERATE SEO KEYWORDS
+// ==========================================================
+
+app.post(
+    "/api/generate-keywords",
+    async (req, res) => {
+
+        try {
+
+            const {
+                category,
+                productName,
+                brand,
+                productDetails,
+                mainKeyword,
+                keyword,
+                marketplace
+            } = req.body || {};
+
+            const normalizedCategory =
+                normalizeCategory(
+                    category
+                );
+
+            if (!normalizedCategory) {
+
+                return res.status(400).json({
+
+                    success: false,
+
+                    error:
+                        "Valid product category is required."
+
+                });
+
+            }
+
+            if (!cleanString(productName)) {
+
+                return res.status(400).json({
+
+                    success: false,
+
+                    error:
+                        "Product Name is required."
+
+                });
+
+            }
+
+            const finalMainKeyword =
+                cleanString(
+                    mainKeyword ||
+                    keyword
+                );
+
+            if (!finalMainKeyword) {
+
+                return res.status(400).json({
+
+                    success: false,
+
+                    error:
+                        "Main Keyword is required."
+
+                });
+
+            }
+
+            const categoryRule =
+                CATEGORY_RULES[
+                    normalizedCategory
+                ] || "";
+
+            const prompt = `
+
+You are an expert e-commerce SEO keyword generator.
+
+CATEGORY:
+${normalizedCategory}
+
+PRODUCT NAME:
+${cleanString(productName)}
+
+BRAND:
+${cleanString(brand) || "Not provided"}
+
+PRODUCT DETAILS:
+${cleanString(productDetails) || "Not provided"}
+
+MAIN KEYWORD:
+${finalMainKeyword}
+
+TARGET MARKETPLACE:
+${cleanString(marketplace) || "All Marketplaces"}
+
+CATEGORY RULE:
+${categoryRule}
+
+${STRICT_RULES}
+
+SEO KEYWORD RULES:
+
+1. Generate up to 20 useful SEO keywords.
+2. Do NOT force 20 keywords.
+3. The exact MAIN KEYWORD MUST be included.
+4. Put the exact MAIN KEYWORD first.
+5. Keywords must be directly relevant to the product.
+6. Use only seller-provided facts.
+7. Brand + Product is allowed when brand is provided.
+8. Category + Product is allowed when natural.
+9. Brand + Main Keyword is allowed when natural.
+10. Category + Main Keyword is allowed when natural.
+11. Product + supplied specification is allowed.
+12. Do not invent color.
+13. Do not invent material.
+14. Do not invent size.
+15. Do not invent quantity.
+16. Do not invent ingredients.
+17. Do not invent features.
+18. Do not invent benefits.
+19. Do not invent compatibility.
+20. Do not invent certification.
+21. Do not invent warranty.
+22. Do not invent health claims.
+23. Do not invent technical specifications.
+24. Do not invent another brand.
+25. Do not invent another product.
+26. Do not create unrelated keywords.
+27. Do not create random word combinations.
+28. Do not use the brand alone.
+29. Do not use the category alone.
+30. Do not use promotional/commercial words.
+
+NEVER USE THESE WORDS:
+
+Buy
+Shop
+Online
+Store
+Sale
+Offer
+Deal
+Best
+Premium
+Amazing
+Excellent
+Trending
+Viral
+Bestseller
+Guaranteed
+Guarantee
+Cheap
+Discount
+Free
+
+NORMALIZATION:
+
+Treat these as equivalent for duplicate detection:
+
+T-Shirt
+Tshirt
+T Shirt
+
+Men's
+Mens
+
+Do not change the visible spelling of the seller's product unnecessarily.
+
+OUTPUT:
+
+Return ONLY valid JSON.
+
+Use exactly this structure:
+
+{
+  "keywords": [
+    "Exact Main Keyword",
+    "Keyword 2",
+    "Keyword 3"
+  ]
+}
+
+Do not include explanations.
+Do not include numbering.
+Do not include markdown.
+Do not include code fences.
+
+`;
+
+            const output =
+                await callGemini(
+                    prompt
+                );
+
+            const parsed =
+                safeJsonParse(
+                    output
+                );
+
+            let keywords = [];
+
+            if (
+                parsed &&
+                Array.isArray(
+                    parsed.keywords
+                )
+            ) {
+
+                keywords =
+                    parsed.keywords
+                        .map(
+                            cleanSEOKeyword
+                        )
+                        .filter(Boolean);
+
+            }
+
+            // Fallback for plain-text response
+            if (
+                keywords.length === 0
+            ) {
+
+                keywords =
+                    output
+                        .split(/\r?\n/)
+                        .map(
+                            cleanSEOKeyword
+                        )
+                        .filter(Boolean);
+
+            }
+
+            // Always ensure exact main keyword
+            keywords.unshift(
+                finalMainKeyword
+            );
+
+            keywords =
+                filterSEOKeywords(
+                    keywords,
+                    productName,
+                    normalizedCategory,
+                    brand,
+                    finalMainKeyword
+                );
+
+            if (
+                !keywords.length
+            ) {
+
+                keywords = [
+                    finalMainKeyword
+                ];
+
+            }
+
+            return res.json({
+
+                success: true,
+
+                category:
+                    normalizedCategory,
+
+                marketplace:
+                    cleanString(
+                        marketplace
+                    ) ||
+                    "All Marketplaces",
+
+                keywords:
+                    keywords.slice(
+                        0,
+                        20
+                    )
+
+            });
+
+        }
+        catch (error) {
+
+            console.error(
+                "GENERATE KEYWORDS ERROR:",
+                error
+            );
+
+            return res.status(500).json({
+
+                success: false,
+
+                error:
+                    error.message ||
+                    "SEO keyword generation failed."
+
+            });
+
+        }
+
+    }
+);
 
 // ==========================================================
 // 404
@@ -1368,7 +1964,8 @@ app.use(
                 "GET /api/categories",
                 "POST /api/generate-title",
                 "POST /api/generate-description",
-                "POST /api/generate-listing"
+                "POST /api/generate-listing",
+                "POST /api/generate-keywords"
 
             ]
 
@@ -1376,7 +1973,6 @@ app.use(
 
     }
 );
-
 
 // ==========================================================
 // GLOBAL ERROR HANDLER
@@ -1390,7 +1986,6 @@ app.use(
             err
         );
 
-
         res.status(500).json({
 
             success: false,
@@ -1402,7 +1997,6 @@ app.use(
 
     }
 );
-
 
 // ==========================================================
 // START SERVER
@@ -1421,7 +2015,7 @@ app.listen(
         );
 
         console.log(
-            "VERSION: 11.0"
+            "VERSION: 12.0"
         );
 
         console.log(
@@ -1447,6 +2041,10 @@ app.listen(
             GEMINI_API_KEY
                 ? "CONFIGURED"
                 : "NOT CONFIGURED"
+        );
+
+        console.log(
+            "SEO KEYWORD API: ENABLED"
         );
 
         console.log(
