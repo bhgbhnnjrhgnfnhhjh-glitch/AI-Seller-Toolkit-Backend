@@ -24,7 +24,7 @@
 ========================================================= */
 
 const API_URL =
-    "https://ai-seller-toolkit-backend-1.onrender.com";
+ "https://ai-seller-toolkit-backend-1.onrender.com/api/generate-seo"
 
 const generateBtn =
     document.getElementById(
