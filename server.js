@@ -1,22 +1,23 @@
 // ==========================================================
 // AI SELLER TOOLKIT
-// SERVER.JS — FINAL VERSION 13.0
+// SERVER.JS — FINAL VERSION 13.1
 // ==========================================================
 // Gemini Interactions API
 // @google/genai >= 2.0.0
 //
 // CATEGORY-AWARE + STRICT FACTUAL AI
 //
-// Endpoints:
+// ENDPOINTS
 // GET  /
 // GET  /api/status
 // GET  /api/categories
+//
 // POST /api/generate-title
 // POST /api/generate-description
 // POST /api/generate-listing
 // POST /api/generate-seo
 //
-// Supported Categories:
+// 14 CATEGORIES
 // Fashion
 // Beauty
 // Electronics
@@ -31,6 +32,17 @@
 // Garden
 // Food
 // Gifts
+//
+// VERSION 13.1 SEO FIX
+// - Main keyword first
+// - No artificial keyword stuffing
+// - No unnecessary Online/Store/Collection
+// - No unnecessary Brand stuffing
+// - No category stuffing
+// - No unsupported attributes
+// - Duplicate protection
+// - Near duplicate protection
+// - Seller facts only
 // ==========================================================
 
 
@@ -58,7 +70,6 @@ app.use(
     })
 );
 
-
 app.use(
     express.json({
         limit: "1mb"
@@ -81,7 +92,6 @@ const MODEL =
     "gemini-3.6-flash";
 
 let ai = null;
-
 
 if (GEMINI_API_KEY) {
 
@@ -129,47 +139,36 @@ const CATEGORY_ALIASES = {
     "electronics": "Electronics",
 
     "home kitchen": "Home & Kitchen",
-
     "home and kitchen": "Home & Kitchen",
-
     "home & kitchen": "Home & Kitchen",
 
     "shoes": "Shoes",
-
     "shoe": "Shoes",
 
     "jewellery": "Jewellery",
-
     "jewelry": "Jewellery",
 
     "toys": "Toys",
-
     "toy": "Toys",
 
     "books": "Books",
-
     "book": "Books",
 
     "pet": "Pet",
-
     "pets": "Pet",
 
     "sports": "Sports",
-
     "sport": "Sports",
 
     "automotive": "Automotive",
-
     "auto": "Automotive",
 
     "garden": "Garden",
-
     "gardening": "Garden",
 
     "food": "Food",
 
     "gifts": "Gifts",
-
     "gift": "Gifts"
 
 };
@@ -184,10 +183,10 @@ const CATEGORY_RULES = {
     "Fashion": `
 Focus on clothing and fashion products.
 
-Allowed facts:
+Use only seller-provided facts such as:
 product type, brand, fabric/material, color,
-size, pattern, fit, sleeve, neckline, occasion,
-quantity and other seller-provided attributes.
+size, pattern, fit, sleeve, neckline,
+occasion, quantity and supplied attributes.
 
 Never invent gender, fabric, color, size,
 pattern, fit, occasion or features.
@@ -196,9 +195,10 @@ pattern, fit, occasion or features.
     "Beauty": `
 Focus on beauty, skincare, haircare and personal-care products.
 
-Use only seller-provided:
+Use only supplied:
 product type, brand, ingredients, quantity,
-fragrance, shade, skin/hair information and other supplied facts.
+fragrance, shade, skin/hair information
+and other seller-provided facts.
 
 Never invent ingredients, benefits, SPF,
 medical claims, certification or suitability.
@@ -210,7 +210,7 @@ Focus on electronic and technology products.
 Use only supplied:
 device type, brand, model, connectivity,
 compatibility, battery, capacity, ports,
-power, color and other specifications.
+power, color and specifications.
 
 Never invent technical specifications,
 compatibility, battery, warranty or certification.
@@ -223,8 +223,8 @@ Use only supplied:
 product type, material, color, size,
 capacity, design, usage and quantity.
 
-Never invent dimensions, capacity, material,
-safety claims or features.
+Never invent dimensions, capacity,
+material, safety claims or features.
 `,
 
     "Shoes": `
@@ -359,16 +359,17 @@ function normalizeCategory(category) {
             .trim()
             .toLowerCase();
 
-    // Remove common emojis
+    // Remove category emojis
     value =
         value
-            .replace(/👗|💄|📱|🏠|👟|💍|🧸|📚|🐶|🏋️|🚗|🌱|🍎|🎁/g, "")
+            .replace(
+                /👗|💄|📱|🏠|👟|💍|🧸|📚|🐶|🏋️|🚗|🌱|🍎|🎁/gu,
+                ""
+            )
             .trim();
 
     if (CATEGORY_ALIASES[value]) {
-
         return CATEGORY_ALIASES[value];
-
     }
 
     const found =
@@ -392,9 +393,7 @@ function cleanString(value) {
         value === null ||
         value === undefined
     ) {
-
         return "";
-
     }
 
     return String(value)
@@ -432,21 +431,16 @@ function safeJsonParse(text) {
             )
             .trim();
 
-
     try {
-
         return JSON.parse(cleaned);
-
     }
     catch {}
-
 
     const objectStart =
         cleaned.indexOf("{");
 
     const objectEnd =
         cleaned.lastIndexOf("}");
-
 
     if (
         objectStart !== -1 &&
@@ -467,13 +461,11 @@ function safeJsonParse(text) {
 
     }
 
-
     const arrayStart =
         cleaned.indexOf("[");
 
     const arrayEnd =
         cleaned.lastIndexOf("]");
-
 
     if (
         arrayStart !== -1 &&
@@ -494,14 +486,13 @@ function safeJsonParse(text) {
 
     }
 
-
     return null;
 
 }
 
 
 // ==========================================================
-// GET TEXT FROM INTERACTION
+// GET TEXT FROM GEMINI INTERACTION
 // ==========================================================
 
 function getInteractionText(interaction) {
@@ -509,7 +500,6 @@ function getInteractionText(interaction) {
     if (!interaction) {
         return "";
     }
-
 
     if (
         typeof interaction.output_text === "string" &&
@@ -520,13 +510,11 @@ function getInteractionText(interaction) {
 
     }
 
-
     if (
         Array.isArray(interaction.steps)
     ) {
 
         const textParts = [];
-
 
         for (
             const step of interaction.steps
@@ -559,7 +547,6 @@ function getInteractionText(interaction) {
 
         }
 
-
         if (textParts.length) {
 
             return textParts
@@ -569,7 +556,6 @@ function getInteractionText(interaction) {
         }
 
     }
-
 
     return "";
 
@@ -590,7 +576,6 @@ async function callGemini(prompt) {
 
     }
 
-
     if (!ai) {
 
         ai =
@@ -600,7 +585,6 @@ async function callGemini(prompt) {
             });
 
     }
-
 
     const interaction =
         await ai.interactions.create({
@@ -613,12 +597,10 @@ async function callGemini(prompt) {
 
         });
 
-
     const text =
         getInteractionText(
             interaction
         );
-
 
     if (!text) {
 
@@ -631,13 +613,11 @@ async function callGemini(prompt) {
             )
         );
 
-
         throw new Error(
-            "Gemini ने कोई usable text response नहीं दिया।"
+            "Gemini ने कोई usable response नहीं दिया।"
         );
 
     }
-
 
     return text;
 
@@ -685,9 +665,11 @@ Guaranteed या 100% जैसा दावा मत दो
 
 15. Missing information को छोड़ दो।
 
-16. Seller के facts को बदलकर गलत अर्थ मत बनाओ।
+16. Seller के facts का अर्थ बदलकर
+गलत जानकारी मत बनाओ।
 
-17. Marketplace-friendly लेकिन factual language उपयोग करो।
+17. Marketplace-friendly लेकिन factual
+language का उपयोग करो।
 
 `;
 
@@ -710,7 +692,7 @@ function normalizeSEOText(text) {
 
 
 // ==========================================================
-// SEO TOKEN SET
+// SEO TOKENS
 // ==========================================================
 
 function seoTokenSet(text) {
@@ -746,32 +728,24 @@ function seoSimilarity(a, b) {
     const B =
         seoTokenSet(b);
 
-
     if (
         !A.size ||
         !B.size
     ) {
-
         return 0;
-
     }
 
-
     let intersection = 0;
-
 
     A.forEach(
         token => {
 
             if (B.has(token)) {
-
                 intersection++;
-
             }
 
         }
     );
-
 
     const union =
         new Set([
@@ -779,11 +753,9 @@ function seoSimilarity(a, b) {
             ...B
         ]).size;
 
-
     if (!union) {
         return 0;
     }
-
 
     return intersection / union;
 
@@ -799,7 +771,6 @@ function cleanSEOKeyword(value) {
     if (!value) {
         return "";
     }
-
 
     return String(value)
         .trim()
@@ -825,109 +796,128 @@ function cleanSEOKeyword(value) {
 
 
 // ==========================================================
-// GENERIC SEO FILLER WORDS
-// ==========================================================
-//
-// These words should NOT be used simply
-// to create artificial keyword variations.
+// SEO FILLER WORDS
 // ==========================================================
 
-const SEO_FILLER_WORDS = new Set([
+const SEO_FILLER_WORDS =
+    new Set([
 
-    "online",
-    "collection",
-    "store",
-    "fashion",
-    "apparel",
-    "wear",
-    "shopping",
-    "buy",
-    "shop",
-    "best",
-    "premium",
-    "trendy",
-    "stylish",
-    "latest",
-    "new",
-    "beautiful",
-    "quality",
-    "sale",
-    "offer",
-    "deals",
-    "price",
-    "cheap",
-    "wholesale"
+        "online",
+        "collection",
+        "store",
+        "fashion",
+        "apparel",
+        "wear",
+        "shopping",
+        "buy",
+        "shop",
+        "best",
+        "premium",
+        "trendy",
+        "stylish",
+        "latest",
+        "new",
+        "beautiful",
+        "quality",
+        "sale",
+        "offer",
+        "offers",
+        "deals",
+        "price",
+        "cheap",
+        "wholesale",
+        "original",
+        "popular",
+        "exclusive",
+        "top"
 
-]);
+    ]);
 
 
 // ==========================================================
-// CHECK IF KEYWORD IS MOSTLY FILLER
+// FILLER CHECK
 // ==========================================================
 
 function isMostlyFillerKeyword(
     keyword,
-    productName
+    productName,
+    mainKeyword
 ) {
 
-    const tokens =
-        normalizeSEOText(keyword)
-            .split(" ")
-            .filter(Boolean);
-
+    const normalizedKeyword =
+        normalizeSEOText(
+            keyword
+        );
 
     const productTokens =
-        seoTokenSet(productName);
+        seoTokenSet(
+            productName
+        );
 
+    const mainTokens =
+        seoTokenSet(
+            mainKeyword
+        );
+
+    const tokens =
+        normalizedKeyword
+            .split(" ")
+            .filter(Boolean);
 
     if (!tokens.length) {
         return true;
     }
 
+    // Main keyword is always permitted.
+    if (
+        normalizedKeyword ===
+        normalizeSEOText(mainKeyword)
+    ) {
 
-    let usefulCount = 0;
+        return false;
 
+    }
+
+    let meaningful = 0;
 
     for (
         const token of tokens
     ) {
 
         if (
-            !SEO_FILLER_WORDS.has(token) ||
-            productTokens.has(token)
+            productTokens.has(token) ||
+            mainTokens.has(token) ||
+            !SEO_FILLER_WORDS.has(token)
         ) {
 
-            usefulCount++;
+            meaningful++;
 
         }
 
     }
 
+    /*
+      Example:
 
-    // A keyword such as:
-    // "Cotton Kurti Online"
-    // becomes mostly product + filler.
-    if (
-        usefulCount === 0
-    ) {
+      Cotton Kurti Online
 
-        return true;
+      Cotton + Kurti = product words
+      Online = filler
 
-    }
+      Therefore reject it if the only
+      additional word is filler.
+    */
 
-
-    // If all extra words are generic filler,
-    // reject the keyword.
-    const nonProductWords =
+    const extraWords =
         tokens.filter(
             token =>
-                !productTokens.has(token)
+                !productTokens.has(token) &&
+                !mainTokens.has(token)
         );
 
-
     if (
-        nonProductWords.length > 0 &&
-        nonProductWords.every(
+        extraWords.length > 0 &&
+        extraWords.every(
             token =>
                 SEO_FILLER_WORDS.has(token)
         )
@@ -937,6 +927,9 @@ function isMostlyFillerKeyword(
 
     }
 
+    if (meaningful === 0) {
+        return true;
+    }
 
     return false;
 
@@ -944,7 +937,7 @@ function isMostlyFillerKeyword(
 
 
 // ==========================================================
-// SAFE SEO FILTER
+// SEO FILTER
 // ==========================================================
 
 function filterSEOKeywords(
@@ -960,24 +953,20 @@ function filterSEOKeywords(
     const seen =
         new Set();
 
-
     const mainNormalized =
         normalizeSEOText(
             mainKeyword
         );
-
 
     const productNormalized =
         normalizeSEOText(
             productName
         );
 
-
     const brandNormalized =
         normalizeSEOText(
             brand
         );
-
 
     const categoryNormalized =
         normalizeSEOText(
@@ -994,30 +983,25 @@ function filterSEOKeywords(
         const keyword =
             cleanSEOKeyword(raw);
 
-
         if (!keyword) {
             continue;
         }
 
-
         const normalized =
-            normalizeSEOText(keyword);
-
+            normalizeSEOText(
+                keyword
+            );
 
         if (!normalized) {
             continue;
         }
 
-
         // Exact duplicate
         if (
             seen.has(normalized)
         ) {
-
             continue;
-
         }
-
 
         // Maximum 8 words
         const wordCount =
@@ -1025,30 +1009,24 @@ function filterSEOKeywords(
                 .split(" ")
                 .length;
 
-
         if (
             wordCount > 8
         ) {
-
             continue;
-
         }
 
-
-        // Main keyword is always allowed
         const isMainKeyword =
             normalized ===
             mainNormalized;
 
 
-        // Reject obvious filler keywords
-        // unless the seller's main keyword
-        // itself contains that word.
+        // Filler protection
         if (
             !isMainKeyword &&
             isMostlyFillerKeyword(
                 keyword,
-                productName
+                productName,
+                mainKeyword
             )
         ) {
 
@@ -1058,7 +1036,7 @@ function filterSEOKeywords(
 
 
         // --------------------------------------------------
-        // BRAND STUFFING PROTECTION
+        // BRAND STUFFING
         // --------------------------------------------------
 
         if (
@@ -1081,9 +1059,9 @@ function filterSEOKeywords(
                     )
                     .trim();
 
-
-            // Reject simple:
-            // Brand + exact Product
+            // Reject:
+            // Test Brand Kurti
+            // when product itself is Kurti.
             if (
                 withoutBrand ===
                 productNormalized
@@ -1097,7 +1075,7 @@ function filterSEOKeywords(
 
 
         // --------------------------------------------------
-        // CATEGORY STUFFING PROTECTION
+        // CATEGORY STUFFING
         // --------------------------------------------------
 
         if (
@@ -1105,29 +1083,26 @@ function filterSEOKeywords(
             normalized.includes(
                 categoryNormalized
             ) &&
-            productNormalized &&
-            normalized.includes(
-                productNormalized
-            ) &&
             !isMainKeyword
         ) {
 
-            const simpleCombination =
-                (
-                    categoryNormalized +
-                    " " +
-                    productNormalized
-                )
+            const withoutCategory =
+                normalized
+                    .replace(
+                        categoryNormalized,
+                        ""
+                    )
                     .replace(
                         /\s+/g,
                         " "
                     )
                     .trim();
 
-
+            // If category was merely added
+            // to the product name, reject.
             if (
-                normalized ===
-                simpleCombination
+                withoutCategory ===
+                productNormalized
             ) {
 
                 continue;
@@ -1138,11 +1113,10 @@ function filterSEOKeywords(
 
 
         // --------------------------------------------------
-        // NEAR DUPLICATE PROTECTION
+        // NEAR DUPLICATE
         // --------------------------------------------------
 
         let tooSimilar = false;
-
 
         for (
             const existing of output
@@ -1152,7 +1126,7 @@ function filterSEOKeywords(
                 seoSimilarity(
                     keyword,
                     existing
-                ) >= 0.82
+                ) >= 0.80
             ) {
 
                 tooSimilar = true;
@@ -1162,18 +1136,14 @@ function filterSEOKeywords(
 
         }
 
-
         if (tooSimilar) {
-
             continue;
-
         }
 
 
         seen.add(
             normalized
         );
-
 
         output.push(
             keyword
@@ -1183,9 +1153,7 @@ function filterSEOKeywords(
         if (
             output.length >= 20
         ) {
-
             break;
-
         }
 
     }
@@ -1197,24 +1165,21 @@ function filterSEOKeywords(
 
     const mainIndex =
         output.findIndex(
-            item =>
+            keyword =>
                 normalizeSEOText(
-                    item
+                    keyword
                 ) ===
                 mainNormalized
         );
 
 
-    if (
-        mainIndex > 0
-    ) {
+    if (mainIndex > 0) {
 
         const mainItem =
             output.splice(
                 mainIndex,
                 1
             )[0];
-
 
         output.unshift(
             mainItem
@@ -1224,26 +1189,26 @@ function filterSEOKeywords(
 
 
     // ------------------------------------------------------
-    // MAIN KEYWORD MUST EXIST
+    // ENSURE MAIN KEYWORD
     // ------------------------------------------------------
 
     const mainExists =
         output.some(
-            item =>
+            keyword =>
                 normalizeSEOText(
-                    item
+                    keyword
                 ) ===
                 mainNormalized
         );
 
 
     if (
-        !mainExists &&
-        mainNormalized
+        mainNormalized &&
+        !mainExists
     ) {
 
         output.unshift(
-            cleanMainKeywordSafe(
+            cleanSEOKeyword(
                 mainKeyword
             )
         );
@@ -1255,71 +1220,6 @@ function filterSEOKeywords(
         0,
         15
     );
-
-}
-
-
-// ==========================================================
-// SAFE MAIN KEYWORD
-// ==========================================================
-
-function cleanMainKeywordSafe(
-    keyword
-) {
-
-    return cleanSEOKeyword(
-        keyword
-    );
-
-}
-
-
-// ==========================================================
-// BASIC VALIDATION
-// ==========================================================
-
-function validateProductInput(
-    category,
-    productName
-) {
-
-    const normalizedCategory =
-        normalizeCategory(
-            category
-        );
-
-
-    if (!normalizedCategory) {
-
-        return {
-            ok: false,
-            error:
-                "Valid product category is required."
-        };
-
-    }
-
-
-    if (
-        !cleanString(
-            productName
-        )
-    ) {
-
-        return {
-            ok: false,
-            error:
-                "Product Name is required."
-        };
-
-    }
-
-
-    return {
-        ok: true,
-        category:
-            normalizedCategory
-    };
 
 }
 
@@ -1340,7 +1240,7 @@ app.get(
                 "AI Seller Toolkit Backend",
 
             version:
-                "13.0",
+                "13.1",
 
             status:
                 "online",
@@ -1392,7 +1292,7 @@ app.get(
                 "AI Seller Toolkit Backend",
 
             version:
-                "13.0",
+                "13.1",
 
             status:
                 "online",
@@ -1460,39 +1360,32 @@ app.post(
         try {
 
             const {
-
                 category,
                 productName,
                 brand,
                 productDetails,
                 keywords
-
             } = req.body || {};
 
 
-            const validation =
-                validateProductInput(
-                    category,
-                    productName
+            const normalizedCategory =
+                normalizeCategory(
+                    category
                 );
 
 
-            if (!validation.ok) {
+            if (!normalizedCategory) {
 
                 return res.status(400).json({
 
                     success: false,
 
                     error:
-                        validation.error
+                        "Valid product category is required."
 
                 });
 
             }
-
-
-            const normalizedCategory =
-                validation.category;
 
 
             const cleanProduct =
@@ -1501,22 +1394,18 @@ app.post(
                 );
 
 
-            const cleanBrand =
-                cleanString(
-                    brand
-                );
+            if (!cleanProduct) {
 
+                return res.status(400).json({
 
-            const cleanDetails =
-                cleanString(
-                    productDetails
-                );
+                    success: false,
 
+                    error:
+                        "Product Name is required."
 
-            const cleanKeywords =
-                cleanString(
-                    keywords
-                );
+                });
+
+            }
 
 
             const categoryRule =
@@ -1527,7 +1416,7 @@ app.post(
 
             const prompt = `
 
-You are an expert e-commerce marketplace TITLE generator.
+You are a STRICT E-COMMERCE PRODUCT TITLE GENERATOR.
 
 CATEGORY:
 ${normalizedCategory}
@@ -1536,66 +1425,51 @@ PRODUCT NAME:
 ${cleanProduct}
 
 BRAND:
-${cleanBrand || "Not provided"}
+${cleanString(brand) || "Not provided"}
 
 PRODUCT DETAILS:
-${cleanDetails || "Not provided"}
+${cleanString(productDetails) || "Not provided"}
 
-SELLER KEYWORDS:
-${cleanKeywords || "Not provided"}
+KEYWORDS:
+${cleanString(keywords) || "Not provided"}
 
 CATEGORY RULE:
 ${categoryRule}
 
 ${STRICT_RULES}
 
-TITLE REQUIREMENTS:
+TITLE RULES:
 
-1. Generate exactly 5 different titles.
+1. Create ONE marketplace-friendly product title.
 
-2. Every title must describe the SAME product.
+2. Use only seller-provided information.
 
-3. Use the exact seller facts.
+3. Do not invent attributes.
 
-4. Brand may be used when supplied.
+4. Do not repeat words unnecessarily.
 
-5. Do not invent attributes.
+5. Do not add fake claims.
 
-6. Do not add unsupported color.
+6. Do not add "Best", "No.1", "Premium",
+"Guaranteed" or similar claims unless supplied.
 
-7. Do not add unsupported size.
+7. Brand may be included naturally if provided.
 
-8. Do not add unsupported gender.
+8. Use important supplied product attributes
+only when they are actually provided.
 
-9. Do not add unsupported material.
+9. Do not keyword stuff.
 
-10. Do not add unsupported features.
+10. Return ONLY valid JSON.
 
-11. Do not use fake claims.
-
-12. Do not use "Best", "No.1", "Premium",
-"Guaranteed" or similar unsupported claims.
-
-13. Do not use emojis.
-
-14. Titles should be natural marketplace titles.
-
-15. Do not create meaningless keyword stuffing.
-
-16. Do not make all 5 titles nearly identical.
-
-Return ONLY valid JSON:
+OUTPUT:
 
 {
-  "titles": [
-    "Title 1",
-    "Title 2",
-    "Title 3",
-    "Title 4",
-    "Title 5"
-  ]
+  "title": "product title"
 }
 
+No markdown.
+No explanation.
 `;
 
 
@@ -1611,76 +1485,40 @@ Return ONLY valid JSON:
                 );
 
 
-            let titles =
+            let title = "";
+
+            if (
                 parsed &&
-                Array.isArray(
-                    parsed.titles
-                )
-                    ? parsed.titles
-                    : [];
-
-
-            titles =
-                titles
-                    .map(cleanString)
-                    .filter(Boolean);
-
-
-            const uniqueTitles = [];
-
-            const titleSeen =
-                new Set();
-
-
-            for (
-                const title of titles
+                typeof parsed.title === "string"
             ) {
 
-                const normalized =
-                    normalizeSEOText(
-                        title
+                title =
+                    cleanString(
+                        parsed.title
                     );
-
-
-                if (
-                    !normalized ||
-                    titleSeen.has(
-                        normalized
-                    )
-                ) {
-
-                    continue;
-
-                }
-
-
-                titleSeen.add(
-                    normalized
-                );
-
-
-                uniqueTitles.push(
-                    title
-                );
-
-
-                if (
-                    uniqueTitles.length >= 5
-                ) {
-
-                    break;
-
-                }
 
             }
 
 
-            if (
-                !uniqueTitles.length
-            ) {
+            if (!title) {
+
+                title =
+                    cleanString(
+                        output
+                    )
+                    .replace(
+                        /^```.*$/gm,
+                        ""
+                    )
+                    .trim();
+
+            }
+
+
+            if (!title) {
 
                 throw new Error(
-                    "Gemini ने valid titles नहीं दिए।"
+                    "Valid title generate नहीं हुआ।"
                 );
 
             }
@@ -1696,8 +1534,8 @@ Return ONLY valid JSON:
                 productName:
                     cleanProduct,
 
-                titles:
-                    uniqueTitles
+                title:
+                    title
 
             });
 
@@ -1708,7 +1546,6 @@ Return ONLY valid JSON:
                 "GENERATE TITLE ERROR:",
                 error
             );
-
 
             return res.status(500).json({
 
@@ -1737,39 +1574,32 @@ app.post(
         try {
 
             const {
-
                 category,
                 productName,
                 brand,
                 productDetails,
                 keywords
-
             } = req.body || {};
 
 
-            const validation =
-                validateProductInput(
-                    category,
-                    productName
+            const normalizedCategory =
+                normalizeCategory(
+                    category
                 );
 
 
-            if (!validation.ok) {
+            if (!normalizedCategory) {
 
                 return res.status(400).json({
 
                     success: false,
 
                     error:
-                        validation.error
+                        "Valid product category is required."
 
                 });
 
             }
-
-
-            const normalizedCategory =
-                validation.category;
 
 
             const cleanProduct =
@@ -1778,22 +1608,18 @@ app.post(
                 );
 
 
-            const cleanBrand =
-                cleanString(
-                    brand
-                );
+            if (!cleanProduct) {
 
+                return res.status(400).json({
 
-            const cleanDetails =
-                cleanString(
-                    productDetails
-                );
+                    success: false,
 
+                    error:
+                        "Product Name is required."
 
-            const cleanKeywords =
-                cleanString(
-                    keywords
-                );
+                });
+
+            }
 
 
             const categoryRule =
@@ -1804,7 +1630,7 @@ app.post(
 
             const prompt = `
 
-You are an expert e-commerce product description writer.
+You are a STRICT E-COMMERCE PRODUCT DESCRIPTION GENERATOR.
 
 CATEGORY:
 ${normalizedCategory}
@@ -1813,56 +1639,93 @@ PRODUCT NAME:
 ${cleanProduct}
 
 BRAND:
-${cleanBrand || "Not provided"}
+${cleanString(brand) || "Not provided"}
 
 PRODUCT DETAILS:
-${cleanDetails || "Not provided"}
+${cleanString(productDetails) || "Not provided"}
 
 KEYWORDS:
-${cleanKeywords || "Not provided"}
+${cleanString(keywords) || "Not provided"}
 
 CATEGORY RULE:
 ${categoryRule}
 
 ${STRICT_RULES}
 
-TASK:
+DESCRIPTION RULES:
 
-Write ONE clear marketplace-ready product description.
+1. Write a clear marketplace-friendly description.
 
-RULES:
+2. Use only supplied facts.
 
-- Use only seller-provided facts.
-- Do not invent specifications.
-- Do not invent benefits.
-- Do not invent ingredients.
-- Do not invent dimensions.
-- Do not invent compatibility.
-- Do not invent warranty.
-- Do not invent certification.
-- Do not make medical claims.
-- Do not make guaranteed claims.
-- Use keywords naturally.
-- Do not keyword stuff.
-- Do not mention AI.
-- Do not return JSON.
-- Return only description text.
+3. Never invent specifications.
 
+4. Never invent benefits.
+
+5. Never invent ingredients.
+
+6. Never invent compatibility.
+
+7. Never invent dimensions.
+
+8. Never invent quantity.
+
+9. Never invent warranty or certification.
+
+10. Do not make medical claims.
+
+11. Do not make exaggerated claims.
+
+12. Do not add unsupported attributes
+just to make the description longer.
+
+13. Keywords may be used naturally,
+but do not keyword stuff.
+
+14. Return ONLY valid JSON.
+
+OUTPUT:
+
+{
+  "description": "product description"
+}
+
+No markdown.
+No explanation.
 `;
 
 
-            const description =
-                (
-                    await callGemini(
-                        prompt
-                    )
-                ).trim();
+            const output =
+                await callGemini(
+                    prompt
+                );
+
+
+            const parsed =
+                safeJsonParse(
+                    output
+                );
+
+
+            let description = "";
+
+            if (
+                parsed &&
+                typeof parsed.description === "string"
+            ) {
+
+                description =
+                    cleanString(
+                        parsed.description
+                    );
+
+            }
 
 
             if (!description) {
 
                 throw new Error(
-                    "Gemini ने description नहीं दिया।"
+                    "Valid description generate नहीं हुआ।"
                 );
 
             }
@@ -1891,7 +1754,6 @@ RULES:
                 error
             );
 
-
             return res.status(500).json({
 
                 success: false,
@@ -1909,7 +1771,7 @@ RULES:
 
 
 // ==========================================================
-// GENERATE COMPLETE LISTING
+// GENERATE LISTING
 // ==========================================================
 
 app.post(
@@ -1918,41 +1780,37 @@ app.post(
 
         try {
 
-            const body =
-                req.body || {};
+            const {
+                category,
+                productName,
+                brand,
+                productDetails,
+                price,
+                color,
+                size,
+                material,
+                imageDescription
+            } = req.body || {};
 
 
-            const category =
-                body.category;
-
-
-            const productName =
-                body.productName;
-
-
-            const validation =
-                validateProductInput(
-                    category,
-                    productName
+            const normalizedCategory =
+                normalizeCategory(
+                    category
                 );
 
 
-            if (!validation.ok) {
+            if (!normalizedCategory) {
 
                 return res.status(400).json({
 
                     success: false,
 
                     error:
-                        validation.error
+                        "Valid product category is required."
 
                 });
 
             }
-
-
-            const normalizedCategory =
-                validation.category;
 
 
             const cleanProduct =
@@ -1961,89 +1819,18 @@ app.post(
                 );
 
 
-            const cleanBrand =
-                cleanString(
-                    body.brand
-                );
+            if (!cleanProduct) {
 
+                return res.status(400).json({
 
-            // Collect ALL supplied product fields
-            // without inventing anything.
+                    success: false,
 
-            const productFacts = {
+                    error:
+                        "Product Name is required."
 
-                productName:
-                    cleanProduct,
+                });
 
-                brand:
-                    cleanBrand,
-
-                price:
-                    cleanString(
-                        body.price
-                    ),
-
-                color:
-                    cleanString(
-                        body.color
-                    ),
-
-                size:
-                    cleanString(
-                        body.size
-                    ),
-
-                material:
-                    cleanString(
-                        body.material
-                    ),
-
-                fabric:
-                    cleanString(
-                        body.fabric
-                    ),
-
-                pattern:
-                    cleanString(
-                        body.pattern
-                    ),
-
-                fit:
-                    cleanString(
-                        body.fit
-                    ),
-
-                occasion:
-                    cleanString(
-                        body.occasion
-                    ),
-
-                quantity:
-                    cleanString(
-                        body.quantity
-                    ),
-
-                productDetails:
-                    cleanString(
-                        body.productDetails
-                    ),
-
-                features:
-                    cleanString(
-                        body.features
-                    ),
-
-                keywords:
-                    cleanString(
-                        body.keywords
-                    ),
-
-                imageDescription:
-                    cleanString(
-                        body.imageDescription
-                    )
-
-            };
+            }
 
 
             const categoryRule =
@@ -2054,75 +1841,88 @@ app.post(
 
             const prompt = `
 
-You are an expert e-commerce marketplace listing generator.
+You are a STRICT E-COMMERCE COMPLETE LISTING GENERATOR.
 
 CATEGORY:
 ${normalizedCategory}
 
-SELLER PRODUCT DATA:
-${JSON.stringify(
-    productFacts,
-    null,
-    2
-)}
+PRODUCT NAME:
+${cleanProduct}
+
+BRAND:
+${cleanString(brand) || "Not provided"}
+
+PRODUCT DETAILS:
+${cleanString(productDetails) || "Not provided"}
+
+PRICE:
+${cleanString(price) || "Not provided"}
+
+COLOR:
+${cleanString(color) || "Not provided"}
+
+SIZE:
+${cleanString(size) || "Not provided"}
+
+MATERIAL:
+${cleanString(material) || "Not provided"}
+
+IMAGE DESCRIPTION:
+${cleanString(imageDescription) || "Not provided"}
 
 CATEGORY RULE:
 ${categoryRule}
 
 ${STRICT_RULES}
 
-IMPORTANT:
-
-The seller data above is the ONLY source of product facts.
-
-Do NOT assume missing information.
-
-Do NOT infer specifications from the product name.
-
-Do NOT invent information from common knowledge.
-
-If a field is empty, ignore it.
-
-TASK:
-
-Create one complete marketplace listing.
-
-Return ONLY valid JSON:
-
-{
-  "title": "Accurate product title",
-  "description": "Factual product description",
-  "highlights": [
-    "Highlight 1",
-    "Highlight 2",
-    "Highlight 3",
-    "Highlight 4",
-    "Highlight 5"
-  ],
-  "seoKeywords": [
-    "Keyword 1",
-    "Keyword 2",
-    "Keyword 3"
-  ]
-}
-
 LISTING RULES:
 
-- Title must be factual.
-- Description must be factual.
-- Highlights must contain only supplied facts.
-- SEO keywords must contain only relevant facts.
-- No fake claims.
-- No unsupported attributes.
-- No medical claims.
-- No technical assumptions.
-- No fake compatibility.
-- No fake warranty.
-- No fake certification.
-- No keyword stuffing.
-- No emojis.
-- No "Best", "No.1", "Guaranteed" unless seller supplied it.
+1. Generate a factual marketplace listing.
 
+2. Use ONLY information supplied by seller.
+
+3. Do not invent missing information.
+
+4. Do not assume gender.
+
+5. Do not assume material.
+
+6. Do not assume color.
+
+7. Do not assume size.
+
+8. Do not assume compatibility.
+
+9. Do not assume ingredients.
+
+10. Do not assume quantity.
+
+11. Do not assume features.
+
+12. Do not make medical claims.
+
+13. Do not make fake performance claims.
+
+14. Do not use fake certifications.
+
+15. Do not use "Best", "No.1", "Premium",
+"Guaranteed" unless explicitly supplied.
+
+16. Do not create fake SEO keywords.
+
+17. Keep the listing marketplace-friendly.
+
+OUTPUT ONLY VALID JSON:
+
+{
+  "title": "",
+  "description": "",
+  "highlights": [],
+  "seoKeywords": []
+}
+
+No markdown.
+No explanation.
 `;
 
 
@@ -2138,10 +1938,13 @@ LISTING RULES:
                 );
 
 
-            if (!parsed) {
+            if (
+                !parsed ||
+                typeof parsed !== "object"
+            ) {
 
                 throw new Error(
-                    "Gemini ने valid listing JSON नहीं दिया।"
+                    "Valid listing response नहीं मिला।"
                 );
 
             }
@@ -2159,46 +1962,25 @@ LISTING RULES:
                 );
 
 
-            let highlights =
+            const highlights =
                 Array.isArray(
                     parsed.highlights
                 )
                     ? parsed.highlights
+                        .map(cleanString)
+                        .filter(Boolean)
+                        .slice(0, 10)
                     : [];
 
 
-            let seoKeywords =
-                Array.isArray(
-                    parsed.seoKeywords
-                )
-                    ? parsed.seoKeywords
-                    : [];
-
-
-            highlights =
-                highlights
-                    .map(cleanString)
-                    .filter(Boolean)
-                    .slice(0, 8);
-
-
-            seoKeywords =
+            const seoKeywords =
                 filterSEOKeywords(
-                    seoKeywords,
+                    parsed.seoKeywords,
                     cleanProduct,
-                    cleanBrand,
+                    brand,
                     normalizedCategory,
                     cleanProduct
                 );
-
-
-            if (!title && !description) {
-
-                throw new Error(
-                    "Gemini ने usable listing नहीं दी।"
-                );
-
-            }
 
 
             return res.json({
@@ -2211,6 +1993,23 @@ LISTING RULES:
                 productName:
                     cleanProduct,
 
+                listing: {
+
+                    title:
+                        title,
+
+                    description:
+                        description,
+
+                    highlights:
+                        highlights,
+
+                    seoKeywords:
+                        seoKeywords
+
+                },
+
+                // Compatibility fields
                 title:
                     title,
 
@@ -2221,14 +2020,7 @@ LISTING RULES:
                     highlights,
 
                 seoKeywords:
-                    seoKeywords,
-
-                // Compatibility aliases
-                keywords:
-                    seoKeywords,
-
-                bulletPoints:
-                    highlights
+                    seoKeywords
 
             });
 
@@ -2239,7 +2031,6 @@ LISTING RULES:
                 "GENERATE LISTING ERROR:",
                 error
             );
-
 
             return res.status(500).json({
 
@@ -2258,7 +2049,7 @@ LISTING RULES:
 
 
 // ==========================================================
-// GENERATE SEO KEYWORDS
+// GENERATE SEO
 // ==========================================================
 
 app.post(
@@ -2268,41 +2059,42 @@ app.post(
         try {
 
             const {
-
                 category,
                 productName,
                 brand,
                 productDetails,
                 mainKeyword,
                 marketplace
-
             } = req.body || {};
 
 
-            const validation =
-                validateProductInput(
-                    category,
-                    productName
+            // ------------------------------------------------
+            // CATEGORY
+            // ------------------------------------------------
+
+            const normalizedCategory =
+                normalizeCategory(
+                    category
                 );
 
 
-            if (!validation.ok) {
+            if (!normalizedCategory) {
 
                 return res.status(400).json({
 
                     success: false,
 
                     error:
-                        validation.error
+                        "Valid product category is required."
 
                 });
 
             }
 
 
-            const normalizedCategory =
-                validation.category;
-
+            // ------------------------------------------------
+            // PRODUCT
+            // ------------------------------------------------
 
             const cleanProduct =
                 cleanString(
@@ -2310,29 +2102,28 @@ app.post(
                 );
 
 
-            const cleanBrand =
-                cleanString(
-                    brand
-                );
+            if (!cleanProduct) {
+
+                return res.status(400).json({
+
+                    success: false,
+
+                    error:
+                        "Product Name is required."
+
+                });
+
+            }
 
 
-            const cleanDetails =
-                cleanString(
-                    productDetails
-                );
-
+            // ------------------------------------------------
+            // MAIN KEYWORD
+            // ------------------------------------------------
 
             const cleanMainKeyword =
                 cleanString(
                     mainKeyword
                 );
-
-
-            const cleanMarketplace =
-                cleanString(
-                    marketplace
-                ) ||
-                "All Marketplaces";
 
 
             if (!cleanMainKeyword) {
@@ -2349,18 +2140,39 @@ app.post(
             }
 
 
+            const cleanBrand =
+                cleanString(
+                    brand
+                );
+
+            const cleanDetails =
+                cleanString(
+                    productDetails
+                );
+
+            const cleanMarketplace =
+                cleanString(
+                    marketplace
+                ) ||
+                "All Marketplaces";
+
+
             const categoryRule =
                 CATEGORY_RULES[
                     normalizedCategory
                 ] || "";
 
 
+            // ------------------------------------------------
+            // SEO PROMPT
+            // ------------------------------------------------
+
             const prompt = `
 
-You are a STRICT and HIGH-QUALITY E-COMMERCE SEO KEYWORD GENERATOR.
+You are a HIGH-QUALITY E-COMMERCE SEO KEYWORD SPECIALIST.
 
-Your task is to generate useful search keywords
-for the EXACT product supplied by the seller.
+Your job is to create genuinely useful search
+keywords for the EXACT product supplied by the seller.
 
 CATEGORY:
 ${normalizedCategory}
@@ -2385,376 +2197,116 @@ ${categoryRule}
 
 ${STRICT_RULES}
 
-
 ==================================================
-SEO KEYWORD RULES
-==================================================
-
-1. The MAIN KEYWORD must appear exactly once.
-
-2. Generate 8 to 15 keywords ONLY when
-   genuinely relevant keywords are possible.
-
-3. If fewer valid keywords are possible,
-   return fewer.
-
-4. NEVER create bad keywords just to reach 8.
-
-5. Every keyword must be relevant to THIS exact product.
-
-6. Use only words/facts supported by the seller.
-
-7. You may create natural variations
-   using genuine product terms and synonyms.
-
-8. Do not invent attributes.
-
-9. Do not invent gender.
-
-10. Do not invent size.
-
-11. Do not invent color.
-
-12. Do not invent material.
-
-13. Do not invent compatibility.
-
-14. Do not invent capacity.
-
-15. Do not invent quantity.
-
-16. Do not invent ingredients.
-
-17. Do not invent model numbers.
-
-18. Do not invent features.
-
-19. Do not invent benefits.
-
-20. Do not invent certifications.
-
-21. Do not invent medical claims.
-
-22. Do not invent performance claims.
-
-23. Do not repeat the brand in every keyword.
-
-24. Brand should be used only when it makes
-    a genuinely useful search phrase.
-
-25. Do not automatically add the category name.
-
-26. Do not automatically add:
-    online
-    collection
-    store
-    fashion
-    apparel
-    wear
-    shopping
-    buy
-    shop
-    best
-    premium
-    trendy
-    stylish
-    latest
-    sale
-    offer
-    deals
-
-27. These generic words may be used ONLY if
-    they are actually part of the seller's
-    supplied product name or main keyword.
-
-28. Do not create combinations such as:
-
-    Product + Online
-    Product + Collection
-    Product + Fashion
-    Product + Store
-    Product + Apparel
-    Product + Wear
-
-    unless the complete phrase is genuinely
-    supplied by the seller or is a clearly
-    meaningful product search phrase.
-
-29. Do not create meaningless word combinations.
-
-30. Do not repeat the same keyword with
-    tiny changes.
-
-31. Do not use numbering.
-
-32. Do not return titles.
-
-33. Do not return descriptions.
-
-34. Do not explain anything.
-
-35. Return ONLY valid JSON.
-
-
-==================================================
-EXAMPLES OF BAD SEO
+SEO RULES
 ==================================================
 
-If product is:
-
-Black Cotton T-Shirt
-
-Do NOT generate:
-
-Black Cotton T-Shirt Online
-Black Cotton T-Shirt Collection
-Black Cotton T-Shirt Fashion
-Black Cotton Apparel
-Black Cotton Store
-Black Cotton Wear
-
-just to increase keyword count.
-
-
-==================================================
-WHAT A GOOD RESULT SHOULD DO
-==================================================
-
-Use genuine variations such as:
-
-- exact main keyword
-- meaningful product synonym
-- exact supplied attribute combinations
-- genuine buyer search phrases
-- natural product terminology
-
-Only when those phrases are supported
-by seller information.
-
-
-==================================================
-FINAL BUYER TEST
-==================================================
-
-For every keyword ask:
-
-"Would a real buyer plausibly search
-this exact phrase for THIS exact product?"
-
-If NO:
-DO NOT include it.
-
-==================================================
-OUTPUT
-==================================================
-
-Return ONLY:
-
-{
-  "keywords": [
-    "keyword 1",
-    "keyword 2",
-    "keyword 3"
-  ]
-}
-
-No markdown.
-No numbering.
-No explanation.
-No extra text.
-
-`;
-
-
-            const output =
-                await callGemini(
-                    prompt
-                );
-
-
-            const parsed =
-                safeJsonParse(
-                    output
-                );
-
-
-            let keywords =
-                parsed &&
-                Array.isArray(
-                    parsed.keywords
-                )
-                    ? parsed.keywords
-                    : [];
-
-
-            keywords =
-                filterSEOKeywords(
-                    keywords,
-                    cleanProduct,
-                    cleanBrand,
-                    normalizedCategory,
-                    cleanMainKeyword
-                );
-
-
-            if (!keywords.length) {
-
-                throw new Error(
-                    "Gemini ने valid SEO keywords नहीं दिए।"
-                );
-
-            }
-
-
-            return res.json({
-
-                success: true,
-
-                category:
-                    normalizedCategory,
-
-                productName:
-                    cleanProduct,
-
-                marketplace:
-                    cleanMarketplace,
-
-                mainKeyword:
-                    cleanMainKeyword,
-
-                keywords:
-                    keywords
-
-            });
-
-        }
-        catch (error) {
-
-            console.error(
-                "GENERATE SEO ERROR:",
-                error
-            );
-
-
-            return res.status(500).json({
-
-                success: false,
-
-                error:
-                    error.message ||
-                    "SEO generation failed."
-
-            });
-
-        }
-
-    }
-);
-
-
-// ==========================================================
-// 404 HANDLER
-// ==========================================================
-
-app.use(
-    (req, res) => {
-
-        res.status(404).json({
-
-            success: false,
-
-            error:
-                "API endpoint not found.",
-
-            path:
-                req.path,
-
-            method:
-                req.method
-
-        });
-
-    }
-);
-
-
-// ==========================================================
-// GLOBAL ERROR HANDLER
-// ==========================================================
-
-app.use(
-    (
-        error,
-        req,
-        res,
-        next
-    ) => {
-
-        console.error(
-            "GLOBAL SERVER ERROR:",
-            error
-        );
-
-
-        res.status(500).json({
-
-            success: false,
-
-            error:
-                error.message ||
-                "Internal server error."
-
-        });
-
-    }
-);
-
-
-// ==========================================================
-// START SERVER
-// ==========================================================
-
-app.listen(
-    PORT,
-    () => {
-
-        console.log(
-            "=================================================="
-        );
-
-        console.log(
-            "AI SELLER TOOLKIT BACKEND"
-        );
-
-        console.log(
-            "Version: 13.0"
-        );
-
-        console.log(
-            "Server running on port:",
-            PORT
-        );
-
-        console.log(
-            "Gemini Model:",
-            MODEL
-        );
-
-        console.log(
-            "Gemini API:",
-            GEMINI_API_KEY
-                ? "CONFIGURED"
-                : "NOT CONFIGURED"
-        );
-
-        console.log(
-            "Categories:",
-            CATEGORIES.length
-        );
-
-        console.log(
-            "=================================================="
-        );
-
-    }
-);
+1. The MAIN KEYWORD MUST be returned exactly once.
+
+2. The MAIN KEYWORD MUST be the first keyword.
+
+3. Generate approximately 8 to 15 keywords
+ONLY when enough genuinely useful keywords exist.
+
+4. If fewer genuinely useful keywords exist,
+return fewer.
+
+5. NEVER create fake keywords just to reach 8 or 15.
+
+6. Every keyword must be relevant to THIS exact product.
+
+7. Keywords must sound like phrases a real buyer
+could plausibly search.
+
+8. Do NOT blindly combine words.
+
+9. Do NOT simply add:
+   online
+   store
+   collection
+   fashion
+   wear
+   apparel
+   shopping
+   buy
+   shop
+   best
+   premium
+   trendy
+   stylish
+   latest
+   sale
+   deals
+   wholesale
+
+10. Those words may only appear when they form
+a genuinely useful and natural search phrase
+for the product.
+
+11. Do NOT create:
+   Product + Online
+   Product + Store
+   Product + Collection
+   Product + Fashion
+   Product + Wear
+   Product + Apparel
+
+just to create more keywords.
+
+12. Do NOT repeat the same keyword.
+
+13. Do NOT create tiny variations of the same keyword.
+
+14. Brand must NOT be added to every keyword.
+
+15. Brand may be used only when it creates
+a genuinely useful buyer search phrase.
+
+16. Category name must NOT automatically
+become a keyword.
+
+17. Do NOT add unsupported attributes.
+
+18. If seller did not provide:
+   color
+   size
+   material
+   fabric
+   gender
+   pattern
+   style
+   compatibility
+   capacity
+   quantity
+   ingredients
+   model
+   age
+   features
+
+   then DO NOT create keywords using them.
+
+19. Do NOT invent:
+   specifications
+   benefits
+   certifications
+   compatibility
+   medical claims
+   performance claims
+   warranty
+   dimensions
+   ingredients
+   material
+   quantity
+   availability
+   pricing
+
+20. Use natural buyer-search phrases.
+
+21. Prefer meaningful variations such as:
+   product type
+   supplied material
+   supplied color
+   supplied model
+   supplied use
+   supplied feature
+   supplied audience
