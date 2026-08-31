@@ -78,6 +78,7 @@
     margin-top:12px;
     text-align:center;
     font-weight:bold;
+    min-height:24px;
 }
 
 .copy-button{
@@ -96,6 +97,10 @@
 <body>
 
 
+<!-- ======================================================
+     HEADER
+====================================================== -->
+
 <header>
 
 <h1>🤖 AI Seller Toolkit</h1>
@@ -104,6 +109,10 @@
 
 </header>
 
+
+<!-- ======================================================
+     HERO
+====================================================== -->
 
 <section class="hero">
 
@@ -116,24 +125,34 @@ Generate Relevant SEO Keywords for Your Products
 </section>
 
 
+<!-- ======================================================
+     SEO BOX
+====================================================== -->
+
 <div class="seo-box">
 
 
-<!-- PRODUCT NAME -->
+<!-- ======================================================
+     PRODUCT NAME
+====================================================== -->
 
-<label>
+<label for="product">
 Product Name
-</label> 
-    
+</label>
+
 <input
-  type="text"
-    id="keyword"
-    placeholder="Optional — खाली छोड़ने पर Product Name इस्तेमाल होगा"
+    type="text"
+    id="product"
+    placeholder="Example: Cotton Kurti"
+    autocomplete="off"
 >
 
-<!-- CATEGORY -->
 
-<label>
+<!-- ======================================================
+     CATEGORY
+====================================================== -->
+
+<label for="category">
 Category
 </label>
 
@@ -202,9 +221,11 @@ Select Category
 </select>
 
 
-<!-- BRAND -->
+<!-- ======================================================
+     BRAND
+====================================================== -->
 
-<label>
+<label for="brand">
 Brand Name
 </label>
 
@@ -212,23 +233,31 @@ Brand Name
     type="text"
     id="brand"
     placeholder="Example: Test Brand"
+    autocomplete="off"
 >
 
-<!-- MAIN KEYWORD -->
 
-<label>
-Main Keyword
+<!-- ======================================================
+     MAIN KEYWORD - OPTIONAL
+====================================================== -->
+
+<label for="keyword">
+Main Keyword <span style="font-weight:normal;">(Optional)</span>
 </label>
 
 <input
     type="text"
     id="keyword"
     placeholder="Optional — खाली छोड़ने पर Product Name इस्तेमाल होगा"
+    autocomplete="off"
 >
 
-<!-- MARKETPLACE -->
 
-<label>
+<!-- ======================================================
+     MARKETPLACE
+====================================================== -->
+
+<label for="marketplace">
 Target Marketplace
 </label>
 
@@ -261,7 +290,9 @@ All Marketplaces
 </select>
 
 
-<!-- GENERATE -->
+<!-- ======================================================
+     GENERATE BUTTON
+====================================================== -->
 
 <button
     id="generateBtn"
@@ -273,12 +304,18 @@ All Marketplaces
 </button>
 
 
+<!-- ======================================================
+     STATUS
+====================================================== -->
+
 <div id="status"></div>
 
 
-<!-- RESULT -->
+<!-- ======================================================
+     RESULT
+====================================================== -->
 
-<label>
+<label for="result">
 Generated SEO Keywords
 </label>
 
@@ -289,7 +326,9 @@ Generated SEO Keywords
 ></textarea>
 
 
-<!-- COPY -->
+<!-- ======================================================
+     COPY BUTTON
+====================================================== -->
 
 <button
     id="copyBtn"
@@ -304,11 +343,14 @@ Generated SEO Keywords
 
 </div>
 
+
+<!-- ======================================================
+     JAVASCRIPT
+====================================================== -->
+
 <script src="seo-keyword-generator.js"></script>
 
-<script
-    src="no-popup.js"
-></script>
+<script src="no-popup.js"></script>
 
 
 </body>
