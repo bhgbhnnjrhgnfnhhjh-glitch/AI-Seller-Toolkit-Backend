@@ -2307,3 +2307,1087 @@ function fallbackHighlights(
         [
             "Color",
             data.color
+        ],
+
+        [
+            "Size",
+            data.size
+        ],
+
+        [
+            "Pattern",
+            data.pattern
+        ],
+
+        [
+            "Model",
+            data.model
+        ],
+
+        [
+            "Capacity",
+            data.capacity
+        ],
+
+        [
+            "Quantity",
+            data.quantity
+        ]
+
+    ];
+
+
+    for (
+        const [
+            label,
+            value
+        ] of mappings
+    ) {
+
+        if (value) {
+
+            output.push(
+                `${label}: ${value}`
+            );
+
+        }
+
+    }
+
+
+    return output.slice(
+        0,
+        8
+    );
+
+}
+
+
+// ==========================================================
+// GET /
+// ==========================================================
+
+app.get(
+    "/",
+    (req, res) => {
+
+        res.json({
+
+            success: true,
+
+            server:
+                "AI Seller Toolkit Backend",
+
+            version:
+                "13.2",
+
+            status:
+                "online",
+
+            model:
+                MODEL,
+
+            api:
+                "Interactions API",
+
+            geminiConfigured:
+                Boolean(
+                    GEMINI_API_KEY
+                ),
+
+            categories:
+                CATEGORIES.length,
+
+            endpoints: [
+
+                "/api/status",
+
+                "/api/categories",
+
+                "/api/generate-title",
+
+                "/api/generate-description",
+
+                "/api/generate-listing",
+
+                "/api/generate-seo"
+
+            ]
+
+        });
+
+    }
+);
+
+
+// ==========================================================
+// GET /api/status
+// ==========================================================
+
+app.get(
+    "/api/status",
+    (req, res) => {
+
+        res.json({
+
+            success: true,
+
+            server:
+                "AI Seller Toolkit Backend",
+
+            version:
+                "13.2",
+
+            status:
+                "online",
+
+            model:
+                MODEL,
+
+            api:
+                "Interactions API",
+
+            geminiConfigured:
+                Boolean(
+                    GEMINI_API_KEY
+                ),
+
+            categories:
+                CATEGORIES.length,
+
+            endpoints: [
+
+                "/api/status",
+
+                "/api/categories",
+
+                "/api/generate-title",
+
+                "/api/generate-description",
+
+                "/api/generate-listing",
+
+                "/api/generate-seo"
+
+            ]
+
+        });
+
+    }
+);
+
+
+// ==========================================================
+// GET /api/categories
+// ==========================================================
+
+app.get(
+    "/api/categories",
+    (req, res) => {
+
+        res.json({
+
+            success: true,
+
+            categories:
+                CATEGORIES,
+
+            count:
+                CATEGORIES.length
+
+        });
+
+    }
+);
+
+
+// ==========================================================
+// POST /api/generate-title
+// ==========================================================
+
+app.post(
+    "/api/generate-title",
+    async (req, res) => {
+
+        const required =
+            requireProductAndCategory(
+                req,
+                res
+            );
+
+
+        if (!required) {
+
+            return;
+
+        }
+
+
+        const data =
+            collectProductData(
+                req.body,
+                required.category
+            );
+
+
+        try {
+
+            const result =
+                await generateJSON(
+
+                    basePrompt(
+
+                        data,
+
+                        `
+Create ONE clear marketplace product title.
+
+Rules:
+
+- Put the main product name first.
+- Brand may be used only when supplied.
+- Use only seller facts.
+- Do not add unsupported adjectives.
+- Do not add unsupported specifications.
+- Do not add fake benefits.
+- Keep title readable.
+- Avoid unnecessary keyword stuffing.
+
+Return exactly:
+
+{
+  "title": "..."
+}
+`
+
+                    )
+
+                );
+
+
+            const title =
+                cleanString(
+                    result.title
+                ) ||
+                fallbackTitle(
+                    data
+                );
+
+
+            res.json({
+
+                success: true,
+
+                title:
+
+                    title,
+
+                generatedTitle:
+                    title
+
+            });
+
+        }
+        catch (error) {
+
+            console.error(
+                "TITLE ERROR:",
+                error.message
+            );
+
+
+            const title =
+                fallbackTitle(
+                    data
+                );
+
+
+            res.json({
+
+                success: true,
+
+                fallback: true,
+
+                title:
+                    title,
+
+                generatedTitle:
+                    title,
+
+                warning:
+                    "AI unavailable; factual fallback used."
+
+            });
+
+        }
+
+    }
+);
+
+
+// ==========================================================
+// POST /api/generate-description
+// ==========================================================
+
+app.post(
+    "/api/generate-description",
+    async (req, res) => {
+
+        const required =
+            requireProductAndCategory(
+                req,
+                res
+            );
+
+
+        if (!required) {
+
+            return;
+
+        }
+
+
+        const data =
+            collectProductData(
+                req.body,
+                required.category
+            );
+
+
+        try {
+
+            const result =
+                await generateJSON(
+
+                    basePrompt(
+
+                        data,
+
+                        `
+Create a concise marketplace product description.
+
+Rules:
+
+- Use only seller facts.
+- Do not invent benefits.
+- Do not invent specifications.
+- Do not invent dimensions.
+- Do not invent compatibility.
+- Do not invent warranty.
+- Do not invent certification.
+- Do not make medical claims.
+- Do not make exaggerated claims.
+- Use natural marketplace language.
+
+Return exactly:
+
+{
+  "description": "..."
+}
+`
+
+                    )
+
+                );
+
+
+            const description =
+                cleanString(
+                    result.description
+                ) ||
+                fallbackDescription(
+                    data
+                );
+
+
+            res.json({
+
+                success: true,
+
+                description:
+                    description,
+
+                generatedDescription:
+                    description
+
+            });
+
+        }
+        catch (error) {
+
+            console.error(
+                "DESCRIPTION ERROR:",
+                error.message
+            );
+
+
+            const description =
+                fallbackDescription(
+                    data
+                );
+
+
+            res.json({
+
+                success: true,
+
+                fallback: true,
+
+                description:
+                    description,
+
+                generatedDescription:
+                    description,
+
+                warning:
+                    "AI unavailable; factual fallback used."
+
+            });
+
+        }
+
+    }
+);
+
+
+// ==========================================================
+// POST /api/generate-listing
+// ==========================================================
+
+app.post(
+    "/api/generate-listing",
+    async (req, res) => {
+
+        const required =
+            requireProductAndCategory(
+                req,
+                res
+            );
+
+
+        if (!required) {
+
+            return;
+
+        }
+
+
+        const data =
+            collectProductData(
+                req.body,
+                required.category
+            );
+
+
+        try {
+
+            const result =
+                await generateJSON(
+
+                    basePrompt(
+
+                        data,
+
+                        `
+Create a complete marketplace product listing.
+
+Return exactly:
+
+{
+  "title": "...",
+  "description": "...",
+  "highlights": [
+    "...",
+    "..."
+  ],
+  "seoKeywords": [
+    "...",
+    "..."
+  ]
+}
+
+Rules:
+
+- Every field must be factual.
+- Use only seller-provided facts.
+- Missing facts must be omitted.
+- Do not invent specifications.
+- Do not invent benefits.
+- Do not invent certifications.
+- Do not invent compatibility.
+- Do not invent dimensions.
+- Do not invent warranty.
+- Do not invent medical claims.
+- SEO keywords must be relevant.
+- Avoid duplicate keywords.
+- Avoid artificial keyword stuffing.
+`
+
+                    )
+
+                );
+
+
+            const title =
+                cleanString(
+                    result.title
+                ) ||
+                fallbackTitle(
+                    data
+                );
+
+
+            const description =
+                cleanString(
+                    result.description
+                ) ||
+                fallbackDescription(
+                    data
+                );
+
+
+            const highlights =
+                Array.isArray(
+                    result.highlights
+                )
+
+                    ? result.highlights
+                        .map(
+                            cleanString
+                        )
+                        .filter(Boolean)
+                        .slice(0, 8)
+
+                    : fallbackHighlights(
+                        data
+                    );
+
+
+            const mainKeyword =
+                cleanString(
+                    data.mainKeyword ||
+                    data.productName
+                );
+
+
+            const seoKeywords =
+                filterSEOKeywords(
+
+                    result.seoKeywords,
+
+                    data.productName,
+
+                    data.brand,
+
+                    data.category,
+
+                    mainKeyword
+
+                );
+
+
+            const finalKeywords =
+                seoKeywords.length
+
+                    ? seoKeywords
+
+                    : buildFallbackKeywords(
+
+                        data.productName,
+
+                        data.brand,
+
+                        data.category,
+
+                        mainKeyword,
+
+                        data
+
+                    );
+
+
+            res.json({
+
+                success: true,
+
+                title:
+                    title,
+
+                description:
+                    description,
+
+                highlights:
+                    highlights,
+
+                seoKeywords:
+                    finalKeywords,
+
+                keywords:
+                    finalKeywords,
+
+                generatedTitle:
+                    title,
+
+                generatedDescription:
+                    description
+
+            });
+
+        }
+        catch (error) {
+
+            console.error(
+                "LISTING ERROR:",
+                error.message
+            );
+
+
+            const title =
+                fallbackTitle(
+                    data
+                );
+
+
+            const description =
+                fallbackDescription(
+                    data
+                );
+
+
+            const keywords =
+                buildFallbackKeywords(
+
+                    data.productName,
+
+                    data.brand,
+
+                    data.category,
+
+                    data.mainKeyword ||
+                        data.productName,
+
+                    data
+
+                );
+
+
+            res.json({
+
+                success: true,
+
+                fallback: true,
+
+                title:
+                    title,
+
+                description:
+                    description,
+
+                highlights:
+                    fallbackHighlights(
+                        data
+                    ),
+
+                seoKeywords:
+                    keywords,
+
+                keywords:
+                    keywords,
+
+                generatedTitle:
+                    title,
+
+                generatedDescription:
+                    description,
+
+                warning:
+                    "AI unavailable; factual fallback used."
+
+            });
+
+        }
+
+    }
+);
+
+
+// ==========================================================
+// POST /api/generate-seo
+// ==========================================================
+
+app.post(
+    "/api/generate-seo",
+    async (req, res) => {
+
+        const required =
+            requireProductAndCategory(
+                req,
+                res
+            );
+
+
+        if (!required) {
+
+            return;
+
+        }
+
+
+        const data =
+            collectProductData(
+                req.body,
+                required.category
+            );
+
+
+        // --------------------------------------------------
+        // MAIN KEYWORD
+        // --------------------------------------------------
+
+        const mainKeyword =
+            cleanSEOKeyword(
+                data.mainKeyword ||
+                data.productName
+            );
+
+
+        try {
+
+            const result =
+                await generateJSON(
+
+                    basePrompt(
+
+                        data,
+
+                        `
+Generate up to 20 relevant SEO keywords.
+
+IMPORTANT:
+
+1. Main Keyword is optional.
+2. If seller provides Main Keyword,
+   use it.
+3. If Main Keyword is missing,
+   use the exact Product Name.
+4. Main Keyword MUST be the first keyword.
+5. Maximum 20 keywords.
+6. Do not repeat keywords.
+7. Do not create near-duplicate keywords.
+8. Do not use unnecessary "Online".
+9. Do not use unnecessary "Store".
+10. Do not use unnecessary "Collection".
+11. Do not use unnecessary "Buy".
+12. Do not use unnecessary "Shop".
+13. Do not use unnecessary "Best".
+14. Do not use unnecessary "Premium".
+15. Do not stuff the brand.
+16. Do not stuff the category.
+17. Do not invent product attributes.
+18. Do not invent material.
+19. Do not invent color.
+20. Do not invent size.
+21. Do not invent model.
+22. Do not invent compatibility.
+23. Do not invent benefits.
+24. Use only seller facts.
+
+Return exactly:
+
+{
+  "mainKeyword": "...",
+  "keywords": [
+    "...",
+    "...",
+    "..."
+  ]
+}
+`
+
+                    )
+
+                );
+
+
+            let aiMainKeyword =
+                cleanSEOKeyword(
+                    result.mainKeyword
+                );
+
+
+            if (!aiMainKeyword) {
+
+                aiMainKeyword =
+                    mainKeyword;
+
+            }
+
+
+            // --------------------------------------------------
+            // MAIN KEYWORD SAFETY
+            // --------------------------------------------------
+
+            const safeMainKeyword =
+                normalizeSEOText(
+                    aiMainKeyword
+                ) ===
+                normalizeSEOText(
+                    mainKeyword
+                )
+
+                    ? aiMainKeyword
+
+                    : mainKeyword;
+
+
+            // --------------------------------------------------
+            // FILTER AI KEYWORDS
+            // --------------------------------------------------
+
+            const filteredKeywords =
+                filterSEOKeywords(
+
+                    result.keywords,
+
+                    data.productName,
+
+                    data.brand,
+
+                    data.category,
+
+                    safeMainKeyword
+
+                );
+
+
+            // --------------------------------------------------
+            // FALLBACK
+            // --------------------------------------------------
+
+            const finalKeywords =
+                filteredKeywords.length
+
+                    ? filteredKeywords
+
+                    : buildFallbackKeywords(
+
+                        data.productName,
+
+                        data.brand,
+
+                        data.category,
+
+                        safeMainKeyword,
+
+                        data
+
+                    );
+
+
+            res.json({
+
+                success: true,
+
+                mainKeyword:
+                    safeMainKeyword,
+
+                keywords:
+                    finalKeywords,
+
+                seoKeywords:
+                    finalKeywords,
+
+                text:
+                    finalKeywords.join(
+                        ", "
+                    ),
+
+                count:
+                    finalKeywords.length
+
+            });
+
+        }
+        catch (error) {
+
+            console.error(
+                "SEO ERROR:",
+                error.message
+            );
+
+
+            // --------------------------------------------------
+            // AI FAILURE FALLBACK
+            // --------------------------------------------------
+
+            const finalKeywords =
+                buildFallbackKeywords(
+
+                    data.productName,
+
+                    data.brand,
+
+                    data.category,
+
+                    mainKeyword,
+
+                    data
+
+                );
+
+
+            res.json({
+
+                success: true,
+
+                fallback: true,
+
+                mainKeyword:
+                    mainKeyword,
+
+                keywords:
+                    finalKeywords,
+
+                seoKeywords:
+                    finalKeywords,
+
+                text:
+                    finalKeywords.join(
+                        ", "
+                    ),
+
+                count:
+                    finalKeywords.length,
+
+                warning:
+                    "AI unavailable; factual fallback used."
+
+            });
+
+        }
+
+    }
+);
+
+
+// ==========================================================
+// 404 HANDLER
+// ==========================================================
+
+app.use(
+    (req, res) => {
+
+        res.status(404).json({
+
+            success: false,
+
+            error:
+                "API endpoint not found",
+
+            path:
+                req.path
+
+        });
+
+    }
+);
+
+
+// ==========================================================
+// GLOBAL ERROR HANDLER
+// ==========================================================
+
+app.use(
+    (
+        err,
+        req,
+        res,
+        next
+    ) => {
+
+        console.error(
+            "SERVER ERROR:",
+            err
+        );
+
+
+        if (
+            res.headersSent
+        ) {
+
+            return next(
+                err
+            );
+
+        }
+
+
+        res.status(500).json({
+
+            success: false,
+
+            error:
+                "Internal server error"
+
+        });
+
+    }
+);
+
+
+// ==========================================================
+// START SERVER
+// ==========================================================
+
+app.listen(
+    PORT,
+    () => {
+
+        console.log(
+            "=========================================================="
+        );
+
+        console.log(
+            "AI SELLER TOOLKIT BACKEND"
+        );
+
+        console.log(
+            "Version: 13.2"
+        );
+
+        console.log(
+            `Server running on port ${PORT}`
+        );
+
+        console.log(
+            `Gemini Model: ${MODEL}`
+        );
+
+        console.log(
+            "Gemini API: " +
+            (
+                GEMINI_API_KEY
+                    ? "CONFIGURED"
+                    : "NOT CONFIGURED"
+            )
+        );
+
+        console.log(
+            "API: Interactions API"
+        );
+
+        console.log(
+            "Categories: " +
+            CATEGORIES.length
+        );
+
+        console.log(
+            "SEO Endpoint: /api/generate-seo"
+        );
+
+        console.log(
+            "=========================================================="
+        );
+
+    }
+);
