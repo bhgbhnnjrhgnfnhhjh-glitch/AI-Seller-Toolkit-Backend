@@ -3,93 +3,659 @@
 
 <head>
 
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-<title>AI SEO Keyword Generator</title>
+    <title>
+        AI SEO Keyword Generator | AI Seller Toolkit
+    </title>
 
-<link
-    rel="stylesheet"
-    href="style.css"
->
+    <meta
+        name="description"
+        content="Generate relevant and factual SEO keywords for your products with AI Seller Toolkit."
+    >
 
-<style>
+    <meta
+        name="robots"
+        content="index, follow"
+    >
 
-.seo-box{
-    max-width:700px;
-    margin:30px auto;
-    padding:25px;
-    background:white;
-    border-radius:12px;
-    box-shadow:0 5px 15px rgba(0,0,0,0.15);
-}
+    <style>
 
-.seo-box label{
-    display:block;
-    margin-top:15px;
-    margin-bottom:6px;
-    font-weight:bold;
-}
+        * {
+            box-sizing: border-box;
+        }
 
-.seo-box input,
-.seo-box select,
-.seo-box textarea{
-    width:100%;
-    padding:12px;
-    border:1px solid #ccc;
-    border-radius:7px;
-    font-size:16px;
-    box-sizing:border-box;
-}
+        html {
+            scroll-behavior: smooth;
+        }
 
-.seo-box button{
-    width:100%;
-    padding:14px;
-    margin-top:20px;
-    border:none;
-    border-radius:7px;
-    background:#16a34a;
-    color:white;
-    font-size:17px;
-    cursor:pointer;
-}
+        body {
+            margin: 0;
+            padding: 0;
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+            background: #f4f6fb;
+            color: #222;
+        }
 
-.seo-box button:hover{
-    background:#15803d;
-}
 
-.seo-box button:disabled{
-    background:#999;
-    cursor:not-allowed;
-}
+        /* ==================================================
+           TOP NAVBAR
+        ================================================== */
 
-#result{
-    margin-top:15px;
-    min-height:250px;
-    line-height:1.8;
-    resize:vertical;
-}
+        .navbar {
 
-#status{
-    margin-top:12px;
-    text-align:center;
-    font-weight:bold;
-    min-height:24px;
-}
+            width: 100%;
 
-.copy-button{
-    background:#2563eb !important;
-}
+            background:
+                linear-gradient(
+                    90deg,
+                    #2563eb,
+                    #315eea
+                );
 
-.copy-button:hover{
-    background:#1d4ed8 !important;
-}
+            color: white;
 
-</style>
+            min-height: 58px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            padding:
+                0 18px;
+
+            box-shadow:
+                0 2px 8px
+                rgba(0,0,0,0.15);
+
+        }
+
+
+        .brand {
+
+            font-size: 18px;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+
+        }
+
+
+        .back-btn {
+
+            color: white;
+
+            text-decoration: none;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            padding: 8px 4px;
+
+        }
+
+
+        .back-btn:hover {
+
+            text-decoration: underline;
+
+        }
+
+
+        /* ==================================================
+           HERO
+        ================================================== */
+
+        .hero {
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #4f46e5
+                );
+
+            color: white;
+
+            text-align: center;
+
+            padding:
+                58px 18px
+                54px;
+
+            border-radius:
+                0 0 22px 22px;
+
+        }
+
+
+        .hero h1 {
+
+            margin:
+                0 0 14px;
+
+            font-size:
+                clamp(28px, 5vw, 42px);
+
+            font-weight: 700;
+
+        }
+
+
+        .hero p {
+
+            margin: 0;
+
+            font-size: 15px;
+
+            opacity: 0.95;
+
+        }
+
+
+        /* ==================================================
+           MAIN CONTAINER
+        ================================================== */
+
+        .container {
+
+            width: 100%;
+
+            max-width: 650px;
+
+            margin:
+                30px auto
+                60px;
+
+            padding:
+                0 15px;
+
+        }
+
+
+        /* ==================================================
+           CARD
+        ================================================== */
+
+        .card {
+
+            background: white;
+
+            border-radius: 12px;
+
+            padding: 24px 18px;
+
+            box-shadow:
+                0 5px 18px
+                rgba(0,0,0,0.10);
+
+        }
+
+
+        /* ==================================================
+           FORM GROUP
+        ================================================== */
+
+        .form-group {
+
+            margin-bottom: 18px;
+
+        }
+
+
+        label {
+
+            display: block;
+
+            margin-bottom: 8px;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            color: #333;
+
+        }
+
+
+        .optional {
+
+            font-weight: 400;
+
+            color: #777;
+
+        }
+
+
+        input,
+        select,
+        textarea {
+
+            width: 100%;
+
+            border:
+                1px solid #d5d9e2;
+
+            border-radius: 7px;
+
+            padding:
+                12px 11px;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            font-size: 14px;
+
+            outline: none;
+
+            background: #fff;
+
+            color: #222;
+
+            transition:
+                border-color 0.2s,
+                box-shadow 0.2s;
+
+        }
+
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+
+            border-color:
+                #2563eb;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(37,99,235,0.12);
+
+        }
+
+
+        select {
+
+            cursor: pointer;
+
+        }
+
+
+        /* ==================================================
+           MAIN KEYWORD HELP
+        ================================================== */
+
+        .help-text {
+
+            margin-top: 6px;
+
+            font-size: 11px;
+
+            line-height: 1.5;
+
+            color: #777;
+
+        }
+
+
+        /* ==================================================
+           BUTTON
+        ================================================== */
+
+        .generate-btn {
+
+            width: 100%;
+
+            border: none;
+
+            border-radius: 6px;
+
+            padding:
+                12px 15px;
+
+            background:
+                #138a3d;
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 5px 15px
+                rgba(37,99,235,0.20);
+
+            transition:
+                transform 0.15s,
+                opacity 0.15s,
+                background 0.15s;
+
+        }
+
+
+        .generate-btn:hover {
+
+            background:
+                #0f7a35;
+
+            transform:
+                translateY(-1px);
+
+        }
+
+
+        .generate-btn:active {
+
+            transform:
+                translateY(0);
+
+        }
+
+
+        .generate-btn:disabled {
+
+            opacity: 0.65;
+
+            cursor: not-allowed;
+
+            transform: none;
+
+        }
+
+
+        /* ==================================================
+           STATUS
+        ================================================== */
+
+        #status {
+
+            min-height: 22px;
+
+            margin:
+                13px 0 5px;
+
+            font-size: 13px;
+
+            line-height: 1.5;
+
+            font-weight: 600;
+
+            text-align: center;
+
+        }
+
+
+        /* ==================================================
+           RESULT LABEL
+        ================================================== */
+
+        .result-label {
+
+            display: block;
+
+            margin:
+                13px 0 8px;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            color: #333;
+
+        }
+
+
+        /* ==================================================
+           RESULT BOX
+        ================================================== */
+
+        #result {
+
+            width: 100%;
+
+            min-height: 270px;
+
+            resize: vertical;
+
+            background:
+                #fafbfe;
+
+            border:
+                2px solid #5b8bd3;
+
+            line-height: 1.7;
+
+            font-size: 14px;
+
+            color: #222;
+
+        }
+
+
+        #result::placeholder {
+
+            color: #a7adb8;
+
+        }
+
+
+        /* ==================================================
+           COPY BUTTON
+        ================================================== */
+
+        .copy-btn {
+
+            width: 100%;
+
+            margin-top: 14px;
+
+            padding:
+                12px 15px;
+
+            border: none;
+
+            border-radius: 6px;
+
+            background:
+                #2563eb;
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            cursor: pointer;
+
+            transition:
+                background 0.15s,
+                transform 0.15s;
+
+        }
+
+
+        .copy-btn:hover {
+
+            background:
+                #1d4ed8;
+
+            transform:
+                translateY(-1px);
+
+        }
+
+
+        .copy-btn:active {
+
+            transform:
+                translateY(0);
+
+        }
+
+
+        /* ==================================================
+           FACTUAL AI INFO
+        ================================================== */
+
+        .info-box {
+
+            margin-top: 20px;
+
+            padding: 14px;
+
+            border-radius: 8px;
+
+            background:
+                #f1f5ff;
+
+            border:
+                1px solid #dbe5ff;
+
+            color: #445;
+
+            font-size: 12px;
+
+            line-height: 1.6;
+
+        }
+
+
+        .info-box strong {
+
+            color: #1d4ed8;
+
+        }
+
+
+        /* ==================================================
+           FOOTER
+        ================================================== */
+
+        .footer {
+
+            text-align: center;
+
+            padding:
+                20px 15px
+                30px;
+
+            color: #777;
+
+            font-size: 12px;
+
+        }
+
+
+        /* ==================================================
+           MOBILE
+        ================================================== */
+
+        @media (max-width: 600px) {
+
+            .navbar {
+
+                min-height: 54px;
+
+                padding:
+                    0 12px;
+
+            }
+
+
+            .brand {
+
+                font-size: 16px;
+
+            }
+
+
+            .back-btn {
+
+                font-size: 12px;
+
+            }
+
+
+            .hero {
+
+                padding:
+                    48px 15px
+                    45px;
+
+                border-radius:
+                    0 0 18px 18px;
+
+            }
+
+
+            .hero h1 {
+
+                font-size: 29px;
+
+            }
+
+
+            .hero p {
+
+                font-size: 13px;
+
+            }
+
+
+            .container {
+
+                margin-top:
+                    22px;
+
+                padding:
+                    0 10px;
+
+            }
+
+
+            .card {
+
+                padding:
+                    20px 16px;
+
+            }
+
+
+            input,
+            select,
+            textarea {
+
+                font-size: 14px;
+
+            }
+
+
+            #result {
+
+                min-height: 250px;
+
+            }
+
+        }
+
+
+    </style>
 
 </head>
 
@@ -97,259 +663,378 @@
 <body>
 
 
-<!-- ======================================================
-     HEADER
-====================================================== -->
+    <!-- ==================================================
+         NAVBAR
+    ================================================== -->
 
-<header>
+    <header class="navbar">
 
-<h1>🤖 AI Seller Toolkit</h1>
+        <div class="brand">
+            🤖 AI Seller Toolkit
+        </div>
 
-<a href="tools.html">⬅ Back</a>
+        <a
+            href="tools.html"
+            class="back-btn"
+        >
+            ← Back
+        </a>
 
-</header>
+    </header>
 
 
-<!-- ======================================================
-     HERO
-====================================================== -->
 
-<section class="hero">
+    <!-- ==================================================
+         HERO
+    ================================================== -->
 
-<h2>🔍 AI SEO Keyword Generator</h2>
+    <section class="hero">
 
-<p>
-Generate Relevant SEO Keywords for Your Products
-</p>
+        <h1>
+            🔍 AI SEO Keyword Generator
+        </h1>
 
-</section>
+        <p>
+            Generate Relevant SEO Keywords for Your Products
+        </p>
 
+    </section>
 
-<!-- ======================================================
-     SEO BOX
-====================================================== -->
 
-<div class="seo-box">
 
+    <!-- ==================================================
+         MAIN
+    ================================================== -->
 
-<!-- ======================================================
-     PRODUCT NAME
-====================================================== -->
+    <main class="container">
 
-<label for="product">
-Product Name
-</label>
+        <div class="card">
 
-<input
-    type="text"
-    id="product"
-    placeholder="Example: Cotton Kurti"
-    autocomplete="off"
->
 
+            <!-- ==================================================
+                 PRODUCT NAME
+            ================================================== -->
 
-<!-- ======================================================
-     CATEGORY
-====================================================== -->
+            <div class="form-group">
 
-<label for="category">
-Category
-</label>
+                <label for="product">
+                    Product Name
+                </label>
 
-<select id="category">
+                <input
+                    type="text"
+                    id="product"
+                    name="product"
+                    placeholder="e.g. Cotton Kurti"
+                    autocomplete="off"
+                >
 
-<option value="">
-Select Category
-</option>
+            </div>
 
-<option value="Fashion">
-👗 Fashion
-</option>
 
-<option value="Beauty">
-💄 Beauty
-</option>
 
-<option value="Electronics">
-📱 Electronics
-</option>
+            <!-- ==================================================
+                 CATEGORY
+            ================================================== -->
 
-<option value="Home & Kitchen">
-🏠 Home & Kitchen
-</option>
+            <div class="form-group">
 
-<option value="Shoes">
-👟 Shoes
-</option>
+                <label for="category">
+                    Category
+                </label>
 
-<option value="Jewellery">
-💍 Jewellery
-</option>
+                <select
+                    id="category"
+                    name="category"
+                >
 
-<option value="Toys">
-🧸 Toys
-</option>
+                    <option value="Fashion">
+                        👗 Fashion
+                    </option>
 
-<option value="Books">
-📚 Books
-</option>
+                    <option value="Beauty">
+                        💄 Beauty
+                    </option>
 
-<option value="Pet">
-🐶 Pet
-</option>
+                    <option value="Electronics">
+                        📱 Electronics
+                    </option>
 
-<option value="Sports">
-🏋️ Sports
-</option>
+                    <option value="Home & Kitchen">
+                        🏠 Home & Kitchen
+                    </option>
 
-<option value="Automotive">
-🚗 Automotive
-</option>
+                    <option value="Shoes">
+                        👟 Shoes
+                    </option>
 
-<option value="Garden">
-🌱 Garden
-</option>
+                    <option value="Jewellery">
+                        💍 Jewellery
+                    </option>
 
-<option value="Food">
-🍎 Food
-</option>
+                    <option value="Toys">
+                        🧸 Toys
+                    </option>
 
-<option value="Gifts">
-🎁 Gifts
-</option>
+                    <option value="Books">
+                        📚 Books
+                    </option>
 
-</select>
+                    <option value="Pet">
+                        🐶 Pet
+                    </option>
 
+                    <option value="Sports">
+                        🏋️ Sports
+                    </option>
 
-<!-- ======================================================
-     BRAND
-====================================================== -->
+                    <option value="Automotive">
+                        🚗 Automotive
+                    </option>
 
-<label for="brand">
-Brand Name
-</label>
+                    <option value="Garden">
+                        🌱 Garden
+                    </option>
 
-<input
-    type="text"
-    id="brand"
-    placeholder="Example: Test Brand"
-    autocomplete="off"
->
+                    <option value="Food">
+                        🍎 Food
+                    </option>
 
+                    <option value="Gifts">
+                        🎁 Gifts
+                    </option>
 
-<!-- ======================================================
-     MAIN KEYWORD - OPTIONAL
-====================================================== -->
+                </select>
 
-<label for="keyword">
-Main Keyword <span style="font-weight:normal;">(Optional)</span>
-</label>
+            </div>
 
-<input
-    type="text"
-    id="keyword"
-    placeholder="Optional — खाली छोड़ने पर Product Name इस्तेमाल होगा"
-    autocomplete="off"
->
 
 
-<!-- ======================================================
-     MARKETPLACE
-====================================================== -->
+            <!-- ==================================================
+                 BRAND
+            ================================================== -->
 
-<label for="marketplace">
-Target Marketplace
-</label>
+            <div class="form-group">
 
-<select id="marketplace">
+                <label for="brand">
+                    Brand Name
+                </label>
 
-<option value="Amazon">
-Amazon
-</option>
+                <input
+                    type="text"
+                    id="brand"
+                    name="brand"
+                    placeholder="e.g. Test Brand"
+                    autocomplete="off"
+                >
 
-<option value="Flipkart">
-Flipkart
-</option>
+            </div>
 
-<option value="Meesho">
-Meesho
-</option>
 
-<option value="Shopify">
-Shopify
-</option>
 
-<option value="Etsy">
-Etsy
-</option>
+            <!-- ==================================================
+                 MAIN KEYWORD
+            ================================================== -->
 
-<option value="All Marketplaces">
-All Marketplaces
-</option>
+            <div class="form-group">
 
-</select>
+                <label for="keyword">
 
+                    Main Keyword
 
-<!-- ======================================================
-     GENERATE BUTTON
-====================================================== -->
+                    <span class="optional">
+                        (Optional)
+                    </span>
 
-<button
-    id="generateBtn"
-    type="button"
->
+                </label>
 
-🤖 Generate SEO Keywords
+                <input
+                    type="text"
+                    id="keyword"
+                    name="keyword"
+                    placeholder="Optional — खाली छोड़ने पर Product Name इस्तेमाल होगा"
+                    autocomplete="off"
+                >
 
-</button>
+                <div class="help-text">
 
+                    Main Keyword खाली छोड़ने पर Product Name automatically
+                    Main Keyword के रूप में इस्तेमाल होगा।
 
-<!-- ======================================================
-     STATUS
-====================================================== -->
+                </div>
 
-<div id="status"></div>
+            </div>
 
 
-<!-- ======================================================
-     RESULT
-====================================================== -->
 
-<label for="result">
-Generated SEO Keywords
-</label>
+            <!-- ==================================================
+                 MARKETPLACE
+            ================================================== -->
 
-<textarea
-    id="result"
-    readonly
-    placeholder="Your AI SEO keywords will appear here..."
-></textarea>
+            <div class="form-group">
 
+                <label for="marketplace">
+                    Target Marketplace
+                </label>
 
-<!-- ======================================================
-     COPY BUTTON
-====================================================== -->
+                <select
+                    id="marketplace"
+                    name="marketplace"
+                >
 
-<button
-    id="copyBtn"
-    class="copy-button"
-    type="button"
->
+                    <option value="Amazon">
+                        Amazon
+                    </option>
 
-📋 Copy Keywords
+                    <option value="Flipkart">
+                        Flipkart
+                    </option>
 
-</button>
+                    <option value="Meesho">
+                        Meesho
+                    </option>
 
+                    <option value="Shopify">
+                        Shopify
+                    </option>
 
-</div>
+                    <option value="Etsy">
+                        Etsy
+                    </option>
 
+                    <option value="eBay">
+                        eBay
+                    </option>
 
-<!-- ======================================================
-     JAVASCRIPT
-====================================================== -->
-<script src="seo-keyword-generator.js?v=14.0"></script>
-    
-<script src="no-popup.js"></script>
+                    <option value="Other">
+                        Other
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <!-- ==================================================
+                 GENERATE BUTTON
+            ================================================== -->
+
+            <button
+                type="button"
+                id="generateBtn"
+                class="generate-btn"
+            >
+                🤖 Generate SEO Keywords
+            </button>
+
+
+
+            <!-- ==================================================
+                 STATUS
+            ================================================== -->
+
+            <div
+                id="status"
+                aria-live="polite"
+            ></div>
+
+
+
+            <!-- ==================================================
+                 RESULT
+            ================================================== -->
+
+            <label
+                for="result"
+                class="result-label"
+            >
+                Generated SEO Keywords
+            </label>
+
+
+            <textarea
+                id="result"
+                name="result"
+                readonly
+                placeholder="Your AI SEO keywords will appear here..."
+            ></textarea>
+
+
+
+            <!-- ==================================================
+                 COPY BUTTON
+            ================================================== -->
+
+            <button
+                type="button"
+                id="copyBtn"
+                class="copy-btn"
+            >
+                📋 Copy Keywords
+            </button>
+
+
+
+            <!-- ==================================================
+                 INFORMATION
+            ================================================== -->
+
+            <div class="info-box">
+
+                <strong>
+                    🔒 Strict Factual AI
+                </strong>
+
+                <br>
+
+                AI केवल आपके द्वारा दी गई product information
+                के आधार पर keywords बनाने की कोशिश करता है।
+
+                Missing product facts को जानबूझकर invent नहीं किया जाता।
+
+                <br><br>
+
+                <strong>
+                    SEO Rules:
+                </strong>
+
+                Duplicate, unnecessary filler,
+                brand stuffing और unsupported claims को
+                filter किया जाता है।
+
+            </div>
+
+
+        </div>
+
+    </main>
+
+
+
+    <!-- ==================================================
+         FOOTER
+    ================================================== -->
+
+    <footer class="footer">
+
+        © 2026 AI Seller Toolkit
+
+    </footer>
+
+
+
+    <!-- ==================================================
+         SEO GENERATOR JAVASCRIPT
+         
+         IMPORTANT:
+         seo-generator.js इसी folder/repository में होना चाहिए.
+    ================================================== -->
+
+    <script
+        src="seo-generator.js"
+        defer
+    ></script>
 
 
 </body>
