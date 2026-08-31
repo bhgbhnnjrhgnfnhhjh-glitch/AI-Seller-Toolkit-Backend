@@ -1,15 +1,18 @@
 {
   "name": "ai-seller-toolkit-backend",
-  "version": "1.0.0",
-  "description": "AI Seller Toolkit Gemini Backend",
+  "version": "13.2.0",
+  "description": "AI Seller Toolkit Gemini Backend - Category Aware Strict Factual AI",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
-    "@google/genai": "^2.0.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2"
+    "@google/genai": "2.19.0",
+    "cors": "2.8.5",
+    "dotenv": "16.6.1",
+    "express": "4.21.2"
   }
 }
