@@ -1,6 +1,6 @@
 // ==========================================================
 // AI SELLER TOOLKIT
-// SERVER.JS — FINAL VERSION 14.0
+// SERVER.JS — FINAL VERSION 14.1
 // ==========================================================
 //
 // Gemini Interactions API
@@ -8,39 +8,29 @@
 //
 // CATEGORY-AWARE + STRICT FACTUAL AI
 //
-// FINAL SEO FIX
+// FINAL 14.1 SEO STABILITY
 //
-// IMPORTANT SEO CHANGES IN VERSION 14.0:
+// SEO FIXES:
+// - Product Name remains primary product fact
+// - Brand/product overlap protection
+// - Main keyword sanitization
+// - Reject brand stuffing
+// - Reject partial-product stuffing
+// - Reject generic one-word product fragments
+// - Reject duplicate keywords
+// - Reject near duplicates
+// - Maximum 20 keywords
+// - Main keyword fallback = Product Name
+// - Never create invented attributes
+// - Never create gender/occasion/features automatically
+// - Stable JSON response
 //
-// 1. Product Name is always the first keyword.
-// 2. Main Keyword is always the first keyword when supplied.
-// 3. Valid Brand + Product keywords are ALLOWED.
-// 4. Brand stuffing is allowed only when it forms a
-//    meaningful product keyword.
-// 5. Near-duplicate filter is much less aggressive.
-// 6. Exact duplicates are removed.
-// 7. Unsupported attributes are removed.
-// 8. Filler-only keywords are removed.
-// 9. Category-only stuffing is removed.
-// 10. Maximum 20 keywords.
-// 11. Stable fallback keywords.
-// 12. SEO never invents gender, material, color, size,
-//     model, compatibility, benefits or specifications.
-// 13. Seller facts only.
+// OTHER ENDPOINTS:
+// /api/generate-title
+// /api/generate-description
+// /api/generate-listing
 //
-// ENDPOINTS
-//
-// GET
-//   /
-//   /api/status
-//   /api/categories
-//
-// POST
-//   /api/generate-title
-//   /api/generate-description
-//   /api/generate-listing
-//   /api/generate-seo
-//
+// They remain compatible.
 // ==========================================================
 
 
@@ -137,53 +127,40 @@ const CATEGORIES = [
 const CATEGORY_ALIASES = {
 
     "fashion": "Fashion",
-
     "beauty": "Beauty",
-
     "electronics": "Electronics",
 
     "home kitchen": "Home & Kitchen",
-
     "home and kitchen": "Home & Kitchen",
-
     "home & kitchen": "Home & Kitchen",
 
     "shoes": "Shoes",
-
     "shoe": "Shoes",
 
     "jewellery": "Jewellery",
-
     "jewelry": "Jewellery",
 
     "toys": "Toys",
-
     "toy": "Toys",
 
     "books": "Books",
-
     "book": "Books",
 
     "pet": "Pet",
-
     "pets": "Pet",
 
     "sports": "Sports",
-
     "sport": "Sports",
 
     "automotive": "Automotive",
-
     "auto": "Automotive",
 
     "garden": "Garden",
-
     "gardening": "Garden",
 
     "food": "Food",
 
     "gifts": "Gifts",
-
     "gift": "Gifts"
 
 };
@@ -360,7 +337,7 @@ personalization options or occasion.
 
 
 // ==========================================================
-// STRICT FACTUAL RULES
+// STRICT RULES
 // ==========================================================
 
 const STRICT_RULES = `
@@ -368,58 +345,27 @@ const STRICT_RULES = `
 STRICT FACTUAL RULES:
 
 1. केवल seller द्वारा दी गई information का उपयोग करो।
-
-2. Missing information को कभी invent मत करो।
-
+2. Missing information कभी invent मत करो।
 3. Fake specifications मत बनाओ।
-
 4. Fake benefits मत बनाओ।
-
 5. Fake certification मत बनाओ।
-
 6. Fake reviews या ratings मत बनाओ।
-
 7. Unsupported medical claims मत बनाओ।
-
 8. Unsupported technical specifications मत बनाओ।
-
 9. Unsupported dimensions मत बनाओ।
-
 10. Unsupported compatibility मत बनाओ।
-
 11. Unsupported warranty मत बनाओ।
-
 12. Unsupported material मत बनाओ।
-
 13. Unsupported quantity मत बनाओ।
-
 14. Unsupported color, size, gender, model,
-age, pattern या feature मत बनाओ।
-
+   age, pattern या feature मत बनाओ।
 15. Best, No.1, Premium, Guaranteed,
-100% जैसे claims मत जोड़ो जब तक seller
-ने explicitly न दिया हो।
-
+   100% जैसे claims मत जोड़ो।
 16. Missing information को छोड़ दो।
-
-17. Seller facts का meaning बदलकर
-गलत information मत बनाओ।
-
-18. SEO में भी केवल seller facts का उपयोग करो।
-
-19. Product Name को हमेशा factual source मानो।
-
-20. Seller-provided Brand को product keyword
-के साथ इस्तेमाल किया जा सकता है।
-
-21. Brand + Product को automatically
-brand stuffing मत समझो।
-
-22. Product Name के meaningful variations
-को automatically duplicate मत समझो।
-
-23. SEO keyword में नया factual attribute
-मत जोड़ो।
+17. Seller facts का अर्थ बदलकर गलत जानकारी मत बनाओ।
+18. Marketplace-friendly factual language रखो।
+19. SEO में भी केवल seller facts का उपयोग करो।
+20. Keyword बनाने के लिए imaginary attributes मत जोड़ो।
 
 `;
 
@@ -439,8 +385,7 @@ function cleanString(value) {
 
     }
 
-    return String(value)
-        .trim();
+    return String(value).trim();
 
 }
 
@@ -452,16 +397,13 @@ function cleanString(value) {
 function normalizeCategory(category) {
 
     if (!category) {
-
         return "";
-
     }
 
     let value =
         String(category)
             .trim()
             .toLowerCase();
-
 
     value =
         value
@@ -471,7 +413,6 @@ function normalizeCategory(category) {
             )
             .trim();
 
-
     if (
         CATEGORY_ALIASES[value]
     ) {
@@ -480,14 +421,11 @@ function normalizeCategory(category) {
 
     }
 
-
     const found =
         CATEGORIES.find(
             item =>
-                item.toLowerCase() ===
-                value
+                item.toLowerCase() === value
         );
-
 
     return found || "";
 
@@ -501,15 +439,11 @@ function normalizeCategory(category) {
 function safeJsonParse(text) {
 
     if (!text) {
-
         return null;
-
     }
 
     let cleaned =
-        String(text)
-            .trim();
-
+        String(text).trim();
 
     cleaned =
         cleaned
@@ -527,27 +461,22 @@ function safeJsonParse(text) {
             )
             .trim();
 
-
     try {
 
-        return JSON.parse(
-            cleaned
-        );
+        return JSON.parse(cleaned);
 
     }
     catch (error) {
 
-        // Continue
+        // continue
 
     }
-
 
     const objectStart =
         cleaned.indexOf("{");
 
     const objectEnd =
         cleaned.lastIndexOf("}");
-
 
     if (
         objectStart !== -1 &&
@@ -564,21 +493,15 @@ function safeJsonParse(text) {
             );
 
         }
-        catch (error) {
-
-            // Continue
-
-        }
+        catch (error) {}
 
     }
-
 
     const arrayStart =
         cleaned.indexOf("[");
 
     const arrayEnd =
         cleaned.lastIndexOf("]");
-
 
     if (
         arrayStart !== -1 &&
@@ -595,14 +518,9 @@ function safeJsonParse(text) {
             );
 
         }
-        catch (error) {
-
-            // Continue
-
-        }
+        catch (error) {}
 
     }
-
 
     return null;
 
@@ -610,80 +528,57 @@ function safeJsonParse(text) {
 
 
 // ==========================================================
-// GET GEMINI TEXT
+// GEMINI RESPONSE TEXT
 // ==========================================================
 
-function getInteractionText(
-    interaction
-) {
+function getInteractionText(interaction) {
 
     if (!interaction) {
-
         return "";
-
     }
 
-
     if (
-        typeof interaction.output_text ===
-            "string" &&
+        typeof interaction.output_text === "string" &&
         interaction.output_text.trim()
     ) {
 
-        return interaction.output_text
-            .trim();
+        return interaction.output_text.trim();
 
     }
 
-
     if (
-        Array.isArray(
-            interaction.output
-        )
+        Array.isArray(interaction.output)
     ) {
 
         const textParts = [];
 
-
         for (
-            const item of
-            interaction.output
+            const item of interaction.output
         ) {
 
             if (!item) {
-
                 continue;
-
             }
 
-
             if (
-                typeof item.text ===
-                    "string"
+                typeof item.text === "string"
             ) {
 
-                textParts.push(
-                    item.text
-                );
+                textParts.push(item.text);
 
             }
 
-
             if (
-                Array.isArray(
-                    item.content
-                )
+                Array.isArray(item.content)
             ) {
 
                 for (
-                    const block of
-                    item.content
+                    const block of item.content
                 ) {
 
                     if (
                         block &&
-                        typeof block.text ===
-                            "string"
+                        typeof block.text === "string"
                     ) {
 
                         textParts.push(
@@ -698,10 +593,7 @@ function getInteractionText(
 
         }
 
-
-        if (
-            textParts.length
-        ) {
+        if (textParts.length) {
 
             return textParts
                 .join("\n")
@@ -711,43 +603,33 @@ function getInteractionText(
 
     }
 
-
     if (
-        Array.isArray(
-            interaction.steps
-        )
+        Array.isArray(interaction.steps)
     ) {
 
         const textParts = [];
 
-
         for (
-            const step of
-            interaction.steps
+            const step of interaction.steps
         ) {
 
             if (
                 !step ||
-                !Array.isArray(
-                    step.content
-                )
+                !Array.isArray(step.content)
             ) {
 
                 continue;
 
             }
 
-
             for (
-                const block of
-                step.content
+                const block of step.content
             ) {
 
                 if (
                     block &&
                     block.type === "text" &&
-                    typeof block.text ===
-                        "string"
+                    typeof block.text === "string"
                 ) {
 
                     textParts.push(
@@ -760,10 +642,7 @@ function getInteractionText(
 
         }
 
-
-        if (
-            textParts.length
-        ) {
+        if (textParts.length) {
 
             return textParts
                 .join("\n")
@@ -772,7 +651,6 @@ function getInteractionText(
         }
 
     }
-
 
     return "";
 
@@ -783,9 +661,7 @@ function getInteractionText(
 // CALL GEMINI
 // ==========================================================
 
-async function callGemini(
-    prompt
-) {
+async function callGemini(prompt) {
 
     if (!GEMINI_API_KEY) {
 
@@ -795,35 +671,26 @@ async function callGemini(
 
     }
 
-
     if (!ai) {
 
-        ai =
-            new GoogleGenAI({
-                apiKey:
-                    GEMINI_API_KEY
-            });
+        ai = new GoogleGenAI({
+            apiKey: GEMINI_API_KEY
+        });
 
     }
-
 
     const interaction =
         await ai.interactions.create({
 
-            model:
-                MODEL,
-
-            input:
-                prompt
+            model: MODEL,
+            input: prompt
 
         });
-
 
     const text =
         getInteractionText(
             interaction
         );
-
 
     if (!text) {
 
@@ -836,13 +703,11 @@ async function callGemini(
             )
         );
 
-
         throw new Error(
             "Gemini ने कोई usable response नहीं दिया।"
         );
 
     }
-
 
     return text;
 
@@ -853,60 +718,37 @@ async function callGemini(
 // SEO NORMALIZATION
 // ==========================================================
 
-function normalizeSEOText(
-    text
-) {
+function normalizeSEOText(text) {
 
     return cleanString(text)
         .toLowerCase()
-        .replace(
-            /[’']/g,
-            ""
-        )
-        .replace(
-            /[-_/]/g,
-            " "
-        )
-        .replace(
-            /[^a-z0-9\s]/g,
-            ""
-        )
-        .replace(
-            /\s+/g,
-            " "
-        )
+        .replace(/[’']/g, "")
+        .replace(/[-_/]/g, " ")
+        .replace(/[^a-z0-9\s]/g, "")
+        .replace(/\s+/g, " ")
         .trim();
 
 }
 
 
 // ==========================================================
-// SEO TOKEN SET
+// SEO TOKENS
 // ==========================================================
 
-function seoTokenSet(
-    text
-) {
+function seoTokenSet(text) {
 
     const normalized =
-        normalizeSEOText(
-            text
-        );
-
+        normalizeSEOText(text);
 
     if (!normalized) {
-
         return new Set();
-
     }
-
 
     return new Set(
         normalized
             .split(" ")
             .filter(
-                token =>
-                    token.length > 1
+                token => token.length > 1
             )
     );
 
@@ -914,54 +756,41 @@ function seoTokenSet(
 
 
 // ==========================================================
-// TOKEN OVERLAP
+// SEO SIMILARITY
 // ==========================================================
 
-function tokenOverlap(
-    a,
-    b
-) {
+function seoSimilarity(a, b) {
 
-    const A =
-        seoTokenSet(a);
+    const A = seoTokenSet(a);
+    const B = seoTokenSet(b);
 
-    const B =
-        seoTokenSet(b);
-
-
-    if (
-        !A.size ||
-        !B.size
-    ) {
-
+    if (!A.size || !B.size) {
         return 0;
-
     }
 
+    let intersection = 0;
 
-    let count = 0;
+    A.forEach(
+        token => {
 
-
-    for (
-        const token of A
-    ) {
-
-        if (
-            B.has(token)
-        ) {
-
-            count++;
+            if (B.has(token)) {
+                intersection++;
+            }
 
         }
+    );
 
+    const union =
+        new Set([
+            ...A,
+            ...B
+        ]).size;
+
+    if (!union) {
+        return 0;
     }
 
-
-    return count /
-        Math.max(
-            A.size,
-            B.size
-        );
+    return intersection / union;
 
 }
 
@@ -970,9 +799,7 @@ function tokenOverlap(
 // CLEAN SEO KEYWORD
 // ==========================================================
 
-function cleanSEOKeyword(
-    value
-) {
+function cleanSEOKeyword(value) {
 
     if (
         value === null ||
@@ -982,7 +809,6 @@ function cleanSEOKeyword(
         return "";
 
     }
-
 
     return String(value)
         .trim()
@@ -1017,6 +843,9 @@ const SEO_FILLER_WORDS =
         "online",
         "collection",
         "store",
+        "fashion",
+        "apparel",
+        "wear",
         "shopping",
         "buy",
         "shop",
@@ -1044,267 +873,142 @@ const SEO_FILLER_WORDS =
 
 
 // ==========================================================
-// UNSUPPORTED MARKETING WORDS
+// PRODUCT FRAGMENT CHECK
 // ==========================================================
 
-const UNSUPPORTED_MARKETING_WORDS =
-    new Set([
-
-        "best",
-        "premium",
-        "guaranteed",
-        "guarantee",
-        "no1",
-        "number1",
-        "top",
-        "amazing",
-        "excellent",
-        "super",
-        "luxury",
-        "highquality",
-        "quality",
-        "stylish",
-        "trendy",
-        "beautiful",
-        "perfect",
-        "original",
-        "exclusive"
-
-    ]);
-
-
-// ==========================================================
-// CHECK UNSUPPORTED MARKETING WORDS
-// ==========================================================
-
-function containsUnsupportedMarketingWord(
-    keyword
+function isProductFragment(
+    keyword,
+    productName
 ) {
 
-    const tokens =
-        normalizeSEOText(
-            keyword
-        )
-            .split(" ")
-            .filter(Boolean);
+    const keywordTokens =
+        seoTokenSet(keyword);
 
+    const productTokens =
+        seoTokenSet(productName);
 
-    return tokens.some(
-        token =>
-            UNSUPPORTED_MARKETING_WORDS.has(
-                token
-            )
-    );
+    if (
+        !keywordTokens.size ||
+        !productTokens.size
+    ) {
+
+        return false;
+
+    }
+
+    // Exact product name is valid.
+    if (
+        normalizeSEOText(keyword) ===
+        normalizeSEOText(productName)
+    ) {
+
+        return false;
+
+    }
+
+    // One-word fragment of a multi-word product
+    // Example:
+    // Product = Cotton Kurti
+    // Keyword = Kurti
+    //
+    // Reject.
+
+    if (
+        keywordTokens.size === 1 &&
+        productTokens.size > 1
+    ) {
+
+        for (
+            const token of keywordTokens
+        ) {
+
+            if (
+                productTokens.has(token)
+            ) {
+
+                return true;
+
+            }
+
+        }
+
+    }
+
+    return false;
 
 }
 
 
 // ==========================================================
-// CHECK FILLER-ONLY KEYWORD
+// BRAND OVERLAP
 // ==========================================================
 
-function isFillerOnlyKeyword(
-    keyword,
-    productName,
-    mainKeyword,
-    brand
+function cleanEffectiveBrand(
+    brand,
+    productName
 ) {
 
-    const normalized =
-        normalizeSEOText(
-            keyword
-        );
-
-
-    if (!normalized) {
-
-        return true;
-
-    }
-
-
-    const main =
-        normalizeSEOText(
-            mainKeyword
-        );
-
-
-    const product =
-        normalizeSEOText(
-            productName
-        );
-
-
-    const brandText =
+    const b =
         normalizeSEOText(
             brand
         );
 
-
-    // Main keyword is always allowed.
-
-    if (
-        normalized === main
-    ) {
-
-        return false;
-
-    }
-
-
-    // Product name is always allowed.
-
-    if (
-        normalized === product
-    ) {
-
-        return false;
-
-    }
-
-
-    // Brand + product is allowed.
-
-    if (
-        brandText &&
-        normalized.includes(
-            brandText
-        ) &&
-        normalized.includes(
-            product
-        )
-    ) {
-
-        return false;
-
-    }
-
-
-    const tokens =
-        normalized
-            .split(" ")
-            .filter(Boolean);
-
-
-    if (!tokens.length) {
-
-        return true;
-
-    }
-
-
-    const meaningful =
-        tokens.filter(
-            token =>
-                !SEO_FILLER_WORDS.has(
-                    token
-                )
+    const p =
+        normalizeSEOText(
+            productName
         );
 
+    if (!b) {
+        return "";
+    }
 
-    return meaningful.length === 0;
+    if (!p) {
+        return b;
+    }
 
-}
+    // If brand contains complete product name,
+    // remove product phrase from brand.
+    //
+    // Example:
+    // Brand = Test Brand Cotton Kurti
+    // Product = Cotton Kurti
+    //
+    // Effective brand becomes:
+    // Test Brand
 
+    if (
+        b.includes(p)
+    ) {
 
-// ==========================================================
-// VALID SELLER FACTS
-// ==========================================================
+        const cleaned =
+            b
+                .replace(
+                    p,
+                    " "
+                )
+                .replace(
+                    /\s+/g,
+                    " "
+                )
+                .trim();
 
-function getSellerFactTerms(
-    data
-) {
+        return cleaned;
 
-    const values = [
+    }
 
-        data.productName,
-        data.brand,
-
-        data.material,
-        data.fabric,
-        data.color,
-        data.size,
-        data.pattern,
-        data.fit,
-        data.occasion,
-        data.quantity,
-
-        data.model,
-
-        data.ingredients,
-        data.fragrance,
-        data.shade,
-
-        data.compatibility,
-        data.battery,
-        data.capacity,
-        data.ports,
-        data.power,
-
-        data.design,
-        data.usage,
-
-        data.closure,
-        data.sole,
-
-        data.stone,
-        data.plating,
-
-        data.ageRange,
-
-        data.author,
-        data.language,
-        data.genre,
-        data.edition,
-        data.publisher,
-        data.isbn,
-
-        data.petType,
-
-        data.sport,
-
-        data.vehicleCompatibility,
-
-        data.flavor,
-        data.packaging,
-
-        data.personalization,
-
-        data.sleeve,
-        data.neckline,
-
-        data.type
-
-    ];
-
-
-    return values
-        .map(cleanString)
-        .filter(Boolean);
+    return b;
 
 }
 
 
 // ==========================================================
-// KEYWORD FACTUAL CHECK
-// ==========================================================
-//
-// This is the main Version 14.0 SEO fix.
-//
-// A keyword is accepted when:
-//
-// A) It is exactly a seller fact, OR
-// B) It contains words from seller facts, OR
-// C) It is a combination of supplied seller facts.
-//
-// We do NOT require every keyword to be completely
-// different from the product name.
-//
+// BRAND STUFFING CHECK
 // ==========================================================
 
-function isFactuallyGroundedKeyword(
+function isBrandStuffedKeyword(
     keyword,
-    data
+    brand,
+    productName
 ) {
 
     const normalizedKeyword =
@@ -1312,349 +1016,387 @@ function isFactuallyGroundedKeyword(
             keyword
         );
 
+    const effectiveBrand =
+        cleanEffectiveBrand(
+            brand,
+            productName
+        );
 
-    if (!normalizedKeyword) {
+    if (
+        !normalizedKeyword ||
+        !effectiveBrand
+    ) {
 
         return false;
 
     }
 
-
-    const product =
-        normalizeSEOText(
-            data.productName
+    const brandTokens =
+        seoTokenSet(
+            effectiveBrand
         );
-
-
-    const brand =
-        normalizeSEOText(
-            data.brand
-        );
-
-
-    const main =
-        normalizeSEOText(
-            data.mainKeyword ||
-            data.productName
-        );
-
-
-    // Main keyword
-
-    if (
-        normalizedKeyword === main
-    ) {
-
-        return true;
-
-    }
-
-
-    // Product name
-
-    if (
-        normalizedKeyword === product
-    ) {
-
-        return true;
-
-    }
-
-
-    // Brand + Product
-
-    if (
-        brand &&
-        normalizedKeyword.includes(brand) &&
-        normalizedKeyword.includes(product)
-    ) {
-
-        return true;
-
-    }
-
 
     const keywordTokens =
         seoTokenSet(
             normalizedKeyword
         );
 
-
-    if (!keywordTokens.size) {
-
+    if (!brandTokens.size) {
         return false;
-
     }
 
+    let brandCount = 0;
 
-    const sellerFacts =
-        getSellerFactTerms(
-            data
-        );
+    brandTokens.forEach(
+        token => {
 
+            if (
+                keywordTokens.has(token)
+            ) {
 
-    const factTokens =
-        new Set();
+                brandCount++;
 
-
-    for (
-        const fact of
-        sellerFacts
-    ) {
-
-        const tokens =
-            seoTokenSet(
-                fact
-            );
-
-        for (
-            const token of
-            tokens
-        ) {
-
-            factTokens.add(
-                token
-            );
+            }
 
         }
-
-    }
-
-
-    if (!factTokens.size) {
-
-        return false;
-
-    }
-
-
-    let groundedCount = 0;
-
-
-    for (
-        const token of
-        keywordTokens
-    ) {
-
-        if (
-            factTokens.has(token)
-        ) {
-
-            groundedCount++;
-
-        }
-
-    }
-
-
-    // Every meaningful token should come from
-    // seller-provided facts.
-
-    return (
-        groundedCount ===
-        keywordTokens.size
     );
+
+    // If keyword contains full effective brand,
+    // reject it unless it is simply the actual product
+    // name plus brand in a meaningful supplied form.
+    //
+    // For SEO stability we reject brand-containing
+    // variations here.
+
+    if (
+        brandCount === brandTokens.size
+    ) {
+
+        return true;
+
+    }
+
+    return false;
 
 }
 
 
 // ==========================================================
-// SEO FILTER — VERSION 14.0
+// MOSTLY FILLER
+// ==========================================================
+
+function isMostlyFillerKeyword(
+    keyword,
+    productName,
+    mainKeyword
+) {
+
+    const normalizedKeyword =
+        normalizeSEOText(keyword);
+
+    if (!normalizedKeyword) {
+        return true;
+    }
+
+    const normalizedMain =
+        normalizeSEOText(mainKeyword);
+
+    if (
+        normalizedKeyword ===
+        normalizedMain
+    ) {
+
+        return false;
+
+    }
+
+    const productTokens =
+        seoTokenSet(productName);
+
+    const mainTokens =
+        seoTokenSet(mainKeyword);
+
+    const tokens =
+        normalizedKeyword
+            .split(" ")
+            .filter(Boolean);
+
+    const extraWords =
+        tokens.filter(
+            token =>
+                !productTokens.has(token) &&
+                !mainTokens.has(token)
+        );
+
+    if (
+        extraWords.length > 0 &&
+        extraWords.every(
+            token =>
+                SEO_FILLER_WORDS.has(token)
+        )
+    ) {
+
+        return true;
+
+    }
+
+    let meaningful = 0;
+
+    for (
+        const token of tokens
+    ) {
+
+        if (
+            productTokens.has(token) ||
+            mainTokens.has(token) ||
+            !SEO_FILLER_WORDS.has(token)
+        ) {
+
+            meaningful++;
+
+        }
+
+    }
+
+    return meaningful === 0;
+
+}
+
+
+// ==========================================================
+// MAIN KEYWORD SAFETY
+// ==========================================================
+
+function sanitizeMainKeyword(
+    mainKeyword,
+    productName,
+    brand
+) {
+
+    const main =
+        cleanSEOKeyword(
+            mainKeyword
+        );
+
+    const product =
+        cleanSEOKeyword(
+            productName
+        );
+
+    if (!product) {
+        return "";
+    }
+
+    if (!main) {
+        return product;
+    }
+
+    const normalizedMain =
+        normalizeSEOText(main);
+
+    const normalizedProduct =
+        normalizeSEOText(product);
+
+    // Exact Product Name = safest main keyword.
+    if (
+        normalizedMain ===
+        normalizedProduct
+    ) {
+
+        return product;
+
+    }
+
+    // If brand contains product name,
+    // treat the product itself as primary SEO term.
+    const effectiveBrand =
+        cleanEffectiveBrand(
+            brand,
+            product
+        );
+
+    const brandNormalized =
+        normalizeSEOText(
+            effectiveBrand
+        );
+
+    // Example:
+    // Product = Cotton Kurti
+    // Brand = Test Brand Cotton Kurti
+    // Main = Test Brand Kurti
+    //
+    // Main keyword contains brand and only a
+    // fragment of product.
+    //
+    // Reject and use Product Name.
+    if (
+        brandNormalized &&
+        normalizedMain.includes(
+            brandNormalized
+        ) &&
+        normalizedMain !==
+            normalizedProduct
+    ) {
+
+        return product;
+
+    }
+
+    // If main keyword is only a fragment
+    // of the product, use Product Name.
+    if (
+        isProductFragment(
+            main,
+            product
+        )
+    ) {
+
+        return product;
+
+    }
+
+    return main;
+
+}
+
+
+// ==========================================================
+// SEO FILTER
 // ==========================================================
 
 function filterSEOKeywords(
     keywords,
-    data,
+    productName,
+    brand,
+    category,
     mainKeyword
 ) {
 
     const output = [];
+    const seen = new Set();
 
-    const seen =
-        new Set();
+    const safeMainKeyword =
+        sanitizeMainKeyword(
+            mainKeyword,
+            productName,
+            brand
+        );
 
+    const mainNormalized =
+        normalizeSEOText(
+            safeMainKeyword
+        );
 
-    const source =
+    const sourceKeywords =
         Array.isArray(keywords)
             ? keywords
             : [];
 
-
-    // ------------------------------------------------------
-    // Helper
-    // ------------------------------------------------------
-
-    function addKeyword(
-        raw,
-        force = false
+    for (
+        const raw of sourceKeywords
     ) {
 
         const keyword =
-            cleanSEOKeyword(
-                raw
-            );
-
+            cleanSEOKeyword(raw);
 
         if (!keyword) {
-
-            return;
-
+            continue;
         }
-
 
         const normalized =
-            normalizeSEOText(
-                keyword
-            );
-
+            normalizeSEOText(keyword);
 
         if (!normalized) {
-
-            return;
-
+            continue;
         }
 
-
-        // Exact duplicate only.
-
+        // Exact duplicate
         if (
             seen.has(normalized)
         ) {
-
-            return;
-
+            continue;
         }
 
-
+        // Maximum 8 words
         const wordCount =
             normalized
                 .split(" ")
                 .filter(Boolean)
                 .length;
 
-
         if (
             wordCount > 8
         ) {
-
-            return;
-
+            continue;
         }
 
+        const isMainKeyword =
+            normalized ===
+            mainNormalized;
 
-        // Unsupported marketing claims.
-
+        // Product fragment
         if (
-            !force &&
-            containsUnsupportedMarketingWord(
-                keyword
-            )
-        ) {
-
-            return;
-
-        }
-
-
-        // Filler-only.
-
-        if (
-            !force &&
-            isFillerOnlyKeyword(
+            !isMainKeyword &&
+            isProductFragment(
                 keyword,
-                data.productName,
-                mainKeyword,
-                data.brand
+                productName
             )
         ) {
 
-            return;
+            continue;
 
         }
 
+        // Brand stuffing
+        if (
+            !isMainKeyword &&
+            isBrandStuffedKeyword(
+                keyword,
+                brand,
+                productName
+            )
+        ) {
 
-        // Must be based on seller facts.
+            continue;
+
+        }
+
+        // Filler
+        if (
+            !isMainKeyword &&
+            isMostlyFillerKeyword(
+                keyword,
+                productName,
+                safeMainKeyword
+            )
+        ) {
+
+            continue;
+
+        }
+
+        // Near duplicate
+        const nearDuplicate =
+            output.some(
+                existing =>
+                    seoSimilarity(
+                        existing,
+                        keyword
+                    ) >= 0.80
+            );
 
         if (
-            !force &&
-            !isFactuallyGroundedKeyword(
-                keyword,
-                data
-            )
+            nearDuplicate &&
+            !isMainKeyword
         ) {
 
-            return;
+            continue;
 
         }
 
+        seen.add(normalized);
 
-        // --------------------------------------------------
-        // IMPORTANT:
-        //
-        // Do NOT reject valid keywords simply because
-        // they have high similarity with Product Name.
-        //
-        // Example:
-        //
-        // Cotton Kurti
-        // Test Brand Cotton Kurti
-        // Test Brand Kurti
-        //
-        // These can all be valid seller-fact keywords.
-        // --------------------------------------------------
-
-
-        seen.add(
-            normalized
-        );
-
-
-        output.push(
-            keyword
-        );
-
-    }
-
-
-    // ------------------------------------------------------
-    // MAIN KEYWORD FIRST
-    // ------------------------------------------------------
-
-    addKeyword(
-        mainKeyword,
-        true
-    );
-
-
-    // ------------------------------------------------------
-    // PRODUCT NAME SECOND IF DIFFERENT
-    // ------------------------------------------------------
-
-    if (
-        normalizeSEOText(
-            data.productName
-        ) !==
-        normalizeSEOText(
-            mainKeyword
-        )
-    ) {
-
-        addKeyword(
-            data.productName,
-            true
-        );
-
-    }
-
-
-    // ------------------------------------------------------
-    // AI KEYWORDS
-    // ------------------------------------------------------
-
-    for (
-        const keyword of
-        source
-    ) {
+        output.push(keyword);
 
         if (
             output.length >= 20
@@ -1664,10 +1406,45 @@ function filterSEOKeywords(
 
         }
 
+    }
 
-        addKeyword(
-            keyword
+
+    // ======================================================
+    // ALWAYS PRODUCT-BASED MAIN KEYWORD
+    // ======================================================
+
+    const finalMain =
+        safeMainKeyword ||
+        cleanSEOKeyword(productName);
+
+    const finalMainNormalized =
+        normalizeSEOText(finalMain);
+
+    const existingIndex =
+        output.findIndex(
+            item =>
+                normalizeSEOText(item) ===
+                finalMainNormalized
         );
+
+    if (
+        existingIndex >= 0
+    ) {
+
+        const item =
+            output.splice(
+                existingIndex,
+                1
+            )[0];
+
+        output.unshift(item);
+
+    }
+    else if (
+        finalMain
+    ) {
+
+        output.unshift(finalMain);
 
     }
 
@@ -1681,168 +1458,89 @@ function filterSEOKeywords(
 
 
 // ==========================================================
-// FALLBACK SEO KEYWORDS — VERSION 14.0
-// ==========================================================
-//
-// This fallback does NOT invent attributes.
-//
-// It creates only combinations from supplied facts.
-//
+// FALLBACK KEYWORDS
 // ==========================================================
 
 function buildFallbackKeywords(
-    data,
-    mainKeyword
+    productName,
+    brand,
+    category,
+    mainKeyword,
+    details
 ) {
 
     const candidates = [];
 
-
     const product =
-        cleanString(
-            data.productName
+        cleanSEOKeyword(
+            productName
         );
 
-
-    const brand =
-        cleanString(
-            data.brand
-        );
-
-
-    const main =
-        cleanString(
+    const safeMain =
+        sanitizeMainKeyword(
             mainKeyword ||
-            product
+            product,
+            product,
+            brand
         );
 
-
-    // ------------------------------------------------------
-    // 1. Main keyword
-    // ------------------------------------------------------
-
-    if (main) {
-
-        candidates.push(
-            main
-        );
-
+    // Main keyword
+    if (safeMain) {
+        candidates.push(safeMain);
     }
 
-
-    // ------------------------------------------------------
-    // 2. Exact Product Name
-    // ------------------------------------------------------
-
-    if (
-        product &&
-        normalizeSEOText(product) !==
-            normalizeSEOText(main)
-    ) {
-
-        candidates.push(
-            product
-        );
-
+    // Product name
+    if (product) {
+        candidates.push(product);
     }
 
+    // Only seller supplied factual attributes
+    const mappings = [
 
-    // ------------------------------------------------------
-    // 3. Brand + Product
-    // ------------------------------------------------------
-
-    if (
-        brand &&
-        product
-    ) {
-
-        candidates.push(
-            `${brand} ${product}`
-        );
-
-    }
-
-
-    // ------------------------------------------------------
-    // 4. Brand + Main Keyword
-    // ------------------------------------------------------
-
-    if (
-        brand &&
-        main &&
-        normalizeSEOText(main) !==
-            normalizeSEOText(product)
-    ) {
-
-        candidates.push(
-            `${brand} ${main}`
-        );
-
-    }
-
-
-    // ------------------------------------------------------
-    // 5. Seller fact combinations
-    // ------------------------------------------------------
-
-    const factMappings = [
-
-        data.material,
-        data.fabric,
-        data.color,
-        data.size,
-        data.pattern,
-        data.fit,
-        data.occasion,
-        data.model,
-        data.capacity,
-        data.sport,
-        data.flavor,
-        data.author,
-        data.language,
-        data.genre,
-        data.petType,
-        data.type
+        ["material", "material"],
+        ["fabric", "fabric"],
+        ["color", "color"],
+        ["size", "size"],
+        ["pattern", "pattern"],
+        ["model", "model"],
+        ["type", "type"],
+        ["sport", "sport"],
+        ["flavor", "flavor"],
+        ["author", "author"]
 
     ];
 
-
     for (
-        const fact of
-        factMappings
+        const [
+            field,
+            label
+        ] of mappings
     ) {
 
-        const cleanFact =
-            cleanString(
-                fact
-            );
+        const value =
+            details &&
+            details[field]
+                ? cleanString(
+                    details[field]
+                )
+                : "";
 
-
-        if (
-            !cleanFact ||
-            !product
-        ) {
-
+        if (!value) {
             continue;
-
         }
 
-
         candidates.push(
-            `${cleanFact} ${product}`
+            `${value} ${product}`
         );
 
     }
 
-
-    // ------------------------------------------------------
-    // Filter
-    // ------------------------------------------------------
-
     return filterSEOKeywords(
         candidates,
-        data,
-        main
+        product,
+        brand,
+        category,
+        safeMain
     );
 
 }
@@ -1860,14 +1558,11 @@ function collectProductData(
     const b =
         body || {};
 
-
     const nestedDetails =
         b.productDetails &&
-        typeof b.productDetails ===
-            "object"
+        typeof b.productDetails === "object"
             ? b.productDetails
             : {};
-
 
     const fields = [
 
@@ -1929,18 +1624,14 @@ function collectProductData(
 
     ];
 
-
     const data = {};
 
-
     for (
-        const field of
-        fields
+        const field of fields
     ) {
 
         let value =
             b[field];
-
 
         if (
             value === undefined
@@ -1950,7 +1641,6 @@ function collectProductData(
                 nestedDetails[field];
 
         }
-
 
         if (
             cleanString(value)
@@ -1963,10 +1653,8 @@ function collectProductData(
 
     }
 
-
     data.category =
         category;
-
 
     data.productName =
         cleanString(
@@ -1975,25 +1663,21 @@ function collectProductData(
             b.name
         );
 
-
     data.brand =
         cleanString(
             b.brand ||
             data.brand
         );
 
-
     data.price =
         cleanString(
             b.price
         );
 
-
     data.mainKeyword =
         cleanString(
             b.mainKeyword
         );
-
 
     data.targetMarketplace =
         cleanString(
@@ -2001,15 +1685,12 @@ function collectProductData(
             b.marketplace
         );
 
-
     data.rawDetails =
         cleanString(
-            typeof b.productDetails ===
-                "string"
+            typeof b.productDetails === "string"
                 ? b.productDetails
                 : b.details
         );
-
 
     return data;
 
@@ -2017,12 +1698,10 @@ function collectProductData(
 
 
 // ==========================================================
-// PRODUCT FACTS TEXT
+// PRODUCT FACTS
 // ==========================================================
 
-function productFactsText(
-    data
-) {
+function productFactsText(data) {
 
     const ignored =
         new Set([
@@ -2037,9 +1716,7 @@ function productFactsText(
 
         ]);
 
-
     const lines = [];
-
 
     for (
         const [
@@ -2051,11 +1728,8 @@ function productFactsText(
         if (
             ignored.has(key)
         ) {
-
             continue;
-
         }
-
 
         if (
             cleanString(value)
@@ -2069,7 +1743,6 @@ function productFactsText(
 
     }
 
-
     if (
         data.rawDetails
     ) {
@@ -2080,15 +1753,11 @@ function productFactsText(
 
     }
 
-
-    if (
-        !lines.length
-    ) {
+    if (!lines.length) {
 
         return "No additional product facts supplied.";
 
     }
-
 
     return lines.join("\n");
 
@@ -2110,7 +1779,6 @@ function requireProductAndCategory(
             req.body.category
         );
 
-
     const productName =
         cleanString(
             req.body &&
@@ -2120,7 +1788,6 @@ function requireProductAndCategory(
                 req.body.name
             )
         );
-
 
     if (!category) {
 
@@ -2136,11 +1803,9 @@ function requireProductAndCategory(
 
         });
 
-
         return null;
 
     }
-
 
     if (!productName) {
 
@@ -2153,11 +1818,9 @@ function requireProductAndCategory(
 
         });
 
-
         return null;
 
     }
-
 
     return {
         category,
@@ -2211,13 +1874,14 @@ ${data.targetMarketplace || "Not provided"}
 IMPORTANT:
 
 - Product Name is always a seller fact.
-- Brand is a seller fact when supplied.
+- Brand is a seller fact only when supplied.
 - Category is classification information.
-- Do not automatically turn category into
-  a product attribute.
-- Missing information must remain missing.
-- Never invent facts.
-- Never add unsupported marketing claims.
+- Never turn category into a product attribute.
+- Never invent missing information.
+- Never create unsupported gender.
+- Never create unsupported occasion.
+- Never create unsupported quality claims.
+- Never create unsupported features.
 
 `;
 
@@ -2228,9 +1892,7 @@ IMPORTANT:
 // GENERATE JSON
 // ==========================================================
 
-async function generateJSON(
-    prompt
-) {
+async function generateJSON(prompt) {
 
     const text =
         await callGemini(
@@ -2243,12 +1905,8 @@ DO NOT USE CODE FENCES.
 `
         );
 
-
     const parsed =
-        safeJsonParse(
-            text
-        );
-
+        safeJsonParse(text);
 
     if (!parsed) {
 
@@ -2257,7 +1915,6 @@ DO NOT USE CODE FENCES.
         );
 
     }
-
 
     return parsed;
 
@@ -2268,21 +1925,17 @@ DO NOT USE CODE FENCES.
 // FALLBACK TITLE
 // ==========================================================
 
-function fallbackTitle(
-    data
-) {
+function fallbackTitle(data) {
 
     const product =
         cleanString(
             data.productName
         );
 
-
     const brand =
         cleanString(
             data.brand
         );
-
 
     if (
         brand &&
@@ -2296,7 +1949,6 @@ function fallbackTitle(
 
     }
 
-
     return product
         .slice(0, 200);
 
@@ -2307,21 +1959,15 @@ function fallbackTitle(
 // FALLBACK DESCRIPTION
 // ==========================================================
 
-function fallbackDescription(
-    data
-) {
+function fallbackDescription(data) {
 
     const facts = [];
 
-
     if (data.brand) {
-
         facts.push(
             `Brand: ${data.brand}`
         );
-
     }
-
 
     if (
         data.material ||
@@ -2337,51 +1983,35 @@ function fallbackDescription(
 
     }
 
-
     if (data.color) {
-
         facts.push(
             `Color: ${data.color}`
         );
-
     }
 
-
     if (data.size) {
-
         facts.push(
             `Size: ${data.size}`
         );
-
     }
 
-
     if (data.quantity) {
-
         facts.push(
             `Quantity: ${data.quantity}`
         );
-
     }
 
-
     if (data.price) {
-
         facts.push(
             `Price: ₹${data.price}`
         );
-
     }
 
-
     if (data.rawDetails) {
-
         facts.push(
             data.rawDetails
         );
-
     }
-
 
     if (facts.length) {
 
@@ -2391,7 +2021,6 @@ function fallbackDescription(
         );
 
     }
-
 
     return (
         `${data.productName} is available with the seller-provided product information.`
@@ -2404,19 +2033,13 @@ function fallbackDescription(
 // FALLBACK HIGHLIGHTS
 // ==========================================================
 
-function fallbackHighlights(
-    data
-) {
+function fallbackHighlights(data) {
 
     const output = [];
 
-
     const mappings = [
 
-        [
-            "Brand",
-            data.brand
-        ],
+        ["Brand", data.brand],
 
         [
             "Material",
@@ -2424,38 +2047,19 @@ function fallbackHighlights(
             data.fabric
         ],
 
-        [
-            "Color",
-            data.color
-        ],
+        ["Color", data.color],
 
-        [
-            "Size",
-            data.size
-        ],
+        ["Size", data.size],
 
-        [
-            "Pattern",
-            data.pattern
-        ],
+        ["Pattern", data.pattern],
 
-        [
-            "Model",
-            data.model
-        ],
+        ["Model", data.model],
 
-        [
-            "Capacity",
-            data.capacity
-        ],
+        ["Capacity", data.capacity],
 
-        [
-            "Quantity",
-            data.quantity
-        ]
+        ["Quantity", data.quantity]
 
     ];
-
 
     for (
         const [
@@ -2474,11 +2078,7 @@ function fallbackHighlights(
 
     }
 
-
-    return output.slice(
-        0,
-        8
-    );
+    return output.slice(0, 8);
 
 }
 
@@ -2499,7 +2099,7 @@ app.get(
                 "AI Seller Toolkit Backend",
 
             version:
-                "14.0",
+                "14.1",
 
             status:
                 "online",
@@ -2521,15 +2121,10 @@ app.get(
             endpoints: [
 
                 "/api/status",
-
                 "/api/categories",
-
                 "/api/generate-title",
-
                 "/api/generate-description",
-
                 "/api/generate-listing",
-
                 "/api/generate-seo"
 
             ]
@@ -2541,7 +2136,7 @@ app.get(
 
 
 // ==========================================================
-// GET /api/status
+// STATUS
 // ==========================================================
 
 app.get(
@@ -2556,7 +2151,7 @@ app.get(
                 "AI Seller Toolkit Backend",
 
             version:
-                "14.0",
+                "14.1",
 
             status:
                 "online",
@@ -2578,15 +2173,10 @@ app.get(
             endpoints: [
 
                 "/api/status",
-
                 "/api/categories",
-
                 "/api/generate-title",
-
                 "/api/generate-description",
-
                 "/api/generate-listing",
-
                 "/api/generate-seo"
 
             ]
@@ -2598,7 +2188,7 @@ app.get(
 
 
 // ==========================================================
-// GET /api/categories
+// CATEGORIES
 // ==========================================================
 
 app.get(
@@ -2622,7 +2212,7 @@ app.get(
 
 
 // ==========================================================
-// POST /api/generate-title
+// GENERATE TITLE
 // ==========================================================
 
 app.post(
@@ -2635,20 +2225,15 @@ app.post(
                 res
             );
 
-
         if (!required) {
-
             return;
-
         }
-
 
         const data =
             collectProductData(
                 req.body,
                 required.category
             );
-
 
         try {
 
@@ -2670,7 +2255,8 @@ Rules:
 - Do not add unsupported adjectives.
 - Do not add unsupported specifications.
 - Do not add fake benefits.
-- Avoid unnecessary keyword stuffing.
+- Keep title readable.
+- Avoid keyword stuffing.
 
 Return exactly:
 
@@ -2683,15 +2269,11 @@ Return exactly:
 
                 );
 
-
             const title =
                 cleanString(
                     result.title
                 ) ||
-                fallbackTitle(
-                    data
-                );
-
+                fallbackTitle(data);
 
             res.json({
 
@@ -2713,12 +2295,8 @@ Return exactly:
                 error.message
             );
 
-
             const title =
-                fallbackTitle(
-                    data
-                );
-
+                fallbackTitle(data);
 
             res.json({
 
@@ -2744,7 +2322,7 @@ Return exactly:
 
 
 // ==========================================================
-// POST /api/generate-description
+// GENERATE DESCRIPTION
 // ==========================================================
 
 app.post(
@@ -2757,20 +2335,15 @@ app.post(
                 res
             );
 
-
         if (!required) {
-
             return;
-
         }
-
 
         const data =
             collectProductData(
                 req.body,
                 required.category
             );
-
 
         try {
 
@@ -2807,15 +2380,11 @@ Return exactly:
 
                 );
 
-
             const description =
                 cleanString(
                     result.description
                 ) ||
-                fallbackDescription(
-                    data
-                );
-
+                fallbackDescription(data);
 
             res.json({
 
@@ -2837,12 +2406,8 @@ Return exactly:
                 error.message
             );
 
-
             const description =
-                fallbackDescription(
-                    data
-                );
-
+                fallbackDescription(data);
 
             res.json({
 
@@ -2868,7 +2433,7 @@ Return exactly:
 
 
 // ==========================================================
-// POST /api/generate-listing
+// GENERATE LISTING
 // ==========================================================
 
 app.post(
@@ -2881,20 +2446,15 @@ app.post(
                 res
             );
 
-
         if (!required) {
-
             return;
-
         }
-
 
         const data =
             collectProductData(
                 req.body,
                 required.category
             );
-
 
         try {
 
@@ -2926,7 +2486,7 @@ Return exactly:
 Rules:
 
 - Every field must be factual.
-- Use only seller-provided facts.
+- Use only seller facts.
 - Missing facts must be omitted.
 - Do not invent specifications.
 - Do not invent benefits.
@@ -2936,77 +2496,69 @@ Rules:
 - Do not invent warranty.
 - Do not invent medical claims.
 - SEO keywords must be relevant.
-- Do not repeat exact keywords.
-- Brand + Product is allowed when brand is supplied.
+- Avoid duplicate keywords.
+- Avoid keyword stuffing.
 `
 
                     )
 
                 );
 
-
             const title =
                 cleanString(
                     result.title
                 ) ||
-                fallbackTitle(
-                    data
-                );
-
+                fallbackTitle(data);
 
             const description =
                 cleanString(
                     result.description
                 ) ||
-                fallbackDescription(
-                    data
-                );
-
+                fallbackDescription(data);
 
             const highlights =
                 Array.isArray(
                     result.highlights
                 )
-
                     ? result.highlights
-                        .map(
-                            cleanString
-                        )
+                        .map(cleanString)
                         .filter(Boolean)
                         .slice(0, 8)
-
-                    : fallbackHighlights(
-                        data
-                    );
-
+                    : fallbackHighlights(data);
 
             const mainKeyword =
-                cleanSEOKeyword(
+                sanitizeMainKeyword(
                     data.mainKeyword ||
-                    data.productName
+                    data.productName,
+                    data.productName,
+                    data.brand
                 );
 
-
-            const seoKeywords =
+            const finalKeywords =
                 filterSEOKeywords(
 
                     result.seoKeywords,
 
-                    data,
+                    data.productName,
+
+                    data.brand,
+
+                    data.category,
 
                     mainKeyword
 
                 );
 
-
-            const finalKeywords =
-                seoKeywords.length
-                    ? seoKeywords
+            const keywords =
+                finalKeywords.length
+                    ? finalKeywords
                     : buildFallbackKeywords(
-                        data,
-                        mainKeyword
+                        data.productName,
+                        data.brand,
+                        data.category,
+                        mainKeyword,
+                        data
                     );
-
 
             res.json({
 
@@ -3022,10 +2574,10 @@ Rules:
                     highlights,
 
                 seoKeywords:
-                    finalKeywords,
+                    keywords,
 
                 keywords:
-                    finalKeywords,
+                    keywords,
 
                 generatedTitle:
                     title,
@@ -3043,32 +2595,34 @@ Rules:
                 error.message
             );
 
-
             const title =
-                fallbackTitle(
-                    data
-                );
-
+                fallbackTitle(data);
 
             const description =
-                fallbackDescription(
-                    data
-                );
-
+                fallbackDescription(data);
 
             const mainKeyword =
-                cleanSEOKeyword(
+                sanitizeMainKeyword(
                     data.mainKeyword ||
-                    data.productName
+                    data.productName,
+                    data.productName,
+                    data.brand
                 );
-
 
             const keywords =
                 buildFallbackKeywords(
-                    data,
-                    mainKeyword
-                );
 
+                    data.productName,
+
+                    data.brand,
+
+                    data.category,
+
+                    mainKeyword,
+
+                    data
+
+                );
 
             res.json({
 
@@ -3083,9 +2637,7 @@ Rules:
                     description,
 
                 highlights:
-                    fallbackHighlights(
-                        data
-                    ),
+                    fallbackHighlights(data),
 
                 seoKeywords:
                     keywords,
@@ -3111,7 +2663,7 @@ Rules:
 
 
 // ==========================================================
-// POST /api/generate-seo
+// GENERATE SEO — FINAL 14.1
 // ==========================================================
 
 app.post(
@@ -3124,13 +2676,9 @@ app.post(
                 res
             );
 
-
         if (!required) {
-
             return;
-
         }
-
 
         const data =
             collectProductData(
@@ -3139,14 +2687,20 @@ app.post(
             );
 
 
-        // ==================================================
-        // MAIN KEYWORD
-        // ==================================================
+        // ====================================================
+        // SAFE MAIN KEYWORD
+        // ====================================================
 
         const mainKeyword =
-            cleanSEOKeyword(
+            sanitizeMainKeyword(
+
                 data.mainKeyword ||
-                data.productName
+                data.productName,
+
+                data.productName,
+
+                data.brand
+
             );
 
 
@@ -3160,73 +2714,68 @@ app.post(
                         data,
 
                         `
-Generate up to 20 factual SEO keywords.
+Generate SEO keywords for this product.
 
-MAIN KEYWORD RULE:
+VERY IMPORTANT SEO LOGIC:
 
-- If Main Keyword is supplied by seller,
-  use it as the first keyword.
-- If Main Keyword is empty,
-  use the exact Product Name.
-- Main Keyword must be first.
+1. Product Name is the primary product identity.
+2. If Main Keyword is empty, use Product Name.
+3. If Main Keyword contains unnecessary brand stuffing,
+   use Product Name instead.
+4. If Main Keyword is only a fragment of a multi-word
+   Product Name, use Product Name instead.
+5. Do not repeat the brand unnecessarily.
+6. Do not repeat the product name unnecessarily.
+7. Do not create one-word fragments from a multi-word
+   product name.
+8. Do not create generic marketplace filler keywords.
+9. Do not use Online unless seller supplied it.
+10. Do not use Buy unless seller supplied it.
+11. Do not use Shop unless seller supplied it.
+12. Do not use Best unless seller supplied it.
+13. Do not use Premium unless seller supplied it.
+14. Do not invent gender.
+15. Do not invent occasion.
+16. Do not invent material.
+17. Do not invent color.
+18. Do not invent size.
+19. Do not invent pattern.
+20. Do not invent features.
+21. Do not invent compatibility.
+22. Do not invent benefits.
+23. Maximum 20 keywords.
+24. No duplicate keywords.
+25. No near-duplicate keywords.
+26. Main keyword must be first.
+27. If there are not enough factual keyword variations,
+    return fewer keywords. Do NOT invent keywords.
 
-IMPORTANT SEO RULES:
-
-1. Use only seller facts.
-2. Product Name is always valid.
-3. Seller-provided Brand is valid.
-4. Brand + Product Name is allowed.
-5. Brand + meaningful product phrase is allowed.
-6. Do not invent gender.
-7. Do not invent material.
-8. Do not invent color.
-9. Do not invent size.
-10. Do not invent model.
-11. Do not invent compatibility.
-12. Do not invent benefits.
-13. Do not invent specifications.
-14. Do not use unsupported marketing claims.
-15. Do not add unnecessary online/store/shop/buy words.
-16. Do not repeat exact keywords.
-17. Do not force 20 keywords if there are not
-    enough factual keywords.
-18. Prefer useful factual keyword variations.
-19. A keyword can contain words from the
-    Product Name and Brand.
-20. Do not remove a valid Brand + Product
-    keyword merely because it resembles the
-    Product Name.
-
-For example, if:
+Example:
 
 Product Name:
 Cotton Kurti
 
 Brand:
-Test Brand
-
-Valid examples include:
-
-Cotton Kurti
 Test Brand Cotton Kurti
+
+Main Keyword:
 Test Brand Kurti
 
-Do NOT invent:
+In this situation the safe primary keyword is:
 
-Women Cotton Kurti
-Cotton Kurti for Women
-Designer Cotton Kurti
-Premium Cotton Kurti
-Cotton Kurti Online
+Cotton Kurti
 
-unless those facts were explicitly supplied.
+Do NOT generate:
+
+Test Brand Test Brand Cotton Kurti
+Test Brand Kurti
+Kurti
 
 Return exactly:
 
 {
   "mainKeyword": "...",
   "keywords": [
-    "...",
     "...",
     "..."
   ]
@@ -3238,77 +2787,85 @@ Return exactly:
                 );
 
 
-            let aiMainKeyword =
+            // =================================================
+            // AI MAIN KEYWORD
+            // =================================================
+
+            const aiMainKeyword =
                 cleanSEOKeyword(
                     result.mainKeyword
                 );
 
 
-            // ==================================================
-            // MAIN KEYWORD SAFETY
-            // ==================================================
+            const safeAIKeyword =
+                sanitizeMainKeyword(
 
-            const safeMainKeyword =
-                normalizeSEOText(
-                    aiMainKeyword
-                ) ===
-                normalizeSEOText(
-                    mainKeyword
-                )
-                    ? aiMainKeyword
-                    : mainKeyword;
+                    aiMainKeyword ||
+                    mainKeyword,
+
+                    data.productName,
+
+                    data.brand
+
+                );
 
 
-            // ==================================================
+            // =================================================
             // FILTER
-            // ==================================================
+            // =================================================
 
             const filteredKeywords =
                 filterSEOKeywords(
 
                     result.keywords,
 
-                    data,
+                    data.productName,
 
-                    safeMainKeyword
+                    data.brand,
+
+                    data.category,
+
+                    safeAIKeyword
 
                 );
 
 
-            // ==================================================
+            // =================================================
             // FALLBACK
-            // ==================================================
+            // =================================================
 
-            let finalKeywords =
-                filteredKeywords;
+            const finalKeywords =
+                filteredKeywords.length
+                    ? filteredKeywords
+                    : buildFallbackKeywords(
 
+                        data.productName,
 
-            if (
-                !finalKeywords.length
-            ) {
+                        data.brand,
 
-                finalKeywords =
-                    buildFallbackKeywords(
-                        data,
-                        safeMainKeyword
+                        data.category,
+
+                        safeAIKeyword,
+
+                        data
+
                     );
 
-            }
 
+            // =================================================
+            // FINAL SAFETY
+            // =================================================
 
-            // ==================================================
-            // GUARANTEE MAIN KEYWORD
-            // ==================================================
+            const finalMain =
+                sanitizeMainKeyword(
 
-            if (
-                !finalKeywords.length
-            ) {
+                    safeAIKeyword,
 
-                finalKeywords = [
-                    safeMainKeyword
-                ];
+                    data.productName,
 
-            }
+                    data.brand
+
+                );
 
 
             res.json({
@@ -3316,7 +2873,7 @@ Return exactly:
                 success: true,
 
                 mainKeyword:
-                    safeMainKeyword,
+                    finalMain,
 
                 keywords:
                     finalKeywords,
@@ -3325,9 +2882,7 @@ Return exactly:
                     finalKeywords,
 
                 text:
-                    finalKeywords.join(
-                        ", "
-                    ),
+                    finalKeywords.join(", "),
 
                 count:
                     finalKeywords.length
@@ -3343,26 +2898,32 @@ Return exactly:
             );
 
 
-            // ==================================================
-            // AI FAILURE FALLBACK
-            // ==================================================
+            const finalMain =
+                sanitizeMainKeyword(
 
-            let finalKeywords =
-                buildFallbackKeywords(
-                    data,
-                    mainKeyword
+                    mainKeyword,
+
+                    data.productName,
+
+                    data.brand
+
                 );
 
 
-            if (
-                !finalKeywords.length
-            ) {
+            const finalKeywords =
+                buildFallbackKeywords(
 
-                finalKeywords = [
-                    mainKeyword
-                ];
+                    data.productName,
 
-            }
+                    data.brand,
+
+                    data.category,
+
+                    finalMain,
+
+                    data
+
+                );
 
 
             res.json({
@@ -3372,7 +2933,7 @@ Return exactly:
                 fallback: true,
 
                 mainKeyword:
-                    mainKeyword,
+                    finalMain,
 
                 keywords:
                     finalKeywords,
@@ -3381,9 +2942,7 @@ Return exactly:
                     finalKeywords,
 
                 text:
-                    finalKeywords.join(
-                        ", "
-                    ),
+                    finalKeywords.join(", "),
 
                 count:
                     finalKeywords.length,
@@ -3439,17 +2998,13 @@ app.use(
             err
         );
 
-
         if (
             res.headersSent
         ) {
 
-            return next(
-                err
-            );
+            return next(err);
 
         }
-
 
         res.status(500).json({
 
@@ -3465,7 +3020,7 @@ app.use(
 
 
 // ==========================================================
-// START SERVER
+// START
 // ==========================================================
 
 app.listen(
@@ -3481,7 +3036,7 @@ app.listen(
         );
 
         console.log(
-            "Version: 14.0"
+            "Version: 14.1"
         );
 
         console.log(
@@ -3511,19 +3066,11 @@ app.listen(
         );
 
         console.log(
+            "SEO: FINAL 14.1 STABLE"
+        );
+
+        console.log(
             "SEO Endpoint: /api/generate-seo"
-        );
-
-        console.log(
-            "SEO Filter: VERSION 14.0"
-        );
-
-        console.log(
-            "Brand + Product: ALLOWED"
-        );
-
-        console.log(
-            "Near Duplicate Blocking: RELAXED"
         );
 
         console.log(
