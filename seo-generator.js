@@ -3,48 +3,26 @@
 // SEO KEYWORD GENERATOR — FINAL VERSION 14.2 FIXED
 // ==========================================================
 //
-// BACKEND:
-// AI Seller Toolkit Backend v14.x
-//
-// MODEL:
-// gemini-3.6-flash
-//
-// API:
-// Gemini Interactions API
-//
-// ENDPOINT:
-// POST /api/generate-seo
-//
-// ==========================================================
-// VERSION 14.2 FIXED
-// ==========================================================
-//
-// ✅ 1 keyword problem fixed
-// ✅ Always minimum 12 keywords
-// ✅ Maximum 20 keywords
-// ✅ Main Keyword always first
-// ✅ Backend may return 1, 5, 10 or 20 keywords
-// ✅ Frontend automatically completes missing keywords
-// ✅ Backend array/string/JSON response supported
+// FIXED:
+// ✅ Backend से केवल 1 keyword आने पर भी 12-20 keywords
+// ✅ Main keyword हमेशा #1
+// ✅ Backend response के कई formats support
 // ✅ Safe factual keyword expansion
 // ✅ No invented product specifications
-// ✅ No invented color
-// ✅ No invented material
-// ✅ No invented size
-// ✅ No invented gender
-// ✅ No invented features
+// ✅ No unsupported colors/materials/sizes/features
+// ✅ No fake claims
 // ✅ Brand stuffing protection
-// ✅ Product fragment protection
-// ✅ Duplicate protection
-// ✅ Near duplicate protection
-// ✅ Generic keyword protection
-// ✅ Input fields never modified
-// ✅ Stable API handling
+// ✅ Exact duplicate protection
+// ✅ Better near-duplicate protection
+// ✅ Maximum 20 keywords
+// ✅ Minimum target 12 keywords
+// ✅ Existing HTML IDs compatible
+// ✅ Copy button compatible
 // ==========================================================
 
 
 // ==========================================================
-// API CONFIGURATION
+// API
 // ==========================================================
 
 const API_URL =
@@ -55,12 +33,10 @@ const SEO_API =
 
 
 // ==========================================================
-// SEO LIMITS
+// SEO SETTINGS
 // ==========================================================
 
 const MAX_KEYWORDS = 20;
-
-// अगर AI कम keywords दे तो frontend कम से कम 12 बनाएगा
 const MIN_KEYWORDS = 12;
 
 
@@ -253,7 +229,7 @@ function isProductFragment(
         normalizeKeyword(product);
 
 
-    // Exact product name is ALWAYS allowed
+    // Exact product name is valid
     if (
         keywordNormalized ===
         productNormalized
@@ -264,11 +240,16 @@ function isProductFragment(
     }
 
 
-    // Single token from multi-token product
+    // Only reject a keyword when it is
+    // literally a single token taken from
+    // a multi-word product name.
     //
-    // Cotton Tshirt
-    // Tshirt ❌
-    // Cotton ❌
+    // Example:
+    // Product = Cotton Tshirt
+    // "Tshirt" = reject
+    //
+    // But:
+    // "Cotton Tshirt online" = allowed
 
     if (
         K.size === 1 &&
@@ -322,13 +303,13 @@ function getEffectiveBrand(
 
     // Example:
     //
-    // Brand:
-    // Test Brand Cotton Tshirt
-    //
     // Product:
     // Cotton Tshirt
     //
-    // Effective Brand:
+    // Brand:
+    // Test Brand Cotton Tshirt
+    //
+    // Effective brand:
     // Test Brand
 
     if (
@@ -359,7 +340,7 @@ function getEffectiveBrand(
 
 
 // ==========================================================
-// BRAND STUFFING CHECK
+// BRAND STUFFING
 // ==========================================================
 
 function isBrandStuffed(
@@ -417,6 +398,8 @@ function isBrandStuffed(
     );
 
 
+    // Only reject when the complete brand
+    // is unnecessarily stuffed into keyword.
     return (
         count === B.size
     );
@@ -529,7 +512,7 @@ function sanitizeMainKeyword(
         normalizeKeyword(productClean);
 
 
-    // Exact product
+    // Exact product name
     if (
         mainNormalized ===
         productNormalized
@@ -553,7 +536,7 @@ function sanitizeMainKeyword(
         );
 
 
-    // Prevent brand-only/main keyword contamination
+    // Do not use full brand stuffing
     if (
         brandNormalized &&
         mainNormalized.includes(
@@ -566,7 +549,7 @@ function sanitizeMainKeyword(
     }
 
 
-    // Prevent product fragment
+    // Do not use a single product fragment
     if (
         isProductFragment(
             mainClean,
@@ -638,27 +621,18 @@ function removeDuplicates(
 ) {
 
     const output = [];
-
-    const seen =
-        new Set();
-
-
-    if (!Array.isArray(keywords)) {
-
-        return output;
-
-    }
+    const seen = new Set();
 
 
     for (
-        const item of keywords
+        const keyword of keywords
     ) {
 
-        const keyword =
-            cleanKeyword(item);
+        const clean =
+            cleanKeyword(keyword);
 
 
-        if (!keyword) {
+        if (!clean) {
 
             continue;
 
@@ -666,7 +640,7 @@ function removeDuplicates(
 
 
         const normalized =
-            normalizeKeyword(keyword);
+            normalizeKeyword(clean);
 
 
         if (!normalized) {
@@ -685,14 +659,9 @@ function removeDuplicates(
         }
 
 
-        seen.add(
-            normalized
-        );
+        seen.add(normalized);
 
-
-        output.push(
-            keyword
-        );
+        output.push(clean);
 
     }
 
@@ -724,43 +693,24 @@ function isGenericKeyword(
     const genericWords = [
 
         "product",
-
         "products",
-
         "item",
-
         "items",
-
-        "online",
-
-        "shopping",
-
-        "online shopping",
-
-        "buy online",
-
-        "shop online",
-
-        "sale",
-
-        "best",
-
         "best product",
-
         "best products",
-
+        "online shopping",
+        "shopping",
+        "online",
+        "buy online",
+        "shop online",
+        "sale",
+        "best",
         "new",
-
         "latest",
-
         "trending",
-
         "quality",
-
         "good quality",
-
         "cheap",
-
         "cheap price"
 
     ];
@@ -774,7 +724,99 @@ function isGenericKeyword(
 
 
 // ==========================================================
-// FRONTEND KEYWORD FILTER
+// SAFE KEYWORD VALIDATION
+// ==========================================================
+
+function isSafeKeyword(
+    keyword,
+    product,
+    brand,
+    mainKeyword
+) {
+
+    const clean =
+        cleanKeyword(keyword);
+
+
+    if (!clean) {
+
+        return false;
+
+    }
+
+
+    const normalized =
+        normalizeKeyword(clean);
+
+
+    if (!normalized) {
+
+        return false;
+
+    }
+
+
+    const mainNormalized =
+        normalizeKeyword(
+            mainKeyword
+        );
+
+
+    // Main keyword is always allowed
+    if (
+        normalized ===
+        mainNormalized
+    ) {
+
+        return true;
+
+    }
+
+
+    // Generic useless keyword
+    if (
+        isGenericKeyword(clean)
+    ) {
+
+        return false;
+
+    }
+
+
+    // Single product fragment
+    if (
+        isProductFragment(
+            clean,
+            product
+        )
+    ) {
+
+        return false;
+
+    }
+
+
+    // Full brand stuffing
+    if (
+        isBrandStuffed(
+            clean,
+            brand,
+            product
+        )
+    ) {
+
+        return false;
+
+    }
+
+
+    return true;
+
+}
+
+
+// ==========================================================
+// FILTER AI KEYWORDS
 // ==========================================================
 
 function filterFrontendKeywords(
@@ -795,15 +837,21 @@ function filterFrontendKeywords(
         );
 
 
-    const mainNormalized =
-        normalizeKeyword(
+    // Main first
+    if (safeMain) {
+
+        output.push(
             safeMain
         );
+
+    }
 
 
     const cleaned =
         removeDuplicates(
-            keywords
+            Array.isArray(keywords)
+                ? keywords
+                : []
         );
 
 
@@ -812,20 +860,19 @@ function filterFrontendKeywords(
     ) {
 
         const normalized =
+            normalizeKeyword(keyword);
+
+
+        const mainNormalized =
             normalizeKeyword(
-                keyword
+                safeMain
             );
 
 
-        const isMain =
+        // Don't add main again
+        if (
             normalized ===
-            mainNormalized;
-
-
-        // Generic
-        if (
-            !isMain &&
-            isGenericKeyword(keyword)
+            mainNormalized
         ) {
 
             continue;
@@ -833,27 +880,12 @@ function filterFrontendKeywords(
         }
 
 
-        // Product fragment
         if (
-            !isMain &&
-            isProductFragment(
+            !isSafeKeyword(
                 keyword,
-                product
-            )
-        ) {
-
-            continue;
-
-        }
-
-
-        // Brand stuffing
-        if (
-            !isMain &&
-            isBrandStuffed(
-                keyword,
+                product,
                 brand,
-                product
+                safeMain
             )
         ) {
 
@@ -862,20 +894,13 @@ function filterFrontendKeywords(
         }
 
 
-        // Near duplicate
-        const nearDuplicate =
+        // Exact duplicate
+        if (
             output.some(
                 existing =>
-                    similarity(
-                        existing,
-                        keyword
-                    ) >= 0.82
-            );
-
-
-        if (
-            nearDuplicate &&
-            !isMain
+                    normalizeKeyword(existing) ===
+                    normalized
+            )
         ) {
 
             continue;
@@ -884,7 +909,7 @@ function filterFrontendKeywords(
 
 
         output.push(
-            keyword
+            cleanKeyword(keyword)
         );
 
 
@@ -900,47 +925,7 @@ function filterFrontendKeywords(
     }
 
 
-    // Main keyword always first
-
-    const mainIndex =
-        output.findIndex(
-            item =>
-                normalizeKeyword(item) ===
-                mainNormalized
-        );
-
-
-    if (
-        mainIndex >= 0
-    ) {
-
-        const mainItem =
-            output.splice(
-                mainIndex,
-                1
-            )[0];
-
-
-        output.unshift(
-            mainItem
-        );
-
-    }
-    else if (
-        safeMain
-    ) {
-
-        output.unshift(
-            safeMain
-        );
-
-    }
-
-
-    return output.slice(
-        0,
-        MAX_KEYWORDS
-    );
+    return output;
 
 }
 
@@ -949,17 +934,22 @@ function filterFrontendKeywords(
 // SAFE FALLBACK KEYWORD BUILDER
 // ==========================================================
 //
-// यह सबसे महत्वपूर्ण FIX है.
+// यह fallback सबसे महत्वपूर्ण FIX है.
 //
-// अगर backend सिर्फ:
+// Backend अगर केवल:
 //
 // 1. Cotton Tshirt
 //
-// देता है तो frontend अपने आप additional
-// safe search phrases बनाएगा.
+// भेजेगा तब भी frontend:
 //
-// कोई नया product fact नहीं बनाया जाएगा.
+// 2. Cotton Tshirt online
+// 3. Buy Cotton Tshirt
+// 4. Cotton Tshirt shopping
+// ...
 //
+// जैसे safe keywords बनाएगा.
+//
+// कोई नया product feature नहीं जोड़ा जाएगा.
 // ==========================================================
 
 function buildSafeFallbackKeywords(
@@ -984,18 +974,14 @@ function buildSafeFallbackKeywords(
     const output = [];
 
 
-    const existing =
-        Array.isArray(existingKeywords)
-            ? existingKeywords
-            : [];
-
-
     const existingNormalized =
         new Set(
-            existing.map(
+
+            existingKeywords.map(
                 item =>
                     normalizeKeyword(item)
             )
+
         );
 
 
@@ -1025,7 +1011,7 @@ function buildSafeFallbackKeywords(
         }
 
 
-        // Already exists
+        // Exact duplicate
         if (
             existingNormalized.has(
                 normalized
@@ -1037,7 +1023,6 @@ function buildSafeFallbackKeywords(
         }
 
 
-        // Already in fallback
         if (
             output.some(
                 item =>
@@ -1051,33 +1036,10 @@ function buildSafeFallbackKeywords(
         }
 
 
-        // Generic
         if (
-            isGenericKeyword(clean)
-        ) {
-
-            return;
-
-        }
-
-
-        // Product fragment
-        if (
-            isProductFragment(
+            !isSafeKeyword(
                 clean,
-                productClean
-            )
-        ) {
-
-            return;
-
-        }
-
-
-        // Brand stuffing
-        if (
-            isBrandStuffed(
-                clean,
+                productClean,
                 brand,
                 productClean
             )
@@ -1088,38 +1050,13 @@ function buildSafeFallbackKeywords(
         }
 
 
-        // Near duplicate against existing
-        const tooSimilar =
-            [
-                ...existing,
-                ...output
-            ].some(
-                item =>
-                    similarity(
-                        item,
-                        clean
-                    ) >= 0.88
-            );
-
-
-        if (
-            tooSimilar
-        ) {
-
-            return;
-
-        }
-
-
-        output.push(
-            clean
-        );
+        output.push(clean);
 
     }
 
 
     // ======================================================
-    // SAFE PRODUCT SEARCH PHRASES
+    // PRODUCT + SAFE SEARCH INTENTS
     // ======================================================
 
     addCandidate(
@@ -1143,6 +1080,10 @@ function buildSafeFallbackKeywords(
     );
 
     addCandidate(
+        productClean + " price"
+    );
+
+    addCandidate(
         "buy " + productClean
     );
 
@@ -1151,28 +1092,16 @@ function buildSafeFallbackKeywords(
     );
 
     addCandidate(
-        productClean + " price"
-    );
-
-    addCandidate(
         productClean + " online shopping"
     );
 
     addCandidate(
-        productClean + " shopping online"
-    );
-
-    addCandidate(
-        "buy " + productClean + " online"
-    );
-
-    addCandidate(
-        "shop " + productClean + " online"
+        productClean + " purchase"
     );
 
 
     // ======================================================
-    // MARKETPLACE PHRASES
+    // MARKETPLACE
     // ======================================================
 
     const market =
@@ -1200,18 +1129,11 @@ function buildSafeFallbackKeywords(
             market
         );
 
-        addCandidate(
-            productClean +
-            " " +
-            market +
-            " shopping"
-        );
-
     }
 
 
     // ======================================================
-    // CATEGORY PHRASES
+    // CATEGORY
     // ======================================================
 
     const categoryClean =
@@ -1230,17 +1152,11 @@ function buildSafeFallbackKeywords(
             categoryClean
         );
 
-        addCandidate(
-            categoryClean +
-            " " +
-            productClean
-        );
-
     }
 
 
     // ======================================================
-    // PRODUCT TOKEN PHRASES
+    // PRODUCT NAME WORD ORDER
     // ======================================================
 
     const tokens =
@@ -1252,14 +1168,10 @@ function buildSafeFallbackKeywords(
             );
 
 
-    // For two-token products:
-    //
+    // Only reverse simple 2-word products
+    // Example:
     // Cotton Tshirt
-    //
-    // Safe:
     // Tshirt Cotton
-    //
-    // No fake attribute is added.
 
     if (
         tokens.length === 2
@@ -1275,19 +1187,32 @@ function buildSafeFallbackKeywords(
 
 
     // ======================================================
-    // MORE SAFE SEARCH INTENTS
+    // SAFE LONG-TAIL PHRASES
     // ======================================================
 
     addCandidate(
-        productClean + " for sale"
+        "online " +
+        productClean
     );
 
     addCandidate(
-        "shop " + productClean + " online"
+        productClean +
+        " shopping online"
     );
 
     addCandidate(
-        "buy " + productClean + " online"
+        productClean +
+        " buying"
+    );
+
+    addCandidate(
+        productClean +
+        " store"
+    );
+
+    addCandidate(
+        productClean +
+        " seller"
     );
 
 
@@ -1331,46 +1256,15 @@ function finalizeKeywords(
 
 
     // ======================================================
-    // STEP 2 — GUARANTEE MAIN KEYWORD
+    // STEP 2 — FALLBACK EXPANSION
     // ======================================================
-
-    const mainNormalized =
-        normalizeKeyword(
-            safeMain
-        );
-
-
-    if (
-        safeMain &&
-        !keywords.some(
-            item =>
-                normalizeKeyword(item) ===
-                mainNormalized
-        )
-    ) {
-
-        keywords.unshift(
-            safeMain
-        );
-
-    }
-
-
-    // ======================================================
-    // STEP 3 — FALLBACK
-    // ======================================================
-    //
-    // IMPORTANT:
-    // AI चाहे 1 keyword दे,
-    // fallback ALWAYS चलेगा अगर count < 12.
-    //
 
     if (
         keywords.length <
         MIN_KEYWORDS
     ) {
 
-        const fallbackKeywords =
+        const fallback =
             buildSafeFallbackKeywords(
                 product,
                 category,
@@ -1381,8 +1275,7 @@ function finalizeKeywords(
 
 
         for (
-            const candidate of
-            fallbackKeywords
+            const candidate of fallback
         ) {
 
             if (
@@ -1395,35 +1288,19 @@ function finalizeKeywords(
             }
 
 
-            const duplicate =
-                keywords.some(
-                    existing =>
-                        normalizeKeyword(existing) ===
-                        normalizeKeyword(candidate)
+            const normalized =
+                normalizeKeyword(
+                    candidate
                 );
 
 
             if (
-                duplicate
-            ) {
-
-                continue;
-
-            }
-
-
-            const nearDuplicate =
                 keywords.some(
                     existing =>
-                        similarity(
-                            existing,
-                            candidate
-                        ) >= 0.88
-                );
-
-
-            if (
-                nearDuplicate
+                        normalizeKeyword(
+                            existing
+                        ) === normalized
+                )
             ) {
 
                 continue;
@@ -1441,51 +1318,40 @@ function finalizeKeywords(
 
 
     // ======================================================
-    // STEP 4 — SECOND FALLBACK
+    // STEP 3 — SECOND FALLBACK
     // ======================================================
     //
-    // अगर किसी कारण से अभी भी 12 नहीं हुए,
-    // additional safe phrases generate करें.
-    //
+    // अगर किसी कारण से ऊपर से भी कम keywords
+    // आए तो यह extra safe phrases जोड़ेंगे.
+    // ======================================================
 
     if (
         keywords.length <
         MIN_KEYWORDS
     ) {
 
-        const extraCandidates = [
+        const extraTemplates = [
 
+            product + " products",
             product + " listing",
-
             product + " search",
-
             product + " shopping online",
-
-            product + " buy online",
-
-            "online " + product,
-
-            "shop " + product,
-
-            "buy " + product,
-
-            product + " store",
-
-            product + " offer",
-
-            product + " deals"
+            product + " available online",
+            product + " marketplace",
+            product + " store online",
+            product + " buy online"
 
         ];
 
 
         for (
             const candidate of
-            extraCandidates
+            extraTemplates
         ) {
 
             if (
                 keywords.length >=
-                MIN_KEYWORDS
+                MAX_KEYWORDS
             ) {
 
                 break;
@@ -1497,15 +1363,12 @@ function finalizeKeywords(
                 cleanKeyword(candidate);
 
 
-            if (!clean) {
-
-                continue;
-
-            }
+            const normalized =
+                normalizeKeyword(clean);
 
 
             if (
-                isGenericKeyword(clean)
+                !normalized
             ) {
 
                 continue;
@@ -1514,22 +1377,11 @@ function finalizeKeywords(
 
 
             if (
-                isProductFragment(
+                !isSafeKeyword(
                     clean,
-                    product
-                )
-            ) {
-
-                continue;
-
-            }
-
-
-            if (
-                isBrandStuffed(
-                    clean,
+                    product,
                     brand,
-                    product
+                    safeMain
                 )
             ) {
 
@@ -1538,15 +1390,13 @@ function finalizeKeywords(
             }
 
 
-            const exists =
+            if (
                 keywords.some(
-                    item =>
-                        normalizeKeyword(item) ===
-                        normalizeKeyword(clean)
-                );
-
-
-            if (exists) {
+                    existing =>
+                        normalizeKeyword(existing) ===
+                        normalized
+                )
+            ) {
 
                 continue;
 
@@ -1563,7 +1413,7 @@ function finalizeKeywords(
 
 
     // ======================================================
-    // STEP 5 — REMOVE DUPLICATES
+    // STEP 4 — REMOVE EXACT DUPLICATES
     // ======================================================
 
     keywords =
@@ -1573,17 +1423,12 @@ function finalizeKeywords(
 
 
     // ======================================================
-    // STEP 6 — MAIN KEYWORD FIRST
+    // STEP 5 — MAIN KEYWORD PROTECTION
     // ======================================================
 
-    const finalMain =
-        safeMain ||
-        cleanInput(product);
-
-
-    const finalMainNormalized =
+    const mainNormalized =
         normalizeKeyword(
-            finalMain
+            safeMain
         );
 
 
@@ -1591,12 +1436,22 @@ function finalizeKeywords(
         keywords.findIndex(
             item =>
                 normalizeKeyword(item) ===
-                finalMainNormalized
+                mainNormalized
         );
 
 
     if (
-        mainIndex >= 0
+        mainIndex === -1 &&
+        safeMain
+    ) {
+
+        keywords.unshift(
+            safeMain
+        );
+
+    }
+    else if (
+        mainIndex > 0
     ) {
 
         const mainItem =
@@ -1611,42 +1466,90 @@ function finalizeKeywords(
         );
 
     }
-    else {
-
-        keywords.unshift(
-            finalMain
-        );
-
-    }
 
 
     // ======================================================
-    // STEP 7 — FINAL LIMIT
+    // STEP 6 — FINAL MAX
     // ======================================================
 
-    keywords =
-        keywords.slice(
-            0,
-            MAX_KEYWORDS
-        );
-
-
-    return keywords;
+    return keywords.slice(
+        0,
+        MAX_KEYWORDS
+    );
 
 }
 
 
 // ==========================================================
-// EXTRACT KEYWORDS FROM BACKEND RESPONSE
+// RESPONSE TEXT EXTRACTION
 // ==========================================================
 
-function extractKeywordsFromResponse(
+function extractTextFromObject(
     data
 ) {
 
+    if (!data) {
+
+        return "";
+
+    }
+
+
     if (
-        data === null ||
-        data === undefined
+        typeof data === "string"
+    ) {
+
+        return data;
+
+    }
+
+
+    const fields = [
+
+        "text",
+        "output_text",
+        "outputText",
+        "content",
+        "generatedText",
+        "generated_text",
+        "response",
+        "message"
+
+    ];
+
+
+    for (
+        const field of fields
+    ) {
+
+        if (
+            typeof data[field] ===
+            "string"
+        ) {
+
+            return data[field];
+
+        }
+
+    }
+
+
+    return "";
+
+}
+
+
+// ==========================================================
+// PARSE KEYWORDS FROM TEXT
+// ==========================================================
+
+function parseKeywordsFromText(
+    text
+) {
+
+    if (
+        !text ||
+        typeof text !== "string"
     ) {
 
         return [];
@@ -1654,8 +1557,165 @@ function extractKeywordsFromResponse(
     }
 
 
+    let cleanText =
+        text.trim();
+
+
     // ======================================================
-    // DIRECT ARRAY
+    // Try JSON array
+    // ======================================================
+
+    try {
+
+        const parsed =
+            JSON.parse(cleanText);
+
+
+        if (
+            Array.isArray(parsed)
+        ) {
+
+            return parsed;
+
+        }
+
+
+        if (
+            parsed &&
+            typeof parsed === "object"
+        ) {
+
+            const nested =
+                extractKeywordsFromResponse(
+                    parsed
+                );
+
+
+            if (
+                nested.length
+            ) {
+
+                return nested;
+
+            }
+
+        }
+
+    }
+    catch (error) {
+
+        // Not JSON, continue
+    }
+
+
+    // ======================================================
+    // Remove markdown code blocks
+    // ======================================================
+
+    cleanText =
+        cleanText
+            .replace(
+                /```json/gi,
+                ""
+            )
+            .replace(
+                /```/g,
+                ""
+            )
+            .trim();
+
+
+    const lines =
+        cleanText.split(/\r?\n/);
+
+
+    const output = [];
+
+
+    for (
+        const line of lines
+    ) {
+
+        let clean =
+            cleanKeyword(line);
+
+
+        if (!clean) {
+
+            continue;
+
+        }
+
+
+        // Remove labels
+        clean =
+            clean.replace(
+                /^(keyword|keywords|seo keywords)\s*:\s*/i,
+                ""
+            );
+
+
+        // Remove numbering
+        clean =
+            clean.replace(
+                /^\d+\s*[\.\)\-:]\s*/,
+                ""
+            );
+
+
+        // Remove bullets
+        clean =
+            clean.replace(
+                /^[-•*]\s*/,
+                ""
+            );
+
+
+        // Remove quotes
+        clean =
+            clean.replace(
+                /^["']|["']$/g,
+                ""
+            );
+
+
+        clean =
+            clean.trim();
+
+
+        if (clean) {
+
+            output.push(
+                clean
+            );
+
+        }
+
+    }
+
+
+    return output;
+
+}
+
+
+// ==========================================================
+// EXTRACT KEYWORDS FROM RESPONSE
+// ==========================================================
+
+function extractKeywordsFromResponse(
+    data
+) {
+
+    if (!data) {
+
+        return [];
+
+    }
+
+
+    // ======================================================
+    // Direct array
     // ======================================================
 
     if (
@@ -1668,90 +1728,32 @@ function extractKeywordsFromResponse(
 
 
     // ======================================================
-    // DIRECT STRING
+    // Common array fields
     // ======================================================
 
-    if (
-        typeof data ===
-        "string"
-    ) {
-
-        return parseKeywordString(
-            data
-        );
-
-    }
-
-
-    // ======================================================
-    // COMMON BACKEND FIELDS
-    // ======================================================
-
-    const fields = [
+    const arrayFields = [
 
         "keywords",
-
         "seoKeywords",
-
         "seo_keywords",
-
         "keywordList",
-
         "keyword_list",
-
         "results",
-
         "items",
-
-        "output",
-
-        "text"
+        "data"
 
     ];
 
 
     for (
-        const field of fields
+        const field of arrayFields
     ) {
 
         if (
-            data[field] !==
-            undefined
+            Array.isArray(data[field])
         ) {
 
-            const value =
-                data[field];
-
-
-            if (
-                Array.isArray(value)
-            ) {
-
-                return value;
-
-            }
-
-
-            if (
-                typeof value ===
-                "string"
-            ) {
-
-                const parsed =
-                    parseKeywordString(
-                        value
-                    );
-
-
-                if (
-                    parsed.length
-                ) {
-
-                    return parsed;
-
-                }
-
-            }
+            return data[field];
 
         }
 
@@ -1759,12 +1761,40 @@ function extractKeywordsFromResponse(
 
 
     // ======================================================
-    // NESTED RESULT
+    // Common string fields
+    // ======================================================
+
+    const text =
+        extractTextFromObject(
+            data
+        );
+
+
+    if (text) {
+
+        const parsed =
+            parseKeywordsFromText(
+                text
+            );
+
+
+        if (
+            parsed.length
+        ) {
+
+            return parsed;
+
+        }
+
+    }
+
+
+    // ======================================================
+    // Nested result
     // ======================================================
 
     if (
-        data.result !== undefined &&
-        data.result !== null
+        data.result
     ) {
 
         const nested =
@@ -1785,12 +1815,13 @@ function extractKeywordsFromResponse(
 
 
     // ======================================================
-    // NESTED DATA
+    // Nested data object
     // ======================================================
 
     if (
-        data.data !== undefined &&
-        data.data !== null
+        data.data &&
+        typeof data.data === "object" &&
+        !Array.isArray(data.data)
     ) {
 
         const nested =
@@ -1810,62 +1841,74 @@ function extractKeywordsFromResponse(
     }
 
 
-    return [];
-
-}
-
-
-// ==========================================================
-// PARSE KEYWORD STRING
-// ==========================================================
-
-function parseKeywordString(
-    text
-) {
-
-    if (!text) {
-
-        return [];
-
-    }
-
-
-    let cleanText =
-        String(text)
-            .trim();
-
-
     // ======================================================
-    // JSON ARRAY STRING
+    // Gemini-style output
     // ======================================================
 
     if (
-        cleanText.startsWith("[") &&
-        cleanText.endsWith("]")
+        data.output
     ) {
 
-        try {
+        if (
+            Array.isArray(data.output)
+        ) {
 
-            const parsed =
-                JSON.parse(
-                    cleanText
-                );
+            const combined = [];
+
+
+            data.output.forEach(
+                item => {
+
+                    if (
+                        typeof item === "string"
+                    ) {
+
+                        combined.push(item);
+
+                    }
+                    else if (
+                        item &&
+                        typeof item === "object"
+                    ) {
+
+                        const t =
+                            extractTextFromObject(
+                                item
+                            );
+
+
+                        if (t) {
+
+                            combined.push(t);
+
+                        }
+
+                    }
+
+                }
+            );
 
 
             if (
-                Array.isArray(parsed)
+                combined.length
             ) {
 
-                return parsed;
+                return parseKeywordsFromText(
+                    combined.join("\n")
+                );
 
             }
 
         }
-        catch (error) {
 
-            console.warn(
-                "SEO JSON array parse failed:",
-                error
+
+        if (
+            typeof data.output ===
+            "string"
+        ) {
+
+            return parseKeywordsFromText(
+                data.output
             );
 
         }
@@ -1873,41 +1916,7 @@ function parseKeywordString(
     }
 
 
-    // ======================================================
-    // SPLIT LINES
-    // ======================================================
-
-    return cleanText
-
-        .split(/\r?\n/)
-
-        .map(
-            line =>
-                cleanKeyword(line)
-        )
-
-        .map(
-            line =>
-                line.replace(
-                    /^\d+\s*[\.\)\-:]\s*/,
-                    ""
-                )
-        )
-
-        .map(
-            line =>
-                line.replace(
-                    /^[-•*]\s*/,
-                    ""
-                )
-        )
-
-        .map(
-            line =>
-                line.trim()
-        )
-
-        .filter(Boolean);
+    return [];
 
 }
 
@@ -1923,35 +1932,42 @@ async function generateSEO() {
             "generateBtn"
         );
 
+
     const productElement =
         document.getElementById(
             "product"
         );
+
 
     const categoryElement =
         document.getElementById(
             "category"
         );
 
+
     const brandElement =
         document.getElementById(
             "brand"
         );
+
 
     const keywordElement =
         document.getElementById(
             "keyword"
         );
 
+
     const marketplaceElement =
         document.getElementById(
             "marketplace"
         );
 
+
     const result =
         document.getElementById(
             "result"
         );
+
 
     const status =
         document.getElementById(
@@ -1960,7 +1976,7 @@ async function generateSEO() {
 
 
     // ======================================================
-    // ELEMENT VALIDATION
+    // ELEMENT CHECK
     // ======================================================
 
     if (
@@ -1975,7 +1991,7 @@ async function generateSEO() {
     ) {
 
         console.error(
-            "❌ SEO Generator: HTML element missing."
+            "❌ SEO Generator: Required HTML element missing."
         );
 
 
@@ -2001,20 +2017,24 @@ async function generateSEO() {
             productElement.value
         );
 
+
     const category =
         cleanInput(
             categoryElement.value
         );
+
 
     const brand =
         cleanInput(
             brandElement.value
         );
 
+
     const mainKeywordInput =
         cleanInput(
             keywordElement.value
         );
+
 
     const marketplace =
         cleanInput(
@@ -2032,7 +2052,9 @@ async function generateSEO() {
             "❌ Please enter Product Name."
         );
 
+
         productElement.focus();
+
 
         return;
 
@@ -2045,7 +2067,9 @@ async function generateSEO() {
             "❌ Please select Product Category."
         );
 
+
         categoryElement.focus();
+
 
         return;
 
@@ -2066,20 +2090,23 @@ async function generateSEO() {
 
 
     // ======================================================
-    // START UI
+    // UI START
     // ======================================================
 
     generateBtn.disabled =
         true;
 
+
     generateBtn.innerText =
         "⏳ Generating SEO Keywords...";
+
 
     result.value =
         "⏳ Please wait...";
 
+
     showStatus(
-        "🤖 AI SEO keywords बना रहा है..."
+        "🤖 SEO keywords generate हो रहे हैं..."
     );
 
 
@@ -2173,7 +2200,7 @@ async function generateSEO() {
 
 
         console.log(
-            "SEO API STATUS:",
+            "SEO API HTTP STATUS:",
             response.status
         );
 
@@ -2189,7 +2216,7 @@ async function generateSEO() {
 
 
         // ==================================================
-        // PARSE
+        // PARSE RESPONSE
         // ==================================================
 
         let data;
@@ -2205,10 +2232,13 @@ async function generateSEO() {
         }
         catch (error) {
 
-            throw new Error(
-                "Backend ने valid JSON response नहीं दिया। HTTP " +
-                response.status
-            );
+            // If backend returned plain text,
+            // treat it as text response.
+
+            data = {
+                text:
+                    responseText
+            };
 
         }
 
@@ -2219,23 +2249,33 @@ async function generateSEO() {
 
         if (!response.ok) {
 
-            throw new Error(
+            let errorMessage =
+                "Backend Error HTTP " +
+                response.status;
 
+
+            if (
                 data &&
-                data.error
+                typeof data === "object"
+            ) {
 
-                    ? data.error
+                errorMessage =
+                    data.error ||
+                    data.message ||
+                    errorMessage;
 
-                    : "Backend Error HTTP " +
-                      response.status
+            }
 
+
+            throw new Error(
+                errorMessage
             );
 
         }
 
 
         // ==================================================
-        // BACKEND FAILURE
+        // SUCCESS FALSE
         // ==================================================
 
         if (
@@ -2244,8 +2284,11 @@ async function generateSEO() {
         ) {
 
             throw new Error(
+
                 data.error ||
+                data.message ||
                 "SEO keywords generate नहीं हुए।"
+
             );
 
         }
@@ -2255,44 +2298,66 @@ async function generateSEO() {
         // EXTRACT AI KEYWORDS
         // ==================================================
 
-        const aiKeywords =
+        let aiKeywords =
             extractKeywordsFromResponse(
                 data
             );
 
 
         console.log(
-            "AI KEYWORDS:",
+            "AI KEYWORDS BEFORE FRONTEND FIX:",
             aiKeywords
         );
 
 
         // ==================================================
-        // FINALIZE
+        // FINAL KEYWORDS
         // ==================================================
 
-        const keywords =
+        const finalKeywords =
             finalizeKeywords(
+
                 aiKeywords,
+
                 product,
+
                 category,
+
                 brand,
+
                 finalMainKeyword,
+
                 marketplace
+
             );
 
 
         console.log(
-            "FINAL KEYWORDS:",
-            keywords
+            "===================================="
+        );
+
+        console.log(
+            "FINAL SEO KEYWORDS 14.2 FIXED:",
+            finalKeywords
+        );
+
+        console.log(
+            "COUNT:",
+            finalKeywords.length
+        );
+
+        console.log(
+            "===================================="
         );
 
 
         // ==================================================
-        // EMPTY PROTECTION
+        // EMPTY CHECK
         // ==================================================
 
-        if (!keywords.length) {
+        if (
+            !finalKeywords.length
+        ) {
 
             throw new Error(
                 "SEO keywords generate नहीं हो सके।"
@@ -2306,7 +2371,7 @@ async function generateSEO() {
         // ==================================================
 
         result.value =
-            keywords
+            finalKeywords
                 .map(
                     (
                         keyword,
@@ -2325,20 +2390,20 @@ async function generateSEO() {
 
 
         // ==================================================
-        // SUCCESS
+        // SUCCESS STATUS
         // ==================================================
 
         showStatus(
 
             "✅ " +
-            keywords.length +
+            finalKeywords.length +
             " SEO keywords generated successfully."
 
         );
 
 
         console.log(
-            "✅ SEO GENERATOR 14.2 FIXED SUCCESS"
+            "✅ SEO Generator 14.2 FIXED SUCCESS"
         );
 
     }
@@ -2351,6 +2416,7 @@ async function generateSEO() {
 
 
         result.value =
+
             "❌ SEO Keywords generate नहीं हो सके.\n\n" +
             "Error: " +
             error.message;
@@ -2365,6 +2431,7 @@ async function generateSEO() {
 
         generateBtn.disabled =
             false;
+
 
         generateBtn.innerText =
             "🤖 Generate SEO Keywords";
@@ -2431,13 +2498,14 @@ async function copySEO() {
             "पहले SEO Keywords generate करें।"
         );
 
+
         return;
 
     }
 
 
     // ======================================================
-    // CLIPBOARD API
+    // MODERN CLIPBOARD
     // ======================================================
 
     if (
@@ -2476,9 +2544,7 @@ async function copySEO() {
     // FALLBACK COPY
     // ======================================================
 
-    fallbackCopy(
-        text
-    );
+    fallbackCopy(text);
 
 }
 
@@ -2504,8 +2570,10 @@ function fallbackCopy(
     textarea.style.position =
         "fixed";
 
+
     textarea.style.left =
         "-9999px";
+
 
     textarea.style.top =
         "0";
@@ -2606,7 +2674,7 @@ window.addEventListener(
 
 
 // ==========================================================
-// UNHANDLED PROMISE
+// UNHANDLED PROMISE ERROR
 // ==========================================================
 
 window.addEventListener(
