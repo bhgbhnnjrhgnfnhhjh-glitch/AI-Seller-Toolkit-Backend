@@ -1,15 +1,38 @@
 // ==========================================================
 // AI SELLER TOOLKIT
-// SEO KEYWORD GENERATOR — FINAL VERSION 13.1
+// SEO KEYWORD GENERATOR — FINAL VERSION 13.2
 // ==========================================================
-// Works with:
-// Backend: AI Seller Toolkit Backend v13.0
-// Model: gemini-3.6-flash
-// API: Gemini Interactions API
-// Endpoint: POST /api/generate-seo
 //
-// Main Keyword = OPTIONAL
-// If empty → Product Name is used automatically
+// Backend:
+// AI Seller Toolkit Backend v13.2
+//
+// Model:
+// gemini-3.6-flash
+//
+// API:
+// Gemini Interactions API
+//
+// Endpoint:
+// POST /api/generate-seo
+//
+// ==========================================================
+// FEATURES
+// ==========================================================
+//
+// ✅ Main Keyword optional
+// ✅ Empty Main Keyword → Product Name used
+// ✅ Main Keyword always first
+// ✅ Maximum 20 keywords
+// ✅ Duplicate protection
+// ✅ Near duplicate protection
+// ✅ Brand stuffing protection
+// ✅ Generic keyword protection
+// ✅ Filler keyword protection
+// ✅ Unsupported claim protection
+// ✅ Seller facts only
+// ✅ AI failure protection
+// ✅ Stable JSON handling
+// ✅ Mobile friendly
 // ==========================================================
 
 
@@ -25,7 +48,7 @@ const SEO_API =
 
 
 // ==========================================================
-// START AFTER HTML LOADS
+// DOM READY
 // ==========================================================
 
 document.addEventListener(
@@ -38,6 +61,7 @@ document.addEventListener(
         const copyBtn =
             document.getElementById("copyBtn");
 
+
         if (generateBtn) {
 
             generateBtn.addEventListener(
@@ -46,6 +70,7 @@ document.addEventListener(
             );
 
         }
+
 
         if (copyBtn) {
 
@@ -56,8 +81,9 @@ document.addEventListener(
 
         }
 
+
         console.log(
-            "✅ SEO Keyword Generator 13.1 loaded"
+            "✅ SEO Keyword Generator 13.2 loaded"
         );
 
     }
@@ -96,7 +122,7 @@ async function generateSEO() {
 
 
     // ========================================================
-    // CHECK HTML ELEMENTS
+    // HTML CHECK
     // ========================================================
 
     if (
@@ -111,7 +137,7 @@ async function generateSEO() {
     ) {
 
         console.error(
-            "SEO Generator: Required HTML element missing."
+            "❌ SEO Generator: Required HTML element missing."
         );
 
         if (status) {
@@ -127,7 +153,7 @@ async function generateSEO() {
 
 
     // ========================================================
-    // GET VALUES
+    // VALUES
     // ========================================================
 
     const product =
@@ -139,7 +165,7 @@ async function generateSEO() {
     const brand =
         brandElement.value.trim();
 
-    const mainKeyword =
+    const enteredKeyword =
         keywordElement.value.trim();
 
     const marketplace =
@@ -177,15 +203,11 @@ async function generateSEO() {
 
 
     // ========================================================
-    // IMPORTANT:
-    // MAIN KEYWORD IS OPTIONAL
-    //
-    // Empty Main Keyword →
-    // Product Name automatically becomes Main Keyword
+    // MAIN KEYWORD
     // ========================================================
 
     const finalMainKeyword =
-        mainKeyword || product;
+        enteredKeyword || product;
 
 
     // ========================================================
@@ -201,12 +223,12 @@ async function generateSEO() {
         "⏳ Please wait...";
 
     showStatus(
-        "🤖 AI SEO keywords बना रहा है..."
+        "🤖 AI relevant SEO keywords बना रहा है..."
     );
 
 
     // ========================================================
-    // REQUEST DATA
+    // REQUEST
     // ========================================================
 
     const requestData = {
@@ -233,13 +255,13 @@ async function generateSEO() {
 
 
     console.log(
-        "SEO Request:",
+        "📤 SEO Request:",
         requestData
     );
 
 
     // ========================================================
-    // API REQUEST
+    // API CALL
     // ========================================================
 
     try {
@@ -255,6 +277,9 @@ async function generateSEO() {
                     headers: {
 
                         "Content-Type":
+                            "application/json",
+
+                        "Accept":
                             "application/json"
 
                     },
@@ -269,27 +294,23 @@ async function generateSEO() {
 
 
         console.log(
-            "SEO API Status:",
+            "📡 SEO API Status:",
             response.status
         );
 
-
-        // ====================================================
-        // READ RESPONSE
-        // ====================================================
 
         const responseText =
             await response.text();
 
 
         console.log(
-            "SEO API Response:",
+            "📥 SEO API Response:",
             responseText
         );
 
 
         // ====================================================
-        // PARSE JSON
+        // JSON PARSE
         // ====================================================
 
         let data = null;
@@ -303,7 +324,7 @@ async function generateSEO() {
                 );
 
         }
-        catch (jsonError) {
+        catch (error) {
 
             throw new Error(
                 "Backend ने valid JSON response नहीं दिया। HTTP " +
@@ -335,7 +356,7 @@ async function generateSEO() {
 
 
         // ====================================================
-        // SUCCESS CHECK
+        // SUCCESS
         // ====================================================
 
         if (
@@ -358,7 +379,7 @@ async function generateSEO() {
 
 
         // ====================================================
-        // GET KEYWORDS
+        // GET AI KEYWORDS
         // ====================================================
 
         let keywords = [];
@@ -389,12 +410,16 @@ async function generateSEO() {
 
 
         // ====================================================
-        // REMOVE DUPLICATES
+        // CLIENT-SIDE QUALITY FILTER
         // ====================================================
 
         keywords =
-            removeDuplicates(
-                keywords
+            filterClientSEOKeywords(
+                keywords,
+                product,
+                brand,
+                category,
+                finalMainKeyword
             );
 
 
@@ -410,18 +435,22 @@ async function generateSEO() {
 
 
         // ====================================================
-        // ENSURE MAIN KEYWORD EXISTS
+        // ENSURE MAIN KEYWORD
         // ====================================================
 
         const mainExists =
             keywords.some(
 
-                item =>
+                function (item) {
 
-                    normalizeKeyword(item) ===
-                    normalizeKeyword(
-                        finalMainKeyword
-                    )
+                    return (
+                        normalizeKeyword(item) ===
+                        normalizeKeyword(
+                            finalMainKeyword
+                        )
+                    );
+
+                }
 
             );
 
@@ -429,14 +458,26 @@ async function generateSEO() {
         if (!mainExists) {
 
             keywords.unshift(
-                finalMainKeyword
+                cleanKeyword(
+                    finalMainKeyword
+                )
             );
 
         }
 
 
         // ====================================================
-        // MAX 20 KEYWORDS
+        // FINAL DEDUPLICATION
+        // ====================================================
+
+        keywords =
+            removeDuplicates(
+                keywords
+            );
+
+
+        // ====================================================
+        // MAX 20
         // ====================================================
 
         keywords =
@@ -447,13 +488,13 @@ async function generateSEO() {
 
 
         // ====================================================
-        // EMPTY RESULT PROTECTION
-        // ====================================================
+        // EMPTY RESULT
+        // ========================================================
 
         if (!keywords.length) {
 
             throw new Error(
-                "AI ने कोई SEO keyword नहीं दिया।"
+                "AI ने कोई valid SEO keyword नहीं दिया।"
             );
 
         }
@@ -486,7 +527,7 @@ async function generateSEO() {
 
 
         // ====================================================
-        // SUCCESS MESSAGE
+        // SUCCESS
         // ====================================================
 
         showStatus(
@@ -499,7 +540,7 @@ async function generateSEO() {
 
 
         console.log(
-            "✅ SEO Keywords:",
+            "✅ Final SEO Keywords:",
             keywords
         );
 
@@ -514,7 +555,6 @@ async function generateSEO() {
 
 
         result.value =
-
             "❌ SEO Keywords generate नहीं हो सके.\n\n" +
             "Error: " +
             error.message;
@@ -539,22 +579,523 @@ async function generateSEO() {
 
 
 // ==========================================================
-// STATUS
+// CLIENT SEO FILTER
 // ==========================================================
 
-function showStatus(message) {
+function filterClientSEOKeywords(
+    keywords,
+    productName,
+    brand,
+    category,
+    mainKeyword
+) {
 
-    const status =
-        document.getElementById(
-            "status"
+    const output = [];
+
+    const seen =
+        new Set();
+
+
+    const productNormalized =
+        normalizeKeyword(
+            productName
         );
 
-    if (status) {
+    const brandNormalized =
+        normalizeKeyword(
+            brand
+        );
 
-        status.innerText =
-            message;
+    const categoryNormalized =
+        normalizeKeyword(
+            category
+        );
+
+    const mainNormalized =
+        normalizeKeyword(
+            mainKeyword
+        );
+
+
+    for (
+        const rawKeyword of keywords
+    ) {
+
+        const keyword =
+            cleanKeyword(
+                rawKeyword
+            );
+
+
+        if (!keyword) {
+
+            continue;
+
+        }
+
+
+        const normalized =
+            normalizeKeyword(
+                keyword
+            );
+
+
+        if (!normalized) {
+
+            continue;
+
+        }
+
+
+        // ====================================================
+        // DUPLICATE
+        // ====================================================
+
+        if (
+            seen.has(
+                normalized
+            )
+        ) {
+
+            continue;
+
+        }
+
+
+        // ====================================================
+        // MAIN KEYWORD
+        // ====================================================
+
+        if (
+            normalized ===
+            mainNormalized
+        ) {
+
+            seen.add(
+                normalized
+            );
+
+            output.push(
+                keyword
+            );
+
+            continue;
+
+        }
+
+
+        // ====================================================
+        // TOO LONG
+        // ====================================================
+
+        const words =
+            normalized
+                .split(" ")
+                .filter(Boolean);
+
+
+        if (
+            words.length > 8
+        ) {
+
+            continue;
+
+        }
+
+
+        // ====================================================
+        // GENERIC SINGLE WORD PROTECTION
+        // ====================================================
+
+        if (
+            words.length === 1
+        ) {
+
+            const generic =
+                new Set([
+
+                    "kurti",
+                    "dress",
+                    "shirt",
+                    "tshirt",
+                    "top",
+                    "jeans",
+                    "saree",
+                    "clothing",
+                    "fashion",
+                    "shoes",
+                    "shoe",
+                    "jewellery",
+                    "jewelry",
+                    "mobile",
+                    "phone",
+                    "laptop",
+                    "earbuds",
+                    "watch",
+                    "bottle",
+                    "bag",
+                    "toy",
+                    "book",
+                    "food",
+                    "gift",
+                    "beauty",
+                    "cream",
+                    "shampoo",
+                    "soap"
+
+                ]);
+
+
+            if (
+                generic.has(
+                    normalized
+                )
+            ) {
+
+                continue;
+
+            }
+
+        }
+
+
+        // ====================================================
+        // BRAND STUFFING PROTECTION
+        // ====================================================
+
+        if (
+            brandNormalized &&
+            normalized.includes(
+                brandNormalized
+            )
+        ) {
+
+            // Allow brand only when
+            // the keyword is exactly the brand
+            // or the main keyword itself.
+
+            if (
+                normalized !==
+                brandNormalized
+            ) {
+
+                continue;
+
+            }
+
+        }
+
+
+        // ====================================================
+        // CATEGORY STUFFING
+        // ====================================================
+
+        if (
+            categoryNormalized &&
+            normalized ===
+            categoryNormalized
+        ) {
+
+            continue;
+
+        }
+
+
+        // ====================================================
+        // FILLER WORDS
+        // ====================================================
+
+        if (
+            containsOnlyFillerWords(
+                normalized
+            )
+        ) {
+
+            continue;
+
+        }
+
+
+        // ====================================================
+        // UNSUPPORTED CLAIM WORDS
+        // ====================================================
+
+        if (
+            containsUnsupportedClaims(
+                normalized
+            )
+        ) {
+
+            continue;
+
+        }
+
+
+        // ====================================================
+        // NEAR DUPLICATE
+        // ====================================================
+
+        let nearDuplicate =
+            false;
+
+
+        for (
+            const existing of output
+        ) {
+
+            const similarity =
+                keywordSimilarity(
+                    keyword,
+                    existing
+                );
+
+
+            if (
+                similarity >= 0.80
+            ) {
+
+                nearDuplicate =
+                    true;
+
+                break;
+
+            }
+
+        }
+
+
+        if (
+            nearDuplicate
+        ) {
+
+            continue;
+
+        }
+
+
+        // ====================================================
+        // PRODUCT RELEVANCE
+        // ====================================================
+
+        const productTokens =
+            tokenSet(
+                productNormalized
+            );
+
+        const keywordTokens =
+            tokenSet(
+                normalized
+            );
+
+
+        let productOverlap =
+            0;
+
+
+        keywordTokens.forEach(
+
+            function (token) {
+
+                if (
+                    productTokens.has(
+                        token
+                    )
+                ) {
+
+                    productOverlap++;
+
+                }
+
+            }
+
+        );
+
+
+        // A keyword should normally
+        // have some relation to product.
+        //
+        // If completely unrelated,
+        // reject it.
+
+        if (
+            productTokens.size > 0 &&
+            productOverlap === 0 &&
+            keywordTokens.size <= 2
+        ) {
+
+            continue;
+
+        }
+
+
+        // ====================================================
+        // ACCEPT
+        // ====================================================
+
+        seen.add(
+            normalized
+        );
+
+
+        output.push(
+            keyword
+        );
 
     }
+
+
+    return output;
+
+}
+
+
+// ==========================================================
+// UNSUPPORTED CLAIMS
+// ==========================================================
+
+function containsUnsupportedClaims(
+    keyword
+) {
+
+    const claims = [
+
+        "best",
+        "number one",
+        "no 1",
+        "no1",
+        "guaranteed",
+        "100 percent",
+        "100%",
+        "premium",
+        "original",
+        "genuine",
+        "luxury",
+        "exclusive",
+        "top quality",
+        "high quality",
+        "waterproof",
+        "water resistant",
+        "long lasting",
+        "durable",
+        "safe",
+        "chemical free",
+        "organic",
+        "natural",
+        "certified",
+        "approved",
+        "doctor recommended",
+        "fast charging",
+        "high performance"
+
+    ];
+
+
+    for (
+        const claim of claims
+    ) {
+
+        if (
+            keyword.includes(
+                claim
+            )
+        ) {
+
+            return true;
+
+        }
+
+    }
+
+
+    return false;
+
+}
+
+
+// ==========================================================
+// FILLER WORDS
+// ==========================================================
+
+const SEO_FILLER_WORDS =
+    new Set([
+
+        "online",
+        "collection",
+        "store",
+        "shopping",
+        "shop",
+        "buy",
+        "fashion",
+        "apparel",
+        "wear",
+        "latest",
+        "new",
+        "best",
+        "premium",
+        "trendy",
+        "stylish",
+        "beautiful",
+        "quality",
+        "sale",
+        "offer",
+        "offers",
+        "deal",
+        "deals",
+        "cheap",
+        "price",
+        "wholesale",
+        "exclusive",
+        "popular",
+        "top"
+
+    ]);
+
+
+// ==========================================================
+// FILLER CHECK
+// ==========================================================
+
+function containsOnlyFillerWords(
+    keyword
+) {
+
+    const words =
+        normalizeKeyword(
+            keyword
+        )
+        .split(" ")
+        .filter(Boolean);
+
+
+    if (!words.length) {
+
+        return true;
+
+    }
+
+
+    let meaningful =
+        0;
+
+
+    for (
+        const word of words
+    ) {
+
+        if (
+            !SEO_FILLER_WORDS.has(
+                word
+            )
+        ) {
+
+            meaningful++;
+
+        }
+
+    }
+
+
+    return meaningful === 0;
 
 }
 
@@ -563,7 +1104,9 @@ function showStatus(message) {
 // CLEAN KEYWORD
 // ==========================================================
 
-function cleanKeyword(value) {
+function cleanKeyword(
+    value
+) {
 
     if (
         value === null ||
@@ -608,7 +1151,9 @@ function cleanKeyword(value) {
 // NORMALIZE KEYWORD
 // ==========================================================
 
-function normalizeKeyword(text) {
+function normalizeKeyword(
+    text
+) {
 
     if (!text) {
 
@@ -636,6 +1181,7 @@ function normalizeKeyword(text) {
             ""
         )
 
+        // T-shirt variations
         .replace(
             /\bt[\s-]*shirt\b/g,
             "tshirt"
@@ -662,10 +1208,114 @@ function normalizeKeyword(text) {
 
 
 // ==========================================================
+// TOKEN SET
+// ==========================================================
+
+function tokenSet(
+    text
+) {
+
+    if (!text) {
+
+        return new Set();
+
+    }
+
+
+    return new Set(
+
+        text
+            .split(" ")
+            .filter(
+                token =>
+                    token.length > 1
+            )
+
+    );
+
+}
+
+
+// ==========================================================
+// KEYWORD SIMILARITY
+// ==========================================================
+
+function keywordSimilarity(
+    a,
+    b
+) {
+
+    const A =
+        tokenSet(
+            normalizeKeyword(a)
+        );
+
+    const B =
+        tokenSet(
+            normalizeKeyword(b)
+        );
+
+
+    if (
+        !A.size ||
+        !B.size
+    ) {
+
+        return 0;
+
+    }
+
+
+    let intersection =
+        0;
+
+
+    A.forEach(
+
+        function (token) {
+
+            if (
+                B.has(token)
+            ) {
+
+                intersection++;
+
+            }
+
+        }
+
+    );
+
+
+    const union =
+        new Set([
+            ...A,
+            ...B
+        ]).size;
+
+
+    if (!union) {
+
+        return 0;
+
+    }
+
+
+    return (
+        intersection /
+        union
+    );
+
+}
+
+
+// ==========================================================
 // REMOVE DUPLICATES
 // ==========================================================
 
-function removeDuplicates(keywords) {
+function removeDuplicates(
+    keywords
+) {
 
     const output = [];
 
@@ -736,16 +1386,22 @@ function prioritizeMainKeyword(
     const index =
         keywords.findIndex(
 
-            item =>
+            function (item) {
 
-                normalizeKeyword(
-                    item
-                ) === target
+                return (
+                    normalizeKeyword(
+                        item
+                    ) === target
+                );
+
+            }
 
         );
 
 
-    if (index > 0) {
+    if (
+        index > 0
+    ) {
 
         const item =
             keywords.splice(
@@ -819,9 +1475,11 @@ async function copySEO() {
                 text
             );
 
+
             alert(
                 "✅ SEO Keywords copied successfully!"
             );
+
 
             return;
 
@@ -839,7 +1497,7 @@ async function copySEO() {
 
 
     // ========================================================
-    // FALLBACK COPY
+    // FALLBACK
     // ========================================================
 
     fallbackCopy(
@@ -853,7 +1511,9 @@ async function copySEO() {
 // FALLBACK COPY
 // ==========================================================
 
-function fallbackCopy(text) {
+function fallbackCopy(
+    text
+) {
 
     const textarea =
         document.createElement(
@@ -868,8 +1528,10 @@ function fallbackCopy(text) {
     textarea.style.position =
         "fixed";
 
+
     textarea.style.left =
         "-9999px";
+
 
     textarea.style.top =
         "0";
@@ -912,9 +1574,10 @@ function fallbackCopy(text) {
     catch (error) {
 
         console.error(
-            "Copy Error:",
+            "❌ Copy Error:",
             error
         );
+
 
         alert(
             "❌ Copy नहीं हो सका।"
@@ -929,7 +1592,31 @@ function fallbackCopy(text) {
 
 
 // ==========================================================
-// GLOBAL ERROR LOG
+// STATUS
+// ==========================================================
+
+function showStatus(
+    message
+) {
+
+    const status =
+        document.getElementById(
+            "status"
+        );
+
+
+    if (status) {
+
+        status.innerText =
+            message;
+
+    }
+
+}
+
+
+// ==========================================================
+// GLOBAL ERROR
 // ==========================================================
 
 window.addEventListener(
@@ -937,8 +1624,26 @@ window.addEventListener(
     function (event) {
 
         console.error(
-            "SEO Page Error:",
-            event.error || event.message
+            "❌ SEO Page Error:",
+            event.error ||
+            event.message
+        );
+
+    }
+);
+
+
+// ==========================================================
+// UNHANDLED PROMISE
+// ==========================================================
+
+window.addEventListener(
+    "unhandledrejection",
+    function (event) {
+
+        console.error(
+            "❌ SEO Promise Error:",
+            event.reason
         );
 
     }
@@ -950,5 +1655,5 @@ window.addEventListener(
 // ==========================================================
 
 console.log(
-    "🚀 AI Seller Toolkit SEO Generator 13.1 Ready"
+    "🚀 AI Seller Toolkit SEO Generator 13.2 Ready"
 );
