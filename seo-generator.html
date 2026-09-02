@@ -10,65 +10,142 @@
         content="width=device-width, initial-scale=1.0"
     >
 
+    <meta
+        name="description"
+        content="AI SEO Keyword Generator for online sellers. Generate relevant product SEO keywords for Amazon, Meesho, Flipkart, Etsy, Shopify and OLX."
+    >
+
+    <meta
+        name="robots"
+        content="index, follow"
+    >
+
     <title>AI SEO Keyword Generator | AI Seller Toolkit</title>
 
+
     <style>
+
+        /* ==================================================
+           GLOBAL
+        ================================================== */
 
         * {
             box-sizing: border-box;
         }
 
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f6fb;
-            color: #222;
+
+        html {
+            scroll-behavior: smooth;
         }
 
-        /* ===============================
+
+        body {
+
+            margin: 0;
+
+            padding: 0;
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f4f6fb;
+
+            color: #222;
+
+            min-height: 100vh;
+
+        }
+
+
+        button,
+        input,
+        select,
+        textarea {
+
+            font-family: inherit;
+
+        }
+
+
+        /* ==================================================
            NAVBAR
-        =============================== */
+        ================================================== */
 
         .navbar {
-            width: 100%;
-            background: linear-gradient(
-                90deg,
-                #2563eb,
-                #4f46e5
-            );
 
-            color: white;
+            width: 100%;
+
+            min-height: 52px;
 
             padding: 12px 18px;
 
+            background:
+                linear-gradient(
+                    90deg,
+                    #2563eb,
+                    #4f46e5
+                );
+
+            color: white;
+
             display: flex;
+
             align-items: center;
+
             justify-content: space-between;
 
-            font-size: 14px;
         }
+
 
         .navbar-brand {
-            font-weight: bold;
+
+            font-size: 14px;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+
         }
+
 
         .back-link {
+
             color: white;
+
             text-decoration: none;
-            font-weight: bold;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+            padding: 5px 0;
+
         }
 
-        /* ===============================
+
+        .back-link:hover {
+
+            text-decoration: underline;
+
+        }
+
+
+        /* ==================================================
            HERO
-        =============================== */
+        ================================================== */
 
         .hero {
-            background: linear-gradient(
-                135deg,
-                #2563eb,
-                #4f46e5
-            );
+
+            width: 100%;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #4f46e5
+                );
 
             color: white;
 
@@ -76,32 +153,48 @@
 
             padding: 38px 15px 42px;
 
-            border-radius: 0 0 18px 18px;
+            border-radius:
+                0 0 18px 18px;
+
         }
 
+
         .hero h1 {
+
             margin: 0;
 
             font-size: 30px;
+
+            line-height: 1.25;
+
         }
 
+
         .hero p {
-            margin-top: 12px;
+
+            margin: 10px 0 0;
 
             font-size: 14px;
 
+            line-height: 1.5;
+
             opacity: 0.95;
+
         }
 
-        /* ===============================
+
+        /* ==================================================
            MAIN CONTAINER
-        =============================== */
+        ================================================== */
 
         .container {
+
             width: 92%;
+
             max-width: 560px;
 
-            margin: 22px auto 60px;
+            margin:
+                22px auto 55px;
 
             background: white;
 
@@ -110,62 +203,104 @@
             border-radius: 12px;
 
             box-shadow:
-                0 5px 20px
-                rgba(0, 0, 0, 0.08);
+                0 5px 22px
+                rgba(
+                    0,
+                    0,
+                    0,
+                    0.08
+                );
+
         }
 
-        /* ===============================
-           FORM
-        =============================== */
+
+        /* ==================================================
+           FORM GROUP
+        ================================================== */
 
         .form-group {
-            margin-bottom: 15px;
+
+            margin-bottom: 16px;
+
         }
 
+
         label {
+
             display: block;
 
             margin-bottom: 7px;
 
             font-size: 13px;
 
-            font-weight: bold;
+            font-weight: 700;
+
         }
+
 
         label span {
+
             color: #888;
-            font-weight: normal;
+
+            font-weight: 400;
+
         }
 
+
         input,
-        select,
-        textarea {
+        select {
 
             width: 100%;
 
-            padding: 12px;
+            height: 44px;
 
-            border: 1px solid #d8dce5;
+            padding:
+                10px 12px;
+
+            border:
+                1px solid #d8dce5;
 
             border-radius: 7px;
 
             font-size: 14px;
 
-            outline: none;
+            color: #222;
 
             background: white;
+
+            outline: none;
+
+            transition:
+                border-color 0.2s,
+                box-shadow 0.2s;
+
         }
 
-        input:focus,
-        select:focus,
-        textarea:focus {
 
-            border-color: #2563eb;
+        input::placeholder {
+
+            color: #999;
+
+        }
+
+
+        input:focus,
+        select:focus {
+
+            border-color:
+                #2563eb;
 
             box-shadow:
                 0 0 0 2px
-                rgba(37, 99, 235, 0.08);
+                rgba(
+                    37,
+                    99,
+                    235,
+                    0.10
+                );
+
         }
+
 
         .help-text {
 
@@ -173,24 +308,28 @@
 
             font-size: 11px;
 
+            line-height: 1.5;
+
             color: #777;
 
-            line-height: 1.5;
         }
 
-        /* ===============================
+
+        /* ==================================================
            GENERATE BUTTON
-        =============================== */
+        ================================================== */
 
         #generateBtn {
 
             width: 100%;
 
+            min-height: 46px;
+
             border: none;
 
-            border-radius: 6px;
+            border-radius: 7px;
 
-            padding: 13px;
+            padding: 12px;
 
             background: #159447;
 
@@ -198,92 +337,167 @@
 
             font-size: 14px;
 
-            font-weight: bold;
+            font-weight: 700;
 
             cursor: pointer;
 
-            transition: 0.2s;
+            transition:
+                background 0.2s,
+                transform 0.1s,
+                opacity 0.2s;
+
         }
 
+
         #generateBtn:hover {
+
             background: #117d3b;
+
         }
+
+
+        #generateBtn:active {
+
+            transform: scale(0.99);
+
+        }
+
 
         #generateBtn:disabled {
 
-            opacity: 0.7;
+            opacity: 0.65;
 
             cursor: not-allowed;
+
+            transform: none;
+
         }
 
-        /* ===============================
+
+        /* ==================================================
            STATUS
-        =============================== */
+        ================================================== */
 
         #status {
 
-            min-height: 20px;
+            min-height: 22px;
 
-            margin: 10px 0;
+            margin:
+                10px 0 8px;
+
+            padding: 2px;
 
             text-align: center;
 
             font-size: 12px;
 
-            font-weight: bold;
+            font-weight: 700;
+
+            line-height: 1.5;
 
             color: #4b8f42;
+
+            word-break: break-word;
+
         }
 
-        /* ===============================
-           RESULT
-        =============================== */
+
+        /* ==================================================
+           RESULT LABEL
+        ================================================== */
 
         .result-label {
 
             display: block;
 
-            margin-top: 8px;
-
-            margin-bottom: 7px;
+            margin:
+                8px 0 7px;
 
             font-size: 13px;
 
-            font-weight: bold;
+            font-weight: 700;
+
         }
+
+
+        /* ==================================================
+           RESULT BOX
+        ================================================== */
 
         #result {
 
+            display: block;
+
             width: 100%;
 
-            min-height: 330px;
+            min-height: 360px;
+
+            max-height: 520px;
 
             resize: vertical;
 
+            overflow-y: auto;
+
             padding: 13px;
 
-            border: 2px solid #7fa5c8;
+            border:
+                2px solid #7fa5c8;
 
             border-radius: 7px;
 
             background: #fbfcff;
 
-            font-family: Arial, sans-serif;
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
 
             font-size: 13px;
 
             line-height: 1.8;
 
             color: #222;
+
+            outline: none;
+
+            white-space: pre-wrap;
+
         }
 
-        /* ===============================
+
+        #result:focus {
+
+            border-color:
+                #2563eb;
+
+            box-shadow:
+                0 0 0 2px
+                rgba(
+                    37,
+                    99,
+                    235,
+                    0.08
+                );
+
+        }
+
+
+        #result::placeholder {
+
+            color: #999;
+
+        }
+
+
+        /* ==================================================
            COPY BUTTON
-        =============================== */
+        ================================================== */
 
         #copyBtn {
 
             width: 100%;
+
+            min-height: 44px;
 
             margin-top: 10px;
 
@@ -291,7 +505,7 @@
 
             border: none;
 
-            border-radius: 6px;
+            border-radius: 7px;
 
             background: #2563eb;
 
@@ -299,18 +513,34 @@
 
             font-size: 14px;
 
-            font-weight: bold;
+            font-weight: 700;
 
             cursor: pointer;
+
+            transition:
+                background 0.2s,
+                transform 0.1s;
+
         }
+
 
         #copyBtn:hover {
+
             background: #1d4ed8;
+
         }
 
-        /* ===============================
+
+        #copyBtn:active {
+
+            transform: scale(0.99);
+
+        }
+
+
+        /* ==================================================
            INFO BOX
-        =============================== */
+        ================================================== */
 
         .info-box {
 
@@ -322,23 +552,28 @@
 
             background: #f0f5ff;
 
-            border: 1px solid #dbe6f5;
+            border:
+                1px solid #dbe6f5;
 
             font-size: 11px;
 
-            line-height: 1.6;
+            line-height: 1.65;
 
             color: #555;
+
         }
+
 
         .info-title {
 
-            font-weight: bold;
+            margin-bottom: 4px;
 
             color: #345c91;
 
-            margin-bottom: 3px;
+            font-weight: 700;
+
         }
+
 
         .seo-rules {
 
@@ -346,14 +581,27 @@
 
             color: #345c91;
 
-            font-weight: bold;
+            font-weight: 700;
+
         }
 
-        /* ===============================
+
+        .info-note {
+
+            margin-top: 8px;
+
+            color: #555;
+
+        }
+
+
+        /* ==================================================
            FOOTER
-        =============================== */
+        ================================================== */
 
         footer {
+
+            width: 100%;
 
             text-align: center;
 
@@ -361,22 +609,61 @@
 
             color: #888;
 
-            padding: 0 10px 25px;
+            padding:
+                0 10px 25px;
+
         }
 
-        /* ===============================
+
+        /* ==================================================
            MOBILE
-        =============================== */
+        ================================================== */
 
         @media (max-width: 600px) {
 
-            .hero {
-                padding: 34px 12px 38px;
+            .navbar {
+
+                padding:
+                    11px 14px;
+
             }
 
-            .hero h1 {
-                font-size: 27px;
+
+            .navbar-brand {
+
+                font-size: 13px;
+
             }
+
+
+            .back-link {
+
+                font-size: 12px;
+
+            }
+
+
+            .hero {
+
+                padding:
+                    34px 12px 38px;
+
+            }
+
+
+            .hero h1 {
+
+                font-size: 26px;
+
+            }
+
+
+            .hero p {
+
+                font-size: 13px;
+
+            }
+
 
             .container {
 
@@ -384,11 +671,61 @@
 
                 padding: 18px;
 
-                margin-top: 20px;
+                margin:
+                    20px auto 50px;
+
             }
 
+
+            input,
+            select {
+
+                height: 44px;
+
+                font-size: 14px;
+
+            }
+
+
             #result {
-                min-height: 330px;
+
+                min-height: 360px;
+
+                font-size: 13px;
+
+                line-height: 1.8;
+
+            }
+
+        }
+
+
+        /* ==================================================
+           VERY SMALL MOBILE
+        ================================================== */
+
+        @media (max-width: 380px) {
+
+            .hero h1 {
+
+                font-size: 23px;
+
+            }
+
+
+            .container {
+
+                width: 94%;
+
+                padding: 15px;
+
+            }
+
+
+            #result {
+
+                min-height: 340px;
+
             }
 
         }
@@ -401,136 +738,212 @@
 <body>
 
 
-    <!-- ===============================
+    <!-- ==================================================
          NAVBAR
-    =============================== -->
+    ================================================== -->
 
-    <nav class="navbar">
+    <nav
+        class="navbar"
+        aria-label="Main navigation"
+    >
 
         <div class="navbar-brand">
+
             🤖 AI Seller Toolkit
+
         </div>
+
 
         <a
             href="tools.html"
             class="back-link"
         >
+
             ← Back
+
         </a>
 
     </nav>
 
 
-    <!-- ===============================
+
+    <!-- ==================================================
          HERO
-    =============================== -->
+    ================================================== -->
 
     <section class="hero">
 
         <h1>
+
             🔍 AI SEO Keyword Generator
+
         </h1>
 
+
         <p>
+
             Generate Relevant SEO Keywords for Your Products
+
         </p>
 
     </section>
 
 
-    <!-- ===============================
+
+    <!-- ==================================================
          MAIN
-    =============================== -->
+    ================================================== -->
 
     <main class="container">
 
 
-        <!-- PRODUCT -->
+        <!-- ==================================================
+             PRODUCT NAME
+        ================================================== -->
 
         <div class="form-group">
 
             <label for="product">
+
                 Product Name
+
             </label>
+
 
             <input
                 type="text"
                 id="product"
+                name="product"
                 placeholder="Example: Cotton Kurti"
                 autocomplete="off"
+                spellcheck="false"
+                maxlength="200"
             >
 
         </div>
 
 
-        <!-- CATEGORY -->
+
+        <!-- ==================================================
+             CATEGORY
+        ================================================== -->
 
         <div class="form-group">
 
             <label for="category">
+
                 Category
+
             </label>
 
-            <select id="category">
+
+            <select
+                id="category"
+                name="category"
+            >
 
                 <option value="">
+
                     Select Category
+
                 </option>
+
 
                 <option value="Fashion">
+
                     👗 Fashion
+
                 </option>
+
 
                 <option value="Beauty">
+
                     💄 Beauty
+
                 </option>
+
 
                 <option value="Electronics">
+
                     📱 Electronics
+
                 </option>
+
 
                 <option value="Home & Kitchen">
+
                     🏠 Home & Kitchen
+
                 </option>
+
 
                 <option value="Shoes">
+
                     👟 Shoes
+
                 </option>
+
 
                 <option value="Jewellery">
+
                     💎 Jewellery
+
                 </option>
+
 
                 <option value="Toys">
+
                     🧸 Toys
+
                 </option>
+
 
                 <option value="Books">
+
                     📚 Books
+
                 </option>
+
 
                 <option value="Pet">
+
                     🐶 Pet
+
                 </option>
+
 
                 <option value="Sports">
+
                     ⚽ Sports
+
                 </option>
+
 
                 <option value="Automotive">
+
                     🚗 Automotive
+
                 </option>
+
 
                 <option value="Garden">
+
                     🌱 Garden
+
                 </option>
+
 
                 <option value="Food">
+
                     🍎 Food
+
                 </option>
 
+
                 <option value="Gifts">
+
                     🎁 Gifts
+
                 </option>
 
             </select>
@@ -538,83 +951,135 @@
         </div>
 
 
-        <!-- BRAND -->
+
+        <!-- ==================================================
+             BRAND
+        ================================================== -->
 
         <div class="form-group">
 
             <label for="brand">
+
                 Brand Name
-                <span>(Optional)</span>
+
+                <span>
+                    (Optional)
+                </span>
+
             </label>
+
 
             <input
                 type="text"
                 id="brand"
+                name="brand"
                 placeholder="Example: Test Brand"
                 autocomplete="off"
+                spellcheck="false"
+                maxlength="200"
             >
 
         </div>
 
 
-        <!-- MAIN KEYWORD -->
+
+        <!-- ==================================================
+             MAIN KEYWORD
+        ================================================== -->
 
         <div class="form-group">
 
             <label for="keyword">
+
                 Main Keyword
-                <span>(Optional)</span>
+
+                <span>
+                    (Optional)
+                </span>
+
             </label>
+
 
             <input
                 type="text"
                 id="keyword"
+                name="keyword"
                 placeholder="Optional — खाली छोड़ने पर Product Name इस्तेमाल होगा"
                 autocomplete="off"
+                spellcheck="false"
+                maxlength="200"
             >
+
 
             <div class="help-text">
 
-                Main Keyword खाली छोड़ने पर Product Name
-                automatically Main Keyword के रूप में इस्तेमाल होगा।
+                Main Keyword खाली छोड़ने पर
+                Product Name automatically
+                Main Keyword के रूप में इस्तेमाल होगा।
 
             </div>
 
         </div>
 
 
-        <!-- MARKETPLACE -->
+
+        <!-- ==================================================
+             MARKETPLACE
+        ================================================== -->
 
         <div class="form-group">
 
             <label for="marketplace">
+
                 Target Marketplace
+
             </label>
 
-            <select id="marketplace">
+
+            <select
+                id="marketplace"
+                name="marketplace"
+            >
 
                 <option value="Amazon">
+
                     Amazon
+
                 </option>
+
 
                 <option value="Meesho">
+
                     Meesho
+
                 </option>
+
 
                 <option value="Flipkart">
+
                     Flipkart
+
                 </option>
+
 
                 <option value="Etsy">
+
                     Etsy
+
                 </option>
+
 
                 <option value="Shopify">
+
                     Shopify
+
                 </option>
 
+
                 <option value="OLX">
+
                     OLX
+
                 </option>
 
             </select>
@@ -622,66 +1087,122 @@
         </div>
 
 
-        <!-- GENERATE -->
+
+        <!-- ==================================================
+             GENERATE BUTTON
+        ================================================== -->
 
         <button
             type="button"
             id="generateBtn"
+            aria-label="Generate SEO Keywords"
         >
+
             🤖 Generate SEO Keywords
+
         </button>
 
 
-        <!-- STATUS -->
 
-        <div id="status"></div>
+        <!-- ==================================================
+             STATUS
+        ================================================== -->
+
+        <div
+            id="status"
+            role="status"
+            aria-live="polite"
+        ></div>
 
 
-        <!-- RESULT -->
+
+        <!-- ==================================================
+             RESULT
+        ================================================== -->
 
         <label
             class="result-label"
             for="result"
         >
+
             Generated SEO Keywords
+
         </label>
+
 
         <textarea
             id="result"
+            name="result"
             readonly
+            aria-label="Generated SEO Keywords"
             placeholder="Generated SEO keywords यहाँ दिखाई देंगे..."
         ></textarea>
 
 
-        <!-- COPY -->
+
+        <!-- ==================================================
+             COPY
+        ================================================== -->
 
         <button
             type="button"
             id="copyBtn"
+            aria-label="Copy SEO Keywords"
         >
+
             📋 Copy Keywords
+
         </button>
 
 
-        <!-- INFO -->
+
+        <!-- ==================================================
+             INFORMATION
+        ================================================== -->
 
         <div class="info-box">
 
+
             <div class="info-title">
+
                 🔒 Strict Factual AI
+
             </div>
 
-            AI केवल दी गई product information और
-            सामान्य search intent के आधार पर relevant
-            SEO keywords बनाने की कोशिश करता है।
+
+            <div>
+
+                AI केवल दी गई product information
+                और सामान्य search intent के आधार पर
+                relevant SEO keywords बनाने की कोशिश करता है।
+                Missing product facts को जानबूझकर invent नहीं किया जाता।
+
+            </div>
+
 
             <div class="seo-rules">
+
                 SEO Rules:
+
             </div>
 
-            Duplicate keywords, useless filler,
-            excessive brand stuffing और unsupported
-            product specifications को avoid किया जाता है।
+
+            <div>
+
+                Duplicate keywords, unnecessary filler,
+                excessive brand stuffing और unsupported
+                product specifications को avoid किया जाता है।
+
+            </div>
+
+
+            <div class="info-note">
+
+                ℹ️ Product की कोई ऐसी specification
+                keyword में नहीं जोड़ी जाएगी जो आपने
+                provide नहीं की है।
+
+            </div>
 
         </div>
 
@@ -689,7 +1210,10 @@
     </main>
 
 
-    <!-- FOOTER -->
+
+    <!-- ==================================================
+         FOOTER
+    ================================================== -->
 
     <footer>
 
@@ -699,1095 +1223,87 @@
 
 
 
-<script>
-
-"use strict";
-
-
-/* ==========================================================
-   AI SELLER TOOLKIT
-   SEO GENERATOR — FINAL INLINE FIX 15.1
-   ==========================================================
-
-   IMPORTANT:
-
-   यह version backend पर पूरी तरह depend नहीं करता।
-
-   अगर backend केवल:
-
-       Cotton kurti
-
-   भेजता है,
-
-   तब भी frontend safe SEO keywords तैयार करेगा।
-
-   Maximum = 20
-   Main Keyword = हमेशा #1
-
-========================================================== */
-
-
-/* ==========================================================
-   API
-========================================================== */
-
-const SEO_API =
-    "https://ai-seller-toolkit-backend-1.onrender.com/api/generate-seo";
-
-
-const MAX_KEYWORDS = 20;
-
-
-/* ==========================================================
-   DOM
-========================================================== */
-
-const generateBtn =
-    document.getElementById("generateBtn");
-
-const copyBtn =
-    document.getElementById("copyBtn");
-
-const productInput =
-    document.getElementById("product");
-
-const categoryInput =
-    document.getElementById("category");
-
-const brandInput =
-    document.getElementById("brand");
-
-const keywordInput =
-    document.getElementById("keyword");
-
-const marketplaceInput =
-    document.getElementById("marketplace");
-
-const resultBox =
-    document.getElementById("result");
-
-const statusBox =
-    document.getElementById("status");
-
-
-/* ==========================================================
-   CLEAN TEXT
-========================================================== */
-
-function cleanText(value) {
-
-    if (
-        value === null ||
-        value === undefined
-    ) {
-
-        return "";
-
-    }
-
-    return String(value)
-
-        .replace(
-            /^\s*\d+\s*[\.\)\-:]\s*/,
-            ""
-        )
-
-        .replace(
-            /^[-•*]\s*/,
-            ""
-        )
-
-        .replace(
-            /\s+/g,
-            " "
-        )
-
-        .trim();
-
-}
-
-
-/* ==========================================================
-   NORMALIZE
-========================================================== */
-
-function normalize(value) {
-
-    return cleanText(value)
-
-        .toLowerCase()
-
-        .replace(
-            /['’]/g,
-            ""
-        )
-
-        .replace(
-            /[-_/]/g,
-            " "
-        )
-
-        .replace(
-            /[^a-z0-9\s]/g,
-            ""
-        )
-
-        .replace(
-            /\s+/g,
-            " "
-        )
-
-        .trim();
-
-}
-
-
-/* ==========================================================
-   ADD UNIQUE KEYWORD
-========================================================== */
-
-function addUnique(
-    list,
-    keyword
-) {
-
-    const clean =
-        cleanText(keyword);
-
-    if (!clean) {
-        return;
-    }
-
-    const normalized =
-        normalize(clean);
-
-    if (!normalized) {
-        return;
-    }
-
-    const exists =
-        list.some(
-            item =>
-                normalize(item) === normalized
-        );
-
-    if (exists) {
-        return;
-    }
-
-    list.push(clean);
-
-}
-
-
-/* ==========================================================
-   SAFE MAIN KEYWORD
-========================================================== */
-
-function getMainKeyword(
-    product,
-    mainKeyword
-) {
-
-    const productClean =
-        cleanText(product);
-
-    const mainClean =
-        cleanText(mainKeyword);
-
-    if (!productClean) {
-        return "";
-    }
-
-    if (!mainClean) {
-        return productClean;
-    }
-
-    return mainClean;
-
-}
-
-
-/* ==========================================================
-   FALLBACK KEYWORDS
-========================================================== */
-
-function buildFallbackKeywords(
-    product,
-    category,
-    marketplace,
-    brand,
-    mainKeyword
-) {
-
-    const list = [];
-
-    const p =
-        cleanText(product);
-
-    const main =
-        getMainKeyword(
-            p,
-            mainKeyword
-        );
-
-    const cat =
-        cleanText(category);
-
-    const market =
-        cleanText(marketplace);
-
-    const b =
-        cleanText(brand);
-
-
-    if (!p) {
-        return [];
-    }
-
-
-    /* ======================================================
-       #1 MAIN KEYWORD
-    ====================================================== */
-
-    addUnique(
-        list,
-        main
-    );
-
-
-    /* ======================================================
-       CORE SEARCH INTENT
-    ====================================================== */
-
-    addUnique(
-        list,
-        p + " online"
-    );
-
-    addUnique(
-        list,
-        p + " buy"
-    );
-
-    addUnique(
-        list,
-        p + " shop"
-    );
-
-    addUnique(
-        list,
-        p + " shopping"
-    );
-
-    addUnique(
-        list,
-        p + " collection"
-    );
-
-    addUnique(
-        list,
-        p + " design"
-    );
-
-    addUnique(
-        list,
-        p + " style"
-    );
-
-    addUnique(
-        list,
-        p + " styles"
-    );
-
-    addUnique(
-        list,
-        p + " fashion"
-    );
-
-    addUnique(
-        list,
-        p + " clothing"
-    );
-
-    addUnique(
-        list,
-        p + " apparel"
-    );
-
-    addUnique(
-        list,
-        p + " wear"
-    );
-
-    addUnique(
-        list,
-        p + " store"
-    );
-
-    addUnique(
-        list,
-        p + " price"
-    );
-
-    addUnique(
-        list,
-        p + " catalog"
-    );
-
-    addUnique(
-        list,
-        p + " product"
-    );
-
-    addUnique(
-        list,
-        p + " listing"
-    );
-
-
-    /* ======================================================
-       MARKETPLACE
-    ====================================================== */
-
-    if (market) {
-
-        addUnique(
-            list,
-            p + " on " + market
-        );
-
-    }
-
-
-    /* ======================================================
-       CATEGORY
-    ====================================================== */
-
-    if (
-        cat &&
-        normalize(cat) !== normalize(p)
-    ) {
-
-        addUnique(
-            list,
-            p + " " + cat
-        );
-
-    }
-
-
-    /* ======================================================
-       BRAND
-       
-       Brand is used only when it is actually a separate
-       brand name. This avoids:
-       
-       Test Brand Cotton kurti
-       
-       becoming a stuffed keyword.
-    ====================================================== */
-
-    if (
-        b &&
-        normalize(b) !== normalize(p) &&
-        !normalize(b).includes(normalize(p))
-    ) {
-
-        addUnique(
-            list,
-            b + " " + p
-        );
-
-    }
-
-
-    /* ======================================================
-       FINAL LIMIT
-    ====================================================== */
-
-    return list.slice(
-        0,
-        MAX_KEYWORDS
-    );
-
-}
-
-
-/* ==========================================================
-   EXTRACT BACKEND KEYWORDS
-========================================================== */
-
-function extractBackendKeywords(data) {
-
-    if (!data) {
-        return [];
-    }
-
-
-    if (
-        Array.isArray(data)
-    ) {
-
-        return data;
-
-    }
-
-
-    const fields = [
-
-        "keywords",
-        "seoKeywords",
-        "seo_keywords",
-        "keywordList",
-        "keyword_list",
-        "results"
-
-    ];
-
-
-    for (
-        const field of fields
-    ) {
-
-        if (
-            Array.isArray(
-                data[field]
-            )
-        ) {
-
-            return data[field];
-
-        }
-
-    }
-
-
-    if (
-        data.result &&
-        typeof data.result === "object"
-    ) {
-
-        return extractBackendKeywords(
-            data.result
-        );
-
-    }
-
-
-    if (
-        data.data &&
-        typeof data.data === "object"
-    ) {
-
-        return extractBackendKeywords(
-            data.data
-        );
-
-    }
-
-
-    if (
-        typeof data === "string"
-    ) {
-
-        return data
-            .split("\n")
-            .map(cleanText)
-            .filter(Boolean);
-
-    }
-
-
-    return [];
-
-}
-
-
-/* ==========================================================
-   SAFE MERGE
-========================================================== */
-
-function mergeKeywords(
-    backendKeywords,
-    fallbackKeywords,
-    product,
-    mainKeyword
-) {
-
-    const finalList = [];
-
-
-    const main =
-        getMainKeyword(
-            product,
-            mainKeyword
-        );
-
-
-    /* ======================================================
-       MAIN KEYWORD ALWAYS FIRST
-    ====================================================== */
-
-    addUnique(
-        finalList,
-        main
-    );
-
-
-    /* ======================================================
-       BACKEND KEYWORDS
-    ====================================================== */
-
-    for (
-        const keyword of backendKeywords
-    ) {
-
-        if (
-            finalList.length >=
-            MAX_KEYWORDS
-        ) {
-
-            break;
-
-        }
-
-        addUnique(
-            finalList,
-            keyword
-        );
-
-    }
-
-
-    /* ======================================================
-       FALLBACK KEYWORDS
-    ====================================================== */
-
-    for (
-        const keyword of fallbackKeywords
-    ) {
-
-        if (
-            finalList.length >=
-            MAX_KEYWORDS
-        ) {
-
-            break;
-
-        }
-
-        addUnique(
-            finalList,
-            keyword
-        );
-
-    }
-
-
-    /* ======================================================
-       GUARANTEE
-       
-       If backend returns only:
-       
-       1. Cotton kurti
-       
-       fallback fills the remaining keywords.
-    ====================================================== */
-
-    return finalList.slice(
-        0,
-        MAX_KEYWORDS
-    );
-
-}
-
-
-/* ==========================================================
-   DISPLAY
-========================================================== */
-
-function displayKeywords(
-    keywords
-) {
-
-    resultBox.value =
-
-        keywords
-            .map(
-                (keyword, index) =>
-
-                    (index + 1) +
-                    ". " +
-                    keyword
-
-            )
-            .join("\n");
-
-}
-
-
-/* ==========================================================
-   GENERATE
-========================================================== */
-
-async function generateSEO() {
-
-    const product =
-        cleanText(
-            productInput.value
-        );
-
-    const category =
-        cleanText(
-            categoryInput.value
-        );
-
-    const brand =
-        cleanText(
-            brandInput.value
-        );
-
-    const mainKeyword =
-        cleanText(
-            keywordInput.value
-        );
-
-    const marketplace =
-        cleanText(
-            marketplaceInput.value
-        );
-
-
-    /* ======================================================
-       VALIDATION
-    ====================================================== */
-
-    if (!product) {
-
-        statusBox.innerText =
-            "❌ Please enter Product Name.";
-
-        productInput.focus();
-
-        return;
-
-    }
-
-
-    if (!category) {
-
-        statusBox.innerText =
-            "❌ Please select Product Category.";
-
-        categoryInput.focus();
-
-        return;
-
-    }
-
-
-    /* ======================================================
-       UI
-    ====================================================== */
-
-    generateBtn.disabled = true;
-
-    generateBtn.innerText =
-        "⏳ Generating SEO Keywords...";
-
-    resultBox.value =
-        "⏳ Please wait...";
-
-    statusBox.innerText =
-        "🤖 AI SEO keywords तैयार कर रहा है...";
-
-
-    /* ======================================================
-       FALLBACK IS CREATED FIRST
-       
-       This is important.
-       
-       Backend fail होने पर भी tool काम करेगा.
-    ====================================================== */
-
-    const fallbackKeywords =
-        buildFallbackKeywords(
-
-            product,
-            category,
-            marketplace,
-            brand,
-            mainKeyword
-
-        );
-
-
-    let backendKeywords = [];
-
-
-    /* ======================================================
-       BACKEND REQUEST
-    ====================================================== */
-
-    try {
-
-        const requestData = {
-
-            category:
-                category,
-
-            productName:
-                product,
-
-            brand:
-                brand,
-
-            productDetails:
-                "",
-
-            mainKeyword:
-                getMainKeyword(
-                    product,
-                    mainKeyword
-                ),
-
-            marketplace:
-                marketplace,
-
-            keywordCount:
-                MAX_KEYWORDS,
-
-            maxKeywords:
-                MAX_KEYWORDS,
-
-            minKeywords:
-                12,
-
-            requestedKeywordCount:
-                MAX_KEYWORDS
-
-        };
-
-
-        console.log(
-            "SEO REQUEST:",
-            requestData
-        );
-
-
-        const response =
-            await fetch(
-                SEO_API,
-                {
-
-                    method: "POST",
-
-                    headers: {
-
-                        "Content-Type":
-                            "application/json",
-
-                        "Accept":
-                            "application/json"
-
-                    },
-
-                    body:
-                        JSON.stringify(
-                            requestData
-                        )
-
-                }
-            );
-
-
-        const text =
-            await response.text();
-
-
-        console.log(
-            "SEO BACKEND RESPONSE:",
-            text
-        );
-
-
-        if (response.ok) {
-
-            try {
-
-                const data =
-                    JSON.parse(text);
-
-                backendKeywords =
-                    extractBackendKeywords(
-                        data
+    <!-- ==================================================
+         SEO GENERATOR JAVASCRIPT
+         
+         IMPORTANT:
+         Version 17.0.0 = CACHE BUSTER
+         
+         Browser पुराने JS को use न करे इसलिए
+         ?v=17.0.0 लगाया गया है।
+    ================================================== -->
+
+    <script
+        src="seo-generator.js?v=17.0.0"
+        defer
+    ></script>
+
+
+    <!-- ==================================================
+         PAGE SAFETY
+    ================================================== -->
+
+    <script>
+
+        /*
+         * यह छोटा safety layer केवल यह सुनिश्चित करता है
+         * कि page load होने के बाद required elements मौजूद हैं।
+         *
+         * यह SEO generation को replace नहीं करता।
+         * Actual generation seo-generator.js करेगा।
+         */
+
+        window.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                const requiredIds = [
+
+                    "generateBtn",
+                    "copyBtn",
+                    "product",
+                    "category",
+                    "brand",
+                    "keyword",
+                    "marketplace",
+                    "result",
+                    "status"
+
+                ];
+
+
+                const missing =
+                    requiredIds.filter(
+                        function (id) {
+
+                            return !document.getElementById(id);
+
+                        }
                     );
 
+
+                if (missing.length > 0) {
+
+                    console.error(
+                        "❌ SEO Generator HTML elements missing:",
+                        missing
+                    );
+
+                }
+                else {
+
+                    console.log(
+                        "✅ SEO Generator HTML 17.0 loaded successfully."
+                    );
+
+                }
+
             }
-            catch (jsonError) {
-
-                console.warn(
-                    "Backend JSON parse failed.",
-                    jsonError
-                );
-
-            }
-
-        }
-
-    }
-    catch (error) {
-
-        console.warn(
-            "Backend unavailable. Using safe frontend fallback.",
-            error
         );
 
-    }
+    </script>
 
 
-    /* ======================================================
-       FINAL MERGE
-    ====================================================== */
-
-    const finalKeywords =
-        mergeKeywords(
-
-            backendKeywords,
-
-            fallbackKeywords,
-
-            product,
-
-            mainKeyword
-
-        );
-
-
-    /* ======================================================
-       DISPLAY
-    ====================================================== */
-
-    if (
-        finalKeywords.length > 0
-    ) {
-
-        displayKeywords(
-            finalKeywords
-        );
-
-
-        statusBox.innerText =
-            "✅ " +
-            finalKeywords.length +
-            " SEO keywords generated successfully.";
-
-        console.log(
-            "FINAL SEO KEYWORDS:",
-            finalKeywords
-        );
-
-    }
-    else {
-
-        resultBox.value =
-            "❌ SEO keywords generate नहीं हो सके.";
-
-        statusBox.innerText =
-            "❌ SEO generation failed.";
-
-    }
-
-
-    /* ======================================================
-       BUTTON RESET
-    ====================================================== */
-
-    generateBtn.disabled = false;
-
-    generateBtn.innerText =
-        "🤖 Generate SEO Keywords";
-
-}
-
-
-/* ==========================================================
-   COPY
-========================================================== */
-
-async function copySEO() {
-
-    const text =
-        resultBox.value.trim();
-
-
-    if (
-        !text ||
-        text.startsWith("❌") ||
-        text.startsWith("⏳")
-    ) {
-
-        alert(
-            "पहले SEO Keywords generate करें।"
-        );
-
-        return;
-
-    }
-
-
-    try {
-
-        if (
-            navigator.clipboard &&
-            navigator.clipboard.writeText
-        ) {
-
-            await navigator.clipboard.writeText(
-                text
-            );
-
-            alert(
-                "✅ SEO Keywords copied successfully!"
-            );
-
-            return;
-
-        }
-
-    }
-    catch (error) {
-
-        console.warn(
-            "Clipboard API failed:",
-            error
-        );
-
-    }
-
-
-    /* ======================================================
-       OLD BROWSER FALLBACK
-    ====================================================== */
-
-    const textarea =
-        document.createElement(
-            "textarea"
-        );
-
-    textarea.value =
-        text;
-
-    textarea.style.position =
-        "fixed";
-
-    textarea.style.left =
-        "-9999px";
-
-    document.body.appendChild(
-        textarea
-    );
-
-    textarea.focus();
-
-    textarea.select();
-
-
-    try {
-
-        const success =
-            document.execCommand(
-                "copy"
-            );
-
-        if (success) {
-
-            alert(
-                "✅ SEO Keywords copied successfully!"
-            );
-
-        }
-        else {
-
-            alert(
-                "❌ Copy नहीं हो सका।"
-            );
-
-        }
-
-    }
-    catch (error) {
-
-        console.error(
-            "Copy error:",
-            error
-        );
-
-        alert(
-            "❌ Copy नहीं हो सका।"
-        );
-
-    }
-
-
-    textarea.remove();
-
-}
-
-
-/* ==========================================================
-   BUTTON EVENTS
-========================================================== */
-
-generateBtn.addEventListener(
-    "click",
-    generateSEO
-);
-
-
-copyBtn.addEventListener(
-    "click",
-    copySEO
-);
-
-
-/* ==========================================================
-   ENTER KEY PROTECTION
-========================================================== */
-
-document.addEventListener(
-    "keydown",
-    function(event) {
-
-        if (
-            event.key === "Enter" &&
-            event.target &&
-            event.target.tagName === "INPUT"
-        ) {
-
-            event.preventDefault();
-
-        }
-
-    }
-);
-
-
-/* ==========================================================
-   STARTUP
-========================================================== */
-
-console.log(
-    "🚀 AI Seller Toolkit SEO Generator 15.1 FIXED loaded"
-);
-    
-    <script src="seo-generator.js?v=16.0.0" defer></script>
-
-</script>
-
-
-    <script src="seo-generator.js?v=16.0.0" defer></script>
 </body>
 
 </html>
