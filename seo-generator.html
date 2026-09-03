@@ -3,903 +3,569 @@
 
 <head>
 
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <meta
-        name="description"
-        content="AI Seller Toolkit SEO Keyword Generator - Generate factual, relevant and product-specific SEO keywords."
-    >
-
-    <title>
-        AI Seller Toolkit - SEO Keyword Generator
-    </title>
-
-
-    <style>
-
-        * {
-            box-sizing: border-box;
-        }
-
-
-        body {
-
-            margin: 0;
-
-            padding: 0;
-
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
-
-            background: #f4f7fb;
-
-            color: #1f2937;
-        }
-
-
-        .container {
-
-            width: 100%;
-
-            max-width: 850px;
-
-            margin: 0 auto;
-
-            padding: 25px 15px 50px;
-        }
-
-
-        .card {
-
-            background: #ffffff;
-
-            border-radius: 18px;
-
-            padding: 25px;
-
-            box-shadow:
-                0 8px 30px
-                rgba(0, 0, 0, 0.08);
-        }
-
-
-        .header {
-
-            text-align: center;
-
-            margin-bottom: 25px;
-        }
-
-
-        .header h1 {
-
-            margin: 0 0 10px;
-
-            font-size: 30px;
-
-            color: #111827;
-        }
-
-
-        .header p {
-
-            margin: 0;
-
-            color: #6b7280;
-
-            line-height: 1.6;
-
-            font-size: 14px;
-        }
-
-
-        .version {
-
-            display: inline-block;
-
-            margin-top: 10px;
-
-            padding: 4px 9px;
-
-            border-radius: 20px;
-
-            background: #eff6ff;
-
-            color: #2563eb;
-
-            font-size: 11px;
-
-            font-weight: 700;
-        }
-
-
-        .form-group {
-
-            margin-bottom: 18px;
-        }
-
-
-        label {
-
-            display: block;
-
-            margin-bottom: 8px;
-
-            font-weight: 700;
-
-            font-size: 15px;
-
-            color: #374151;
-        }
-
-
-        input,
-        select,
-        textarea {
-
-            width: 100%;
-
-            padding: 13px 14px;
-
-            border:
-                1px solid #d1d5db;
-
-            border-radius: 10px;
-
-            font-size: 15px;
-
-            outline: none;
-
-            background: #ffffff;
-
-            color: #111827;
-
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
-        }
-
-
-        input:focus,
-        select:focus,
-        textarea:focus {
-
-            border-color: #2563eb;
-
-            box-shadow:
-                0 0 0 3px
-                rgba(37, 99, 235, 0.10);
-        }
-
-
-        textarea {
-
-            min-height: 135px;
-
-            resize: vertical;
-
-            line-height: 1.6;
-        }
-
-
-        .hint {
-
-            margin-top: 6px;
-
-            font-size: 12px;
-
-            color: #6b7280;
-
-            line-height: 1.5;
-        }
-
-
-        .button {
-
-            width: 100%;
-
-            border: none;
-
-            border-radius: 10px;
-
-            padding: 14px 18px;
-
-            font-size: 16px;
-
-            font-weight: 700;
-
-            cursor: pointer;
-
-            background: #2563eb;
-
-            color: #ffffff;
-
-            transition:
-                background 0.2s,
-                transform 0.1s;
-        }
-
-
-        .button:hover {
-
-            background: #1d4ed8;
-        }
-
-
-        .button:active {
-
-            transform: scale(0.99);
-        }
-
-
-        .button:disabled {
-
-            opacity: 0.65;
-
-            cursor: not-allowed;
-
-            transform: none;
-        }
-
-
-        .status {
-
-            display: none;
-
-            margin-top: 18px;
-
-            padding: 13px 15px;
-
-            border-radius: 10px;
-
-            font-size: 14px;
-
-            line-height: 1.5;
-        }
-
-
-        .status.show {
-
-            display: block;
-        }
-
-
-        .status.info {
-
-            background: #eff6ff;
-
-            color: #1d4ed8;
-
-            border:
-                1px solid #bfdbfe;
-        }
-
-
-        .status.success {
-
-            background: #ecfdf5;
-
-            color: #047857;
-
-            border:
-                1px solid #a7f3d0;
-        }
-
-
-        .status.error {
-
-            background: #fef2f2;
-
-            color: #b91c1c;
-
-            border:
-                1px solid #fecaca;
-        }
-
-
-        .result-box {
-
-            margin-top: 22px;
-        }
-
-
-        .result-box textarea {
-
-            min-height: 310px;
-
-            line-height: 1.8;
-
-            font-size: 15px;
-
-            background: #fafafa;
-        }
-
-
-        .copy-button {
-
-            margin-top: 10px;
-
-            width: 100%;
-
-            padding: 12px;
-
-            border: none;
-
-            border-radius: 10px;
-
-            background: #111827;
-
-            color: #ffffff;
-
-            font-size: 15px;
-
-            font-weight: 700;
-
-            cursor: pointer;
-        }
-
-
-        .copy-button:hover {
-
-            background: #000000;
-        }
-
-
-        .info-box {
-
-            margin-top: 22px;
-
-            padding: 16px;
-
-            background: #f8fafc;
-
-            border:
-                1px solid #e2e8f0;
-
-            border-radius: 12px;
-        }
-
-
-        .info-box h3 {
-
-            margin: 0 0 10px;
-
-            font-size: 17px;
-
-            color: #1f2937;
-        }
-
-
-        .info-box ul {
-
-            margin: 0;
-
-            padding-left: 20px;
-        }
-
-
-        .info-box li {
-
-            margin-bottom: 7px;
-
-            line-height: 1.5;
-
-            color: #475569;
-
-            font-size: 13px;
-        }
-
-
-        .api-status {
-
-            margin-top: 13px;
-
-            padding-top: 10px;
-
-            border-top:
-                1px solid #e2e8f0;
-
-            font-size: 11px;
-
-            color: #64748b;
-
-            word-break: break-all;
-
-            line-height: 1.5;
-        }
-
-
-        .connection-test {
-
-            margin-top: 10px;
-
-            width: 100%;
-
-            padding: 10px;
-
-            border:
-                1px solid #cbd5e1;
-
-            border-radius: 8px;
-
-            background: #ffffff;
-
-            color: #475569;
-
-            font-size: 13px;
-
-            font-weight: 600;
-
-            cursor: pointer;
-        }
-
-
-        .connection-test:hover {
-
-            background: #f1f5f9;
-        }
-
-
-        @media (max-width: 600px) {
-
-            .container {
-
-                padding:
-                    15px 10px 35px;
-            }
-
-
-            .card {
-
-                padding: 18px;
-
-                border-radius: 14px;
-            }
-
-
-            .header h1 {
-
-                font-size: 25px;
-            }
-
-
-            input,
-            select,
-            textarea {
-
-                font-size: 14px;
-            }
-
-        }
-
-    </style>
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<meta
+    name="description"
+    content="AI Seller Toolkit SEO Keyword Generator - Generate factual, relevant and product-specific SEO keywords."
+>
+
+<title>AI Seller Toolkit - SEO Keyword Generator</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    padding:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f4f7fb;
+    color:#1f2937;
+}
+
+.container{
+    width:100%;
+    max-width:850px;
+    margin:0 auto;
+    padding:25px 15px 50px;
+}
+
+.card{
+    background:#fff;
+    border-radius:18px;
+    padding:25px;
+    box-shadow:0 8px 30px rgba(0,0,0,.08);
+}
+
+.header{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.header h1{
+    margin:0 0 10px;
+    font-size:30px;
+    color:#111827;
+}
+
+.header p{
+    margin:0;
+    color:#6b7280;
+    line-height:1.6;
+    font-size:14px;
+}
+
+.version{
+    display:inline-block;
+    margin-top:10px;
+    padding:4px 10px;
+    border-radius:20px;
+    background:#eff6ff;
+    color:#2563eb;
+    font-size:11px;
+    font-weight:700;
+}
+
+.form-group{
+    margin-bottom:18px;
+}
+
+label{
+    display:block;
+    margin-bottom:8px;
+    font-weight:700;
+    font-size:15px;
+    color:#374151;
+}
+
+input,
+select,
+textarea{
+    width:100%;
+    padding:13px 14px;
+    border:1px solid #d1d5db;
+    border-radius:10px;
+    font-size:15px;
+    outline:none;
+    background:#fff;
+    color:#111827;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+    border-color:#2563eb;
+    box-shadow:0 0 0 3px rgba(37,99,235,.10);
+}
+
+textarea{
+    min-height:135px;
+    resize:vertical;
+    line-height:1.6;
+}
+
+.hint{
+    margin-top:6px;
+    font-size:12px;
+    color:#6b7280;
+    line-height:1.5;
+}
+
+.button{
+    width:100%;
+    border:0;
+    border-radius:10px;
+    padding:14px 18px;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+    background:#2563eb;
+    color:#fff;
+}
+
+.button:hover{
+    background:#1d4ed8;
+}
+
+.button:disabled{
+    opacity:.65;
+    cursor:not-allowed;
+}
+
+.status{
+    display:none;
+    margin-top:18px;
+    padding:13px 15px;
+    border-radius:10px;
+    font-size:14px;
+    line-height:1.5;
+}
+
+.status.show{
+    display:block;
+}
+
+.status.info{
+    background:#eff6ff;
+    color:#1d4ed8;
+    border:1px solid #bfdbfe;
+}
+
+.status.success{
+    background:#ecfdf5;
+    color:#047857;
+    border:1px solid #a7f3d0;
+}
+
+.status.error{
+    background:#fef2f2;
+    color:#b91c1c;
+    border:1px solid #fecaca;
+}
+
+.result-box{
+    margin-top:22px;
+}
+
+.result-box textarea{
+    min-height:310px;
+    line-height:1.8;
+    font-size:15px;
+    background:#fafafa;
+}
+
+.copy-button{
+    margin-top:10px;
+    width:100%;
+    padding:12px;
+    border:0;
+    border-radius:10px;
+    background:#111827;
+    color:#fff;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+}
+
+.copy-button:hover{
+    background:#000;
+}
+
+.info-box{
+    margin-top:22px;
+    padding:16px;
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+    border-radius:12px;
+}
+
+.info-box h3{
+    margin:0 0 10px;
+    font-size:17px;
+    color:#1f2937;
+}
+
+.info-box ul{
+    margin:0;
+    padding-left:20px;
+}
+
+.info-box li{
+    margin-bottom:7px;
+    line-height:1.5;
+    color:#475569;
+    font-size:13px;
+}
+
+.api-status{
+    margin-top:13px;
+    padding-top:10px;
+    border-top:1px solid #e2e8f0;
+    font-size:11px;
+    color:#64748b;
+    word-break:break-all;
+    line-height:1.5;
+}
+
+.connection-test{
+    margin-top:10px;
+    width:100%;
+    padding:10px;
+    border:1px solid #cbd5e1;
+    border-radius:8px;
+    background:#fff;
+    color:#475569;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.connection-test:hover{
+    background:#f1f5f9;
+}
+
+@media(max-width:600px){
+
+    .container{
+        padding:15px 10px 35px;
+    }
+
+    .card{
+        padding:18px;
+        border-radius:14px;
+    }
+
+    .header h1{
+        font-size:25px;
+    }
+
+    input,
+    select,
+    textarea{
+        font-size:14px;
+    }
+}
+
+</style>
 
 </head>
 
 
 <body>
 
-
 <div class="container">
 
+<div class="card">
 
-    <div class="card">
 
+<!-- HEADER -->
 
-        <!-- ==================================================
-             HEADER
-        =================================================== -->
+<div class="header">
 
-        <div class="header">
+<h1>
+🔎 AI SEO Keyword Generator
+</h1>
 
-            <h1>
-                🔎 AI SEO Keyword Generator
-            </h1>
+<p>
+Generate relevant, factual and product-specific SEO keywords
+for your product listing.
+</p>
 
-            <p>
-                Generate relevant, factual and
-                product-specific SEO keywords
-                for your product listing.
-            </p>
-
-            <div class="version">
-                FINAL VERSION 22.0
-            </div>
-
-        </div>
-
-
-
-        <!-- ==================================================
-             FORM
-        =================================================== -->
-
-        <form id="seoForm">
-
-
-            <!-- PRODUCT NAME -->
-
-            <div class="form-group">
-
-                <label for="product">
-                    Product Name *
-                </label>
-
-                <input
-                    type="text"
-                    id="product"
-                    name="product"
-                    placeholder="Example: Cotton Kurti"
-                    autocomplete="off"
-                    required
-                >
-
-                <div class="hint">
-                    Enter the exact name of your product.
-                </div>
-
-            </div>
-
-
-
-            <!-- CATEGORY -->
-
-            <div class="form-group">
-
-                <label for="category">
-                    Product Category *
-                </label>
-
-                <select
-                    id="category"
-                    name="category"
-                    required
-                >
-
-                    <option value="">
-                        Select Category
-                    </option>
-
-                    <option value="Fashion">
-                        👗 Fashion
-                    </option>
-
-                    <option value="Beauty">
-                        💄 Beauty
-                    </option>
-
-                    <option value="Electronics">
-                        📱 Electronics
-                    </option>
-
-                    <option value="Home & Kitchen">
-                        🏠 Home & Kitchen
-                    </option>
-
-                    <option value="Shoes">
-                        👟 Shoes
-                    </option>
-
-                    <option value="Jewellery">
-                        💎 Jewellery
-                    </option>
-
-                    <option value="Toys">
-                        🧸 Toys
-                    </option>
-
-                    <option value="Books">
-                        📚 Books
-                    </option>
-
-                    <option value="Pet">
-                        🐾 Pet
-                    </option>
-
-                    <option value="Sports">
-                        ⚽ Sports
-                    </option>
-
-                    <option value="Automotive">
-                        🚗 Automotive
-                    </option>
-
-                    <option value="Garden">
-                        🌱 Garden
-                    </option>
-
-                    <option value="Food">
-                        🍴 Food
-                    </option>
-
-                    <option value="Gifts">
-                        🎁 Gifts
-                    </option>
-
-                </select>
-
-            </div>
-
-
-
-            <!-- BRAND -->
-
-            <div class="form-group">
-
-                <label for="brand">
-                    Brand
-                </label>
-
-                <input
-                    type="text"
-                    id="brand"
-                    name="brand"
-                    placeholder="Example: Test Brand"
-                    autocomplete="off"
-                >
-
-                <div class="hint">
-                    Optional. Enter only the real brand name.
-                </div>
-
-            </div>
-
-
-
-            <!-- PRODUCT DETAILS -->
-
-            <div class="form-group">
-
-                <label for="keyword">
-                    Product Details / Main Keyword
-                </label>
-
-                <textarea
-                    id="keyword"
-                    name="keyword"
-                    placeholder="Example: Blue floral print cotton kurti, round neck, cotton fabric, size M"
-                ></textarea>
-
-                <div class="hint">
-
-                    Add real product information such as
-                    material, color, size, pattern,
-                    capacity, model, quantity, etc.
-
-                    Do not enter information that is
-                    not true for your product.
-
-                </div>
-
-            </div>
-
-
-
-            <!-- MARKETPLACE -->
-
-            <div class="form-group">
-
-                <label for="marketplace">
-                    Marketplace
-                </label>
-
-                <select
-                    id="marketplace"
-                    name="marketplace"
-                >
-
-                    <option value="">
-                        Select Marketplace
-                    </option>
-
-                    <option value="Amazon">
-                        Amazon
-                    </option>
-
-                    <option value="Meesho">
-                        Meesho
-                    </option>
-
-                    <option value="Flipkart">
-                        Flipkart
-                    </option>
-
-                    <option value="Etsy">
-                        Etsy
-                    </option>
-
-                    <option value="Shopify">
-                        Shopify
-                    </option>
-
-                    <option value="OLX">
-                        OLX
-                    </option>
-
-                </select>
-
-            </div>
-
-
-
-            <!-- GENERATE BUTTON -->
-
-            <button
-                type="submit"
-                id="generateBtn"
-                class="button"
-            >
-                ✨ Generate SEO Keywords
-            </button>
-
-
-        </form>
-
-
-
-        <!-- ==================================================
-             STATUS
-        =================================================== -->
-
-        <div
-            id="status"
-            class="status"
-            role="status"
-            aria-live="polite"
-        ></div>
-
-
-
-        <!-- ==================================================
-             RESULT
-        =================================================== -->
-
-        <div class="result-box">
-
-            <label for="result">
-                Generated SEO Keywords
-            </label>
-
-            <textarea
-                id="result"
-                readonly
-                placeholder="Your SEO keywords will appear here..."
-            ></textarea>
-
-
-            <button
-                type="button"
-                id="copyBtn"
-                class="copy-button"
-            >
-                📋 Copy Keywords
-            </button>
-
-        </div>
-
-
-
-        <!-- ==================================================
-             RULES
-        =================================================== -->
-
-        <div class="info-box">
-
-            <h3>
-                🛡️ Strict Factual SEO Rules
-            </h3>
-
-            <ul>
-
-                <li>
-                    Keywords are generated from
-                    the information supplied by the seller.
-                </li>
-
-                <li>
-                    The AI must not invent product
-                    specifications.
-                </li>
-
-                <li>
-                    Unsupported material, color,
-                    size, gender, usage or feature
-                    claims are not allowed.
-                </li>
-
-                <li>
-                    Generic filler phrases such as
-                    "buy", "shop", "shopping" and
-                    "online" are not automatically
-                    added just to increase the count.
-                </li>
-
-                <li>
-                    Duplicate keywords are removed.
-                </li>
-
-                <li>
-                    If only a few factual keywords
-                    are possible, the tool returns
-                    fewer keywords instead of making
-                    irrelevant variations.
-                </li>
-
-            </ul>
-
-
-            <div class="api-status">
-
-                Backend API:
-
-                https://ai-seller-toolkit-backend-1.onrender.com/api/generate-seo
-
-            </div>
-
-
-            <!-- CONNECTION TEST -->
-
-            <button
-                type="button"
-                id="connectionTestBtn"
-                class="connection-test"
-            >
-                🔌 Test Backend Connection
-            </button>
-
-        </div>
-
-
-    </div>
-
+<div class="version">
+FINAL VERSION 22.0
+</div>
 
 </div>
 
 
+<!-- PRODUCT -->
 
-<!-- ==========================================================
-     SINGLE-FILE JAVASCRIPT
-     NO EXTERNAL seo-generator.js
-========================================================== -->
+<div class="form-group">
+
+<label for="seo22ProductName">
+Product Name *
+</label>
+
+<input
+    type="text"
+    id="seo22ProductName"
+    placeholder="Example: Cotton Kurti"
+    autocomplete="off"
+>
+
+<div class="hint">
+Enter the exact name of your product.
+</div>
+
+</div>
+
+
+<!-- CATEGORY -->
+
+<div class="form-group">
+
+<label for="seo22Category">
+Product Category *
+</label>
+
+<select id="seo22Category">
+
+<option value="">
+Select Category
+</option>
+
+<option value="Fashion">👗 Fashion</option>
+<option value="Beauty">💄 Beauty</option>
+<option value="Electronics">📱 Electronics</option>
+<option value="Home & Kitchen">🏠 Home & Kitchen</option>
+<option value="Shoes">👟 Shoes</option>
+<option value="Jewellery">💎 Jewellery</option>
+<option value="Toys">🧸 Toys</option>
+<option value="Books">📚 Books</option>
+<option value="Pet">🐾 Pet</option>
+<option value="Sports">⚽ Sports</option>
+<option value="Automotive">🚗 Automotive</option>
+<option value="Garden">🌱 Garden</option>
+<option value="Food">🍴 Food</option>
+<option value="Gifts">🎁 Gifts</option>
+
+</select>
+
+</div>
+
+
+<!-- BRAND -->
+
+<div class="form-group">
+
+<label for="seo22Brand">
+Brand
+</label>
+
+<input
+    type="text"
+    id="seo22Brand"
+    placeholder="Example: Test Brand"
+    autocomplete="off"
+>
+
+<div class="hint">
+Optional. Enter only the real brand name.
+</div>
+
+</div>
+
+
+<!-- DETAILS -->
+
+<div class="form-group">
+
+<label for="seo22Details">
+Product Details / Main Keyword
+</label>
+
+<textarea
+    id="seo22Details"
+    placeholder="Example: Blue floral print cotton kurti, round neck, cotton fabric, size M"
+></textarea>
+
+<div class="hint">
+Add real product information such as material, color,
+size, pattern, capacity, model, quantity, etc.
+Do not enter information that is not true for your product.
+</div>
+
+</div>
+
+
+<!-- MARKETPLACE -->
+
+<div class="form-group">
+
+<label for="seo22Marketplace">
+Marketplace
+</label>
+
+<select id="seo22Marketplace">
+
+<option value="">
+Select Marketplace
+</option>
+
+<option value="Amazon">Amazon</option>
+<option value="Meesho">Meesho</option>
+<option value="Flipkart">Flipkart</option>
+<option value="Etsy">Etsy</option>
+<option value="Shopify">Shopify</option>
+<option value="OLX">OLX</option>
+
+</select>
+
+</div>
+
+
+<!-- GENERATE -->
+
+<button
+    type="button"
+    id="seo22GenerateButton"
+    class="button"
+>
+✨ Generate SEO Keywords
+</button>
+
+
+<!-- STATUS -->
+
+<div
+    id="seo22Status"
+    class="status"
+    role="status"
+    aria-live="polite"
+></div>
+
+
+<!-- RESULT -->
+
+<div class="result-box">
+
+<label for="seo22Result">
+Generated SEO Keywords
+</label>
+
+<textarea
+    id="seo22Result"
+    readonly
+    placeholder="Your SEO keywords will appear here..."
+></textarea>
+
+<button
+    type="button"
+    id="seo22CopyButton"
+    class="copy-button"
+>
+📋 Copy Keywords
+</button>
+
+</div>
+
+
+<!-- RULES -->
+
+<div class="info-box">
+
+<h3>
+🛡️ Strict Factual SEO Rules
+</h3>
+
+<ul>
+
+<li>
+Keywords are generated only from seller-provided information.
+</li>
+
+<li>
+The AI must not invent product specifications.
+</li>
+
+<li>
+Unsupported material, color, size, gender, usage or feature
+claims are not allowed.
+</li>
+
+<li>
+Generic filler phrases such as "buy", "shop",
+"shopping" and "online" are not automatically added
+just to increase the keyword count.
+</li>
+
+<li>
+Duplicate keywords are removed.
+</li>
+
+<li>
+If only a few factual keywords are possible,
+the tool returns fewer keywords instead of fake variations.
+</li>
+
+</ul>
+
+<div class="api-status">
+
+Backend API:
+
+https://ai-seller-toolkit-backend-1.onrender.com/api/generate-seo
+
+</div>
+
+
+<button
+    type="button"
+    id="seo22ConnectionButton"
+    class="connection-test"
+>
+🔌 Test Backend Connection
+</button>
+
+</div>
+
+
+</div>
+
+</div>
+
 
 <script>
 
 "use strict";
 
 
-// ==========================================================
-// VERSION
-// ==========================================================
+/* =========================================================
+   AI SELLER TOOLKIT
+   SEO GENERATOR
+   FINAL VERSION 22.0 FIXED
+========================================================= */
 
-const SEO_VERSION = "22.0";
 
-
-// ==========================================================
-// BACKEND URL
-// ==========================================================
-
-const BACKEND_URL =
+const SEO22_BACKEND =
     "https://ai-seller-toolkit-backend-1.onrender.com";
 
 
-const SEO_ENDPOINT =
-    BACKEND_URL +
+const SEO22_ENDPOINT =
+    SEO22_BACKEND +
     "/api/generate-seo";
 
 
-// ==========================================================
-// SUPPORTED CATEGORIES
-// ==========================================================
-
-const SUPPORTED_CATEGORIES = [
+const SEO22_CATEGORIES = [
 
     "Fashion",
     "Beauty",
@@ -919,98 +585,18 @@ const SUPPORTED_CATEGORIES = [
 ];
 
 
-// ==========================================================
-// PAGE LOAD
-// ==========================================================
+/* =========================================================
+   GET CURRENT VALUE
+========================================================= */
 
-document.addEventListener(
-    "DOMContentLoaded",
-    function () {
-
-        console.log(
-            "AI Seller Toolkit SEO Generator " +
-            SEO_VERSION +
-            " loaded."
-        );
-
-
-        const form =
-            document.getElementById(
-                "seoForm"
-            );
-
-
-        const copyBtn =
-            document.getElementById(
-                "copyBtn"
-            );
-
-
-        const connectionBtn =
-            document.getElementById(
-                "connectionTestBtn"
-            );
-
-
-        if (form) {
-
-            form.addEventListener(
-                "submit",
-                function (event) {
-
-                    event.preventDefault();
-
-                    generateSEO();
-
-                }
-            );
-
-        }
-
-
-        if (copyBtn) {
-
-            copyBtn.addEventListener(
-                "click",
-                copyKeywords
-            );
-
-        }
-
-
-        if (connectionBtn) {
-
-            connectionBtn.addEventListener(
-                "click",
-                testBackend
-            );
-
-        }
-
-    }
-);
-
-
-// ==========================================================
-// GET VALUE
-// ==========================================================
-
-function getValue(id) {
+function seo22Value(id){
 
     const element =
         document.getElementById(id);
 
-
-    if (!element) {
-
-        console.error(
-            "Element not found:",
-            id
-        );
-
+    if(!element){
         return "";
     }
-
 
     return String(
         element.value || ""
@@ -1018,351 +604,194 @@ function getValue(id) {
 }
 
 
-// ==========================================================
-// SHOW STATUS
-// ==========================================================
+/* =========================================================
+   STATUS
+========================================================= */
 
-function showStatus(
-    message,
-    type
-) {
+function seo22Status(message,type){
 
-    const status =
+    const box =
         document.getElementById(
-            "status"
+            "seo22Status"
         );
 
-
-    if (!status) {
+    if(!box){
         return;
     }
 
-
-    status.textContent =
+    box.textContent =
         message || "";
 
-
-    status.className =
+    box.className =
         "status show " +
         (type || "info");
 }
 
 
-// ==========================================================
-// HIDE STATUS
-// ==========================================================
+/* =========================================================
+   LOADING
+========================================================= */
 
-function hideStatus() {
-
-    const status =
-        document.getElementById(
-            "status"
-        );
-
-
-    if (!status) {
-        return;
-    }
-
-
-    status.textContent = "";
-
-    status.className =
-        "status";
-}
-
-
-// ==========================================================
-// LOADING
-// ==========================================================
-
-function setLoading(
-    loading
-) {
+function seo22Loading(isLoading){
 
     const button =
         document.getElementById(
-            "generateBtn"
+            "seo22GenerateButton"
         );
 
-
-    if (!button) {
+    if(!button){
         return;
     }
 
+    button.disabled =
+        isLoading;
 
-    if (loading) {
-
-        button.disabled =
-            true;
-
-        button.textContent =
-            "⏳ Generating SEO Keywords...";
-
-    } else {
-
-        button.disabled =
-            false;
-
-        button.textContent =
-            "✨ Generate SEO Keywords";
-    }
+    button.textContent =
+        isLoading
+        ? "⏳ Generating SEO Keywords..."
+        : "✨ Generate SEO Keywords";
 }
 
 
-// ==========================================================
-// NORMALIZE CATEGORY
-// ==========================================================
+/* =========================================================
+   CLEAN KEYWORD
+========================================================= */
 
-function normalizeCategory(
-    category
-) {
+function seo22Clean(value){
 
-    let value =
-        String(
-            category || ""
-        ).trim();
-
-
-    value =
-        value.replace(
-            /^[^\p{L}\p{N}]+/u,
-            ""
-        );
-
-
-    if (
-        value ===
-        "Fashion & Clothing"
-    ) {
-
-        return "Fashion";
-    }
-
-
-    return value;
-}
-
-
-// ==========================================================
-// CLEAN KEYWORD
-// ==========================================================
-
-function cleanKeyword(
-    keyword
-) {
-
-    if (
-        keyword === null ||
-        keyword === undefined
-    ) {
-
+    if(
+        value === null ||
+        value === undefined
+    ){
         return "";
     }
 
+    let text =
+        String(value).trim();
 
-    let value =
-        String(keyword)
-            .trim();
-
-
-    // Remove numbering
-
-    value =
-        value.replace(
+    text =
+        text.replace(
             /^\s*(?:[-•*]|\d+[.)])\s*/,
             ""
         );
 
-
-    // Remove quotes
-
-    value =
-        value.replace(
+    text =
+        text.replace(
             /^["'“”‘’]+|["'“”‘’]+$/g,
             ""
         );
 
-
-    // Remove extra spaces
-
-    value =
-        value.replace(
+    text =
+        text.replace(
             /\s+/g,
             " "
         );
 
-
-    return value.trim();
+    return text.trim();
 }
 
 
-// ==========================================================
-// GENERIC FILLER CHECK
-// ==========================================================
+/* =========================================================
+   REMOVE GENERIC FILLER
+========================================================= */
 
-function isGenericFiller(
-    keyword
-) {
+function seo22IsFiller(keyword){
 
     const value =
-        keyword
-            .toLowerCase()
-            .trim();
+        keyword.toLowerCase();
 
-
-    const patterns = [
-
-        /\bproduct\s+online\b/i,
-
-        /\bonline\s+shopping\b/i,
-
-        /\bonline\s+buy\b/i,
+    const forbidden = [
 
         /\bbuy\s+online\b/i,
-
         /\bshop\s+online\b/i,
-
-        /\bonline\s+shop\b/i,
-
+        /\bonline\s+shopping\b/i,
         /\bshopping\s+online\b/i,
-
-        /\bproduct\s+shop\b/i,
-
+        /\bonline\s+shop\b/i,
+        /\bproduct\s+online\b/i,
         /\bproduct\s+shopping\b/i,
-
+        /\bproduct\s+shop\b/i,
         /\bbest\s+product\b/i,
-
         /\bbest\s+quality\b/i,
-
         /\bhigh\s+quality\b/i,
-
         /\btop\s+quality\b/i,
-
-        /\baffordable\s+product\b/i,
-
         /\btrending\s+product\b/i,
-
         /\bpopular\s+product\b/i,
-
         /\bmust\s+have\b/i
 
     ];
 
-
-    return patterns.some(
-        function (pattern) {
-
-            return pattern.test(
-                value
-            );
-
+    return forbidden.some(
+        function(pattern){
+            return pattern.test(value);
         }
     );
 }
 
 
-// ==========================================================
-// UNIQUE KEYWORDS
-// ==========================================================
+/* =========================================================
+   UNIQUE
+========================================================= */
 
-function uniqueKeywords(
-    keywords
-) {
+function seo22Unique(keywords){
 
-    const seen =
-        new Set();
+    const result = [];
+    const seen = new Set();
 
-
-    const output = [];
-
-
-    for (
-        const item of keywords
-    ) {
+    keywords.forEach(function(item){
 
         const keyword =
-            cleanKeyword(item);
+            seo22Clean(item);
 
-
-        if (!keyword) {
-            continue;
+        if(!keyword){
+            return;
         }
 
-
-        if (
-            isGenericFiller(
-                keyword
-            )
-        ) {
-
-            continue;
+        if(seo22IsFiller(keyword)){
+            return;
         }
 
-
-        const normalized =
+        const key =
             keyword.toLowerCase();
 
-
-        if (
-            seen.has(normalized)
-        ) {
-
-            continue;
+        if(seen.has(key)){
+            return;
         }
 
+        seen.add(key);
 
-        seen.add(
-            normalized
-        );
+        result.push(keyword);
 
+    });
 
-        output.push(
-            keyword
-        );
-
-    }
-
-
-    return output;
+    return result;
 }
 
 
-// ==========================================================
-// EXTRACT KEYWORDS
-// ==========================================================
+/* =========================================================
+   EXTRACT API RESPONSE
+========================================================= */
 
-function extractKeywords(
-    data
-) {
+function seo22Extract(data){
 
-    if (!data) {
-
+    if(!data){
         return [];
     }
 
 
-    // ------------------------------------------------------
-    // Direct array
-    // ------------------------------------------------------
+    /* Direct Array */
 
-    if (
-        Array.isArray(data)
-    ) {
+    if(Array.isArray(data)){
 
-        return data
-            .map(
-                cleanKeyword
-            )
-            .filter(Boolean);
+        return data.map(
+            seo22Clean
+        ).filter(Boolean);
+
     }
 
 
-    // ------------------------------------------------------
-    // Possible array fields
-    // ------------------------------------------------------
+    /* Common Array Fields */
 
-    const arrayFields = [
+    const fields = [
 
         "keywords",
         "seoKeywords",
@@ -1373,62 +802,58 @@ function extractKeywords(
     ];
 
 
-    for (
-        const field of arrayFields
-    ) {
+    for(
+        let i = 0;
+        i < fields.length;
+        i++
+    ){
 
-        if (
+        const field =
+            fields[i];
+
+        if(
             Array.isArray(
                 data[field]
             )
-        ) {
+        ){
 
             return data[field]
-                .map(
-                    function (item) {
+                .map(function(item){
 
-                        if (
-                            typeof item ===
-                            "string"
-                        ) {
+                    if(
+                        typeof item ===
+                        "string"
+                    ){
+                        return seo22Clean(item);
+                    }
 
-                            return cleanKeyword(
-                                item
-                            );
-                        }
+                    if(
+                        item &&
+                        typeof item ===
+                        "object"
+                    ){
 
+                        return seo22Clean(
 
-                        if (
-                            item &&
-                            typeof item ===
-                            "object"
-                        ) {
+                            item.keyword ||
+                            item.text ||
+                            item.value ||
+                            ""
 
-                            return cleanKeyword(
-
-                                item.keyword ||
-                                item.text ||
-                                item.value ||
-                                ""
-
-                            );
-
-                        }
-
-
-                        return "";
+                        );
 
                     }
-                )
+
+                    return "";
+
+                })
                 .filter(Boolean);
         }
 
     }
 
 
-    // ------------------------------------------------------
-    // Possible text fields
-    // ------------------------------------------------------
+    /* Text Fields */
 
     const textFields = [
 
@@ -1441,385 +866,288 @@ function extractKeywords(
     ];
 
 
-    for (
-        const field of textFields
-    ) {
+    for(
+        let i = 0;
+        i < textFields.length;
+        i++
+    ){
 
-        if (
+        const field =
+            textFields[i];
+
+        if(
             typeof data[field] ===
             "string"
-        ) {
+        ){
 
-            return parseText(
+            return seo22ParseText(
                 data[field]
             );
+
         }
 
     }
 
 
-    // ------------------------------------------------------
-    // data object
-    // ------------------------------------------------------
+    /* Nested Data */
 
-    if (
+    if(
         data.data &&
         typeof data.data ===
         "object"
-    ) {
+    ){
 
-        return extractKeywords(
+        return seo22Extract(
             data.data
         );
+
     }
 
 
     return [];
+
 }
 
 
-// ==========================================================
-// PARSE TEXT
-// ==========================================================
+/* =========================================================
+   PARSE TEXT
+========================================================= */
 
-function parseText(
-    text
-) {
+function seo22ParseText(text){
 
-    if (!text) {
-
+    if(!text){
         return [];
     }
 
-
     const value =
-        String(text)
-            .trim();
+        String(text).trim();
 
 
-    // ------------------------------------------------------
-    // Try JSON
-    // ------------------------------------------------------
+    /* Try JSON */
 
-    try {
+    try{
 
         const parsed =
-            JSON.parse(
-                value
-            );
+            JSON.parse(value);
 
+        const extracted =
+            seo22Extract(parsed);
 
-        const result =
-            extractKeywords(
-                parsed
-            );
-
-
-        if (
-            result.length
-        ) {
-
-            return result;
+        if(extracted.length){
+            return extracted;
         }
 
-    } catch (error) {
+    }catch(error){
 
-        // Continue as plain text.
+        /* Plain text */
+
     }
 
 
-    // ------------------------------------------------------
-    // Lines
-    // ------------------------------------------------------
-
-    const lines =
+    let lines =
         value
-            .split(/\r?\n/)
-            .map(
-                cleanKeyword
-            )
-            .filter(Boolean);
+        .split(/\r?\n/)
+        .map(seo22Clean)
+        .filter(Boolean);
 
 
-    // ------------------------------------------------------
-    // Numbered list
-    // ------------------------------------------------------
+    /* Numbered result */
 
     const numbered =
-        lines.filter(
-            function (line) {
+        lines.filter(function(line){
 
-                return /^\d+[.)]\s*/
-                    .test(line);
+            return /^\d+[.)]\s*/.test(
+                line
+            );
 
-            }
-        );
+        });
 
 
-    if (
-        numbered.length
-    ) {
+    if(numbered.length){
 
         return numbered
-            .map(
-                cleanKeyword
-            )
+            .map(seo22Clean)
             .filter(Boolean);
+
     }
 
 
-    // ------------------------------------------------------
-    // Comma separated
-    // ------------------------------------------------------
+    /* Comma separated */
 
-    if (
+    if(
         lines.length === 1 &&
-        /[,;|]/.test(
-            lines[0]
-        )
-    ) {
+        /[,;|]/.test(lines[0])
+    ){
 
-        return lines[0]
-            .split(
-                /[,;|]/
-            )
-            .map(
-                cleanKeyword
-            )
+        lines =
+            lines[0]
+            .split(/[,;|]/)
+            .map(seo22Clean)
             .filter(Boolean);
+
     }
 
 
     return lines;
+
 }
 
 
-// ==========================================================
-// DISPLAY RESULT
-// ==========================================================
+/* =========================================================
+   DISPLAY
+========================================================= */
 
-function displayKeywords(
-    keywords
-) {
+function seo22Display(keywords){
 
     const result =
         document.getElementById(
-            "result"
+            "seo22Result"
         );
 
-
-    if (!result) {
+    if(!result){
         return;
     }
-
-
-    if (
-        !keywords.length
-    ) {
-
-        result.value =
-            "";
-
-        return;
-    }
-
 
     result.value =
         keywords
-            .slice(0, 20)
-            .map(
-                function (
-                    keyword,
-                    index
-                ) {
+        .slice(0,20)
+        .map(function(keyword,index){
 
-                    return (
-                        (index + 1) +
-                        ". " +
-                        keyword
-                    );
+            return (
+                (index + 1) +
+                ". " +
+                keyword
+            );
 
-                }
-            )
-            .join("\n");
+        })
+        .join("\n");
 }
 
 
-// ==========================================================
-// GENERATE SEO
-// ==========================================================
+/* =========================================================
+   GENERATE SEO
+========================================================= */
 
-async function generateSEO() {
+async function seo22Generate(){
 
-    // ------------------------------------------------------
-    // ALWAYS READ CURRENT DOM VALUES
-    // ------------------------------------------------------
+    /* IMPORTANT:
+       Read the CURRENT DOM directly.
+       No old variables.
+    */
 
     const product =
-        getValue(
-            "product"
+        seo22Value(
+            "seo22ProductName"
         );
-
 
     const category =
-        normalizeCategory(
-            getValue(
-                "category"
-            )
+        seo22Value(
+            "seo22Category"
         );
-
 
     const brand =
-        getValue(
-            "brand"
+        seo22Value(
+            "seo22Brand"
         );
 
-
-    const mainKeyword =
-        getValue(
-            "keyword"
+    const details =
+        seo22Value(
+            "seo22Details"
         );
-
 
     const marketplace =
-        getValue(
-            "marketplace"
+        seo22Value(
+            "seo22Marketplace"
         );
 
 
-    // ------------------------------------------------------
-    // DEBUG
-    // ------------------------------------------------------
-
     console.log(
-        "SEO 22.0 FORM DATA:",
+        "SEO 22.0 CURRENT VALUES:",
         {
-            product:
-                product,
-
-            category:
-                category,
-
-            brand:
-                brand,
-
-            mainKeyword:
-                mainKeyword,
-
-            marketplace:
-                marketplace
+            product,
+            category,
+            brand,
+            details,
+            marketplace
         }
     );
 
 
-    // ======================================================
-    // PRODUCT VALIDATION
-    // ======================================================
+    /* PRODUCT VALIDATION */
 
-    if (!product) {
+    if(!product){
 
-        showStatus(
+        seo22Status(
             "❌ Product Name is required.",
             "error"
         );
 
-
-        const productInput =
-            document.getElementById(
-                "product"
-            );
-
-
-        if (productInput) {
-
-            productInput.focus();
-        }
-
+        document
+            .getElementById(
+                "seo22ProductName"
+            )
+            ?.focus();
 
         return;
+
     }
 
 
-    // ======================================================
-    // CATEGORY VALIDATION
-    // ======================================================
+    /* CATEGORY VALIDATION */
 
-    if (!category) {
+    if(!category){
 
-        showStatus(
+        seo22Status(
             "❌ Product Category is required.",
             "error"
         );
 
-
-        const categoryInput =
-            document.getElementById(
-                "category"
-            );
-
-
-        if (categoryInput) {
-
-            categoryInput.focus();
-        }
-
+        document
+            .getElementById(
+                "seo22Category"
+            )
+            ?.focus();
 
         return;
+
     }
 
 
-    // ======================================================
-    // CATEGORY CHECK
-    // ======================================================
+    /* VALID CATEGORY */
 
-    if (
-        !SUPPORTED_CATEGORIES.includes(
+    if(
+        !SEO22_CATEGORIES.includes(
             category
         )
-    ) {
+    ){
 
-        showStatus(
+        seo22Status(
             "❌ Please select a valid product category.",
             "error"
         );
 
         return;
+
     }
 
-
-    // ======================================================
-    // CLEAR OLD RESULT
-    // ======================================================
 
     const result =
         document.getElementById(
-            "result"
+            "seo22Result"
         );
 
-
-    if (result) {
-
-        result.value =
-            "";
+    if(result){
+        result.value = "";
     }
 
 
-    // ======================================================
-    // LOADING
-    // ======================================================
+    seo22Loading(true);
 
-    setLoading(true);
-
-
-    showStatus(
+    seo22Status(
         "⏳ Connecting to AI SEO Generator...",
         "info"
     );
 
-
-    // ======================================================
-    // REQUEST
-    // ======================================================
 
     const requestBody = {
 
@@ -1833,7 +1161,7 @@ async function generateSEO() {
             brand,
 
         mainKeyword:
-            mainKeyword,
+            details,
 
         marketplace:
             marketplace
@@ -1841,30 +1169,27 @@ async function generateSEO() {
     };
 
 
-    try {
+    console.log(
+        "SEO API REQUEST:",
+        requestBody
+    );
 
-        console.log(
-            "Sending request to:",
-            SEO_ENDPOINT
-        );
 
+    try{
 
         const response =
             await fetch(
-                SEO_ENDPOINT,
+                SEO22_ENDPOINT,
                 {
 
-                    method:
-                        "POST",
+                    method:"POST",
 
-                    headers: {
-
+                    headers:{
                         "Content-Type":
                             "application/json",
 
                         "Accept":
                             "application/json"
-
                     },
 
                     body:
@@ -1876,91 +1201,62 @@ async function generateSEO() {
             );
 
 
-        // ==================================================
-        // READ RESPONSE
-        // ==================================================
-
-        const rawText =
+        const raw =
             await response.text();
 
 
         console.log(
-            "SEO API RESPONSE:",
-            rawText
+            "SEO API RAW RESPONSE:",
+            raw
         );
 
 
         let data = null;
 
 
-        if (
-            rawText
-        ) {
+        if(raw){
 
-            try {
+            try{
 
                 data =
-                    JSON.parse(
-                        rawText
-                    );
+                    JSON.parse(raw);
 
-            } catch (
-                parseError
-            ) {
-
-                console.error(
-                    "JSON parse error:",
-                    parseError
-                );
-
+            }catch(error){
 
                 throw new Error(
-                    "Backend returned an invalid response."
+                    "Backend returned invalid JSON."
                 );
+
             }
 
         }
 
 
-        // ==================================================
-        // HTTP ERROR
-        // ==================================================
+        if(!response.ok){
 
-        if (
-            !response.ok
-        ) {
-
-            let errorMessage =
+            let message =
                 "SEO generation failed.";
 
+            if(data){
 
-            if (
-                data &&
-                typeof data ===
-                "object"
-            ) {
-
-                errorMessage =
+                message =
                     data.error ||
                     data.message ||
-                    errorMessage;
+                    message;
+
             }
 
-
             throw new Error(
-                errorMessage
+                message
             );
+
         }
 
 
-        // ==================================================
-        // SUCCESS FALSE
-        // ==================================================
-
-        if (
+        if(
             data &&
             data.success === false
-        ) {
+        ){
 
             throw new Error(
 
@@ -1969,32 +1265,19 @@ async function generateSEO() {
                 "SEO generation failed."
 
             );
+
         }
 
 
-        // ==================================================
-        // EXTRACT
-        // ==================================================
-
         let keywords =
-            extractKeywords(
-                data
-            );
+            seo22Extract(data);
 
-
-        // ==================================================
-        // CLEAN + UNIQUE
-        // ==================================================
 
         keywords =
-            uniqueKeywords(
+            seo22Unique(
                 keywords
             );
 
-
-        // ==================================================
-        // MAX 20
-        // ==================================================
 
         keywords =
             keywords.slice(
@@ -2003,41 +1286,24 @@ async function generateSEO() {
             );
 
 
-        // ==================================================
-        // EMPTY RESULT
-        // ==================================================
+        if(!keywords.length){
 
-        if (
-            !keywords.length
-        ) {
-
-            showStatus(
-
+            seo22Status(
                 "⚠️ No factual SEO keywords were returned. Add more real product details and try again.",
-
                 "error"
-
             );
 
-
             return;
+
         }
 
 
-        // ==================================================
-        // SHOW
-        // ==================================================
-
-        displayKeywords(
+        seo22Display(
             keywords
         );
 
 
-        // ==================================================
-        // SUCCESS
-        // ==================================================
-
-        showStatus(
+        seo22Status(
 
             "✅ SEO keywords generated successfully (" +
             keywords.length +
@@ -2048,17 +1314,15 @@ async function generateSEO() {
         );
 
 
-    } catch (
-        error
-    ) {
+    }catch(error){
 
         console.error(
-            "SEO GENERATOR ERROR:",
+            "SEO 22.0 ERROR:",
             error
         );
 
 
-        showStatus(
+        seo22Status(
 
             "❌ " +
             (
@@ -2070,33 +1334,29 @@ async function generateSEO() {
 
         );
 
-    } finally {
+    }finally{
 
-        setLoading(
-            false
-        );
+        seo22Loading(false);
 
     }
 
 }
 
 
-// ==========================================================
-// COPY KEYWORDS
-// ==========================================================
+/* =========================================================
+   COPY
+========================================================= */
 
-async function copyKeywords() {
+async function seo22Copy(){
 
     const result =
         document.getElementById(
-            "result"
+            "seo22Result"
         );
 
-
-    if (!result) {
+    if(!result){
         return;
     }
-
 
     const text =
         String(
@@ -2104,117 +1364,94 @@ async function copyKeywords() {
         ).trim();
 
 
-    if (!text) {
+    if(!text){
 
-        showStatus(
+        seo22Status(
             "⚠️ There are no SEO keywords to copy.",
             "error"
         );
 
         return;
+
     }
 
 
-    // ======================================================
-    // MODERN CLIPBOARD
-    // ======================================================
+    try{
 
-    try {
-
-        if (
+        if(
             navigator.clipboard &&
             navigator.clipboard.writeText
-        ) {
+        ){
 
             await navigator.clipboard.writeText(
                 text
             );
 
-            showStatus(
+            seo22Status(
                 "✅ Keywords copied successfully.",
                 "success"
             );
 
             return;
+
         }
 
-
-    } catch (
-        clipboardError
-    ) {
+    }catch(error){
 
         console.warn(
             "Clipboard API failed:",
-            clipboardError
+            error
         );
+
     }
 
 
-    // ======================================================
-    // FALLBACK
-    // ======================================================
-
-    try {
+    try{
 
         result.removeAttribute(
             "readonly"
         );
 
-
         result.focus();
 
-
         result.select();
-
 
         const copied =
             document.execCommand(
                 "copy"
             );
 
-
         result.setAttribute(
             "readonly",
             ""
         );
 
 
-        if (
-            copied
-        ) {
+        if(copied){
 
-            showStatus(
+            seo22Status(
                 "✅ Keywords copied successfully.",
                 "success"
             );
 
-        } else {
+        }else{
 
-            showStatus(
+            seo22Status(
                 "⚠️ Copy failed. Please copy manually.",
                 "error"
             );
+
         }
 
-
-    } catch (
-        error
-    ) {
-
-        console.error(
-            "Copy failed:",
-            error
-        );
-
+    }catch(error){
 
         result.setAttribute(
             "readonly",
             ""
         );
 
-
-        showStatus(
-            "⚠️ Copy failed. Please copy the keywords manually.",
+        seo22Status(
+            "⚠️ Copy failed. Please copy manually.",
             "error"
         );
 
@@ -2223,22 +1460,21 @@ async function copyKeywords() {
 }
 
 
-// ==========================================================
-// BACKEND CONNECTION TEST
-// ==========================================================
+/* =========================================================
+   BACKEND TEST
+========================================================= */
 
-async function testBackend() {
+async function seo22TestBackend(){
 
     const button =
         document.getElementById(
-            "connectionTestBtn"
+            "seo22ConnectionButton"
         );
 
 
-    if (button) {
+    if(button){
 
-        button.disabled =
-            true;
+        button.disabled = true;
 
         button.textContent =
             "⏳ Testing Backend...";
@@ -2246,83 +1482,74 @@ async function testBackend() {
     }
 
 
-    showStatus(
+    seo22Status(
         "⏳ Testing backend connection...",
         "info"
     );
 
 
-    try {
+    try{
 
         const response =
             await fetch(
-                BACKEND_URL +
+                SEO22_BACKEND +
                 "/api/status",
                 {
+                    method:"GET",
 
-                    method:
-                        "GET",
-
-                    headers: {
-
+                    headers:{
                         "Accept":
                             "application/json"
-
                     }
-
                 }
             );
 
 
-        const rawText =
+        const raw =
             await response.text();
 
 
         console.log(
-            "Backend status:",
-            rawText
+            "BACKEND STATUS:",
+            raw
         );
 
 
-        if (
-            !response.ok
-        ) {
+        if(!response.ok){
 
             throw new Error(
-                "Backend returned HTTP " +
+                "HTTP " +
                 response.status
             );
+
         }
 
 
         let data = null;
 
 
-        try {
+        try{
 
             data =
-                JSON.parse(
-                    rawText
-                );
+                JSON.parse(raw);
 
-        } catch (
-            error
-        ) {
+        }catch(error){
 
             throw new Error(
                 "Backend returned invalid JSON."
             );
+
         }
 
 
-        showStatus(
+        seo22Status(
 
             "✅ Backend is connected successfully." +
             (
                 data.version
-                    ? " Server Version: " +
-                      data.version
-                    : ""
+                ? " Server Version: " +
+                  data.version
+                : ""
             ),
 
             "success"
@@ -2330,34 +1557,30 @@ async function testBackend() {
         );
 
 
-    } catch (
-        error
-    ) {
+    }catch(error){
 
         console.error(
-            "Backend connection error:",
+            "BACKEND TEST ERROR:",
             error
         );
 
 
-        showStatus(
+        seo22Status(
 
             "❌ Backend connection failed. " +
             (
-                error.message ||
-                ""
+                error.message || ""
             ),
 
             "error"
 
         );
 
-    } finally {
+    }finally{
 
-        if (button) {
+        if(button){
 
-            button.disabled =
-                false;
+            button.disabled = false;
 
             button.textContent =
                 "🔌 Test Backend Connection";
@@ -2369,18 +1592,61 @@ async function testBackend() {
 }
 
 
-// ==========================================================
-// FINAL CONSOLE MESSAGE
-// ==========================================================
+/* =========================================================
+   DIRECT BUTTON EVENTS
+========================================================= */
+
+document
+    .getElementById(
+        "seo22GenerateButton"
+    )
+    ?.addEventListener(
+        "click",
+        function(){
+
+            seo22Generate();
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "seo22CopyButton"
+    )
+    ?.addEventListener(
+        "click",
+        function(){
+
+            seo22Copy();
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "seo22ConnectionButton"
+    )
+    ?.addEventListener(
+        "click",
+        function(){
+
+            seo22TestBackend();
+
+        }
+    );
+
+
+/* =========================================================
+   READY
+========================================================= */
 
 console.log(
-    "AI Seller Toolkit SEO Generator FINAL VERSION " +
-    SEO_VERSION +
-    " is active."
+    "AI Seller Toolkit SEO Generator FINAL VERSION 22.0 FIXED loaded."
 );
 
 </script>
-
 
 </body>
 
