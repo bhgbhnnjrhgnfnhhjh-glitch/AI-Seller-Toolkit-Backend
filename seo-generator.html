@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
 
     <meta
@@ -16,6 +18,7 @@
     <title>AI SEO Keyword Generator</title>
 
     <style>
+
         * {
             box-sizing: border-box;
         }
@@ -53,6 +56,7 @@
             text-align: center;
             color: #666;
             margin-bottom: 25px;
+            line-height: 1.5;
         }
 
         .group {
@@ -75,6 +79,7 @@
             font-size: 16px;
             outline: none;
             background: #fff;
+            font-family: Arial, sans-serif;
         }
 
         input:focus,
@@ -92,6 +97,7 @@
             font-size: 13px;
             color: #777;
             margin-top: 5px;
+            line-height: 1.4;
         }
 
         button {
@@ -126,6 +132,11 @@
             color: #334155;
         }
 
+        #connectionTestBtn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         #copyBtn {
             width: 100%;
             margin-top: 12px;
@@ -143,6 +154,7 @@
             border-radius: 10px;
             display: none;
             line-height: 1.5;
+            white-space: pre-wrap;
         }
 
         .status.success {
@@ -182,6 +194,7 @@
 
         .rules li {
             margin-bottom: 7px;
+            line-height: 1.4;
         }
 
         .api-info {
@@ -191,6 +204,7 @@
             border-radius: 10px;
             font-size: 13px;
             word-break: break-all;
+            line-height: 1.5;
         }
 
         .version {
@@ -200,7 +214,14 @@
             font-size: 13px;
         }
 
+        .result-info {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #64748b;
+        }
+
         @media (max-width: 600px) {
+
             .container {
                 padding: 12px;
             }
@@ -212,23 +233,36 @@
             h1 {
                 font-size: 25px;
             }
+
         }
+
     </style>
+
 </head>
 
+
 <body>
+
 
 <div class="container">
 
     <div class="card">
 
-        <h1>🔎 AI SEO Keyword Generator</h1>
+
+        <h1>
+            🔎 AI SEO Keyword Generator
+        </h1>
+
 
         <div class="subtitle">
             Generate relevant, factual and product-specific SEO keywords
         </div>
 
-        <!-- PRODUCT NAME -->
+
+        <!-- =====================================================
+             PRODUCT NAME
+             ===================================================== -->
+
         <div class="group">
 
             <label for="product">
@@ -249,7 +283,10 @@
         </div>
 
 
-        <!-- CATEGORY -->
+        <!-- =====================================================
+             CATEGORY
+             ===================================================== -->
+
         <div class="group">
 
             <label for="category">
@@ -323,7 +360,10 @@
         </div>
 
 
-        <!-- BRAND -->
+        <!-- =====================================================
+             BRAND
+             ===================================================== -->
+
         <div class="group">
 
             <label for="brand">
@@ -337,10 +377,18 @@
                 autocomplete="off"
             >
 
+            <div class="help">
+                Brand is sent separately so it is not unnecessarily repeated
+                inside SEO keywords.
+            </div>
+
         </div>
 
 
-        <!-- PRODUCT DETAILS -->
+        <!-- =====================================================
+             PRODUCT DETAILS
+             ===================================================== -->
+
         <div class="group">
 
             <label for="keyword">
@@ -360,7 +408,10 @@
         </div>
 
 
-        <!-- MARKETPLACE -->
+        <!-- =====================================================
+             MARKETPLACE
+             ===================================================== -->
+
         <div class="group">
 
             <label for="marketplace">
@@ -406,27 +457,42 @@
         </div>
 
 
-        <!-- GENERATE -->
+        <!-- =====================================================
+             GENERATE
+             ===================================================== -->
+
         <button id="generateBtn">
             ✨ Generate SEO Keywords
         </button>
 
 
-        <!-- CONNECTION TEST -->
+        <!-- =====================================================
+             CONNECTION TEST
+             ===================================================== -->
+
         <button id="connectionTestBtn">
             🔌 Test Backend Connection
         </button>
 
 
-        <!-- STATUS -->
+        <!-- =====================================================
+             STATUS
+             ===================================================== -->
+
         <div
             id="status"
             class="status"
         ></div>
 
 
-        <!-- RESULT -->
-        <div class="group" style="margin-top: 20px;">
+        <!-- =====================================================
+             RESULT
+             ===================================================== -->
+
+        <div
+            class="group"
+            style="margin-top:20px;"
+        >
 
             <label for="result">
                 Generated SEO Keywords
@@ -438,16 +504,27 @@
                 readonly
             ></textarea>
 
+            <div
+                id="resultInfo"
+                class="result-info"
+            ></div>
+
         </div>
 
 
-        <!-- COPY -->
+        <!-- =====================================================
+             COPY
+             ===================================================== -->
+
         <button id="copyBtn">
             📋 Copy Keywords
         </button>
 
 
-        <!-- RULES -->
+        <!-- =====================================================
+             RULES
+             ===================================================== -->
+
         <div class="rules">
 
             <h3>
@@ -477,8 +554,17 @@
                 </li>
 
                 <li>
-                    The system does not force 20 keywords when
-                    enough factual information is not available.
+                    Brand is not unnecessarily repeated in SEO keywords.
+                </li>
+
+                <li>
+                    Measurement units should remain attached to their
+                    factual numbers.
+                </li>
+
+                <li>
+                    The system does not force 20 keywords when enough
+                    factual information is not available.
                 </li>
 
             </ul>
@@ -486,7 +572,10 @@
         </div>
 
 
-        <!-- API INFO -->
+        <!-- =====================================================
+             API INFO
+             ===================================================== -->
+
         <div class="api-info">
 
             <strong>Backend:</strong><br>
@@ -503,12 +592,14 @@
 
 
         <div class="version">
-            AI Seller Toolkit — SEO Generator Final Version 23.0
+            AI Seller Toolkit — SEO Generator Final Version 24.0
         </div>
+
 
     </div>
 
 </div>
+
 
 
 <script>
@@ -518,8 +609,7 @@
 
 /* ==========================================================
    AI SELLER TOOLKIT
-   SEO GENERATOR — FINAL VERSION 23.0
-   Single File
+   SEO GENERATOR — FINAL VERSION 24.0
    ========================================================== */
 
 
@@ -568,20 +658,24 @@ const statusBox =
 const resultBox =
     document.getElementById("result");
 
+const resultInfo =
+    document.getElementById("resultInfo");
+
 const copyBtn =
     document.getElementById("copyBtn");
 
 
 /* ==========================================================
-   STATUS
+   SHOW STATUS
    ========================================================== */
 
 function showStatus(message, type) {
 
-    statusBox.textContent = message;
+    statusBox.textContent =
+        message || "";
 
     statusBox.className =
-        "status " + type;
+        "status " + (type || "success");
 
 }
 
@@ -592,8 +686,13 @@ function showStatus(message, type) {
 
 function cleanText(value) {
 
-    if (value === null || value === undefined) {
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
         return "";
+
     }
 
     return String(value)
@@ -610,15 +709,24 @@ function cleanText(value) {
 function normalizeKeyword(value) {
 
     return cleanText(value)
-        .replace(/^\d+[\.\)\-:]\s*/, "")
-        .replace(/^[-•*]\s*/, "")
+
+        .replace(
+            /^\s*(?:\d+[\.\)\-:]|\-|\•|\*)\s*/,
+            ""
+        )
+
+        .replace(
+            /^["'`]+|["'`]+$/g,
+            ""
+        )
+
         .trim();
 
 }
 
 
 /* ==========================================================
-   GENERIC / BAD KEYWORDS
+   FORBIDDEN GENERIC TERMS
    ========================================================== */
 
 const forbiddenTerms = [
@@ -655,18 +763,24 @@ const forbiddenTerms = [
 ];
 
 
+/* ==========================================================
+   FORBIDDEN CHECK
+   ========================================================== */
+
 function containsForbiddenTerm(keyword) {
 
     const text =
-        keyword.toLowerCase();
+        cleanText(keyword).toLowerCase();
 
-    return forbiddenTerms.some(function(term) {
+    return forbiddenTerms.some(
+        function(term) {
 
-        return text.includes(
-            term.toLowerCase()
-        );
+            return text.includes(
+                term.toLowerCase()
+            );
 
-    });
+        }
+    );
 
 }
 
@@ -677,35 +791,60 @@ function containsForbiddenTerm(keyword) {
 
 function removeDuplicates(keywords) {
 
-    const seen = new Set();
+    const seen =
+        new Set();
 
-    const finalList = [];
+    const finalList =
+        [];
 
-    keywords.forEach(function(item) {
+    if (!Array.isArray(keywords)) {
 
-        const cleaned =
-            normalizeKeyword(item);
+        return finalList;
 
-        if (!cleaned) {
-            return;
+    }
+
+
+    keywords.forEach(
+        function(item) {
+
+            const cleaned =
+                normalizeKeyword(item);
+
+            if (!cleaned) {
+
+                return;
+
+            }
+
+
+            if (
+                containsForbiddenTerm(cleaned)
+            ) {
+
+                return;
+
+            }
+
+
+            const key =
+                cleaned
+                    .toLowerCase();
+
+
+            if (seen.has(key)) {
+
+                return;
+
+            }
+
+
+            seen.add(key);
+
+            finalList.push(cleaned);
+
         }
+    );
 
-        if (containsForbiddenTerm(cleaned)) {
-            return;
-        }
-
-        const key =
-            cleaned.toLowerCase();
-
-        if (seen.has(key)) {
-            return;
-        }
-
-        seen.add(key);
-
-        finalList.push(cleaned);
-
-    });
 
     return finalList;
 
@@ -713,7 +852,8 @@ function removeDuplicates(keywords) {
 
 
 /* ==========================================================
-   EXTRACT KEYWORDS FROM RESPONSE
+   EXTRACT KEYWORDS
+   Handles multiple backend response formats
    ========================================================== */
 
 function extractKeywords(data) {
@@ -721,48 +861,115 @@ function extractKeywords(data) {
     let keywords = [];
 
 
-    /* ------------------------------------------
-       ARRAY RESPONSE
-       ------------------------------------------ */
+    /* ======================================================
+       DIRECT ARRAY
+       ====================================================== */
 
     if (Array.isArray(data)) {
 
-        keywords = data;
+        keywords =
+            data;
 
     }
 
 
-    /* ------------------------------------------
-       keywords
-       ------------------------------------------ */
+    /* ======================================================
+       data.keywords
+       ====================================================== */
 
     else if (
         data &&
         Array.isArray(data.keywords)
     ) {
 
-        keywords = data.keywords;
+        keywords =
+            data.keywords;
 
     }
 
 
-    /* ------------------------------------------
-       seoKeywords
-       ------------------------------------------ */
+    /* ======================================================
+       data.seoKeywords
+       ====================================================== */
 
     else if (
         data &&
         Array.isArray(data.seoKeywords)
     ) {
 
-        keywords = data.seoKeywords;
+        keywords =
+            data.seoKeywords;
 
     }
 
 
-    /* ------------------------------------------
-       text
-       ------------------------------------------ */
+    /* ======================================================
+       data.data.keywords
+       ====================================================== */
+
+    else if (
+        data &&
+        data.data &&
+        Array.isArray(data.data.keywords)
+    ) {
+
+        keywords =
+            data.data.keywords;
+
+    }
+
+
+    /* ======================================================
+       data.data.seoKeywords
+       ====================================================== */
+
+    else if (
+        data &&
+        data.data &&
+        Array.isArray(data.data.seoKeywords)
+    ) {
+
+        keywords =
+            data.data.seoKeywords;
+
+    }
+
+
+    /* ======================================================
+       data.result.keywords
+       ====================================================== */
+
+    else if (
+        data &&
+        data.result &&
+        Array.isArray(data.result.keywords)
+    ) {
+
+        keywords =
+            data.result.keywords;
+
+    }
+
+
+    /* ======================================================
+       data.result.seoKeywords
+       ====================================================== */
+
+    else if (
+        data &&
+        data.result &&
+        Array.isArray(data.result.seoKeywords)
+    ) {
+
+        keywords =
+            data.result.seoKeywords;
+
+    }
+
+
+    /* ======================================================
+       STRING: data.text
+       ====================================================== */
 
     else if (
         data &&
@@ -776,9 +983,9 @@ function extractKeywords(data) {
     }
 
 
-    /* ------------------------------------------
-       result
-       ------------------------------------------ */
+    /* ======================================================
+       STRING: data.result
+       ====================================================== */
 
     else if (
         data &&
@@ -792,9 +999,9 @@ function extractKeywords(data) {
     }
 
 
-    /* ------------------------------------------
-       output
-       ------------------------------------------ */
+    /* ======================================================
+       STRING: data.output
+       ====================================================== */
 
     else if (
         data &&
@@ -808,7 +1015,143 @@ function extractKeywords(data) {
     }
 
 
-    return removeDuplicates(keywords);
+    /* ======================================================
+       STRING: data.data
+       ====================================================== */
+
+    else if (
+        data &&
+        typeof data.data === "string"
+    ) {
+
+        keywords =
+            data.data
+                .split(/\r?\n/);
+
+    }
+
+
+    /* ======================================================
+       STRING: data.resultText
+       ====================================================== */
+
+    else if (
+        data &&
+        typeof data.resultText === "string"
+    ) {
+
+        keywords =
+            data.resultText
+                .split(/\r?\n/);
+
+    }
+
+
+    /* ======================================================
+       ARRAY OF OBJECTS
+       ====================================================== */
+
+    if (
+        Array.isArray(keywords)
+    ) {
+
+        keywords =
+            keywords.map(
+                function(item) {
+
+                    if (
+                        typeof item === "string"
+                    ) {
+
+                        return item;
+
+                    }
+
+
+                    if (
+                        item &&
+                        typeof item.keyword === "string"
+                    ) {
+
+                        return item.keyword;
+
+                    }
+
+
+                    if (
+                        item &&
+                        typeof item.text === "string"
+                    ) {
+
+                        return item.text;
+
+                    }
+
+
+                    if (
+                        item &&
+                        typeof item.value === "string"
+                    ) {
+
+                        return item.value;
+
+                    }
+
+
+                    return "";
+
+                }
+            );
+
+    }
+
+
+    return removeDuplicates(
+        keywords
+    );
+
+}
+
+
+/* ==========================================================
+   EXTRACT ERROR MESSAGE
+   ========================================================== */
+
+function getServerError(data, fallback) {
+
+    if (
+        data &&
+        typeof data.error === "string"
+    ) {
+
+        return data.error;
+
+    }
+
+
+    if (
+        data &&
+        data.error &&
+        typeof data.error.message === "string"
+    ) {
+
+        return data.error.message;
+
+    }
+
+
+    if (
+        data &&
+        typeof data.message === "string"
+    ) {
+
+        return data.message;
+
+    }
+
+
+    return fallback ||
+        "Something went wrong.";
 
 }
 
@@ -819,24 +1162,60 @@ function extractKeywords(data) {
 
 async function generateSEO() {
 
+
+    /* ======================================================
+       READ FORM VALUES
+       ====================================================== */
+
     const product =
-        cleanText(productInput.value);
+        cleanText(
+            productInput.value
+        );
+
 
     const category =
-        cleanText(categoryInput.value);
+        cleanText(
+            categoryInput.value
+        );
+
 
     const brand =
-        cleanText(brandInput.value);
+        cleanText(
+            brandInput.value
+        );
+
+
+    /*
+     * IMPORTANT:
+     *
+     * productDetails is the actual textarea value.
+     *
+     * mainKeyword is explicitly defined here.
+     *
+     * This prevents:
+     *
+     * "mainKeyword is not defined"
+     *
+     */
+
+    const productDetails =
+        cleanText(
+            keywordInput.value
+        );
+
 
     const mainKeyword =
-        cleanText(keywordInput.value);
+        productDetails;
+
 
     const marketplace =
-        cleanText(marketplaceInput.value);
+        cleanText(
+            marketplaceInput.value
+        );
 
 
     /* ======================================================
-       FRONTEND VALIDATION
+       VALIDATION
        ====================================================== */
 
     if (!product) {
@@ -868,12 +1247,21 @@ async function generateSEO() {
 
 
     /* ======================================================
-       UI
+       UI START
        ====================================================== */
 
-    generateBtn.disabled = true;
+    generateBtn.disabled =
+        true;
 
-    resultBox.value = "";
+    connectionTestBtn.disabled =
+        true;
+
+    resultBox.value =
+        "";
+
+    resultInfo.textContent =
+        "";
+
 
     showStatus(
         "⏳ Generating relevant SEO keywords...",
@@ -882,36 +1270,61 @@ async function generateSEO() {
 
 
     /* ======================================================
-       IMPORTANT FIX
-       ======================================================
-
-       Backend expects:
-
-       productName
-
-       NOT:
-
-       product
-
+       REQUEST BODY
        ====================================================== */
 
     const requestBody = {
 
-        productName: product,
+        /*
+         * Main backend field
+         */
+        productName:
+            product,
+
 
         /*
-         * Compatibility field.
-         * Existing backend versions may ignore this.
+         * Compatibility field
          */
-        product: product,
+        product:
+            product,
 
-        category: category,
 
-        brand: brand,
+        /*
+         * Category
+         */
+        category:
+            category,
 
-        mainKeyword: mainKeyword,
 
-        marketplace: marketplace
+        /*
+         * Brand
+         */
+        brand:
+            brand,
+
+
+        /*
+         * Main keyword
+         *
+         * IMPORTANT:
+         * This variable is defined above.
+         */
+        mainKeyword:
+            mainKeyword,
+
+
+        /*
+         * Product details
+         */
+        productDetails:
+            productDetails,
+
+
+        /*
+         * Marketplace
+         */
+        marketplace:
+            marketplace
 
     };
 
@@ -924,6 +1337,7 @@ async function generateSEO() {
 
     try {
 
+
         /* ==================================================
            API REQUEST
            ================================================== */
@@ -932,26 +1346,32 @@ async function generateSEO() {
             await fetch(
                 SEO_ENDPOINT,
                 {
-                    method: "POST",
 
-                    headers: {
-                        "Content-Type":
-                            "application/json",
+                    method:
+                        "POST",
 
-                        "Accept":
-                            "application/json"
-                    },
+                    headers:
+                        {
+
+                            "Content-Type":
+                                "application/json",
+
+                            "Accept":
+                                "application/json"
+
+                        },
 
                     body:
                         JSON.stringify(
                             requestBody
                         )
+
                 }
             );
 
 
         /* ==================================================
-           RESPONSE TEXT
+           READ RAW RESPONSE
            ================================================== */
 
         const rawText =
@@ -965,28 +1385,34 @@ async function generateSEO() {
 
 
         /* ==================================================
-           PARSE RESPONSE
+           PARSE JSON
            ================================================== */
 
-        let data = null;
+        let data =
+            null;
 
-        try {
 
-            data =
-                rawText
-                    ? JSON.parse(rawText)
-                    : null;
+        if (rawText) {
 
-        } catch (parseError) {
+            try {
 
-            console.error(
-                "JSON parse error:",
-                parseError
-            );
+                data =
+                    JSON.parse(
+                        rawText
+                    );
 
-            throw new Error(
-                "Server returned an invalid response."
-            );
+            } catch (parseError) {
+
+                console.error(
+                    "JSON parse error:",
+                    parseError
+                );
+
+                throw new Error(
+                    "Server returned an invalid response."
+                );
+
+            }
 
         }
 
@@ -997,35 +1423,13 @@ async function generateSEO() {
 
         if (!response.ok) {
 
-            let errorMessage =
-                "SEO generation failed.";
+            const errorMessage =
+                getServerError(
+                    data,
+                    "SEO generation failed. Server returned HTTP " +
+                    response.status + "."
+                );
 
-            if (
-                data &&
-                data.error
-            ) {
-
-                errorMessage =
-                    cleanText(data.error);
-
-            }
-
-            else if (
-                data &&
-                data.message
-            ) {
-
-                errorMessage =
-                    cleanText(data.message);
-
-            }
-
-            else if (rawText) {
-
-                errorMessage =
-                    cleanText(rawText);
-
-            }
 
             throw new Error(
                 errorMessage
@@ -1035,7 +1439,7 @@ async function generateSEO() {
 
 
         /* ==================================================
-           SUCCESS CHECK
+           SUCCESS FLAG CHECK
            ================================================== */
 
         if (
@@ -1044,9 +1448,8 @@ async function generateSEO() {
         ) {
 
             throw new Error(
-                cleanText(
-                    data.error ||
-                    data.message ||
+                getServerError(
+                    data,
                     "SEO generation failed."
                 )
             );
@@ -1055,33 +1458,43 @@ async function generateSEO() {
 
 
         /* ==================================================
-           EXTRACT
+           EXTRACT KEYWORDS
            ================================================== */
 
         const keywords =
-            extractKeywords(data);
+            extractKeywords(
+                data
+            );
+
+
+        console.log(
+            "Extracted SEO keywords:",
+            keywords
+        );
 
 
         /* ==================================================
-           NO RESULT
+           NO KEYWORDS
            ================================================== */
 
-        if (!keywords.length) {
+        if (
+            !keywords.length
+        ) {
 
             throw new Error(
-                "AI returned no valid SEO keywords. Please add more product details."
+                "Server responded successfully, but no SEO keywords were returned."
             );
 
         }
 
 
         /* ==================================================
-           FINAL OUTPUT
+           NUMBER KEYWORDS
            ================================================== */
 
-        resultBox.value =
-            keywords
-                .map(function(keyword, index) {
+        const numberedKeywords =
+            keywords.map(
+                function(keyword, index) {
 
                     return (
                         (index + 1) +
@@ -1089,22 +1502,39 @@ async function generateSEO() {
                         keyword
                     );
 
-                })
-                .join("\n");
+                }
+            );
+
+
+        /* ==================================================
+           DISPLAY RESULT
+           ================================================== */
+
+        resultBox.value =
+            numberedKeywords.join(
+                "\n"
+            );
+
+
+        resultInfo.textContent =
+            keywords.length +
+            " relevant SEO keyword" +
+            (
+                keywords.length === 1
+                    ? ""
+                    : "s"
+            ) +
+            " generated.";
 
 
         showStatus(
-
-            "✅ SEO keywords generated successfully. " +
-            keywords.length +
-            " relevant keyword(s) found.",
-
+            "✅ SEO keywords generated successfully.",
             "success"
-
         );
 
 
     } catch (error) {
+
 
         console.error(
             "SEO generation error:",
@@ -1113,24 +1543,33 @@ async function generateSEO() {
 
 
         let message =
-            error &&
-            error.message
-                ? error.message
-                : "SEO generation failed.";
+            "Unable to generate SEO keywords.";
 
-
-        /* ================================================
-           COMMON NETWORK ERRORS
-           ================================================ */
 
         if (
-            message.includes(
-                "Failed to fetch"
-            )
+            error &&
+            error.message
         ) {
 
             message =
-                "Backend connection failed. Please check Render server, CORS and internet connection.";
+                error.message;
+
+        }
+
+
+        /*
+         * Helpful network error
+         */
+
+        if (
+            error &&
+            error.name === "TypeError"
+        ) {
+
+            message =
+                "Unable to connect to the backend. " +
+                "Please check the backend URL, Render status, " +
+                "internet connection and CORS settings.";
 
         }
 
@@ -1143,7 +1582,16 @@ async function generateSEO() {
 
     } finally {
 
-        generateBtn.disabled = false;
+
+        /* ==================================================
+           RESTORE BUTTONS
+           ================================================== */
+
+        generateBtn.disabled =
+            false;
+
+        connectionTestBtn.disabled =
+            false;
 
     }
 
@@ -1151,12 +1599,15 @@ async function generateSEO() {
 
 
 /* ==========================================================
-   CONNECTION TEST
+   TEST BACKEND CONNECTION
    ========================================================== */
 
-async function testConnection() {
+async function testBackendConnection() {
 
-    connectionTestBtn.disabled = true;
+
+    connectionTestBtn.disabled =
+        true;
+
 
     showStatus(
         "⏳ Testing backend connection...",
@@ -1166,20 +1617,21 @@ async function testConnection() {
 
     try {
 
+
         const response =
             await fetch(
-                STATUS_ENDPOINT +
-                "?t=" +
-                Date.now(),
+                STATUS_ENDPOINT,
                 {
-                    method: "GET",
 
-                    headers: {
-                        "Accept":
-                            "application/json"
-                    },
+                    method:
+                        "GET",
 
-                    cache: "no-store"
+                    headers:
+                        {
+                            "Accept":
+                                "application/json"
+                        }
+
                 }
             );
 
@@ -1188,20 +1640,29 @@ async function testConnection() {
             await response.text();
 
 
-        let data = null;
+        console.log(
+            "Backend status response:",
+            rawText
+        );
+
+
+        let data =
+            null;
 
 
         try {
 
             data =
                 rawText
-                    ? JSON.parse(rawText)
+                    ? JSON.parse(
+                        rawText
+                    )
                     : null;
 
         } catch (error) {
 
             throw new Error(
-                "Backend returned invalid JSON."
+                "Backend returned an invalid response."
             );
 
         }
@@ -1210,103 +1671,66 @@ async function testConnection() {
         if (!response.ok) {
 
             throw new Error(
-                cleanText(
-                    data &&
-                    (
-                        data.error ||
-                        data.message
-                    )
-                ) ||
-                "Backend status request failed."
-            );
-
-        }
-
-
-        if (
-            data &&
-            data.success === false
-        ) {
-
-            throw new Error(
-                cleanText(
-                    data.error ||
-                    data.message ||
-                    "Backend is not ready."
+                getServerError(
+                    data,
+                    "Backend returned HTTP " +
+                    response.status
                 )
             );
 
         }
 
 
-        let version =
-            data &&
-            data.version
-                ? data.version
-                : "Unknown";
-
-        let model =
-            data &&
-            data.model
-                ? data.model
-                : "Unknown";
-
-
         showStatus(
-
-            "✅ Backend connected successfully." +
+            "✅ Backend connected successfully.\n" +
+            "Server: " +
+            (
+                data &&
+                data.message
+                    ? data.message
+                    : "Online"
+            ) +
             "\nVersion: " +
-            version +
-            " | Model: " +
-            model,
-
+            (
+                data &&
+                data.version
+                    ? data.version
+                    : "Unknown"
+            ) +
+            "\nModel: " +
+            (
+                data &&
+                data.model
+                    ? data.model
+                    : "Unknown"
+            ),
             "success"
-
-        );
-
-
-        console.log(
-            "Backend status:",
-            data
         );
 
 
     } catch (error) {
 
+
         console.error(
-            "Connection test error:",
+            "Backend connection error:",
             error
         );
 
 
-        let message =
-            error &&
-            error.message
-                ? error.message
-                : "Connection test failed.";
-
-
-        if (
-            message.includes(
-                "Failed to fetch"
-            )
-        ) {
-
-            message =
-                "Cannot connect to backend. Check Render server and CORS.";
-
-        }
-
-
         showStatus(
-            "❌ " + message,
+            "❌ Backend connection failed.\n" +
+            (
+                error.message ||
+                "Unable to connect to backend."
+            ),
             "error"
         );
 
 
     } finally {
 
-        connectionTestBtn.disabled = false;
+        connectionTestBtn.disabled =
+            false;
 
     }
 
@@ -1319,14 +1743,17 @@ async function testConnection() {
 
 async function copyKeywords() {
 
+
     const text =
-        cleanText(resultBox.value);
+        cleanText(
+            resultBox.value
+        );
 
 
     if (!text) {
 
         showStatus(
-            "⚠️ पहले SEO keywords generate करें.",
+            "⚠️ There are no generated keywords to copy.",
             "error"
         );
 
@@ -1337,9 +1764,36 @@ async function copyKeywords() {
 
     try {
 
-        await navigator.clipboard.writeText(
-            text
-        );
+
+        /*
+         * Modern Clipboard API
+         */
+
+        if (
+            navigator.clipboard &&
+            navigator.clipboard.writeText
+        ) {
+
+            await navigator.clipboard.writeText(
+                text
+            );
+
+        } else {
+
+
+            /*
+             * Fallback for older browsers
+             */
+
+            resultBox.focus();
+
+            resultBox.select();
+
+            document.execCommand(
+                "copy"
+            );
+
+        }
 
 
         showStatus(
@@ -1350,37 +1804,17 @@ async function copyKeywords() {
 
     } catch (error) {
 
-        /* -----------------------------------------------
-           Fallback copy
-           ----------------------------------------------- */
 
-        resultBox.select();
-
-        resultBox.setSelectionRange(
-            0,
-            resultBox.value.length
+        console.error(
+            "Copy error:",
+            error
         );
 
 
-        try {
-
-            document.execCommand(
-                "copy"
-            );
-
-            showStatus(
-                "✅ SEO keywords copied successfully.",
-                "success"
-            );
-
-        } catch (copyError) {
-
-            showStatus(
-                "❌ Copy failed. Please select and copy manually.",
-                "error"
-            );
-
-        }
+        showStatus(
+            "❌ Unable to copy automatically. Please select and copy the keywords manually.",
+            "error"
+        );
 
     }
 
@@ -1399,7 +1833,7 @@ generateBtn.addEventListener(
 
 connectionTestBtn.addEventListener(
     "click",
-    testConnection
+    testBackendConnection
 );
 
 
@@ -1410,14 +1844,19 @@ copyBtn.addEventListener(
 
 
 /* ==========================================================
-   ENTER KEY SUPPORT
+   ENTER / CTRL+ENTER SUPPORT
    ========================================================== */
 
-productInput.addEventListener(
+keywordInput.addEventListener(
     "keydown",
     function(event) {
 
+        /*
+         * Ctrl + Enter
+         */
+
         if (
+            event.ctrlKey &&
             event.key === "Enter"
         ) {
 
@@ -1432,11 +1871,11 @@ productInput.addEventListener(
 
 
 /* ==========================================================
-   INITIAL STATUS
+   INITIAL MESSAGE
    ========================================================== */
 
 console.log(
-    "AI Seller Toolkit SEO Generator 23.0 loaded successfully."
+    "AI Seller Toolkit SEO Generator Final Version 24.0 loaded."
 );
 
 console.log(
@@ -1446,5 +1885,7 @@ console.log(
 
 </script>
 
+
 </body>
+
 </html>
