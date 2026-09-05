@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="AI Seller Toolkit SEO Keyword Generator">
+<title>AI SEO Keyword Generator</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#1f2937}
+.wrap{max-width:900px;margin:auto;padding:16px}
+.hero{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;padding:24px;border-radius:18px;text-align:center;margin-bottom:18px}
+.hero h1{margin:0 0 7px;font-size:27px}
+.ver{font-size:12px;margin-top:8px;opacity:.9}
+.card{background:#fff;padding:20px;border-radius:16px;margin-bottom:18px;box-shadow:0 5px 20px rgba(0,0,0,.07)}
+.field{margin-bottom:16px}
+label{display:block;font-weight:700;margin-bottom:7px}
+input,select,textarea{width:100%;padding:13px;border:1px solid #d1d5db;border-radius:10px;font-size:15px;background:#fff}
+textarea{min-height:120px;resize:vertical}
+.buttons{display:flex;gap:10px;flex-wrap:wrap}
+button{border:0;border-radius:10px;padding:13px 17px;font-weight:700;font-size:15px;cursor:pointer}
+button:disabled{opacity:.65;cursor:not-allowed}
+#generateBtn{flex:1;background:#4f46e5;color:#fff}
+#testBtn{background:#111827;color:#fff}
+#copyBtn{width:100%;background:#059669;color:#fff;margin-top:14px}
+.status{display:none;padding:12px;border-radius:10px;margin-bottom:15px;font-weight:700;line-height:1.5;word-break:break-word}
+.status.info{display:block;background:#eff6ff;color:#1d4ed8}
+.status.success{display:block;background:#ecfdf5;color:#047857}
+.status.error{display:block;background:#fef2f2;color:#b91c1c}
+.result{display:none}
+.keywords{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:9px}
+.kw{padding:11px;border:1px solid #e5e7eb;border-radius:9px;background:#f8fafc;word-break:break-word}
+.note{font-size:13px;line-height:1.6}
+@media(max-width:600px){
+ .wrap{padding:10px}.card{padding:15px}.buttons{flex-direction:column}
+ #generateBtn,#testBtn{width:100%}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hero">
+  <h1>🔎 AI SEO Keyword Generator</h1>
+  <div>Generate relevant factual SEO keywords</div>
+  <div class="ver">FINAL VERSION 27 — STABLE FRONTEND</div>
+</div>
+
+<div class="card">
+  <div id="status" class="status" aria-live="polite"></div>
+
+  <div class="field">
+    <label for="product">Product Name *</label>
+    <input id="product" type="text" placeholder="Example: Test Brand Cotton Kurti" autocomplete="off">
+  </div>
+
+  <div class="field">
+    <label for="category">Product Category *</label>
+    <select id="category">
+      <option value="Fashion">Fashion</option>
+      <option value="Beauty">Beauty</option>
+      <option value="Electronics">Electronics</option>
+      <option value="Home & Kitchen">Home & Kitchen</option>
+      <option value="Shoes">Shoes</option>
+      <option value="Jewellery">Jewellery</option>
+      <option value="Toys">Toys</option>
+      <option value="Books">Books</option>
+      <option value="Pet">Pet</option>
+      <option value="Sports">Sports</option>
+      <option value="Automotive">Automotive</option>
+      <option value="Garden">Garden</option>
+      <option value="Food">Food</option>
+      <option value="Gifts">Gifts</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label for="brand">Brand</label>
+    <input id="brand" type="text" placeholder="Example: Test Brand" autocomplete="off">
+  </div>
+
+  <div class="field">
+    <label for="details">Product Details / Main Product Information</label>
+    <textarea id="details" placeholder="Example: Cotton fabric, floral print, blue color"></textarea>
+  </div>
+
+  <div class="field">
+    <label for="marketplace">Marketplace</label>
+    <select id="marketplace">
+      <option value="">Select Marketplace</option>
+      <option value="Meesho">Meesho</option>
+      <option value="Amazon">Amazon</option>
+      <option value="Flipkart">Flipkart</option>
+      <option value="Etsy">Etsy</option>
+      <option value="Shopify">Shopify</option>
+      <option value="General">General</option>
+    </select>
+  </div>
+
+  <div class="buttons">
+    <button id="generateBtn" type="button">✨ Generate SEO Keywords</button>
+    <button id="testBtn" type="button">🔌 Test Connection</button>
+  </div>
+</div>
+
+<div id="resultBox" class="card result">
+  <h2>📋 Generated SEO Keywords</h2>
+  <div id="keywordList" class="keywords"></div>
+  <button id="copyBtn" type="button">📋 Copy All Keywords</button>
+</div>
+
+<div class="card note">
+  <b>🛡️ Strict Factual Rules</b><br><br>
+  Only seller-provided facts are used. No invented material, color, size, features,
+  benefits, certifications or claims. Duplicate keywords are removed.
+</div>
+
+</div>
+
+<!-- IMPORTANT: only this FINAL V27 JS is loaded -->
+<script src="seo-generator.js?v=27.0.0"></script>
+</body>
+</html>
