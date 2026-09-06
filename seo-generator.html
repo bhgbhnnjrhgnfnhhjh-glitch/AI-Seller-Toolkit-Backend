@@ -2,16 +2,21 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
 <meta
     name="description"
     content="AI Seller Toolkit - Factual SEO Keyword Generator"
 >
 
-<title>AI SEO Keyword Generator — Final V28</title>
+<title>AI SEO Keyword Generator — Final V29</title>
 
 <style>
+
 * {
     box-sizing: border-box;
 }
@@ -30,7 +35,12 @@ body {
 }
 
 .hero {
-    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    background: linear-gradient(
+        135deg,
+        #4f46e5,
+        #7c3aed
+    );
+
     color: white;
     padding: 24px;
     border-radius: 18px;
@@ -43,9 +53,15 @@ body {
     font-size: 27px;
 }
 
-.ver {
-    font-size: 12px;
+.hero p {
+    margin: 0;
+    font-size: 14px;
+    opacity: .95;
+}
+
+.version {
     margin-top: 8px;
+    font-size: 12px;
     opacity: .9;
 }
 
@@ -154,12 +170,18 @@ button:disabled {
     display: none;
 }
 
+.result h2 {
+    margin-top: 0;
+}
+
 .keywords {
     display: grid;
-    grid-template-columns: repeat(
-        auto-fit,
-        minmax(220px, 1fr)
-    );
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(220px, 1fr)
+        );
+
     gap: 9px;
 }
 
@@ -169,6 +191,7 @@ button:disabled {
     border-radius: 9px;
     background: #f8fafc;
     word-break: break-word;
+    line-height: 1.45;
 }
 
 .kw-number {
@@ -187,10 +210,16 @@ button:disabled {
 }
 
 .rules li {
-    margin-bottom: 5px;
+    margin-bottom: 6px;
 }
 
-@media(max-width:600px) {
+.small {
+    font-size: 12px;
+    color: #6b7280;
+    margin-top: 7px;
+}
+
+@media (max-width: 600px) {
 
     .wrap {
         padding: 10px;
@@ -208,13 +237,17 @@ button:disabled {
     #testBtn {
         width: 100%;
     }
+
 }
+
 </style>
 </head>
+
 
 <body>
 
 <div class="wrap">
+
 
     <!-- =====================================================
          HEADER
@@ -222,21 +255,23 @@ button:disabled {
 
     <div class="hero">
 
-        <h1>🔎 AI SEO Keyword Generator</h1>
+        <h1>
+            🔎 AI SEO Keyword Generator
+        </h1>
 
-        <div>
+        <p>
             Generate relevant, factual and non-duplicate SEO keywords
-        </div>
+        </p>
 
-        <div class="ver">
-            FINAL VERSION 28.0 — Duplicate Safe SEO
+        <div class="version">
+            FINAL VERSION 29.0 — Strict Duplicate-Safe SEO Engine
         </div>
 
     </div>
 
 
     <!-- =====================================================
-         INPUT FORM
+         INPUT CARD
     ====================================================== -->
 
     <div class="card">
@@ -247,6 +282,8 @@ button:disabled {
             aria-live="polite"
         ></div>
 
+
+        <!-- PRODUCT -->
 
         <div class="field">
 
@@ -263,6 +300,8 @@ button:disabled {
 
         </div>
 
+
+        <!-- CATEGORY -->
 
         <div class="field">
 
@@ -333,6 +372,8 @@ button:disabled {
         </div>
 
 
+        <!-- BRAND -->
+
         <div class="field">
 
             <label for="brand">
@@ -349,6 +390,8 @@ button:disabled {
         </div>
 
 
+        <!-- DETAILS -->
+
         <div class="field">
 
             <label for="details">
@@ -360,8 +403,14 @@ button:disabled {
                 placeholder="Example: roasted, salted, peanuts, 200 g pack"
             ></textarea>
 
+            <div class="small">
+                केवल वही जानकारी डालें जो आपके product में वास्तव में मौजूद है।
+            </div>
+
         </div>
 
+
+        <!-- MARKETPLACE -->
 
         <div class="field">
 
@@ -403,6 +452,8 @@ button:disabled {
 
         </div>
 
+
+        <!-- BUTTONS -->
 
         <div class="buttons">
 
@@ -459,43 +510,50 @@ button:disabled {
 
     <div class="card note">
 
-        <b>🛡️ Strict SEO Rules</b>
+        <b>
+            🛡️ Strict SEO Rules
+        </b>
 
         <br><br>
 
         <ul class="rules">
 
             <li>
-                Only seller-provided product facts are used.
+                केवल seller-provided facts का उपयोग होगा।
             </li>
 
             <li>
-                No invented material, color, size, feature or benefit.
+                कोई invented material, color, size या feature नहीं।
             </li>
 
             <li>
-                No fake certification or unsupported claim.
+                कोई fake benefit या certification नहीं।
             </li>
 
             <li>
-                Duplicate keywords are automatically removed.
+                Duplicate keywords automatically हटेंगे।
             </li>
 
             <li>
-                Product name is not unnecessarily repeated.
+                Product name को बेवजह बार-बार repeat नहीं किया जाएगा।
             </li>
 
             <li>
-                Repeated units such as "g g", "kg kg", "ml ml"
-                are removed.
+                <b>200 g g</b>, <b>500 ml ml</b>,
+                <b>gpack</b> जैसी खराब unit combinations हटेंगी।
             </li>
 
             <li>
-                Unnatural repeated phrases are removed.
+                <b>Roasted Roasted Peanuts</b> जैसी repetition हटेगी।
             </li>
 
             <li>
-                Keywords remain relevant to the selected product.
+                Full product name के साथ अनावश्यक extra words वाले
+                keywords reject होंगे।
+            </li>
+
+            <li>
+                Marketplace name को product fact नहीं माना जाएगा।
             </li>
 
         </ul>
@@ -506,8 +564,8 @@ button:disabled {
 
 
 <!-- ==========================================================
-     INLINE JAVASCRIPT
-     FINAL VERSION 28.0
+     SEO GENERATOR
+     FINAL VERSION 29.0
      ========================================================== -->
 
 <script>
@@ -516,9 +574,10 @@ button:disabled {
 
 (function () {
 
+
     /* ========================================================
        BACKEND
-    ========================================================= */
+    ======================================================== */
 
     const BACKEND_URL =
         "https://ai-seller-toolkit-backend-1.onrender.com";
@@ -532,49 +591,44 @@ button:disabled {
 
     /* ========================================================
        DOM
-    ========================================================= */
-
-    const $ = function (id) {
-        return document.getElementById(id);
-    };
-
+    ======================================================== */
 
     const productInput =
-        $("product");
+        document.getElementById("product");
 
     const categoryInput =
-        $("category");
+        document.getElementById("category");
 
     const brandInput =
-        $("brand");
+        document.getElementById("brand");
 
     const detailsInput =
-        $("details");
+        document.getElementById("details");
 
     const marketplaceInput =
-        $("marketplace");
+        document.getElementById("marketplace");
 
     const generateBtn =
-        $("generateBtn");
+        document.getElementById("generateBtn");
 
     const testBtn =
-        $("testBtn");
+        document.getElementById("testBtn");
 
     const statusBox =
-        $("status");
+        document.getElementById("status");
 
     const resultBox =
-        $("resultBox");
+        document.getElementById("resultBox");
 
     const keywordList =
-        $("keywordList");
+        document.getElementById("keywordList");
 
     const copyBtn =
-        $("copyBtn");
+        document.getElementById("copyBtn");
 
 
     /* ========================================================
-       BASIC CLEAN
+       CLEAN TEXT
     ======================================================== */
 
     function clean(value) {
@@ -594,14 +648,15 @@ button:disabled {
 
 
     /* ========================================================
-       LOWERCASE NORMALIZATION
+       NORMALIZE
     ======================================================== */
 
     function normalize(value) {
 
         return clean(value)
             .toLowerCase()
-            .replace(/[“”"']/g, "")
+            .replace(/[“”"'`]/g, "")
+            .replace(/[‐-‒–—−]/g, "-")
             .replace(/\s+/g, " ")
             .trim();
 
@@ -612,19 +667,28 @@ button:disabled {
        STATUS
     ======================================================== */
 
-    function showStatus(message, type) {
+    function showStatus(
+        message,
+        type
+    ) {
 
-        statusBox.textContent = message;
+        statusBox.textContent =
+            message;
 
         statusBox.className =
-            "status " + (type || "info");
+            "status " +
+            (
+                type ||
+                "info"
+            );
 
     }
 
 
     function clearStatus() {
 
-        statusBox.textContent = "";
+        statusBox.textContent =
+            "";
 
         statusBox.className =
             "status";
@@ -633,44 +697,49 @@ button:disabled {
 
 
     /* ========================================================
-       REMOVE DUPLICATE KEYWORDS
+       UNIQUE
     ======================================================== */
 
-    function uniqueKeywords(list) {
+    function uniqueKeywords(
+        list
+    ) {
 
-        const seen = new Set();
+        const seen =
+            new Set();
 
-        const output = [];
+        const output =
+            [];
 
 
-        list.forEach(function (item) {
+        list.forEach(
+            function (item) {
 
-            const value = clean(item);
+                const value =
+                    clean(item);
 
-            if (!value) {
-                return;
+                if (!value) {
+                    return;
+                }
+
+                const key =
+                    normalize(value);
+
+                if (!key) {
+                    return;
+                }
+
+                if (
+                    seen.has(key)
+                ) {
+                    return;
+                }
+
+                seen.add(key);
+
+                output.push(value);
+
             }
-
-
-            const key =
-                normalize(value);
-
-
-            if (!key) {
-                return;
-            }
-
-
-            if (seen.has(key)) {
-                return;
-            }
-
-
-            seen.add(key);
-
-            output.push(value);
-
-        });
+        );
 
 
         return output;
@@ -679,43 +748,104 @@ button:disabled {
 
 
     /* ========================================================
-       CLEAN REPEATED WORDS
-       Example:
-       roasted roasted peanuts
-       salted salted peanuts
+       NORMALIZE CONNECTED UNITS
+       
+       gpack -> g pack
+       kgpack -> kg pack
+       mlpack -> ml pack
+       ======================================================== */
+
+    function normalizeConnectedUnits(
+        value
+    ) {
+
+        return clean(value)
+
+            .replace(
+                /(\d+(?:\.\d+)?)(g|kg|mg|ml|l|cm|mm|m|inch|inches)(pack|packet|packets|box|boxes|set|sets|piece|pieces)\b/gi,
+                "$1 $2 $3"
+            )
+
+            .replace(
+                /\b(g|kg|mg|ml|l|cm|mm|m|inch|inches)(pack|packet|packets|box|boxes|set|sets|piece|pieces)\b/gi,
+                "$1 $2"
+            )
+
+            .replace(
+                /\b(\d+(?:\.\d+)?)\s*(g|kg|mg|ml|l|cm|mm|m|inch|inches)\s+\2\b/gi,
+                "$1 $2"
+            );
+
+    }
+
+
+    /* ========================================================
+       NORMALIZE PUNCTUATION
     ======================================================== */
 
-    function removeRepeatedWords(keyword) {
+    function normalizeKeywordText(
+        value
+    ) {
+
+        return normalizeConnectedUnits(
+            value
+        )
+            .replace(
+                /[,:;|]+/g,
+                " "
+            )
+            .replace(
+                /\s+/g,
+                " "
+            )
+            .trim();
+
+    }
+
+
+    /* ========================================================
+       REPEATED WORD PROTECTION
+    ======================================================== */
+
+    function removeAdjacentRepeatedWords(
+        value
+    ) {
 
         const words =
-            clean(keyword)
-                .split(" ");
-
-        const output = [];
-
-        let previous = "";
+            normalizeKeywordText(value)
+                .split(" ")
+                .filter(Boolean);
 
 
-        words.forEach(function (word) {
+        const output =
+            [];
 
-            const normalizedWord =
-                normalize(word);
+        let previous =
+            "";
 
 
-            if (
-                normalizedWord &&
-                normalizedWord === previous
-            ) {
-                return;
+        words.forEach(
+            function (word) {
+
+                const current =
+                    normalize(word);
+
+
+                if (
+                    current &&
+                    current === previous
+                ) {
+                    return;
+                }
+
+
+                output.push(word);
+
+                previous =
+                    current;
+
             }
-
-
-            output.push(word);
-
-            previous =
-                normalizedWord;
-
-        });
+        );
 
 
         return output.join(" ");
@@ -724,265 +854,297 @@ button:disabled {
 
 
     /* ========================================================
-       REMOVE DUPLICATE UNITS
-       Example:
-       200 g g
-       500 ml ml
-       1 kg kg
-       ======================================================== */
+       DUPLICATE UNITS
+    ======================================================== */
 
-    function removeDuplicateUnits(keyword) {
+    function removeDuplicateUnits(
+        value
+    ) {
 
-        return clean(keyword)
+        return normalizeKeywordText(
+            value
+        )
 
-            .replace(
-                /\b(\d+(?:\.\d+)?)\s*(g|kg|mg|ml|l|cm|mm|m|inch|inches)\s+\2\b/gi,
-                "$1 $2"
-            )
+        .replace(
+            /\b(\d+(?:\.\d+)?)\s*(g|kg|mg|ml|l|cm|mm|m|inch|inches)\s+\2\b/gi,
+            "$1 $2"
+        )
 
-            .replace(
-                /\b(g|kg|mg|ml|l|cm|mm|m|inch|inches)\s+\1\b/gi,
-                "$1"
-            );
+        .replace(
+            /\b(\d+(?:\.\d+)?)\s*(g|kg|mg|ml|l|cm|mm|m|inch|inches)\s*(g|kg|mg|ml|l|cm|mm|m|inch|inches)\b/gi,
+            "$1 $2"
+        );
 
     }
 
 
     /* ========================================================
-       REMOVE PRODUCT-NAME DUPLICATION
-       
-       Example:
-       Product:
-       Roasted Salted Peanuts 200 g
+       PRODUCT WORDS
+    ======================================================== */
 
-       Bad:
-       roasted Roasted Salted Peanuts 200 g
+    function getWords(
+        value
+    ) {
 
-       Bad:
-       salted Roasted Salted Peanuts 200 g
-       ======================================================== */
+        return normalizeKeywordText(
+            value
+        )
+        .split(" ")
+        .filter(Boolean);
 
-    function removeProductDuplication(
+    }
+
+
+    /* ========================================================
+       FULL PRODUCT PHRASE CHECK
+    ======================================================== */
+
+    function containsFullProduct(
         keyword,
         product
     ) {
 
-        let value =
-            clean(keyword);
+        const k =
+            normalizeKeywordText(
+                keyword
+            );
 
-        const productClean =
-            clean(product);
-
-
-        if (!value || !productClean) {
-            return value;
-        }
-
-
-        const keywordLower =
-            normalize(value);
-
-        const productLower =
-            normalize(productClean);
+        const p =
+            normalizeKeywordText(
+                product
+            );
 
 
         if (
-            keywordLower === productLower
+            !k ||
+            !p
         ) {
-            return productClean;
-        }
-
-
-        /*
-         * Remove repeated complete product
-         * name inside the same keyword.
-         */
-
-        const productWords =
-            productLower.split(" ");
-
-
-        const keywordWords =
-            keywordLower.split(" ");
-
-
-        /*
-         * If keyword contains the complete
-         * product phrase more than once,
-         * keep only one occurrence.
-         */
-
-        let firstIndex =
-            keywordWords.join(" ")
-                .indexOf(productLower);
-
-
-        if (firstIndex >= 0) {
-
-            const before =
-                clean(
-                    value.substring(
-                        0,
-                        firstIndex
-                    )
-                );
-
-            const afterStart =
-                firstIndex +
-                productClean.length;
-
-            const after =
-                clean(
-                    value.substring(
-                        afterStart
-                    )
-                );
-
-
-            /*
-             * If the part before or after
-             * contains words already inside
-             * the product name, remove them
-             * when they create an obvious
-             * repeated phrase.
-             */
-
-            const beforeWords =
-                normalize(before)
-                    .split(" ")
-                    .filter(Boolean);
-
-            const afterWords =
-                normalize(after)
-                    .split(" ")
-                    .filter(Boolean);
-
-
-            const productWordSet =
-                new Set(productWords);
-
-
-            while (
-                beforeWords.length &&
-                productWordSet.has(
-                    beforeWords[
-                        beforeWords.length - 1
-                    ]
-                )
-            ) {
-                beforeWords.pop();
-            }
-
-
-            while (
-                afterWords.length &&
-                productWordSet.has(
-                    afterWords[0]
-                )
-            ) {
-                afterWords.shift();
-            }
-
-
-            const rebuilt = clean(
-                beforeWords.join(" ") +
-                " " +
-                productClean +
-                " " +
-                afterWords.join(" ")
-            );
-
-
-            if (rebuilt) {
-                value = rebuilt;
-            }
-
-        }
-
-
-        return value;
-
-    }
-
-
-    /* ========================================================
-       REMOVE UNNATURAL REPEATED PHRASES
-       ======================================================== */
-
-    function hasExcessiveRepetition(
-        keyword,
-        product
-    ) {
-
-        const words =
-            normalize(keyword)
-                .split(" ")
-                .filter(Boolean);
-
-
-        if (words.length < 2) {
             return false;
         }
 
 
-        const counts = {};
+        return (
+            k === p ||
+            k.includes(p)
+        );
+
+    }
 
 
-        words.forEach(function (word) {
+    /* ========================================================
+       BAD FULL PRODUCT EXPANSION
+       
+       If product is:
+       Roasted Salted Peanuts 200 g
 
-            counts[word] =
-                (counts[word] || 0) + 1;
+       Reject:
+       Roasted Salted Peanuts 200 g pack
+       gpack Roasted Salted Peanuts 200 g
+       roasted Roasted Salted Peanuts 200 g
+       salted Roasted Salted Peanuts 200 g
+       ======================================================== */
 
-        });
+    function isBadFullProductExpansion(
+        keyword,
+        product
+    ) {
+
+        const k =
+            normalizeKeywordText(
+                keyword
+            );
+
+        const p =
+            normalizeKeywordText(
+                product
+            );
+
+
+        if (
+            !k ||
+            !p
+        ) {
+            return false;
+        }
+
+
+        if (k === p) {
+            return false;
+        }
+
+
+        if (!k.includes(p)) {
+            return false;
+        }
 
 
         /*
-         * A single word should not normally
-         * appear more than twice.
+         * Product phrase is present but
+         * keyword contains something extra.
          */
+
+        return true;
+
+    }
+
+
+    /* ========================================================
+       PRODUCT TOKEN REPETITION
+    ======================================================== */
+
+    function hasTooMuchProductRepetition(
+        keyword,
+        product
+    ) {
+
+        const kWords =
+            getWords(keyword);
+
+        const pWords =
+            getWords(product);
+
+
+        if (
+            !kWords.length ||
+            !pWords.length
+        ) {
+            return false;
+        }
+
+
+        const productSet =
+            new Set(
+                pWords
+            );
+
+
+        let repeated =
+            0;
+
+
+        kWords.forEach(
+            function (word) {
+
+                if (
+                    productSet.has(
+                        word
+                    )
+                ) {
+                    repeated++;
+                }
+
+            }
+        );
+
+
+        /*
+         * If keyword contains product
+         * tokens many times, reject it.
+         */
+
+        if (
+            repeated >
+            pWords.length
+        ) {
+            return true;
+        }
+
+
+        return false;
+
+    }
+
+
+    /* ========================================================
+       BAD GENERIC SEO WORDS
+    ======================================================== */
+
+    const BAD_GENERIC_WORDS = new Set([
+
+        "online",
+        "buy",
+        "shop",
+        "shopping",
+        "best",
+        "premium",
+        "trendy",
+        "stylish",
+        "latest",
+        "cheap",
+        "price",
+        "collection",
+        "store",
+        "deal",
+        "deals",
+        "offer",
+        "offers",
+        "sale",
+        "discount"
+
+    ]);
+
+
+    /* ========================================================
+       CHECK BAD GENERIC WORDS
+    ======================================================== */
+
+    function containsBadGenericWord(
+        keyword
+    ) {
+
+        const words =
+            getWords(keyword);
+
+
+        return words.some(
+            function (word) {
+
+                return BAD_GENERIC_WORDS.has(
+                    word
+                );
+
+            }
+        );
+
+    }
+
+
+    /* ========================================================
+       CHECK DUPLICATE WORD
+    ======================================================== */
+
+    function hasTripleWord(
+        keyword
+    ) {
+
+        const words =
+            getWords(keyword);
+
+
+        const counts =
+            {};
+
+
+        words.forEach(
+            function (word) {
+
+                counts[word] =
+                    (
+                        counts[word] ||
+                        0
+                    ) + 1;
+
+            }
+        );
+
 
         for (
             const word in counts
         ) {
 
-            if (counts[word] >= 3) {
-                return true;
-            }
-
-        }
-
-
-        /*
-         * If product name is already complete,
-         * don't allow an extra duplicate prefix
-         * made only from product words.
-         */
-
-        const productWords =
-            normalize(product)
-                .split(" ")
-                .filter(Boolean);
-
-
-        if (
-            productWords.length >= 2
-        ) {
-
-            const normalizedProduct =
-                productWords.join(" ");
-
-
-            const normalizedKeyword =
-                normalize(keyword);
-
-
-            const occurrences =
-                normalizedKeyword
-                    .split(normalizedProduct)
-                    .length - 1;
-
-
-            if (occurrences > 1) {
+            if (
+                counts[word] >= 3
+            ) {
                 return true;
             }
 
@@ -995,8 +1157,8 @@ button:disabled {
 
 
     /* ========================================================
-       FINAL FRONTEND KEYWORD CLEANER
-       ======================================================== */
+       FINAL KEYWORD CLEAN
+    ======================================================== */
 
     function cleanSEOKeyword(
         keyword,
@@ -1004,7 +1166,9 @@ button:disabled {
     ) {
 
         let value =
-            clean(keyword);
+            normalizeKeywordText(
+                keyword
+            );
 
 
         if (!value) {
@@ -1020,40 +1184,26 @@ button:disabled {
             value.replace(
                 /^[\s•*\-–—\d.)]+/,
                 ""
-            ).trim();
-
-
-        /*
-         * Remove duplicate complete product
-         * fragments.
-         */
-
-        value =
-            removeProductDuplication(
-                value,
-                product
             );
 
 
-        /*
-         * Remove repeated adjacent words.
-         */
+        value =
+            removeAdjacentRepeatedWords(
+                value
+            );
+
 
         value =
-            removeRepeatedWords(value);
+            removeDuplicateUnits(
+                value
+            );
 
-
-        /*
-         * Remove repeated units.
-         */
 
         value =
-            removeDuplicateUnits(value);
+            normalizeConnectedUnits(
+                value
+            );
 
-
-        /*
-         * Final whitespace cleanup.
-         */
 
         value =
             clean(value);
@@ -1065,16 +1215,76 @@ button:disabled {
 
 
         /*
-         * Reject extreme repetition.
+         * Main product exact match is allowed.
          */
 
         if (
-            hasExcessiveRepetition(
+            normalize(value) ===
+            normalize(product)
+        ) {
+
+            return clean(product);
+
+        }
+
+
+        /*
+         * Full product + extra text = reject.
+         */
+
+        if (
+            isBadFullProductExpansion(
                 value,
                 product
             )
         ) {
+
             return "";
+
+        }
+
+
+        /*
+         * Too much product-word repetition.
+         */
+
+        if (
+            hasTooMuchProductRepetition(
+                value,
+                product
+            )
+        ) {
+
+            return "";
+
+        }
+
+
+        /*
+         * Triple repeated words.
+         */
+
+        if (
+            hasTripleWord(value)
+        ) {
+
+            return "";
+
+        }
+
+
+        /*
+         * Generic marketing words.
+         */
+
+        if (
+            containsBadGenericWord(
+                value
+            )
+        ) {
+
+            return "";
+
         }
 
 
@@ -1084,38 +1294,385 @@ button:disabled {
 
 
     /* ========================================================
-       FINAL KEYWORD FILTER
+       BUILD PRODUCT CORE
+       
+       Example:
+       Roasted Salted Peanuts 200 g
+
+       Core:
+       Roasted Salted Peanuts
+
+       Quantity:
+       200 g
        ======================================================== */
 
-    function filterKeywords(
-        list,
+    function parseProduct(
         product
     ) {
 
-        const cleaned = [];
+        const normalized =
+            normalizeKeywordText(
+                product
+            );
 
 
-        list.forEach(function (item) {
+        const match =
+            normalized.match(
+                /^(.*?)(\d+(?:\.\d+)?\s*(?:g|kg|mg|ml|l|cm|mm|m|inch|inches))$/i
+            );
 
-            const keyword =
-                cleanSEOKeyword(
-                    item,
-                    product
+
+        if (!match) {
+
+            return {
+                full:
+                    normalized,
+
+                core:
+                    normalized,
+
+                quantity:
+                    ""
+
+            };
+
+        }
+
+
+        return {
+
+            full:
+                normalized,
+
+            core:
+                clean(
+                    match[1]
+                ),
+
+            quantity:
+                clean(
+                    match[2]
+                )
+
+        };
+
+    }
+
+
+    /* ========================================================
+       SELLER FACT TOKENS
+    ======================================================== */
+
+    function sellerTokens(
+        details
+    ) {
+
+        const cleaned =
+            normalizeKeywordText(
+                details
+            );
+
+
+        if (!cleaned) {
+            return [];
+        }
+
+
+        const words =
+            cleaned
+                .split(" ")
+                .filter(Boolean);
+
+
+        const result =
+            [];
+
+
+        words.forEach(
+            function (word) {
+
+                /*
+                 * Ignore very short noise.
+                 */
+
+                if (
+                    word.length < 2
+                ) {
+                    return;
+                }
+
+
+                /*
+                 * Remove standalone
+                 * punctuation.
+                 */
+
+                if (
+                    /^[^a-z0-9]+$/i.test(
+                        word
+                    )
+                ) {
+                    return;
+                }
+
+
+                result.push(
+                    word
                 );
 
-
-            if (!keyword) {
-                return;
             }
-
-
-            cleaned.push(keyword);
-
-        });
+        );
 
 
         return uniqueKeywords(
-            cleaned
+            result
+        );
+
+    }
+
+
+    /* ========================================================
+       DETERMINISTIC KEYWORDS
+       
+       This engine is used as a safe fallback.
+       It never invents product facts.
+    ======================================================== */
+
+    function buildSafeKeywords(
+        product,
+        details,
+        brand
+    ) {
+
+        const parsed =
+            parseProduct(
+                product
+            );
+
+
+        const output =
+            [];
+
+
+        /*
+         * Main keyword.
+         */
+
+        output.push(
+            parsed.full
+        );
+
+
+        /*
+         * Product without quantity.
+         */
+
+        if (
+            parsed.core &&
+            normalize(parsed.core) !==
+            normalize(parsed.full)
+        ) {
+
+            output.push(
+                parsed.core
+            );
+
+        }
+
+
+        /*
+         * Core words.
+         */
+
+        const coreWords =
+            getWords(
+                parsed.core
+            );
+
+
+        /*
+         * For 2+ words, make natural
+         * contiguous phrases.
+         *
+         * Example:
+         * roasted salted peanuts
+         *
+         * -> roasted salted
+         * -> salted peanuts
+         */
+
+        if (
+            coreWords.length >= 2
+        ) {
+
+            for (
+                let size = 2;
+                size <= Math.min(
+                    3,
+                    coreWords.length
+                );
+                size++
+            ) {
+
+                for (
+                    let i = 0;
+                    i + size <= coreWords.length;
+                    i++
+                ) {
+
+                    const phrase =
+                        coreWords
+                            .slice(
+                                i,
+                                i + size
+                            )
+                            .join(" ");
+
+
+                    output.push(
+                        phrase
+                    );
+
+                }
+
+            }
+
+        }
+
+
+        /*
+         * Product core + quantity
+         * for useful shorter phrases.
+         */
+
+        if (
+            parsed.quantity &&
+            coreWords.length >= 2
+        ) {
+
+            /*
+             * Last two product words.
+             */
+
+            const lastTwo =
+                coreWords.slice(
+                    -2
+                ).join(" ");
+
+
+            if (lastTwo) {
+
+                output.push(
+                    lastTwo +
+                    " " +
+                    parsed.quantity
+                );
+
+            }
+
+
+            /*
+             * First word + last product word
+             * only when product has 3+ words.
+             */
+
+            if (
+                coreWords.length >= 3
+            ) {
+
+                const firstLast =
+                    coreWords[0] +
+                    " " +
+                    coreWords[
+                        coreWords.length - 1
+                    ];
+
+
+                output.push(
+                    firstLast +
+                    " " +
+                    parsed.quantity
+                );
+
+            }
+
+        }
+
+
+        /*
+         * Seller details.
+         *
+         * Only add useful words that are
+         * already present in product or
+         * are explicitly supplied.
+         */
+
+        const detailWords =
+            sellerTokens(
+                details
+            );
+
+
+        const productWordSet =
+            new Set(
+                getWords(
+                    parsed.full
+                )
+            );
+
+
+        detailWords.forEach(
+            function (word) {
+
+                if (
+                    productWordSet.has(
+                        normalize(word)
+                    )
+                ) {
+                    return;
+                }
+
+
+                /*
+                 * Do not create random
+                 * one-word SEO keywords.
+                 */
+
+                if (
+                    word.length < 4
+                ) {
+                    return;
+                }
+
+            }
+        );
+
+
+        /*
+         * Brand combinations only if
+         * brand is explicitly supplied.
+         */
+
+        const cleanBrand =
+            clean(brand);
+
+
+        if (
+            cleanBrand &&
+            parsed.core
+        ) {
+
+            output.push(
+                cleanBrand +
+                " " +
+                parsed.core
+            );
+
+        }
+
+
+        return uniqueKeywords(
+            output
         );
 
     }
@@ -1125,12 +1682,17 @@ button:disabled {
        EXTRACT BACKEND KEYWORDS
     ======================================================== */
 
-    function extractKeywords(data) {
+    function extractKeywords(
+        data
+    ) {
 
-        const collected = [];
+        const collected =
+            [];
 
 
-        function add(value) {
+        function add(
+            value
+        ) {
 
             if (
                 value === null ||
@@ -1144,7 +1706,9 @@ button:disabled {
                 Array.isArray(value)
             ) {
 
-                value.forEach(add);
+                value.forEach(
+                    add
+                );
 
                 return;
 
@@ -1152,8 +1716,10 @@ button:disabled {
 
 
             if (
-                typeof value === "string" ||
-                typeof value === "number"
+                typeof value ===
+                    "string" ||
+                typeof value ===
+                    "number"
             ) {
 
                 String(value)
@@ -1162,25 +1728,30 @@ button:disabled {
                         /\r?\n|[,|]+/
                     )
 
-                    .map(function (item) {
+                    .map(
+                        function (item) {
 
-                        return item
-                            .replace(
-                                /^[\s•*\-–—\d.)]+/,
-                                ""
-                            )
-                            .trim();
+                            return item
+                                .replace(
+                                    /^[\s•*\-–—\d.)]+/,
+                                    ""
+                                )
+                                .trim();
 
-                    })
+                        }
+                    )
 
                     .filter(Boolean)
 
-                    .forEach(function (item) {
+                    .forEach(
+                        function (item) {
 
-                        collected.push(item);
+                            collected.push(
+                                item
+                            );
 
-                    });
-
+                        }
+                    );
 
                 return;
 
@@ -1188,7 +1759,8 @@ button:disabled {
 
 
             if (
-                typeof value === "object"
+                typeof value ===
+                "object"
             ) {
 
                 [
@@ -1197,21 +1769,30 @@ button:disabled {
                     "text",
                     "result",
                     "results",
-                    "data",
-                    "output"
-                ].forEach(function (key) {
+                    "output",
+                    "data"
+                ]
 
-                    if (
-                        Object.prototype
-                            .hasOwnProperty
-                            .call(value, key)
-                    ) {
+                .forEach(
+                    function (key) {
 
-                        add(value[key]);
+                        if (
+                            Object.prototype
+                                .hasOwnProperty
+                                .call(
+                                    value,
+                                    key
+                                )
+                        ) {
+
+                            add(
+                                value[key]
+                            );
+
+                        }
 
                     }
-
-                });
+                );
 
             }
 
@@ -1229,7 +1810,50 @@ button:disabled {
 
 
     /* ========================================================
-       JSON RESPONSE
+       FINAL FILTER
+    ======================================================== */
+
+    function filterBackendKeywords(
+        list,
+        product
+    ) {
+
+        const result =
+            [];
+
+
+        list.forEach(
+            function (item) {
+
+                const cleaned =
+                    cleanSEOKeyword(
+                        item,
+                        product
+                    );
+
+
+                if (!cleaned) {
+                    return;
+                }
+
+
+                result.push(
+                    cleaned
+                );
+
+            }
+        );
+
+
+        return uniqueKeywords(
+            result
+        );
+
+    }
+
+
+    /* ========================================================
+       READ JSON
     ======================================================== */
 
     async function readJSON(
@@ -1247,13 +1871,22 @@ button:disabled {
 
         try {
 
-            return JSON.parse(raw);
+            return JSON.parse(
+                raw
+            );
 
-        } catch (error) {
+        } catch (
+            error
+        ) {
 
             return {
-                success: false,
-                error: raw
+
+                success:
+                    false,
+
+                error:
+                    raw
+
             };
 
         }
@@ -1272,7 +1905,8 @@ button:disabled {
 
         if (
             data &&
-            typeof data === "object"
+            typeof data ===
+                "object"
         ) {
 
             return clean(
@@ -1296,44 +1930,22 @@ button:disabled {
 
 
     /* ========================================================
-       RENDER KEYWORDS
+       RENDER
     ======================================================== */
 
     function renderKeywords(
         list
     ) {
 
-        keywordList.innerHTML = "";
-
-
-        if (!list.length) {
-
-            const empty =
-                document.createElement(
-                    "div"
-                );
-
-
-            empty.className =
-                "kw";
-
-
-            empty.textContent =
-                "No valid SEO keywords were returned.";
-
-
-            keywordList.appendChild(
-                empty
-            );
-
-
-            return;
-
-        }
+        keywordList.innerHTML =
+            "";
 
 
         list.forEach(
-            function (keyword, index) {
+            function (
+                keyword,
+                index
+            ) {
 
                 const item =
                     document.createElement(
@@ -1356,7 +1968,10 @@ button:disabled {
 
 
                 number.textContent =
-                    (index + 1) + ".";
+                    (
+                        index + 1
+                    ) +
+                    ".";
 
 
                 const text =
@@ -1464,10 +2079,10 @@ button:disabled {
 
 
         /* ====================================================
-           IMPORTANT:
-           mainKeyword is ALWAYS DEFINED HERE.
-           
-           No accidental undefined variable.
+           IMPORTANT FIX
+
+           mainKeyword is explicitly declared here.
+           It can NEVER be undefined.
         ==================================================== */
 
         const mainKeyword =
@@ -1475,9 +2090,14 @@ button:disabled {
 
 
         /*
-         * Send product details separately.
-         * Do NOT combine product + details into
-         * the mainKeyword.
+         * Do NOT use:
+         *
+         * product + details
+         *
+         * as mainKeyword.
+         *
+         * This was one of the causes of
+         * repeated product phrases.
          */
 
         const requestBody = {
@@ -1513,7 +2133,7 @@ button:disabled {
 
 
         /* ====================================================
-           UI STATE
+           BUTTON STATE
         ==================================================== */
 
         generateBtn.disabled =
@@ -1536,24 +2156,28 @@ button:disabled {
         );
 
 
-        /* ====================================================
-           API REQUEST
-        ==================================================== */
-
         try {
+
+            /* =================================================
+               BACKEND REQUEST
+            ================================================= */
 
             const response =
                 await fetch(
                     SEO_ENDPOINT,
                     {
-                        method: "POST",
+
+                        method:
+                            "POST",
 
                         headers: {
+
                             "Content-Type":
                                 "application/json",
 
                             "Accept":
                                 "application/json"
+
                         },
 
                         body:
@@ -1563,6 +2187,7 @@ button:disabled {
 
                         cache:
                             "no-store"
+
                     }
                 );
 
@@ -1589,81 +2214,155 @@ button:disabled {
 
 
             /* =================================================
-               EXTRACT
+               BACKEND KEYWORDS
             ================================================= */
 
-            let keywords =
-                extractKeywords(
-                    data
+            const backendKeywords =
+                filterBackendKeywords(
+                    extractKeywords(
+                        data
+                    ),
+                    product
                 );
 
 
             /* =================================================
-               CLEAN
+               SAFE DETERMINISTIC KEYWORDS
             ================================================= */
 
-            keywords =
-                filterKeywords(
-                    keywords,
-                    product
+            const safeKeywords =
+                buildSafeKeywords(
+                    product,
+                    details,
+                    brand
                 );
+
+
+            /* =================================================
+               IMPORTANT V29 RULE
+
+               Backend AI output is NOT trusted blindly.
+
+               Safe deterministic keywords are placed first.
+            ================================================= */
+
+            let finalKeywords =
+                [];
+
+
+            finalKeywords.push(
+                mainKeyword
+            );
 
 
             /*
-             * Main keyword should appear first.
+             * Add safe product-derived
+             * keywords first.
              */
 
-            const finalMainKeyword =
-                cleanSEOKeyword(
-                    mainKeyword,
-                    product
-                );
+            safeKeywords.forEach(
+                function (keyword) {
+
+                    const cleaned =
+                        cleanSEOKeyword(
+                            keyword,
+                            product
+                        );
 
 
-            if (
-                finalMainKeyword
-            ) {
+                    if (
+                        cleaned &&
+                        normalize(cleaned) !==
+                        normalize(mainKeyword)
+                    ) {
 
-                keywords =
-                    keywords.filter(
-                        function (keyword) {
+                        finalKeywords.push(
+                            cleaned
+                        );
 
-                            return (
-                                normalize(keyword) !==
-                                normalize(
-                                    finalMainKeyword
-                                )
-                            );
+                    }
 
-                        }
+                }
+            );
+
+
+            /*
+             * Add backend keywords only
+             * after strict filtering.
+             */
+
+            backendKeywords.forEach(
+                function (keyword) {
+
+                    const cleaned =
+                        cleanSEOKeyword(
+                            keyword,
+                            product
+                        );
+
+
+                    if (!cleaned) {
+                        return;
+                    }
+
+
+                    /*
+                     * Never allow a backend
+                     * keyword containing the
+                     * complete product name
+                     * plus extra words.
+                     */
+
+                    if (
+                        isBadFullProductExpansion(
+                            cleaned,
+                            product
+                        )
+                    ) {
+                        return;
+                    }
+
+
+                    finalKeywords.push(
+                        cleaned
                     );
 
+                }
+            );
 
-                keywords.unshift(
-                    finalMainKeyword
+
+            /* =================================================
+               UNIQUE
+            ================================================= */
+
+            finalKeywords =
+                uniqueKeywords(
+                    finalKeywords
                 );
 
-            }
 
+            /* =================================================
+               FINAL MAXIMUM
+            ================================================= */
 
-            /*
-             * Final duplicate protection.
-             */
-
-            keywords =
-                uniqueKeywords(
-                    keywords
-                ).slice(
+            finalKeywords =
+                finalKeywords.slice(
                     0,
                     20
                 );
 
 
-            if (!keywords.length) {
+            /* =================================================
+               SAFETY
+            ================================================= */
 
-                throw new Error(
-                    "Backend responded successfully, but no valid SEO keywords were returned."
-                );
+            if (
+                !finalKeywords.length
+            ) {
+
+                finalKeywords = [
+                    mainKeyword
+                ];
 
             }
 
@@ -1673,7 +2372,7 @@ button:disabled {
             ================================================= */
 
             renderKeywords(
-                keywords
+                finalKeywords
             );
 
 
@@ -1687,7 +2386,7 @@ button:disabled {
 
             showStatus(
                 "✅ SEO keywords generated successfully. " +
-                keywords.length +
+                finalKeywords.length +
                 " valid keywords found.",
                 "success"
             );
@@ -1704,29 +2403,91 @@ button:disabled {
             );
 
 
-        } catch (error) {
+        } catch (
+            error
+        ) {
 
             console.error(
-                "SEO Generator V28 Error:",
+                "SEO Generator V29 Error:",
                 error
             );
 
 
-            const message =
-                clean(
-                    error &&
-                    error.message
+            /*
+             * IMPORTANT:
+             * If backend temporarily fails,
+             * still provide safe factual
+             * deterministic keywords.
+             */
+
+            const emergencyKeywords =
+                buildSafeKeywords(
+                    product,
+                    details,
+                    brand
+                )
+
+                .map(
+                    function (keyword) {
+
+                        return cleanSEOKeyword(
+                            keyword,
+                            product
+                        );
+
+                    }
+                )
+
+                .filter(Boolean);
+
+
+            const finalEmergency =
+                uniqueKeywords(
+                    emergencyKeywords
+                )
+                .slice(
+                    0,
+                    20
                 );
 
 
-            showStatus(
-                "❌ SEO generation failed: " +
-                (
-                    message ||
-                    "Unknown error. Please try again."
-                ),
-                "error"
-            );
+            if (
+                finalEmergency.length
+            ) {
+
+                renderKeywords(
+                    finalEmergency
+                );
+
+
+                resultBox.style.display =
+                    "block";
+
+
+                copyBtn.disabled =
+                    false;
+
+
+                showStatus(
+                    "⚠️ AI backend response नहीं मिला, इसलिए केवल seller-provided facts से safe keywords बनाए गए।",
+                    "info"
+                );
+
+            } else {
+
+                showStatus(
+                    "❌ SEO generation failed: " +
+                    (
+                        clean(
+                            error &&
+                            error.message
+                        ) ||
+                        "Unknown error."
+                    ),
+                    "error"
+                );
+
+            }
 
         } finally {
 
@@ -1772,15 +2533,20 @@ button:disabled {
                 await fetch(
                     STATUS_ENDPOINT,
                     {
-                        method: "GET",
+
+                        method:
+                            "GET",
 
                         headers: {
+
                             "Accept":
                                 "application/json"
+
                         },
 
                         cache:
                             "no-store"
+
                     }
                 );
 
@@ -1830,10 +2596,12 @@ button:disabled {
             );
 
 
-        } catch (error) {
+        } catch (
+            error
+        ) {
 
             console.error(
-                "Connection Test V28 Error:",
+                "Connection Test V29 Error:",
                 error
             );
 
@@ -1876,34 +2644,37 @@ button:disabled {
 
     async function copyAll() {
 
+        const nodes =
+            keywordList.querySelectorAll(
+                ".kw"
+            );
+
+
         const items =
             Array.from(
-                keywordList.querySelectorAll(
-                    ".kw"
-                )
+                nodes
             )
 
-            .map(function (item) {
+            .map(
+                function (item) {
 
-                return clean(
-                    item.textContent
-                )
-
-                    /*
-                     * Remove display number.
-                     */
-
+                    return clean(
+                        item.textContent
+                    )
                     .replace(
                         /^\d+\.\s*/,
                         ""
                     );
 
-            })
+                }
+            )
 
             .filter(Boolean);
 
 
-        if (!items.length) {
+        if (
+            !items.length
+        ) {
 
             showStatus(
                 "❌ No keywords to copy.",
@@ -1916,7 +2687,9 @@ button:disabled {
 
 
         const text =
-            items.join("\n");
+            items.join(
+                "\n"
+            );
 
 
         try {
@@ -1926,8 +2699,11 @@ button:disabled {
                 navigator.clipboard.writeText
             ) {
 
-                await navigator.clipboard
-                    .writeText(text);
+                await navigator
+                    .clipboard
+                    .writeText(
+                        text
+                    );
 
             } else {
 
@@ -1944,7 +2720,13 @@ button:disabled {
             );
 
 
-        } catch (error) {
+        } catch (
+            error
+        ) {
+
+            /*
+             * Android/browser fallback.
+             */
 
             const textarea =
                 document.createElement(
@@ -1961,6 +2743,9 @@ button:disabled {
 
             textarea.style.left =
                 "-9999px";
+
+            textarea.style.top =
+                "0";
 
 
             document.body.appendChild(
@@ -1986,10 +2771,12 @@ button:disabled {
                 );
 
 
-            } catch (copyError) {
+            } catch (
+                copyError
+            ) {
 
                 showStatus(
-                    "❌ Copy failed. Please select and copy the keywords manually.",
+                    "❌ Copy failed. Please select the keywords manually.",
                     "error"
                 );
 
@@ -2030,7 +2817,8 @@ button:disabled {
         function (event) {
 
             if (
-                event.key === "Enter"
+                event.key ===
+                "Enter"
             ) {
 
                 event.preventDefault();
@@ -2044,11 +2832,11 @@ button:disabled {
 
 
     /* ========================================================
-       PAGE LOAD
+       LOAD
     ======================================================== */
 
     console.log(
-        "AI Seller Toolkit SEO Generator FINAL VERSION 28.0 loaded"
+        "AI Seller Toolkit SEO Generator FINAL VERSION 29.0 loaded"
     );
 
 
