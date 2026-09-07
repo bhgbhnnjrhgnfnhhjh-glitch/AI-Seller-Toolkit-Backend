@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AI Hashtag Generator — FINAL VERSION 4.0</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#172033}.top{background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;text-align:center;padding:18px 12px}.top h1{margin:0;font-size:22px}.top p{margin:6px 0 0;font-size:12px}.wrap{max-width:620px;margin:30px auto;padding:0 14px}.card{background:#fff;border-radius:14px;padding:20px;box-shadow:0 6px 22px rgba(0,0,0,.10);margin-bottom:18px}.badge{display:inline-block;background:#eef2ff;color:#3730a3;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:700}.title{text-align:center;font-size:20px;margin:8px 0 18px}.field{margin-bottom:14px}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;border:1px solid #d6dce7;border-radius:8px;padding:11px;font-size:14px;background:#fff}.field textarea{min-height:78px;resize:vertical}.btn{width:100%;border:0;border-radius:8px;padding:12px;font-weight:700;font-size:14px;cursor:pointer}.generate{background:#16a34a;color:#fff}.secondary{margin-top:8px;background:#e8eef8;color:#1f2937}.btn:disabled{opacity:.65;cursor:not-allowed}.status{display:none;margin-top:12px;padding:10px;border-radius:8px;font-size:13px}.status.ok{display:block;background:#ecfdf3;color:#166534}.status.err{display:block;background:#fef2f2;color:#b91c1c}.status.info{display:block;background:#eff6ff;color:#1d4ed8}.result{display:none}.result h2{font-size:16px;margin:0 0 12px}.hash-list{display:flex;flex-wrap:wrap;gap:8px}.hash{background:#f1f5f9;border:1px solid #dbe3ee;border-radius:8px;padding:8px 10px;font-size:14px;word-break:break-word}.copy{margin-top:14px;background:#2563eb;color:#fff}.meta,.api{font-size:12px;color:#64748b;margin-top:10px}.api{font-size:11px;word-break:break-all}.rules{font-size:12px;line-height:1.55;background:#eff6ff;border-radius:8px;padding:11px;color:#334155}.back{display:inline-block;color:#fff;text-decoration:none;font-size:12px;margin-top:5px}
+</style></head>
+<body>
+<div class="top"><h1># AI Hashtag Generator</h1><p>FINAL VERSION 4.0 — Backend API + Strict Natural Hashtag Engine</p><a class="back" href="tools.html">← Back to Tools</a></div>
+<div class="wrap">
+<div class="card"><div class="badge">14 CATEGORIES + GEMINI BACKEND</div><h2 class="title">Generate AI Hashtags</h2>
+<div class="field"><label for="productName">Product Name *</label><input id="productName" type="text" placeholder="Example: Black Cotton T-Shirt" autocomplete="off"></div>
+<div class="field"><label for="brand">Brand Name</label><input id="brand" type="text" placeholder="Optional" autocomplete="off"></div>
+<div class="field"><label for="category">Category *</label><select id="category">
+<option value="Fashion">👗 Fashion</option><option value="Beauty">💄 Beauty</option><option value="Electronics">📱 Electronics</option><option value="Home & Kitchen">🏠 Home &amp; Kitchen</option><option value="Shoes">👟 Shoes</option><option value="Jewellery">💍 Jewellery</option><option value="Toys">🧸 Toys</option><option value="Books">📚 Books</option><option value="Pet">🐶 Pet</option><option value="Sports">🏋️ Sports</option><option value="Automotive">🚗 Automotive</option><option value="Garden">🌱 Garden</option><option value="Food">🍎 Food</option><option value="Gifts">🎁 Gifts</option>
+</select></div>
+<div class="field"><label for="details">Product Details</label><textarea id="details" placeholder="Optional: color, material, size, pack, model, use, etc. Only enter facts you know."></textarea></div>
+<div class="field"><label for="platform">Platform</label><select id="platform"><option>Instagram</option><option>Facebook</option><option>Pinterest</option><option>YouTube</option><option>Meesho</option><option>Amazon</option><option>Flipkart</option><option>Etsy</option><option>Shopify</option><option>General</option></select></div>
+<button id="generateBtn" class="btn generate">✨ Generate AI Hashtags</button><button id="testBtn" class="btn secondary">🔌 Test Backend Connection</button><div id="status" class="status"></div><div class="api">Backend: https://ai-seller-toolkit-backend-1.onrender.com/api/generate-hashtags</div></div>
+<div id="resultCard" class="card result"><h2>Generated AI Hashtags</h2><div id="hashList" class="hash-list"></div><button id="copyBtn" class="btn copy">📋 Copy Hashtags</button><div id="meta" class="meta"></div></div>
+<div class="card"><div class="rules"><strong>FINAL V4.0 Rules:</strong><br>• Backend Gemini API is called for every generation.<br>• Only seller-provided product facts and selected category may be used.<br>• Single-word attribute hashtags such as #Black, #Cotton, #RoundNeck, #Fashion are rejected.<br>• Random fragments such as #Ca, #test, #brand, #shirt, #round and #neck are rejected.<br>• Product-related hashtags must contain at least two meaningful source parts.<br>• Exact seller brand is allowed as one complete brand hashtag.<br>• Duplicates and malformed hashtags are removed automatically.<br>• If AI output is weak, a deterministic local fallback creates safe combinations.<br>• Other AI Seller Toolkit tools are not changed by this page.</div></div>
+</div>
+<script>
+'use strict';
+const API_BASE='https://ai-seller-toolkit-backend-1.onrender.com';
+const GENERATE_URL=API_BASE+'/api/generate-hashtags';
+const STATUS_URL=API_BASE+'/api/status';
+const VERSION='FINAL-VERSION-4.0';
+const $=id=>document.getElementById(id);
+const productName=$('productName'),brand=$('brand'),category=$('category'),details=$('details'),platform=$('platform');
+const generateBtn=$('generateBtn'),testBtn=$('testBtn'),status=$('status'),resultCard=$('resultCard'),hashList=$('hashList'),copyBtn=$('copyBtn'),meta=$('meta');
+let lastHashtags=[];
+function cleanText(v){return String(v??'').replace(/\s+/g,' ').trim()}
+function words(v){return cleanText(v).toLowerCase().match(/[\p{L}\p{N}]+/gu)||[]}
+function compact(v){return cleanText(v).toLowerCase().replace(/[^\p{L}\p{N}]+/gu,'')}
+function normalizeHashtag(v){let s=cleanText(v).replace(/^#+/,'').replace(/[^\p{L}\p{N}_ ]/gu,' ').replace(/\s+/g,' ').trim();if(!s)return '';return '#'+s.replace(/[ _-]+/g,'')}
+function sourcePhrases(p,b,c,d){
+ const arr=[]; [p,b,d,c].forEach(v=>cleanText(v).split(/[\n,;|]+/).map(cleanText).filter(Boolean).forEach(x=>arr.push(x)));
+ return [...new Set(arr)];
+}
+function tokenizeSource(p,b,c,d){
+ const all=[]; sourcePhrases(p,b,c,d).forEach(x=>words(x).forEach(w=>{if(w.length>=2&&!all.includes(w))all.push(w)})); return all;
+}
+function canBuildTag(tag,p,b,c,d){
+ const t=compact(tag); if(!t||t.length<4)return false;
+ const brandTag=compact(b); if(brandTag && t===brandTag)return true;
+ const productWords=words(p).map(compact).filter(Boolean);
+ const source=tokenizeSource(p,b,c,d);
+ if(!source.length)return false;
+ // The tag must be completely composed of seller/category words; no invented letters.
+ let rem=t;
+ const units=[...new Set(source)].sort((a,b)=>b.length-a.length);
+ let used=0;
+ for(const u of units){
+   while(rem.includes(u)) { rem=rem.replace(u,''); used++; }
+ }
+ if(rem.length!==0)return false;
+ // Never allow a single source word except the exact brand.
+ if(used<2)return false;
+ // It must be product-relevant: contain at least one product-name token.
+ if(!productWords.some(w=>w && t.includes(w)))return false;
+ return true;
+}
+function unique(list){const out=[],seen=new Set();for(const x of list){const h=normalizeHashtag(x);if(!h)continue;const k=h.toLowerCase();if(!seen.has(k)){seen.add(k);out.push(h)}}return out}
+function filterAI(arr,p,b,c,d){return unique((Array.isArray(arr)?arr:[]).filter(x=>canBuildTag(x,p,b,c,d))).slice(0,15)}
+function detailUnits(d){
+ return cleanText(d).split(/[\n,;|]+/).map(cleanText).filter(Boolean).flatMap(x=>{
+   const w=words(x); return w.length>1?[x]:[];
+ }).filter((x,i,a)=>a.findIndex(y=>compact(y)===compact(x))===i);
+}
+function localSafeHashtags(p,b,c,d){
+ const out=[];
+ const add=x=>{const h=normalizeHashtag(x);if(h&&canBuildTag(h,p,b,c,d)&&!out.some(y=>y.toLowerCase()===h.toLowerCase()))out.push(h)};
+ // Always keep exact full product first.
+ add(p);
+ if(b)add(b);
+ const pw=words(p).filter(w=>w.length>=2);
+ const du=detailUnits(d).map(x=>words(x).join(' '));
+ const detailWords=[...new Set(du.flatMap(x=>words(x)))].filter(w=>w.length>=2);
+ // Product token pairs / triples.
+ for(let i=0;i<pw.length;i++)for(let j=i+1;j<pw.length;j++)add(pw[i]+' '+pw[j]);
+ for(let i=0;i<pw.length;i++)for(let j=i+1;j<pw.length;j++)for(let k=j+1;k<pw.length;k++)add(pw[i]+' '+pw[j]+' '+pw[k]);
+ // Detail + product combinations.
+ for(const x of detailWords)for(const y of pw)add(x+' '+y);
+ for(const x of du)for(const y of pw)add(x+' '+y);
+ // Category + product word, but never category alone.
+ const cw=words(c).filter(w=>w.length>=2);
+ for(const x of cw)for(const y of pw)add(x+' '+y);
+ return out.slice(0,15);
+}
+function showStatus(msg,type='info'){status.className='status '+type;status.textContent=msg}
+function render(list){lastHashtags=list;hashList.innerHTML='';list.forEach(h=>{const el=document.createElement('div');el.className='hash';el.textContent=h;hashList.appendChild(el)});meta.textContent='Total Hashtags: '+list.length+' • '+VERSION;resultCard.style.display='block'}
+async function readJSON(r){const text=await r.text();let data;try{data=JSON.parse(text)}catch(e){throw new Error('Backend returned an invalid response.')}if(!r.ok||data.success===false)throw new Error(data.error||('Backend error HTTP '+r.status));return data}
+async function testConnection(){testBtn.disabled=true;showStatus('⏳ Checking backend connection...');try{const r=await fetch(STATUS_URL,{cache:'no-store'});const d=await readJSON(r);showStatus('✅ Backend connected. Model: '+(d.model||'configured')+' • Version: '+(d.version||'unknown'),'ok')}catch(e){showStatus('❌ Backend connection failed: '+e.message,'err')}finally{testBtn.disabled=false}}
+async function generateHashtags(){
+ const p=cleanText(productName.value),b=cleanText(brand.value),c=cleanText(category.value),d=cleanText(details.value),pl=cleanText(platform.value);
+ if(!p)return showStatus('❌ Product Name is required.','err');
+ if(!c)return showStatus('❌ Category is required.','err');
+ generateBtn.disabled=true;testBtn.disabled=true;generateBtn.textContent='⏳ Generating...';showStatus('⏳ Calling Hashtag Backend API...');resultCard.style.display='none';
+ try{
+   const payload={productName:p,brand:b,category:c,productDetails:d,platform:pl};
+   const r=await fetch(GENERATE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),cache:'no-store'});
+   const data=await readJSON(r);
+   let ai=filterAI(data.hashtags||data.data?.hashtags||[],p,b,c,d);
+   const local=localSafeHashtags(p,b,c,d);
+   // Local quality engine is authoritative; AI suggestions are added only after validation.
+   let final=unique([...ai,...local]).filter(x=>canBuildTag(x,p,b,c,d)).slice(0,15);
+   if(!final.length)throw new Error('No valid hashtags generated. Add product details and try again.');
+   render(final);showStatus('✅ Hashtags generated successfully — '+final.length+' valid hashtags.','ok');resultCard.scrollIntoView({behavior:'smooth',block:'start'});
+ }catch(e){console.error('Hashtag Generator V4:',e);showStatus('❌ Hashtag generation failed: '+e.message,'err')}
+ finally{generateBtn.disabled=false;testBtn.disabled=false;generateBtn.textContent='✨ Generate AI Hashtags'}
+}
+generateBtn.addEventListener('click',generateHashtags);testBtn.addEventListener('click',testConnection);
+copyBtn.addEventListener('click',async()=>{if(!lastHashtags.length)return showStatus('❌ No hashtags to copy.','err');try{await navigator.clipboard.writeText(lastHashtags.join(' '));showStatus('✅ Hashtags copied successfully.','ok')}catch(e){showStatus('❌ Copy failed. Please copy manually.','err')}});
+console.log('AI Hashtag Generator FINAL VERSION 4.0 loaded — backend + strict multi-word validation.');
+</script></body></html>
