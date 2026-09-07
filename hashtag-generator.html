@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="AI Hashtag Generator — Backend API powered, category-aware, factual hashtags.">
+<title>AI Hashtag Generator — FINAL VERSION 2.0</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f7fb;color:#172033}.top{background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;text-align:center;padding:18px 12px}.top h1{margin:0;font-size:22px}.top p{margin:6px 0 0;font-size:12px}.wrap{max-width:620px;margin:30px auto;padding:0 14px}.card{background:#fff;border-radius:14px;padding:20px;box-shadow:0 6px 22px rgba(0,0,0,.10);margin-bottom:18px}.badge{display:inline-block;background:#eef2ff;color:#3730a3;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:700;margin-bottom:8px}.title{text-align:center;font-size:20px;margin:5px 0 18px}.field{margin-bottom:14px}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;border:1px solid #d6dce7;border-radius:8px;padding:11px;font-size:14px;background:#fff}.field textarea{min-height:78px;resize:vertical}.btn{width:100%;border:0;border-radius:8px;padding:12px;font-weight:700;font-size:14px;cursor:pointer}.generate{background:#16a34a;color:#fff}.generate:disabled{opacity:.65;cursor:not-allowed}.secondary{margin-top:8px;background:#e8eef8;color:#1f2937}.status{display:none;margin-top:12px;padding:10px;border-radius:8px;font-size:13px}.status.ok{display:block;background:#ecfdf3;color:#166534}.status.err{display:block;background:#fef2f2;color:#b91c1c}.status.info{display:block;background:#eff6ff;color:#1d4ed8}.result{display:none}.result h2{font-size:16px;margin:0 0 12px}.hash-list{display:flex;flex-wrap:wrap;gap:8px}.hash{background:#f1f5f9;border:1px solid #dbe3ee;border-radius:8px;padding:8px 10px;font-size:14px;word-break:break-word}.copy{margin-top:14px;background:#2563eb;color:#fff}.meta{font-size:12px;color:#64748b;margin-top:10px}.rules{font-size:12px;line-height:1.55;background:#eff6ff;border-radius:8px;padding:11px;color:#334155}.api{font-size:11px;color:#64748b;word-break:break-all;margin-top:8px}.back{display:inline-block;color:#fff;text-decoration:none;font-size:12px;margin-top:5px}
+</style>
+</head>
+<body>
+<div class="top">
+  <h1># AI Hashtag Generator</h1>
+  <p>FINAL VERSION 2.0 — Backend API Connected</p>
+  <a class="back" href="tools.html">← Back to Tools</a>
+</div>
+
+<div class="wrap">
+  <div class="card">
+    <div class="badge">14 CATEGORY + GEMINI BACKEND</div>
+    <h2 class="title">Generate AI Hashtags</h2>
+
+    <div class="field">
+      <label for="productName">Product Name *</label>
+      <input id="productName" type="text" placeholder="Example: Black Cotton T-Shirt" autocomplete="off">
+    </div>
+
+    <div class="field">
+      <label for="brand">Brand Name</label>
+      <input id="brand" type="text" placeholder="Optional" autocomplete="off">
+    </div>
+
+    <div class="field">
+      <label for="category">Category *</label>
+      <select id="category">
+        <option value="Fashion">👗 Fashion</option>
+        <option value="Beauty">💄 Beauty</option>
+        <option value="Electronics">📱 Electronics</option>
+        <option value="Home & Kitchen">🏠 Home &amp; Kitchen</option>
+        <option value="Shoes">👟 Shoes</option>
+        <option value="Jewellery">💍 Jewellery</option>
+        <option value="Toys">🧸 Toys</option>
+        <option value="Books">📚 Books</option>
+        <option value="Pet">🐶 Pet</option>
+        <option value="Sports">🏋️ Sports</option>
+        <option value="Automotive">🚗 Automotive</option>
+        <option value="Garden">🌱 Garden</option>
+        <option value="Food">🍎 Food</option>
+        <option value="Gifts">🎁 Gifts</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="details">Product Details</label>
+      <textarea id="details" placeholder="Optional: color, material, size, pack, model, use, etc. Only enter facts you know."></textarea>
+    </div>
+
+    <div class="field">
+      <label for="platform">Platform</label>
+      <select id="platform">
+        <option>Instagram</option><option>Facebook</option><option>Pinterest</option><option>YouTube</option>
+        <option>Meesho</option><option>Amazon</option><option>Flipkart</option><option>Etsy</option><option>Shopify</option><option>General</option>
+      </select>
+    </div>
+
+    <button id="generateBtn" class="btn generate">✨ Generate AI Hashtags</button>
+    <button id="testBtn" class="btn secondary">🔌 Test Backend Connection</button>
+    <div id="status" class="status"></div>
+    <div class="api">Backend: https://ai-seller-toolkit-backend-1.onrender.com/api/generate-hashtags</div>
+  </div>
+
+  <div id="resultCard" class="card result">
+    <h2>Generated AI Hashtags</h2>
+    <div id="hashList" class="hash-list"></div>
+    <button id="copyBtn" class="btn copy">📋 Copy Hashtags</button>
+    <div id="meta" class="meta"></div>
+  </div>
+
+  <div class="card">
+    <div class="rules">
+      <strong>Strict AI Rules:</strong><br>
+      • Hashtags come from the seller's product information and selected category.<br>
+      • No unsupported product attributes or fake claims.<br>
+      • Duplicate hashtags are removed.<br>
+      • Hashtags are normalized to a clean # format.<br>
+      • All 14 requested categories are supported.<br>
+      • This page only calls the hashtag endpoint; it does not modify other tools.
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+const API_BASE='https://ai-seller-toolkit-backend-1.onrender.com';
+const GENERATE_URL=API_BASE+'/api/generate-hashtags';
+const STATUS_URL=API_BASE+'/api/status';
+const CATEGORY_URL=API_BASE+'/api/categories';
+const VERSION='FINAL-VERSION-2.0';
+
+const $=id=>document.getElementById(id);
+const productName=$('productName'),brand=$('brand'),category=$('category'),details=$('details'),platform=$('platform');
+const generateBtn=$('generateBtn'),testBtn=$('testBtn'),status=$('status'),resultCard=$('resultCard'),hashList=$('hashList'),copyBtn=$('copyBtn'),meta=$('meta');
+let lastHashtags=[];
+
+function showStatus(message,type='info'){
+  status.className='status '+type;
+  status.textContent=message;
+}
+function cleanText(v){return String(v??'').replace(/\s+/g,' ').trim()}
+function normalizeHashtag(v){
+  let s=cleanText(v);
+  if(!s)return '';
+  s=s.replace(/^#+/,'').replace(/[^\p{L}\p{N}_\- ]/gu,' ').replace(/\s+/g,' ').trim();
+  if(!s)return '';
+  return '#'+s.replace(/[\s\-]+/g,'');
+}
+function cleanHashtags(arr){
+  const out=[],seen=new Set();
+  if(!Array.isArray(arr))return out;
+  for(const item of arr){
+    const h=normalizeHashtag(item);
+    if(!h)continue;
+    const key=h.toLowerCase();
+    if(seen.has(key))continue;
+    seen.add(key);out.push(h);
+  }
+  return out.slice(0,15);
+}
+function renderHashtags(list){
+  lastHashtags=list;
+  hashList.innerHTML='';
+  list.forEach(h=>{const d=document.createElement('div');d.className='hash';d.textContent=h;hashList.appendChild(d)});
+  meta.textContent='Total Hashtags: '+list.length+' • '+VERSION;
+  resultCard.style.display='block';
+}
+async function readJSON(response){
+  const text=await response.text();
+  let data=null;
+  try{data=JSON.parse(text)}catch(e){throw new Error('Backend returned an invalid response.')}
+  if(!response.ok || data.success===false){throw new Error(data.error||('Backend error HTTP '+response.status))}
+  return data;
+}
+
+async function testConnection(){
+  testBtn.disabled=true;showStatus('⏳ Checking backend connection...','info');
+  try{
+    const r=await fetch(STATUS_URL,{method:'GET',cache:'no-store'});
+    const data=await readJSON(r);
+    showStatus('✅ Backend connected. Model: '+(data.model||'configured')+' • Version: '+(data.version||'unknown'),'ok');
+  }catch(e){showStatus('❌ Backend connection failed: '+e.message,'err')}
+  finally{testBtn.disabled=false}
+}
+
+async function generateHashtags(){
+  const p=cleanText(productName.value),b=cleanText(brand.value),c=cleanText(category.value),d=cleanText(details.value),pl=cleanText(platform.value);
+  if(!p){showStatus('❌ Product Name is required.','err');productName.focus();return}
+  if(!c){showStatus('❌ Category is required.','err');category.focus();return}
+  generateBtn.disabled=true;testBtn.disabled=true;generateBtn.textContent='⏳ Generating...';showStatus('⏳ Connecting to AI Hashtag Backend...','info');resultCard.style.display='none';
+  try{
+    const payload={productName:p,brand:b,category:c,productDetails:d,platform:pl};
+    const r=await fetch(GENERATE_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),cache:'no-store'});
+    const data=await readJSON(r);
+    const hashtags=cleanHashtags(data.hashtags || data.data?.hashtags || []);
+    if(!hashtags.length)throw new Error('Backend generated no hashtags. Add more product details and try again.');
+    renderHashtags(hashtags);
+    showStatus('✅ Hashtags generated successfully — '+hashtags.length+' hashtags.','ok');
+    resultCard.scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(e){
+    console.error('Hashtag Generator Error:',e);
+    showStatus('❌ Hashtag generation failed: '+e.message,'err');
+  }finally{
+    generateBtn.disabled=false;testBtn.disabled=false;generateBtn.textContent='✨ Generate AI Hashtags';
+  }
+}
+
+generateBtn.addEventListener('click',generateHashtags);
+testBtn.addEventListener('click',testConnection);
+copyBtn.addEventListener('click',async()=>{
+  if(!lastHashtags.length){showStatus('❌ No hashtags to copy.','err');return}
+  const text=lastHashtags.join(' ');
+  try{await navigator.clipboard.writeText(text);showStatus('✅ Hashtags copied successfully.','ok')}
+  catch(e){showStatus('❌ Copy failed. Please select and copy the hashtags manually.','err')}
+});
+productName.addEventListener('keydown',e=>{if(e.key==='Enter')generateHashtags()});
+console.log('AI Hashtag Generator FINAL VERSION 2.0 loaded — Backend API connected.');
+</script>
+</body>
+</html>
