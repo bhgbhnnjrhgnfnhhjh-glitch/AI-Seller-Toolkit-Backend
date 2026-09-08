@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Hashtag Generator — FINAL VERSION 10.0</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#18202a}
+.container{max-width:760px;margin:30px auto;padding:20px}.card{background:#fff;border-radius:18px;padding:24px;box-shadow:0 8px 30px rgba(0,0,0,.08)}
+h1{margin-top:0}label{display:block;font-weight:700;margin:16px 0 7px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #d6dbe3;border-radius:10px;font-size:15px}
+textarea{min-height:110px;resize:vertical}button{width:100%;padding:14px;margin-top:20px;border:0;border-radius:10px;background:#111827;color:#fff;font-size:16px;font-weight:700;cursor:pointer}
+button:disabled{opacity:.6}.status{margin-top:14px;font-size:14px}.result{margin-top:20px;padding:16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;white-space:pre-wrap;line-height:1.8}
+.small,.version{font-size:12px;color:#64748b}.small{margin-top:10px}
+</style>
+</head>
+<body>
+<div class="container"><div class="card">
+<h1>🏷️ AI Hashtag Generator</h1>
+<div class="version">FINAL VERSION 10.0 — LOCKED &amp; CLEAN ENGINE</div>
+
+<label for="category">Category</label>
+<select id="category">
+<option>Fashion</option><option>Beauty</option><option>Electronics</option><option>Home & Kitchen</option>
+<option>Shoes</option><option>Jewellery</option><option>Toys</option><option>Books</option><option>Pet</option>
+<option>Sports</option><option>Automotive</option><option>Garden</option><option>Food</option><option>Gifts</option>
+</select>
+
+<label for="productName">Product Name *</label>
+<input id="productName" placeholder="e.g. Black Cotton T-Shirt">
+
+<label for="brand">Brand</label>
+<input id="brand" placeholder="e.g. TestBrand">
+
+<label for="details">Product Details</label>
+<textarea id="details" placeholder="e.g. Black cotton, round neck"></textarea>
+
+<label for="keywords">Important Keywords</label>
+<input id="keywords" placeholder="e.g. cotton t-shirt, black t-shirt">
+
+<button id="generateBtn">✨ Generate Hashtags</button>
+<div id="status" class="status"></div><div id="result" class="result" style="display:none"></div>
+<div class="small">Only seller-provided phrases are used. Backend AI output is never displayed.</div>
+</div></div>
+
+<script>
+const API_BASE="https://ai-seller-toolkit-backend-1.onrender.com";
+const VERSION="10.0";
+
+function clean(v){return String(v||"").replace(/[•|/\\()[\]{}"'“”‘’]+/g," ").replace(/\s+/g," ").trim();}
+function norm(v){return String(v||"").toLowerCase().replace(/[^a-z0-9\u0900-\u097f]/g,"");}
+function words(v){return clean(v).toLowerCase().replace(/[^a-z0-9\u0900-\u097f\s,-]/gi," ").split(/[\s,]+/).filter(Boolean);}
+function proper(w){return w.charAt(0).toUpperCase()+w.slice(1).toLowerCase();}
+function tagFrom(w){return "#"+w.map(proper).join("");}
+function duplicate(w){let a=w.map(norm);return a.some((x,i)=>a.indexOf(x)!==i);}
+function validPhrase(p){let w=words(p);return w.length>=2&&w.length<=5&&!duplicate(w);}
+function contiguous(source,target){
+ let s=source.map(norm),t=target.map(norm);
+ for(let i=0;i<=s.length-t.length;i++){let ok=true;for(let j=0;j<t.length;j++)if(s[i+j]!==t[j]){ok=false;break;}if(ok)return true;}return false;
+}
+function add(out,seen,p,source){
+ p=clean(p);if(!validPhrase(p))return;
+ let w=words(p);if(!contiguous(source,w))return;
+ let t=tagFrom(w),k=norm(t);if(!seen.has(k)){seen.add(k);out.push(t);}
+}
+function phrases(v){return clean(v).split(/[;,]+/).map(x=>x.trim()).filter(Boolean);}
+
+function generate(){
+ const product=clean(productName.value),brand=clean(document.getElementById("brand").value);
+ const details=clean(document.getElementById("details").value),keywords=clean(document.getElementById("keywords").value);
+ if(!product)throw new Error("Please enter Product Name.");
+
+ const source=words([product,details,keywords].filter(Boolean).join(" "));
+ const pw=words(product),dw=words(details),kw=words(keywords);
+ const out=[],seen=new Set();
+
+ // Fixed output order: Product -> Brand -> exact seller phrases -> relevant phrases.
+ if(validPhrase(product)){let t=tagFrom(pw);seen.add(norm(t));out.push(t);}
+ if(brand){let bw=words(brand),t="#"+bw.map(proper).join("");if(!seen.has(norm(t))){seen.add(norm(t));out.push(t);}}
+
+ [...phrases(details),...phrases(keywords)].forEach(p=>add(out,seen,p,source));
+
+ for(let n=Math.min(4,pw.length);n>=2;n--)for(let i=0;i<=pw.length-n;i++)
+   add(out,seen,pw.slice(i,i+n).join(" "),source);
+
+ for(let n=Math.min(3,dw.length);n>=2;n--)for(let i=0;i<=dw.length-n;i++)
+   add(out,seen,dw.slice(i,i+n).join(" "),source);
+
+ for(let n=Math.min(4,kw.length);n>=2;n--)for(let i=0;i<=kw.length-n;i++)
+   add(out,seen,kw.slice(i,i+n).join(" "),source);
+
+ return out.filter(t=>{let w=t.slice(1).split(/(?=[A-Z])/).filter(Boolean);return !duplicate(w);}).slice(0,12);
+}
+
+async function pingBackend(){
+ try{await fetch(API_BASE+"/api/generate-hashtags",{method:"POST",headers:{"Content-Type":"application/json"},
+ body:JSON.stringify({category:category.value,productName:productName.value.trim(),brand:brand.value.trim(),
+ details:details.value.trim(),keywords:keywords.value.trim(),version:VERSION})});}catch(e){}
+}
+
+const category=document.getElementById("category"),productName=document.getElementById("productName");
+const details=document.getElementById("details"),keywords=document.getElementById("keywords");
+document.getElementById("generateBtn").addEventListener("click",async()=>{
+ const btn=document.getElementById("generateBtn"),status=document.getElementById("status"),result=document.getElementById("result");
+ btn.disabled=true;result.style.display="none";status.textContent="Generating clean hashtags…";
+ try{let tags=generate();await pingBackend();if(!tags.length)throw new Error("Please enter a valid multi-word product name or product details.");
+ result.textContent=tags.join(" ");result.style.display="block";status.textContent="✅ Hashtags generated successfully — FINAL VERSION 10.0";
+ }catch(e){status.textContent="❌ "+e.message;}finally{btn.disabled=false;}
+});
+</script>
+</body>
+</html>
