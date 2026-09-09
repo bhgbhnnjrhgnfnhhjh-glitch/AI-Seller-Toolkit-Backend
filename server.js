@@ -1,6 +1,6 @@
 // ==========================================================
 // AI SELLER TOOLKIT
-// SERVER.JS — FINAL VERSION 29.0
+// SERVER.JS — FINAL VERSION 31.0
 // Category-Aware + Strict Factual AI
 // Gemini Interactions API
 // SEO Attribute Engine
@@ -22,7 +22,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
 const MODEL = process.env.GEMINI_MODEL || "gemini-3.6-flash";
-const VERSION = "30.0";
+const VERSION = "31.0";
 
 let ai = null;
 
@@ -606,29 +606,19 @@ function containsBlockedSEOWord(keyword) {
 function keywordContainsProduct(keyword, productName) {
     const keywordTokens = seoTokens(keyword);
     const productTokens = seoTokens(productName);
-
     if (!productTokens.length || !keywordTokens.length) return false;
 
     const keywordSet = new Set(keywordTokens);
     const productHead = productTokens[productTokens.length - 1];
-
-    // The product head must be present. This blocks fragments such as
-    // "Inch", "Plastic", "Plant" and "Plant Pot" for
-    // "8 Inch Plastic Plant Pot".
     if (!keywordSet.has(productHead)) return false;
 
+    const matchedProductTokens = productTokens.filter(t => keywordSet.has(t)).length;
     if (productTokens.length === 1) return true;
-
-    const matchedProductTokens = productTokens.filter(
-        token => keywordSet.has(token)
-    ).length;
-
-    // A multi-word product must remain a recognizable product phrase.
     if (matchedProductTokens < 2) return false;
 
-    // Measurement integrity: if the product name contains a numeric
-    // measurement, never allow the unit to appear without its number.
-    // Example: reject "Inch Plastic Plant Pot" for "8 Inch Plastic Plant Pot".
+    // HARD measurement lock: whenever the seller product contains a number + unit,
+    // a keyword may contain that unit only when it also contains the exact number.
+    // Example: 8 Inch Plastic Plant Pot -> "Inch Plastic Plant Pot" is NEVER valid.
     for (let i = 0; i < productTokens.length; i++) {
         const token = productTokens[i];
         if (/^\d+(?:\.\d+)?$/.test(token)) {
@@ -637,19 +627,12 @@ function keywordContainsProduct(keyword, productName) {
         }
     }
 
-    // Never accept usage/sentence fragments as SEO keywords.
     const lower = cleanSEOKeyword(keyword).toLowerCase();
-    if (lower.includes('suitable for ') || lower.includes('ideal for ') ||
-        lower.includes('perfect for ') || lower.includes('best for ')) {
-        return false;
-    }
+    if (/\b(?:suitable|ideal|perfect|best)\s+for\b/.test(lower)) return false;
+    if (/\b(?:for|used for|use for)\s+[a-z]/.test(lower)) return false;
 
-    // A product with 3+ tokens should contain at least 3 product tokens,
-    // unless it is an intentional attribute variant that still contains
-    // the product head and a meaningful seller-provided descriptor.
-    if (productTokens.length >= 3 && matchedProductTokens < 3) {
-        return false;
-    }
+    // Do not accept a 3+ word product by dropping its measurement/identity.
+    if (productTokens.length >= 3 && matchedProductTokens < 3) return false;
 
     return true;
 }
@@ -1539,7 +1522,7 @@ Return JSON only:
             mainKeyword,
             ...keywords,
             ...buildGuaranteedSEOKeywords(body, productName)
-        ]).slice(0, 20);
+        ]).filter(k => isValidSEOKeyword(k, productName, mainKeyword, body.brand)).slice(0, 20);
 
         if (!keywords.length) {
             keywords = [productName];
