@@ -1,7 +1,8 @@
 {
   "name": "ai-seller-toolkit-backend",
-  "version": "25.1.0",
+  "version": "28.0.0",
   "private": true,
+  "description": "AI Seller Toolkit backend with category-aware factual SEO generation",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
